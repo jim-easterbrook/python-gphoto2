@@ -27,6 +27,22 @@
 
 %include "typemaps.i"
 
+// image dimensions use uint32_t
+%typemap(in) uint32_t {
+  $1 = PyInt_AsLong($input);
+}
+%typemap(out) uint32_t {
+  $result = PyInt_FromLong($1);
+}
+
+// image mtime uses time_t
+%typemap(in) time_t {
+  $1 = PyInt_AsLong($input);
+}
+%typemap(out) time_t {
+  $result = PyInt_FromLong($1);
+}
+
 // gp_list_new() returns a pointer in an output parameter
 %typemap(in, numinputs=0) CameraList ** (CameraList *temp) {
   $1 = &temp;

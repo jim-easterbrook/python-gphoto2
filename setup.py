@@ -19,11 +19,13 @@
 
 from distutils.core import setup, Extension
 
-gphoto2_module = Extension('_gphoto2',
-                           sources = ['gphoto2/gphoto2.i'],
-                           swig_opts = ['-I/usr/include', '-builtin'],
-                           libraries = ['gphoto2'],
-                           )
+gphoto2_module = Extension(
+    '_gphoto2',
+    sources = ['gphoto2/gphoto2.i'],
+    swig_opts = ['-I/usr/include', '-builtin', '-O', '-Wall'],
+    libraries = ['gphoto2'],
+    extra_compile_args = ['-O3', '-Wno-unused-variable'],
+    )
 
 version = '0.1'
 

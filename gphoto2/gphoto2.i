@@ -43,6 +43,14 @@
   $result = PyInt_FromLong($1);
 }
 
+// gp_camera_get_config() returns a pointer in an output parameter
+%typemap(in, numinputs=0) CameraWidget ** (CameraWidget *temp) {
+  $1 = &temp;
+}
+%typemap(argout) CameraWidget ** {
+  $result = PyTuple_Pack(2, $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, 0));
+}
+
 // gp_list_new() returns a pointer in an output parameter
 %typemap(in, numinputs=0) CameraList ** (CameraList *temp) {
   $1 = &temp;
@@ -96,6 +104,7 @@
 
 %include "gphoto2/gphoto2-abilities-list.h"
 %include "gphoto2/gphoto2-port.h"
+%include "gphoto2/gphoto2-widget.h"
 %include "gphoto2/gphoto2-filesys.h"
 %include "gphoto2/gphoto2-result.h"
 

@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 import os
 import sys
 
@@ -66,6 +67,13 @@ def main():
     print '...'
     for path in files[-10:]:
         print path
+    info = get_file_info(camera, context, files[-1])
+    print
+    print 'File info'
+    print '========='
+    print 'image dimensions:', info.file.width, info.file.height
+    print 'image type:', info.file.type
+    print 'file mtime:', datetime.fromtimestamp(info.file.mtime).isoformat(' ')
     gp.check_result(gp.gp_camera_exit(camera, context))
     gp.check_result(gp.gp_camera_free(camera))
     return 0

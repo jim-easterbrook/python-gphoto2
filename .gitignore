@@ -1,0 +1,3 @@
+build
+gphoto2/*.py
+gphoto2/*_wrap.c

@@ -112,12 +112,12 @@
 
 // Add a python result error checking function
 %pythoncode %{
-def check_result(status):
-    if isinstance(status, tuple):
-        status, result = status
+def check_result(result):
+    if isinstance(result, tuple):
+        error, result = result
     else:
-        result = None
-    if status == GP_OK:
-        return result
-    raise RuntimeError(gp_result_as_string(status))
+        error = result
+    if error < 0:
+        raise RuntimeError(gp_result_as_string(error))
+    return result
 %}

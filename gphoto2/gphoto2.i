@@ -27,6 +27,11 @@
 
 %include "typemaps.i"
 
+// Some simple results are passed as pointers
+%apply int *OUTPUT { CameraWidgetType * };
+%apply int *OUTPUT { int * };
+%apply float *OUTPUT { float * };
+
 // image dimensions use uint32_t
 %typemap(in) uint32_t {
   $1 = PyInt_AsLong($input);
@@ -48,7 +53,12 @@
   $1 = &temp;
 }
 %typemap(argout) CameraWidget ** {
-  $result = PyTuple_Pack(2, $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, 0));
+  if (!PyList_Check($result)) {
+    PyObject* temp = $result;
+    $result = PyList_New(1);
+    PyList_SetItem($result, 0, temp);
+  }
+  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, 0));
 }
 
 // gp_list_new() returns a pointer in an output parameter
@@ -56,7 +66,12 @@
   $1 = &temp;
 }
 %typemap(argout) CameraList ** {
-  $result = PyTuple_Pack(2, $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraList, 0));
+  if (!PyList_Check($result)) {
+    PyObject* temp = $result;
+    $result = PyList_New(1);
+    PyList_SetItem($result, 0, temp);
+  }
+  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraList, 0));
 }
 
 // gp_camera_new() returns a pointer in an output parameter
@@ -64,7 +79,12 @@
   $1 = &temp;
 }
 %typemap(argout) Camera ** {
-  $result = PyTuple_Pack(2, $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, 0));
+  if (!PyList_Check($result)) {
+    PyObject* temp = $result;
+    $result = PyList_New(1);
+    PyList_SetItem($result, 0, temp);
+  }
+  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, 0));
 }
 
 // gp_abilities_list_new() returns a pointer in an output parameter
@@ -72,8 +92,12 @@
   $1 = &temp;
 }
 %typemap(argout) CameraAbilitiesList ** {
-  $result = PyTuple_Pack(
-    2, $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraAbilitiesList, 0));
+  if (!PyList_Check($result)) {
+    PyObject* temp = $result;
+    $result = PyList_New(1);
+    PyList_SetItem($result, 0, temp);
+  }
+  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraAbilitiesList, 0));
 }
 
 // gp_port_new() returns a pointer in an output parameter
@@ -81,8 +105,12 @@
   $1 = &temp;
 }
 %typemap(argout) GPPort ** {
-  $result = PyTuple_Pack(
-    2, $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPort, 0));
+  if (!PyList_Check($result)) {
+    PyObject* temp = $result;
+    $result = PyList_New(1);
+    PyList_SetItem($result, 0, temp);
+  }
+  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPort, 0));
 }
 
 // gp_list_get_name() and gp_list_get_value() return string pointers in output params
@@ -90,7 +118,15 @@
   $1 = &temp;
 }
 %typemap(argout) char ** {
-  $result = PyTuple_Pack(2, $result, PyString_FromString(*$1));
+  if (!PyList_Check($result)) {
+    PyObject* temp = $result;
+    $result = PyList_New(1);
+    PyList_SetItem($result, 0, temp);
+  }
+  if (*$1)
+    PyList_Append($result, PyString_FromString(*$1));
+  else
+    PyList_Append($result, Py_None);
 }
 
 // Some things are defined in .h files but are not in the library
@@ -110,16 +146,34 @@
 
 %include "gphoto2/gphoto2-camera.h"
 
+// Add type specific gp_widget_get_value methods
+%inline %{
+static int gp_widget_get_value_text(CameraWidget *widget, char **value) {
+  return gp_widget_get_value(widget, value);
+  };
+
+static int gp_widget_get_value_int(CameraWidget *widget, int *value) {
+  return gp_widget_get_value(widget, value);
+  };
+
+static int gp_widget_get_value_float(CameraWidget *widget, float *value) {
+  return gp_widget_get_value(widget, value);
+  };
+%}
+
 // Add a python result error checking function
 %pythoncode %{
 class GPhoto2Error(EnvironmentError):
     pass
 
 def check_result(result):
-    if isinstance(result, tuple):
+    if not isinstance(result, (tuple, list)):
+        error = result
+    elif len(result) == 2:
         error, result = result
     else:
-        error = result
+        error = result[0]
+        result = result[1:]
     if error < 0:
         raise GPhoto2Error(error, gp_result_as_string(error))
     return result

@@ -23,7 +23,7 @@
 #include "gphoto2/gphoto2.h"
 %}
 
-%feature("autodoc", "3");
+%feature("autodoc", "2");
 
 %include "typemaps.i"
 
@@ -112,12 +112,15 @@
 
 // Add a python result error checking function
 %pythoncode %{
+class GPhoto2Error(EnvironmentError):
+    pass
+
 def check_result(result):
     if isinstance(result, tuple):
         error, result = result
     else:
         error = result
     if error < 0:
-        raise RuntimeError(gp_result_as_string(error))
+        raise GPhoto2Error(error, gp_result_as_string(error))
     return result
 %}

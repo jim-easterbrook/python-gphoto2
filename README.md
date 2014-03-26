@@ -35,6 +35,7 @@ In general it is easier to use the C [API documentation](http://www.gphoto.org/d
 There is one major difference between the Python and C APIs.
 C functions that are passed a pointer to a pointer (and usually do some memory allocation) such as [gp_camera_new](http://www.gphoto.org/doc/api/gphoto2-camera_8h.html#a34f54a290d83399407fbe44d270c0ca) have Python equivalents that create the required pointer and return it in a tuple with the gphoto2 error code.
 For example, the C code:
+
     #include "gphoto2.h"
     int error;
     Camera *camera;
@@ -42,6 +43,7 @@ For example, the C code:
     ...
     error = gp_camera_unref(camera);
 has this Python equivalent:
+
     import gphoto2 as gp
     error, camera = gp.gp_camera_new()
     ...

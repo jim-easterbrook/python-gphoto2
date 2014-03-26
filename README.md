@@ -24,13 +24,36 @@ Python's `distutils` are used to build and install python-gphoto2:
     python setup.py build
     sudo python setup.py install
 
-Note the repetition of the `build` command -- the first one runs SWIG and creates a Python interface file which is then used on the second run.
+Note the repetition of the `build` command - the first one runs SWIG and creates a Python interface file which is then used on the second run.
 
 Documentation
 -------------
 
 After building and installing `pydoc gphoto2` will generate copious documentation.
-In general it is easier to use the `C` [API documentation](http://www.gphoto.org/doc/api/).
+In general it is easier to use the C [API documentation](http://www.gphoto.org/doc/api/).
+
+There is one major difference between the Python and C APIs.
+C functions that are passed a pointer to a pointer (and usually do some memory allocation) such as [gp_camera_new](http://www.gphoto.org/doc/api/gphoto2-camera_8h.html#a34f54a290d83399407fbe44d270c0ca) have Python equivalents that create the required pointer and return it in a tuple with the gphoto2 error code.
+For example, the C code:
+    #include "gphoto2.h"
+    int error;
+    Camera *camera;
+    error = gp_camera_new(&camera);
+    ...
+    error = gp_camera_unref(camera);
+has this Python equivalent:
+    import gphoto2 as gp
+    error, camera = gp.gp_camera_new()
+    ...
+    error = gp.gp_camera_unref(camera)
+
+The Python interface includes a function to check gphoto2 error values and raise an exception if an error occurs.
+This function also unwraps tuples such as that returned by `gp.gp_camera_new` in the example.
+Using this function the example becomes:
+    import gphoto2 as gp
+    camera = gp.check_result(gp.gp_camera_new())
+    ...
+    gp.check_result(gp.gp_camera_unref(camera))
 
 Legalese
 --------

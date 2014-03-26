@@ -52,6 +52,7 @@ has this Python equivalent:
 The Python interface includes a function to check gphoto2 error values and raise an exception if an error occurs.
 This function also unwraps tuples such as that returned by `gp.gp_camera_new` in the example.
 Using this function the example becomes:
+
     import gphoto2 as gp
     camera = gp.check_result(gp.gp_camera_new())
     ...

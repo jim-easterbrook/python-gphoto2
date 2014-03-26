@@ -33,7 +33,7 @@ After building and installing `pydoc gphoto2` will generate copious documentatio
 In general it is easier to use the C [API documentation](http://www.gphoto.org/doc/api/).
 
 There is one major difference between the Python and C APIs.
-C functions that are passed a pointer to a pointer (and usually do some memory allocation) such as [gp_camera_new](http://www.gphoto.org/doc/api/gphoto2-camera_8h.html#a34f54a290d83399407fbe44d270c0ca) have Python equivalents that create the required pointer and return it in a tuple with the gphoto2 error code.
+C functions that are passed a pointer to a pointer (and usually do some memory allocation) such as [gp_camera_new](http://www.gphoto.org/doc/api/gphoto2-camera_8h.html#a34f54a290d83399407fbe44d270c0ca) have Python equivalents that create the required pointer and return it in a list with the gphoto2 error code.
 For example, the C code:
 
     #include "gphoto2.h"
@@ -50,13 +50,20 @@ has this Python equivalent:
     error = gp.gp_camera_unref(camera)
 
 The Python interface includes a function to check gphoto2 error values and raise an exception if an error occurs.
-This function also unwraps tuples such as that returned by `gp.gp_camera_new` in the example.
+This function also unwraps lists such as that returned by `gp.gp_camera_new` in the example.
 Using this function the example becomes:
 
     import gphoto2 as gp
     camera = gp.check_result(gp.gp_camera_new())
     ...
     gp.check_result(gp.gp_camera_unref(camera))
+
+Other functions that have result pointer parameters in the C versions also return a list containing the error code and result value(s) in their Python versions.
+
+Some functions, such as [gp_widget_get_value](http://www.gphoto.org/doc/api/gphoto2-widget_8h.html#5a5b95809b2a44e62891044ab13b620c), can return different types using a `void *` pointer in C.
+The Python interface includes type specific functions such as `gp_widget_get_value_text` to overcome this restriction.
+
+See the example programs for typical usage of the Python gphoto2 API.
 
 Legalese
 --------

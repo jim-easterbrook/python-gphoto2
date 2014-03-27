@@ -15,30 +15,43 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module gphoto2
+%module gphoto2_list
 
 %{
-#define SWIG_FILE_WITH_INIT
-
 #include "gphoto2/gphoto2.h"
 %}
 
 %feature("autodoc", "2");
 
-// Add a python result error checking function
-%pythoncode %{
-class GPhoto2Error(EnvironmentError):
-    pass
+%include "typemaps.i"
 
-def check_result(result):
-    if not isinstance(result, (tuple, list)):
-        error = result
-    elif len(result) == 2:
-        error, result = result
-    else:
-        error = result[0]
-        result = result[1:]
-    if error < 0:
-        raise GPhoto2Error(error, gp_result_as_string(error))
-    return result
-%}
+// gp_list_new() returns a pointer in an output parameter
+%typemap(in, numinputs=0) CameraList ** (CameraList *temp) {
+  $1 = &temp;
+}
+%typemap(argout) CameraList ** {
+  if (!PyList_Check($result)) {
+    PyObject* temp = $result;
+    $result = PyList_New(1);
+    PyList_SetItem($result, 0, temp);
+  }
+  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraList, 0));
+}
+
+// gp_list_get_name() and gp_list_get_value() return string pointers in output params
+%typemap(in, numinputs=0) char ** (char *temp) {
+  $1 = &temp;
+}
+%typemap(argout) char ** {
+  if (!PyList_Check($result)) {
+    PyObject* temp = $result;
+    $result = PyList_New(1);
+    PyList_SetItem($result, 0, temp);
+  }
+  if (*$1)
+    PyList_Append($result, PyString_FromString(*$1));
+  else
+    PyList_Append($result, Py_None);
+}
+
+%include "gphoto2/gphoto2-list.h"

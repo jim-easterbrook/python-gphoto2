@@ -15,30 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module gphoto2
+%module gphoto2_result
 
 %{
-#define SWIG_FILE_WITH_INIT
-
 #include "gphoto2/gphoto2.h"
 %}
 
 %feature("autodoc", "2");
 
-// Add a python result error checking function
-%pythoncode %{
-class GPhoto2Error(EnvironmentError):
-    pass
+%include "typemaps.i"
 
-def check_result(result):
-    if not isinstance(result, (tuple, list)):
-        error = result
-    elif len(result) == 2:
-        error, result = result
-    else:
-        error = result[0]
-        result = result[1:]
-    if error < 0:
-        raise GPhoto2Error(error, gp_result_as_string(error))
-    return result
-%}
+%include "gphoto2/gphoto2-port-result.h"
+%include "gphoto2/gphoto2-result.h"

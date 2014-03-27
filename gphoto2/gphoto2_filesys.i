@@ -15,30 +15,33 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module gphoto2
+%module gphoto2_filesys
 
 %{
-#define SWIG_FILE_WITH_INIT
-
 #include "gphoto2/gphoto2.h"
 %}
 
 %feature("autodoc", "2");
 
-// Add a python result error checking function
-%pythoncode %{
-class GPhoto2Error(EnvironmentError):
-    pass
+%include "typemaps.i"
 
-def check_result(result):
-    if not isinstance(result, (tuple, list)):
-        error = result
-    elif len(result) == 2:
-        error, result = result
-    else:
-        error = result[0]
-        result = result[1:]
-    if error < 0:
-        raise GPhoto2Error(error, gp_result_as_string(error))
-    return result
-%}
+// image dimensions use uint32_t
+%typemap(in) uint32_t {
+  $1 = PyInt_AsLong($input);
+}
+%typemap(out) uint32_t {
+  $result = PyInt_FromLong($1);
+}
+
+// image mtime uses time_t
+%typemap(in) time_t {
+  $1 = PyInt_AsLong($input);
+}
+%typemap(out) time_t {
+  $result = PyInt_FromLong($1);
+}
+
+// Some things are defined in .h files but are not in the library
+%ignore gp_filesystem_get_storageinfo;
+
+%include "gphoto2/gphoto2-filesys.h"

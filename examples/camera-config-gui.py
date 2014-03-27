@@ -35,6 +35,20 @@ class MainWindow(QtGui.QMainWindow):
         quit_action.setShortcuts(['Ctrl+Q', 'Ctrl+W'])
         quit_action.triggered.connect(QtGui.qApp.closeAllWindows)
         self.addAction(quit_action)
+        # main widget
+        widget = QtGui.QWidget()
+        widget.setLayout(QtGui.QGridLayout())
+        widget.layout().setColumnStretch(0, 1)
+        self.setCentralWidget(widget)
+        # 'apply' button
+        self.apply_button = QtGui.QPushButton('apply changes')
+        self.apply_button.setEnabled(False)
+        self.apply_button.clicked.connect(self.apply_changes)
+        widget.layout().addWidget(self.apply_button, 1, 1)
+        # 'cancel' button
+        quit_button = QtGui.QPushButton('cancel')
+        quit_button.clicked.connect(QtGui.qApp.closeAllWindows)
+        widget.layout().addWidget(quit_button, 1, 2)
         # defer full initialisation (slow operation) until gui is visible
         QtGui.QApplication.postEvent(
             self, QtCore.QEvent(self.do_init), Qt.LowEventPriority - 1)
@@ -52,18 +66,27 @@ class MainWindow(QtGui.QMainWindow):
 
     def initialise(self):
         # get camera config tree
-        camera = gp.check_result(gp.gp_camera_new())
-        context = gp.gp_context_new()
-        gp.check_result(gp.gp_camera_init(camera, context))
-        camera_config = gp.check_result(
-            gp.gp_camera_get_config(camera, context))
+        self.camera = gp.check_result(gp.gp_camera_new())
+        self.context = gp.gp_context_new()
+        gp.check_result(gp.gp_camera_init(self.camera, self.context))
+        self.camera_config = gp.check_result(
+            gp.gp_camera_get_config(self.camera, self.context))
         # create corresponding tree of tab widgets
         self.setWindowTitle(
-            gp.check_result(gp.gp_widget_get_label(camera_config)))
-        self.setCentralWidget(config_widget(camera_config))
+            gp.check_result(gp.gp_widget_get_label(self.camera_config)))
+        self.centralWidget().layout().addWidget(SectionWidget(
+            self.config_changed, self.camera_config), 0, 0, 1, 3)
 
-class config_widget(QtGui.QWidget):
-    def __init__(self, camera_config, parent=None):
+    def config_changed(self):
+        self.apply_button.setEnabled(True)
+
+    def apply_changes(self):
+        gp.check_result(gp.gp_camera_set_config(
+            self.camera, self.camera_config, self.context))
+        QtGui.qApp.closeAllWindows()
+
+class SectionWidget(QtGui.QWidget):
+    def __init__(self, config_changed, camera_config, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.setLayout(QtGui.QFormLayout())
         child_count = gp.check_result(gp.gp_widget_count_children(camera_config))
@@ -78,55 +101,115 @@ class config_widget(QtGui.QWidget):
                 if not tabs:
                     tabs = QtGui.QTabWidget()
                     self.layout().insertRow(0, tabs)
-                tabs.addTab(config_widget(child), label)
+                tabs.addTab(SectionWidget(config_changed, child), label)
             elif child_type == gp.GP_WIDGET_TEXT:
-                widget = QtGui.QLineEdit()
-                value = gp.check_result(gp.gp_widget_get_value_text(child))
-                if value:
-                    widget.setText(value)
-                self.layout().addRow(label, widget)
+                self.layout().addRow(label, TextWidget(config_changed, child))
             elif child_type == gp.GP_WIDGET_RANGE:
-                lo, hi, inc = gp.check_result(gp.gp_widget_get_range(child))
-                value = gp.check_result(gp.gp_widget_get_value_float(child))
-                widget = QtGui.QSlider(Qt.Horizontal)
-                widget.setRange(int(lo * 1000.0), int(hi * 1000.0))
-                widget.setSingleStep(int(inc * 1000.0))
-                widget.setValue(value * 1000.0)
-                self.layout().addRow(label, widget)
+                self.layout().addRow(label, RangeWidget(config_changed, child))
             elif child_type == gp.GP_WIDGET_TOGGLE:
-                widget = QtGui.QCheckBox()
-                value = gp.check_result(gp.gp_widget_get_value_int(child))
-                widget.setChecked(value != 0)
-                self.layout().addRow(label, widget)
+                self.layout().addRow(label, ToggleWidget(config_changed, child))
             elif child_type == gp.GP_WIDGET_RADIO:
-                widget = QtGui.QWidget()
-                widget.setLayout(QtGui.QHBoxLayout())
-                value = gp.check_result(gp.gp_widget_get_value_text(child))
-                choice_count = gp.check_result(gp.gp_widget_count_choices(child))
-                for n in range(choice_count):
-                    choice = gp.check_result(gp.gp_widget_get_choice(child, n))
-                    if choice:
-                        button = QtGui.QRadioButton(choice)
-                        widget.layout().addWidget(button)
-                        if choice == value:
-                            button.setChecked(True)
-                self.layout().addRow(label, widget)
+                self.layout().addRow(label, RadioWidget(config_changed, child))
             elif child_type == gp.GP_WIDGET_MENU:
-                widget = QtGui.QComboBox()
-                value = gp.check_result(gp.gp_widget_get_value_text(child))
-                choice_count = gp.check_result(gp.gp_widget_count_choices(child))
-                for n in range(choice_count):
-                    choice = gp.check_result(gp.gp_widget_get_choice(child, n))
-                    if choice:
-                        widget.addItem(choice)
-                        if choice == value:
-                            widget.setCurrentIndex(n)
-                self.layout().addRow(label, widget)
-            elif child_type == gp.GP_WIDGET_BUTTON:
-                widget = QtGui.QPushButton()
-                self.layout().addRow(label, widget)
+                self.layout().addRow(label, MenuWidget(config_changed, child))
             else:
                 print 'Cannot make widget type %d for %s' % (child_type, label)
+
+class TextWidget(QtGui.QLineEdit):
+    def __init__(self, config_changed, config, parent=None):
+        QtGui.QLineEdit.__init__(self, parent)
+        self.config_changed = config_changed
+        self.config = config
+        assert gp.check_result(gp.gp_widget_count_children(config)) == 0
+        value = gp.check_result(gp.gp_widget_get_value_text(config))
+        if value:
+            self.setText(value)
+        self.editingFinished.connect(self.new_value)
+
+    def new_value(self):
+        value = str(self.text())
+        gp.check_result(gp.gp_widget_set_value_text(self.config, value))
+        self.config_changed()
+
+class RangeWidget(QtGui.QSlider):
+    def __init__(self, config_changed, config, parent=None):
+        QtGui.QSlider.__init__(self, Qt.Horizontal, parent)
+        self.config_changed = config_changed
+        self.config = config
+        assert gp.check_result(gp.gp_widget_count_children(config)) == 0
+        lo, hi, self.inc = gp.check_result(gp.gp_widget_get_range(config))
+        value = gp.check_result(gp.gp_widget_get_value_float(config))
+        self.setRange(int(lo * self.inc), int(hi * self.inc))
+        self.setValue(int(value * self.inc))
+        self.sliderReleased.connect(self.new_value)
+
+    def new_value(self):
+        value = float(self.value()) * self.inc
+        gp.check_result(gp.gp_widget_set_value_float(self.config, value))
+        self.config_changed()
+
+class ToggleWidget(QtGui.QCheckBox):
+    def __init__(self, config_changed, config, parent=None):
+        QtGui.QCheckBox.__init__(self, parent)
+        self.config_changed = config_changed
+        self.config = config
+        assert gp.check_result(gp.gp_widget_count_children(config)) == 0
+        value = gp.check_result(gp.gp_widget_get_value_int(config))
+        self.setChecked(value != 0)
+        self.clicked.connect(self.new_value)
+
+    def new_value(self):
+        value = self.isChecked()
+        gp.check_result(gp.gp_widget_set_value_int(self.config, (0, 1)[value]))
+        self.config_changed()
+
+class RadioWidget(QtGui.QWidget):
+    def __init__(self, config_changed, config, parent=None):
+        QtGui.QWidget.__init__(self, parent)
+        self.config_changed = config_changed
+        self.config = config
+        assert gp.check_result(gp.gp_widget_count_children(config)) == 0
+        self.setLayout(QtGui.QHBoxLayout())
+        value = gp.check_result(gp.gp_widget_get_value_text(config))
+        choice_count = gp.check_result(gp.gp_widget_count_choices(config))
+        self.buttons = []
+        for n in range(choice_count):
+            choice = gp.check_result(gp.gp_widget_get_choice(config, n))
+            if choice:
+                button = QtGui.QRadioButton(choice)
+                self.layout().addWidget(button)
+                if choice == value:
+                    button.setChecked(True)
+                self.buttons.append((button, choice))
+                button.clicked.connect(self.new_value)
+
+    def new_value(self):
+        for button, choice in self.buttons:
+            if button.isChecked():
+                gp.check_result(gp.gp_widget_set_value_text(self.config, choice))
+                self.config_changed()
+                return
+
+class MenuWidget(QtGui.QComboBox):
+    def __init__(self, config_changed, config, parent=None):
+        QtGui.QComboBox.__init__(self, parent)
+        self.config_changed = config_changed
+        self.config = config
+        assert gp.check_result(gp.gp_widget_count_children(config)) == 0
+        value = gp.check_result(gp.gp_widget_get_value_text(config))
+        choice_count = gp.check_result(gp.gp_widget_count_choices(config))
+        for n in range(choice_count):
+            choice = gp.check_result(gp.gp_widget_get_choice(config, n))
+            if choice:
+                self.addItem(choice)
+                if choice == value:
+                    self.setCurrentIndex(n)
+        self.currentIndexChanged.connect(self.new_value)
+
+    def new_value(self, value):
+        value = str(self.itemText(value))
+        gp.check_result(gp.gp_widget_set_value_text(self.config, value))
+        self.config_changed()
 
 if __name__ == "__main__":
     app = QtGui.QApplication([])

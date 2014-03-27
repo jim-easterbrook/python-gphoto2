@@ -1,4 +1,3 @@
-from .gphoto2 import *
 from .gphoto2_abilities_list import *
 from .gphoto2_camera import *
 from .gphoto2_context import *

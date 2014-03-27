@@ -27,3 +27,21 @@
 
 %include "gphoto2/gphoto2-port-result.h"
 %include "gphoto2/gphoto2-result.h"
+
+// Add a python result error checking function
+%pythoncode %{
+class GPhoto2Error(EnvironmentError):
+    pass
+
+def check_result(result):
+    if not isinstance(result, (tuple, list)):
+        error = result
+    elif len(result) == 2:
+        error, result = result
+    else:
+        error = result[0]
+        result = result[1:]
+    if error < 0:
+        raise GPhoto2Error(error, gp_result_as_string(error))
+    return result
+%}

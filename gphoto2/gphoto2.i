@@ -100,6 +100,19 @@
   PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraAbilitiesList, 0));
 }
 
+// gp_file_new() returns a pointer in an output parameter
+%typemap(in, numinputs=0) CameraFile ** (CameraFile *temp) {
+  $1 = &temp;
+}
+%typemap(argout) CameraFile ** {
+  if (!PyList_Check($result)) {
+    PyObject* temp = $result;
+    $result = PyList_New(1);
+    PyList_SetItem($result, 0, temp);
+  }
+  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraFile, 0));
+}
+
 // gp_port_new() returns a pointer in an output parameter
 %typemap(in, numinputs=0) GPPort ** (GPPort *temp) {
   $1 = &temp;

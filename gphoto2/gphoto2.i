@@ -146,8 +146,8 @@
 
 %include "gphoto2/gphoto2-camera.h"
 
-// Add type specific gp_widget_get_value methods
 %inline %{
+// Add type specific gp_widget_get_value methods
 static int gp_widget_get_value_text(CameraWidget *widget, char **value) {
   return gp_widget_get_value(widget, value);
   };
@@ -158,6 +158,19 @@ static int gp_widget_get_value_int(CameraWidget *widget, int *value) {
 
 static int gp_widget_get_value_float(CameraWidget *widget, float *value) {
   return gp_widget_get_value(widget, value);
+  };
+
+// Add type specific gp_widget_set_value methods
+static int gp_widget_set_value_text(CameraWidget *widget, char *value) {
+  return gp_widget_set_value(widget, value);
+  };
+
+static int gp_widget_set_value_int(CameraWidget *widget, const int value) {
+  return gp_widget_set_value(widget, &value);
+  };
+
+static int gp_widget_set_value_float(CameraWidget *widget, const float value) {
+  return gp_widget_set_value(widget, &value);
   };
 %}
 

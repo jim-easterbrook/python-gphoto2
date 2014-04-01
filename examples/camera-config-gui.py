@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import sys
 
 from PyQt4 import QtGui, QtCore
@@ -212,6 +213,9 @@ class MenuWidget(QtGui.QComboBox):
         self.config_changed()
 
 if __name__ == "__main__":
+    logging.basicConfig(
+        format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
+    gp.check_result(gp.use_python_logging())
     app = QtGui.QApplication([])
     main = MainWindow()
     main.show()

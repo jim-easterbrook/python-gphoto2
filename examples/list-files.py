@@ -18,6 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
+import logging
 import os
 import sys
 
@@ -53,6 +54,9 @@ def get_file_info(camera, context, path):
     return info
 
 def main():
+    logging.basicConfig(
+        format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
+    gp.check_result(gp.use_python_logging())
     camera = gp.check_result(gp.gp_camera_new())
     context = gp.gp_context_new()
     gp.check_result(gp.gp_camera_init(camera, context))

@@ -17,11 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
 import sys
 
 import gphoto2 as gp
 
 def main():
+    logging.basicConfig(
+        format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
+    gp.check_result(gp.use_python_logging())
     camera = gp.check_result(gp.gp_camera_new())
     context = gp.gp_context_new()
     gp.check_result(gp.gp_camera_init(camera, context))

@@ -5,5 +5,6 @@ from .gphoto2_file import *
 from .gphoto2_filesys import *
 from .gphoto2_list import *
 from .gphoto2_port import *
+from .gphoto2_port_log import *
 from .gphoto2_result import *
 from .gphoto2_widget import *

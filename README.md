@@ -13,7 +13,7 @@ Dependencies
 
 *   Python: <http://python.org/>
 *   SWIG: <http://swig.org/>
-*   libgphoto2: <http://www.gphoto.org/proj/libgphoto2/>
+*   libgphoto2: <http://www.gphoto.org/proj/libgphoto2/> version 2.5 or greater
 
 Building and installation
 -------------------------
@@ -24,16 +24,16 @@ Python's `distutils` are used to build and install python-gphoto2:
     python setup.py build
     sudo python setup.py install
 
-Note the repetition of the `build` command - the first one runs SWIG and creates a Python interface file which is then used on the second run.
+Note the repetition of the `build` command - the first one runs SWIG and creates Python interface files which are then built on the second run.
 
 Documentation
 -------------
 
-After building and installing `pydoc gphoto2` will generate copious documentation.
+After building and installing `pydoc gphoto2` will display copious documentation.
 In general it is easier to use the C [API documentation](http://www.gphoto.org/doc/api/).
 
 There is one major difference between the Python and C APIs.
-C functions that are passed a pointer to a pointer (and usually do some memory allocation) such as [gp_camera_new](http://www.gphoto.org/doc/api/gphoto2-camera_8h.html#a34f54a290d83399407fbe44d270c0ca) have Python equivalents that create the required pointer and return it in a list with the gphoto2 error code.
+C functions that are passed a pointer to a pointer (and usually do some memory allocation) such as [gp_camera_new](http://www.gphoto.org/doc/api/gphoto2-camera_8h.html#ad89d6ee1c35f5ee399e89ecaeac6bd61) have Python equivalents that create the required pointer and return it in a list with the gphoto2 error code.
 For example, the C code:
 
     #include "gphoto2.h"
@@ -61,7 +61,7 @@ Using this function the example becomes:
 Other functions that have result pointer parameters in the C versions also return a list containing the error code and result value(s) in their Python versions.
 
 Some functions, such as [gp_widget_get_value](http://www.gphoto.org/doc/api/gphoto2-widget_8h.html#5a5b95809b2a44e62891044ab13b620c), can return different types using a `void *` pointer in C.
-The Python interface includes type specific functions such as `gp_widget_get_value_text` to overcome this restriction.
+The Python interface includes type specific functions such as `gp_widget_get_value_text` that can be used from Python.
 
 See the example programs for typical usage of the Python gphoto2 API.
 

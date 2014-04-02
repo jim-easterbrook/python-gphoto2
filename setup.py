@@ -32,7 +32,7 @@ for mod_name in mod_names:
         '_%s' % mod_name,
         sources = ['gphoto2/%s.i' % mod_name],
         swig_opts = ['-I/usr/include', '-builtin', '-O', '-Wall'],
-        libraries = ['gphoto2'],
+        libraries = ['gphoto2', 'gphoto2_port'],
         extra_compile_args = ['-O3', '-Wno-unused-variable'],
         ))
     init_module += 'from .%s import *\n' % mod_name

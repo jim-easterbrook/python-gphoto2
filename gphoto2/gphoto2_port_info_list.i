@@ -41,6 +41,19 @@
   PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfoList, 0));
 }
 
+// gp_port_info_new() returns a pointer in an output parameter
+%typemap(in, numinputs=0) GPPortInfo * (GPPortInfo temp) {
+  $1 = &temp;
+}
+%typemap(argout) GPPortInfo * {
+  if (!PyList_Check($result)) {
+    PyObject* temp = $result;
+    $result = PyList_New(1);
+    PyList_SetItem($result, 0, temp);
+  }
+  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfo, 0));
+}
+
 // several getter functions return string pointers in output params
 %typemap(in, numinputs=0) char ** (char *temp) {
   $1 = &temp;

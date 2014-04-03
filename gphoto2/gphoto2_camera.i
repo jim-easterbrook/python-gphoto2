@@ -25,6 +25,7 @@
 %import "gphoto2_file.i"
 %import "gphoto2_filesys.i"
 %import "gphoto2_list.i"
+%import "gphoto2_port_info_list.i"
 %import "gphoto2_widget.i"
 
 %feature("autodoc", "2");

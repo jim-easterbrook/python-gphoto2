@@ -15,30 +15,46 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module gphoto2_abilities_list
+%module gphoto2_port_info_list
 
 %{
 #include "gphoto2/gphoto2.h"
 %}
 
-%import "gphoto2_context.i"
-%import "gphoto2_port_info_list.i"
-
 %feature("autodoc", "2");
+
+%ignore gp_port_info_get_library_filename;
+%ignore gp_port_info_set_library_filename;
 
 %include "typemaps.i"
 
-// gp_abilities_list_new() returns a pointer in an output parameter
-%typemap(in, numinputs=0) CameraAbilitiesList ** (CameraAbilitiesList *temp) {
+// gp_port_info_list_new() returns a pointer in an output parameter
+%typemap(in, numinputs=0) GPPortInfoList ** (GPPortInfoList *temp) {
   $1 = &temp;
 }
-%typemap(argout) CameraAbilitiesList ** {
+%typemap(argout) GPPortInfoList ** {
   if (!PyList_Check($result)) {
     PyObject* temp = $result;
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraAbilitiesList, 0));
+  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfoList, 0));
 }
 
-%include "gphoto2/gphoto2-abilities-list.h"
+// several getter functions return string pointers in output params
+%typemap(in, numinputs=0) char ** (char *temp) {
+  $1 = &temp;
+}
+%typemap(argout) char ** {
+  if (!PyList_Check($result)) {
+    PyObject* temp = $result;
+    $result = PyList_New(1);
+    PyList_SetItem($result, 0, temp);
+  }
+  if (*$1)
+    PyList_Append($result, PyString_FromString(*$1));
+  else
+    PyList_Append($result, Py_None);
+}
+
+%include "gphoto2/gphoto2-port-info-list.h"

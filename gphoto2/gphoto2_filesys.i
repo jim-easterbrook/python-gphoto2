@@ -27,18 +27,26 @@
 
 // image dimensions use uint32_t
 %typemap(in) uint32_t {
-  $1 = PyInt_AsLong($input);
+  $1 = PyLong_AsUnsignedLong($input);
 }
 %typemap(out) uint32_t {
-  $result = PyInt_FromLong($1);
+  $result = PyLong_FromUnsignedLong($1);
+}
+
+// storage info uses uint64_t
+%typemap(in) uint64_t {
+  $1 = PyLong_AsUnsignedLongLong($input);
+}
+%typemap(out) uint64_t {
+  $result = PyLong_FromUnsignedLongLong($1);
 }
 
 // image mtime uses time_t
 %typemap(in) time_t {
-  $1 = PyInt_AsLong($input);
+  $1 = PyLong_AsLongLong($input);
 }
 %typemap(out) time_t {
-  $result = PyInt_FromLong($1);
+  $result = PyLong_FromLongLong($1);
 }
 
 // Some things are defined in .h files but are not in the library

@@ -22,7 +22,7 @@ import os
 
 mod_names = map(lambda x: x[0],
                 filter(lambda x: x[1] == '.i',
-                       map(os.path.splitext, os.listdir('gphoto2'))))
+                       map(os.path.splitext, os.listdir('source'))))
 mod_names.sort()
 
 ext_modules = []
@@ -30,16 +30,16 @@ init_module = ''
 for mod_name in mod_names:
     ext_modules.append(Extension(
         '_%s' % mod_name,
-        sources = ['gphoto2/%s.i' % mod_name],
+        sources = ['source/%s.i' % mod_name],
         swig_opts = ['-I/usr/include', '-builtin', '-O', '-Wall'],
         libraries = ['gphoto2', 'gphoto2_port'],
         extra_compile_args = ['-O3', '-Wno-unused-variable'],
         ))
     init_module += 'from .%s import *\n' % mod_name
 
-old_init_module = open('gphoto2/__init__.py', 'r').read()
+old_init_module = open('source/__init__.py', 'r').read()
 if init_module != old_init_module:
-    open('gphoto2/__init__.py', 'w').write(init_module)
+    open('source/__init__.py', 'w').write(init_module)
 
 version = '0.1'
 
@@ -52,4 +52,5 @@ setup(name = 'gphoto2',
       ext_package = 'gphoto2',
       ext_modules = ext_modules,
       packages = ['gphoto2'],
+      package_dir = {'gphoto2' : 'source'},
       )

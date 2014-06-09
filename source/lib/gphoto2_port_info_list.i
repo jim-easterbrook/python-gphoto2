@@ -38,7 +38,7 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyList_Append($result, SWIG_NewPointerObj($1, SWIGTYPE_p__GPPortInfoList, 0));
+  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfoList, 0));
 }
 
 // gp_port_info_new() returns a pointer in an output parameter
@@ -51,7 +51,7 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfo, 0));
+  PyList_Append($result, SWIG_NewPointerObj($1, SWIGTYPE_p__GPPortInfo, 0));
 }
 
 // several getter functions return string pointers in output params

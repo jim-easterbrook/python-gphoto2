@@ -5,6 +5,9 @@ python-gphoto2 is a very basic (low-level) Python interface to [libgphoto2](http
 It is built using [SWIG](http://swig.org/) to automatically generate the interface code.
 This gives direct access to the libgphoto2 functions, but in a rather un-Pythonic manner.
 
+There are some Python helper classes to ease access to many of the low-level functions.
+This makes the package a bit more Pythonic, but you will still need to deal directly with the lower level at times.
+
 There are still parts of the libgphoto2 API that are not included in python-gphoto2.
 Please let me know if you have any specific requirements.
 
@@ -37,7 +40,7 @@ After building and installing `pydoc gphoto2` will display copious documentation
 In general it is easier to use the C [API documentation](http://www.gphoto.org/doc/api/).
 
 There is one major difference between the Python and C APIs.
-C functions that are passed a pointer to a pointer (and usually do some memory allocation) such as [gp_camera_new](http://www.gphoto.org/doc/api/gphoto2-camera_8h.html#ad89d6ee1c35f5ee399e89ecaeac6bd61) have Python equivalents that create the required pointer and return it in a list with the gphoto2 error code.
+C functions that are passed a pointer to a pointer (and usually do some memory allocation) such as [gp_camera_new](http://www.gphoto.org/doc/api/gphoto2-camera_8h.html) have Python equivalents that create the required pointer and return it in a list with the gphoto2 error code.
 For example, the C code:
 
     #include "gphoto2.h"
@@ -62,9 +65,23 @@ Using this function the example becomes:
     ...
     gp.check_result(gp.gp_camera_unref(camera))
 
+The Python helper classes deal with cleaning up and make things even simpler.
+Here is a complete example:
+
+    import gphoto2 as gp
+    with gp.Context() as context:
+        with gp.Camera(context.context) as camera:
+            camera.init()
+            text = gp.CameraText()
+            camera.get_summary(text)
+            print 'Summary'
+            print '======='
+            print text.text
+            camera.exit()
+
 Other functions that have result pointer parameters in the C versions also return a list containing the error code and result value(s) in their Python versions.
 
-Some functions, such as [gp_widget_get_value](http://www.gphoto.org/doc/api/gphoto2-widget_8h.html#5a5b95809b2a44e62891044ab13b620c), can return different types using a `void *` pointer in C.
+Some functions, such as [gp_widget_get_value](http://www.gphoto.org/doc/api/gphoto2-widget_8h.html), can return different types using a `void *` pointer in C.
 The Python interface includes type specific functions such as `gp_widget_get_value_text` that can be used from Python.
 
 See the example programs for typical usage of the Python gphoto2 API.

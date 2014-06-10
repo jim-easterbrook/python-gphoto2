@@ -141,15 +141,18 @@ Here is a complete example program:
 The higher level classes and the functions they wrap are as follows.
 Each class also "owns" a low-level object which is available as an attribute (e.g. to pass to other functions).
 
-============  ===================================  =============  =============
-Python class  C function                           Python method  Data & C type
-============  ===================================  =============  =============
-Context       gp_xxx(..., context)                 xxx(...)       context (GPContext)
-Camera        gp_camera_xxx(camera, ..., context)  xxx(...)       camera (Camera)
-              gp_camera_xxx(camera, ...)
-CameraWidget  gp_widget_xxx(widget, ...)           xxx(...)       widget (CameraWidget)
-CameraList    gp_list_xxx(list, ...)               xxx(...)       list (CameraList)
-============  ===================================  =============  =============
+=================== =================================== ============= =============
+Python class        C function                          Python method Data & C type
+=================== =================================== ============= =============
+Camera              gp_camera_xxx(camera, ..., context) xxx(...)      camera (Camera)
+                    gp_camera_xxx(camera, ...)
+CameraAbilitiesList gp_abilities_list_xxx(list, ...)    xxx(...)      list (CameraAbilitiesList)
+CameraFile          gp_file_xxx(file, ...)              xxx(...)      file (CameraFile)
+CameraList          gp_list_xxx(list, ...)              xxx(...)      list (CameraList)
+CameraWidget        gp_widget_xxx(widget, ...)          xxx(...)      widget (CameraWidget)
+Context             gp_xxx(..., context)                xxx(...)      context (GPContext)
+PortInfoList        gp_port_info_list_xxx(list, ...)    xxx(...)      list (GPPortInfoList)
+=================== =================================== ============= =============
 
 Legalese
 --------

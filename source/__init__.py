@@ -147,6 +147,70 @@ class CameraWidget(object):
         """Release resources allocated during object creation."""
         check_result(gp_widget_unref(self.widget))
 
+class CameraFile(object):
+    """CameraFile helper class.
+
+    Wraps all gp_file_*(file, ...) function calls. For example
+        gp_file_save(file, filename)
+    becomes
+        CameraFile.save(filename)
+
+    The file attribute stores the low-level CameraFile object created
+    by the helper class.
+    
+    """
+    def __init__(self):
+        self.file = check_result(gp_file_new())
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.cleanup()
+
+    def __getattr__(self, name):
+        self._next_call = getattr(lib, 'gp_file_%s' % name)
+        return self._call
+
+    def _call(self, *arg):
+        return check_result((self._next_call)(self.file, *arg))
+
+    def cleanup(self):
+        """Release resources allocated during object creation."""
+        check_result(gp_file_unref(self.file))
+
+class CameraAbilitiesList(object):
+    """CameraAbilitiesList helper class.
+
+    Wraps all gp_abilities_list_*(list, ...) function calls. For example
+        gp_abilities_list_lookup_model(list, model)
+    becomes
+        CameraAbilitiesList.lookup_model(model)
+
+    The list attribute stores the low-level CameraAbilitiesList object
+    created by the helper class.
+    
+    """
+    def __init__(self):
+        self.list = check_result(gp_abilities_list_new())
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.cleanup()
+
+    def __getattr__(self, name):
+        self._next_call = getattr(lib, 'gp_abilities_list_%s' % name)
+        return self._call
+
+    def _call(self, *arg):
+        return check_result((self._next_call)(self.list, *arg))
+
+    def cleanup(self):
+        """Release resources allocated during object creation."""
+        check_result(gp_abilities_list_free(self.list))
+
 class CameraList(object):
     """CameraList helper class.
 
@@ -178,3 +242,35 @@ class CameraList(object):
     def cleanup(self):
         """Release resources allocated during object creation."""
         check_result(gp_list_unref(self.list))
+
+class PortInfoList(object):
+    """PortInfoList helper class.
+
+    Wraps all gp_port_info_list_*(list, ...) function calls. For example
+        gp_port_info_list_lookup_path(list, path)
+    becomes
+        PortInfoList.lookup_path(path)
+
+    The list attribute stores the low-level GPPortInfoList object
+    created by the helper class.
+    
+    """
+    def __init__(self):
+        self.list = check_result(gp_port_info_list_new())
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.cleanup()
+
+    def __getattr__(self, name):
+        self._next_call = getattr(lib, 'gp_port_info_list_%s' % name)
+        return self._call
+
+    def _call(self, *arg):
+        return check_result((self._next_call)(self.list, *arg))
+
+    def cleanup(self):
+        """Release resources allocated during object creation."""
+        check_result(gp_port_info_list_free(self.list))

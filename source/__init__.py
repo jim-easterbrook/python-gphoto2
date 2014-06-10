@@ -92,11 +92,19 @@ class Camera(object):
 
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_camera_%s' % name)
+        if name in ('get_abilities',  'set_abilities',
+                    'get_port_info',  'set_port_info',
+                    'get_port_speed', 'set_port_speed',
+                    'start_timeout',  'stop_timeout',   'set_timeout_funcs'):
+            return self._call_no_context
         return self._call
 
     def _call(self, *arg):
         return check_result(
             (self._next_call)(self.camera, *(arg + (self.context,))))
+
+    def _call_no_context(self, *arg):
+        return check_result((self._next_call)(self.camera, *arg))
 
     def cleanup(self):
         """Release resources allocated during object creation."""

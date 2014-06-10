@@ -146,6 +146,7 @@ Python class  C function                           Python method  Data & C type
 ============  ===================================  =============  =============
 Context       gp_xxx(..., context)                 xxx(...)       context (GPContext)
 Camera        gp_camera_xxx(camera, ..., context)  xxx(...)       camera (Camera)
+              gp_camera_xxx(camera, ...)
 CameraWidget  gp_widget_xxx(widget, ...)           xxx(...)       widget (CameraWidget)
 CameraList    gp_list_xxx(list, ...)               xxx(...)       list (CameraList)
 ============  ===================================  =============  =============

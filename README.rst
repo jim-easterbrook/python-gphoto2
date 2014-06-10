@@ -1,6 +1,9 @@
 python-gphoto2
 ==============
 
+.. contents::
+   :backlinks: top
+
 python-gphoto2 is a very basic (low-level) Python interface to `libgphoto2 <http://www.gphoto.org/proj/libgphoto2/>`_.
 It is built using `SWIG <http://swig.org/>`_ to automatically generate the interface code.
 This gives direct access to the libgphoto2 functions, but in a rather un-Pythonic manner.
@@ -14,16 +17,21 @@ Please let me know if you have any specific requirements.
 Dependencies
 ------------
 
-*   Python: <http://python.org/>
-*   SWIG: <http://swig.org/>
-*   libgphoto2: <http://www.gphoto.org/proj/libgphoto2/> version 2.5 or greater
+*   Python: http://python.org/
+*   SWIG: http://swig.org/
+*   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.5 or greater
 
 Note that you need the "development headers" versions of libgphoto2 and Python.
 Most Linux distributions' package managers have these, but the names vary.
 Look for ``libgphoto2-2-dev`` or ``libgphoto2-devel`` or something similar.
 
-Building and installation
--------------------------
+Installation and testing
+------------------------
+
+Use ``git`` to "clone" the GitHub repository, then change to the new directory::
+
+    git clone https://github.com/jim-easterbrook/python-gphoto2.git
+    cd python-gphoto2
 
 Python's ``distutils`` are used to build and install python-gphoto2::
 
@@ -33,15 +41,48 @@ Python's ``distutils`` are used to build and install python-gphoto2::
 
 Note the repetition of the ``build`` command - the first one runs SWIG and creates Python interface files which are then built on the second run.
 
-Documentation
--------------
+Connect a digital camera to your computer, switch it on, and try one of the example programs::
 
-After building and installing ``pydoc gphoto2`` will display copious documentation.
-In general it is easier to use the C `API documentation <http://www.gphoto.org/doc/api/>`_.
+    python examples/camera-summary.py
 
-There is one major difference between the Python and C APIs.
-C functions that are passed a pointer to a pointer (and usually do some memory allocation) such as `gp_camera_new <http://www.gphoto.org/doc/api/gphoto2-camera_8h.html>`_ have Python equivalents that create the required pointer and return it in a list with the gphoto2 error code.
-For example, the C code::
+If this works then you're ready to start using python-gphoto2.
+
+Using python-gphoto2
+--------------------
+
+The Python interface to libgphoto2 should allow you to do anything you could do in a C program.
+However, the project is still quite young and there are probably bits missing.
+Let me know if you run into any problems.
+
+The following paragraphs show how the Python interfaces differ from C.
+See the example programs for typical usage of the Python gphoto2 API.
+
+Low-level interface
+^^^^^^^^^^^^^^^^^^^
+
+Using SWIG to generate the Python interfaces automatically means that every function in libgphoto2 *should* be available to Python.
+The ``pydoc`` command can be used to show basic information about a function::
+
+   jim@firefly ~/python-gphoto2 $ pydoc gphoto2.gp_camera_folder_list_files
+   Help on built-in function gp_camera_folder_list_files in gphoto2:
+
+   gphoto2.gp_camera_folder_list_files = gp_camera_folder_list_files(...)
+       gp_camera_folder_list_files(camera, folder, list, context) -> int
+
+       Parameters:
+           camera: Camera *
+           folder: char const *
+           list: CameraList *
+           context: GPContext *
+   jim@firefly ~/python-gphoto2 $
+
+In general it is easier to use the C `API documentation <http://www.gphoto.org/doc/api/>`_, but make sure you find the documentation for the version of libgphoto2 installed on your computer.
+
+Note that there is one major difference between the Python and C APIs.
+C functions that use a pointer parameter to return a value (and often do some memory allocation) such as `gp_camera_new() <http://www.gphoto.org/doc/api/gphoto2-camera_8h.html>`_ have Python equivalents that create the required pointer and return it in a list with the gphoto2 error code.
+For example, the C code:
+
+.. code:: c
 
     #include "gphoto2.h"
     int error;
@@ -49,24 +90,42 @@ For example, the C code::
     error = gp_camera_new(&camera);
     ...
     error = gp_camera_unref(camera);
-has this Python equivalent::
+
+has this Python equivalent:
+
+.. code:: python
 
     import gphoto2 as gp
     error, camera = gp.gp_camera_new()
     ...
     error = gp.gp_camera_unref(camera)
 
-The Python interface includes a function to check gphoto2 error values and raise an exception if an error occurs.
-This function also unwraps lists such as that returned by ``gp.gp_camera_new`` in the example.
-Using this function the example becomes::
+Some functions, such as `gp_widget_get_value() <http://www.gphoto.org/doc/api/gphoto2-widget_8h.html>`_, can return different types using a ``void *`` pointer in C.
+The Python interface includes type specific functions such as ``gp_widget_get_value_text()``.
+
+Error checking
+^^^^^^^^^^^^^^
+
+Most of the libgphoto2 functions return an integer to indicate success or failure.
+The Python interface includes a function to check these values and raise an exception if an error occurs.
+This function also unwraps lists such as that returned by ``gp_camera_new()`` in the example.
+Using this function the example becomes:
+
+.. code:: python
 
     import gphoto2 as gp
     camera = gp.check_result(gp.gp_camera_new())
     ...
     gp.check_result(gp.gp_camera_unref(camera))
 
-The Python helper classes deal with cleaning up and make things even simpler.
-Here is a complete example::
+Higher-level interface
+^^^^^^^^^^^^^^^^^^^^^^
+
+There are some higher-level Python helper classes that handle object creation and deletion and make things even simpler.
+They provide simplified interfaces to many of the libgphoto2 functions, with shortened names and no need to pass shared data such as ``context``.
+Here is a complete example program:
+
+.. code:: python
 
     import gphoto2 as gp
     with gp.Context() as context:
@@ -79,18 +138,23 @@ Here is a complete example::
             print text.text
             camera.exit()
 
-Other functions that have result pointer parameters in the C versions also return a list containing the error code and result value(s) in their Python versions.
+The higher level classes and the functions they wrap are as follows.
+Each class also "owns" a low-level object which is available as an attribute (e.g. to pass to other functions).
 
-Some functions, such as `gp_widget_get_value <http://www.gphoto.org/doc/api/gphoto2-widget_8h.html>`_, can return different types using a ``void *`` pointer in C.
-The Python interface includes type specific functions such as ``gp_widget_get_value_text`` that can be used from Python.
-
-See the example programs for typical usage of the Python gphoto2 API.
+============  ===================================  =============  =============
+Python class  C function                           Python method  Data & C type
+============  ===================================  =============  =============
+Context       gp_xxx(..., context)                 xxx(...)       context (GPContext)
+Camera        gp_camera_xxx(camera, ..., context)  xxx(...)       camera (Camera)
+CameraWidget  gp_widget_xxx(widget, ...)           xxx(...)       widget (CameraWidget)
+CameraList    gp_list_xxx(list, ...)               xxx(...)       list (CameraList)
+============  ===================================  =============  =============
 
 Legalese
 --------
 
 python-gphoto2 - Python interface to libgphoto2
-<http://github.com/jim-easterbrook/python-gphoto2>
+http://github.com/jim-easterbrook/python-gphoto2
 Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
 
 This program is free software: you can redistribute it and/or modify
@@ -104,4 +168,4 @@ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
+along with this program.  If not, see http://www.gnu.org/licenses/.

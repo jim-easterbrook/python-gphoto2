@@ -28,8 +28,17 @@ def main():
     gp.check_result(gp.use_python_logging())
     cameras = gp.check_result(gp.gp_list_new())
     context = gp.gp_context_new()
-    cam_count = gp.check_result(gp.gp_camera_autodetect(cameras, context))
-    assert cam_count == gp.gp_list_count(cameras)
+    if hasattr(gp, 'gp_camera_autodetect'):
+        # gphoto2 version 2.5+
+        cam_count = gp.check_result(gp.gp_camera_autodetect(cameras, context))
+        assert cam_count == gp.gp_list_count(cameras)
+    else:
+        port_info_list = gp.check_result(gp.gp_port_info_list_new())
+        gp.check_result(gp.gp_port_info_list_load(port_info_list))
+        abilities_list = gp.check_result(gp.gp_abilities_list_new())
+        gp.check_result(gp.gp_abilities_list_load(abilities_list, context))
+        gp.check_result(gp.gp_abilities_list_detect(
+            abilities_list, port_info_list, cameras, context))
     for n in range(gp.gp_list_count(cameras)):
         print 'camera number', n
         print '==============='

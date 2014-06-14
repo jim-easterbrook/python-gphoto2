@@ -27,8 +27,17 @@ def main():
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     with gp.Context() as context:
         with gp.CameraList() as cameras:
-            cam_count = context.camera_autodetect(cameras.list)
-            assert cam_count == cameras.count()
+            if hasattr(gp, 'gp_camera_autodetect'):
+                # gphoto2 version 2.5+
+                cam_count = context.camera_autodetect(cameras.list)
+                assert cam_count == cameras.count()
+            else:
+                with gp.PortInfoList() as port_info_list:
+                    port_info_list.load()
+                    with gp.CameraAbilitiesList() as abilities_list:
+                        abilities_list.load(context.context)
+                        abilities_list.detect(
+                            port_info_list.list, cameras.list, context.context)
             for n in range(cameras.count()):
                 print 'camera number', n
                 print '==============='

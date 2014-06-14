@@ -19,7 +19,7 @@ Dependencies
 
 *   Python: http://python.org/
 *   SWIG: http://swig.org/
-*   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.5 or greater
+*   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.4 or greater
 
 Note that you need the "development headers" versions of libgphoto2 and Python.
 Most Linux distributions' package managers have these, but the names vary.

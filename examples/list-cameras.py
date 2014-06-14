@@ -39,6 +39,8 @@ def main():
         gp.check_result(gp.gp_abilities_list_load(abilities_list, context))
         gp.check_result(gp.gp_abilities_list_detect(
             abilities_list, port_info_list, cameras, context))
+        gp.check_result(gp.gp_abilities_list_free(abilities_list))
+        gp.check_result(gp.gp_port_info_list_free(port_info_list))
     for n in range(gp.gp_list_count(cameras)):
         print 'camera number', n
         print '==============='

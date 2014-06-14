@@ -22,6 +22,7 @@
 %}
 
 %import "gphoto2_context.i"
+%import "gphoto2_list.i"
 %import "gphoto2_port_info_list.i"
 
 %feature("autodoc", "2");

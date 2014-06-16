@@ -21,6 +21,10 @@
 #include "gphoto2/gphoto2.h"
 %}
 
+%import "gphoto2_context.i"
+%import "gphoto2_file.i"
+%import "gphoto2_list.i"
+
 %feature("autodoc", "2");
 
 %include "typemaps.i"

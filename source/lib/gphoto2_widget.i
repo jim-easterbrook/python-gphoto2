@@ -22,6 +22,7 @@
 %}
 
 %import "gphoto2_camera.i"
+%import "gphoto2_context.i"
 
 %feature("autodoc", "2");
 

@@ -23,6 +23,4 @@
 
 %feature("autodoc", "2");
 
-%include "typemaps.i"
-
 %include "gphoto2/gphoto2-context.h"

@@ -21,6 +21,8 @@
 #include "gphoto2/gphoto2.h"
 %}
 
+%import "gphoto2_port.i"
+
 %feature("autodoc", "2");
 
 %ignore gp_port_info_get_library_filename;

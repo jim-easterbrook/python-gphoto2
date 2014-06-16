@@ -21,6 +21,8 @@
 #include "gphoto2/gphoto2.h"
 %}
 
+%import "gphoto2_port_info_list.i"
+
 %feature("autodoc", "2");
 
 %include "typemaps.i"

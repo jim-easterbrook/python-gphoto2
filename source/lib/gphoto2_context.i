@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module gphoto2_context
+%module(package="gphoto2.lib") gphoto2_context
 
 %{
 #include "gphoto2/gphoto2.h"

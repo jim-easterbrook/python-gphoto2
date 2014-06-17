@@ -53,14 +53,39 @@ old_init_module = open('source/lib/__init__.py', 'r').read()
 if init_module != old_init_module:
     open('source/lib/__init__.py', 'w').write(init_module)
 
-version = '0.2'
+version = '0.2.0'
+
+with open('README.rst') as ldf:
+    long_description = ldf.read()
 
 setup(name = 'gphoto2',
       version = version,
       description = 'Python interface to libgphoto2',
+      long_description = long_description,
       author = 'Jim Easterbrook',
       author_email = 'jim@jim-easterbrook.me.uk',
-      url = 'http://jim-easterbrook.github.com/python-gphoto2/',
+      url = 'https://github.com/jim-easterbrook/python-gphoto2',
+      download_url = 'https://github.com/jim-easterbrook/python-gphoto2/archive/master.zip#egg=gphoto2-%s' % version,
+      classifiers = [
+          'Development Status :: 4 - Beta',
+          'Intended Audience :: Developers',
+          'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
+          'Operating System :: MacOS',
+          'Operating System :: MacOS :: MacOS X',
+          'Operating System :: POSIX',
+          'Operating System :: POSIX :: BSD :: FreeBSD',
+          'Operating System :: POSIX :: BSD :: NetBSD',
+          'Operating System :: POSIX :: Linux',
+          'Programming Language :: Python :: 2',
+          'Programming Language :: Python :: 2.6',
+          'Programming Language :: Python :: 2.7',
+          'Programming Language :: Python :: 3',
+          'Topic :: Multimedia',
+          'Topic :: Multimedia :: Graphics',
+          'Topic :: Multimedia :: Graphics :: Capture',
+          ],
+      platforms = ['POSIX', 'MacOS'],
+      license = 'GNU GPL',
       ext_package = 'gphoto2.lib',
       ext_modules = ext_modules,
       packages = ['gphoto2', 'gphoto2.lib'],

@@ -36,10 +36,7 @@ Use ``git`` to "clone" the GitHub repository, then change to the new directory::
 Python's ``distutils`` are used to build and install python-gphoto2::
 
     python setup.py build
-    python setup.py build
     sudo python setup.py install
-
-Note the repetition of the ``build`` command - the first one runs SWIG and creates Python interface files which are then built on the second run.
 
 Connect a digital camera to your computer, switch it on, and try one of the example programs::
 

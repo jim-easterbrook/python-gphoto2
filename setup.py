@@ -18,20 +18,23 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from distutils.core import setup, Extension
+from distutils.command.build import build
 import os
 import subprocess
 import sys
 
+# get gphoto2 version
 gphoto2_version = str(subprocess.check_output(['gphoto2-config', '--version']))
 gphoto2_version = tuple(gphoto2_version.split()[1].split('.'))
 
+# get list of modules
 mod_names = list(map(lambda x: x[0],
                      filter(lambda x: x[1] == '.i',
                             map(os.path.splitext, os.listdir('source/lib')))))
 mod_names.sort()
 
+# create extension modules list
 ext_modules = []
-init_module = ''
 swig_opts = ['-I/usr/include', '-builtin', '-O', '-Wall']
 if sys.version_info[0] >= 3:
     swig_opts.append('-py3')
@@ -47,11 +50,21 @@ for mod_name in mod_names:
         libraries = ['gphoto2', 'gphoto2_port'],
         extra_compile_args = ['-O3', '-Wno-unused-variable'],
         ))
-    init_module += 'from .%s import *\n' % mod_name
 
+# rewrite init module, if needed
+init_module = ''
+for mod_name in mod_names:
+    init_module += 'from .%s import *\n' % mod_name
 old_init_module = open('source/lib/__init__.py', 'r').read()
 if init_module != old_init_module:
     open('source/lib/__init__.py', 'w').write(init_module)
+
+# redefine 'build' command so SWIG extensions get compiled first, as
+# they create .py files that then need to be installed
+class SWIG_build(build):
+    def run(self):
+        self.run_command('build_ext')
+        return build.run(self)
 
 version = '0.2.0'
 with open('README.rst') as ldf:
@@ -86,6 +99,7 @@ setup(name = 'gphoto2',
           ],
       platforms = ['POSIX', 'MacOS'],
       license = 'GNU GPL',
+      cmdclass = {'build': SWIG_build},
       ext_package = 'gphoto2.lib',
       ext_modules = ext_modules,
       packages = ['gphoto2', 'gphoto2.lib'],

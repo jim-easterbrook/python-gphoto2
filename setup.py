@@ -20,18 +20,21 @@
 from distutils.core import setup, Extension
 import os
 import subprocess
+import sys
 
-gphoto2_version = subprocess.check_output(['gphoto2-config', '--version'])
+gphoto2_version = str(subprocess.check_output(['gphoto2-config', '--version']))
 gphoto2_version = tuple(gphoto2_version.split()[1].split('.'))
 
-mod_names = map(lambda x: x[0],
-                filter(lambda x: x[1] == '.i',
-                       map(os.path.splitext, os.listdir('source/lib'))))
+mod_names = list(map(lambda x: x[0],
+                     filter(lambda x: x[1] == '.i',
+                            map(os.path.splitext, os.listdir('source/lib')))))
 mod_names.sort()
 
 ext_modules = []
 init_module = ''
 swig_opts = ['-I/usr/include', '-builtin', '-O', '-Wall']
+if sys.version_info[0] >= 3:
+    swig_opts.append('-py3')
 if gphoto2_version[0:2] == ('2', '4'):
     swig_opts. append('-DGPHOTO2_24')
 elif gphoto2_version[0:2] == ('2', '5'):

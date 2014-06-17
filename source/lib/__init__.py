@@ -8,4 +8,5 @@ from .gphoto2_port import *
 from .gphoto2_port_info_list import *
 from .gphoto2_port_log import *
 from .gphoto2_result import *
+from .gphoto2_version import *
 from .gphoto2_widget import *

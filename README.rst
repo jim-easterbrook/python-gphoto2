@@ -4,7 +4,7 @@ python-gphoto2
 .. contents::
    :backlinks: top
 
-python-gphoto2 is a very basic (low-level) Python interface to `libgphoto2 <http://www.gphoto.org/proj/libgphoto2/>`_.
+python-gphoto2 is a very basic (low-level) Python interface (or binding) to `libgphoto2 <http://www.gphoto.org/proj/libgphoto2/>`_.
 It is built using `SWIG <http://swig.org/>`_ to automatically generate the interface code.
 This gives direct access to the libgphoto2 functions, but in a rather un-Pythonic manner.
 
@@ -17,7 +17,7 @@ Please let me know if you have any specific requirements.
 Dependencies
 ------------
 
-*   Python: http://python.org/
+*   Python: http://python.org/ version 2.6 or greater (including Python 3)
 *   SWIG: http://swig.org/
 *   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.4 or greater
 
@@ -133,9 +133,9 @@ Here is a complete example program:
             camera.init()
             text = gp.CameraText()
             camera.get_summary(text)
-            print 'Summary'
-            print '======='
-            print text.text
+            print('Summary')
+            print('=======')
+            print(text.text)
             camera.exit()
 
 The higher level classes and the functions they wrap are as follows.

@@ -54,9 +54,9 @@ if init_module != old_init_module:
     open('source/lib/__init__.py', 'w').write(init_module)
 
 version = '0.2.0'
-
 with open('README.rst') as ldf:
     long_description = ldf.read()
+url = 'https://github.com/jim-easterbrook/python-gphoto2'
 
 setup(name = 'gphoto2',
       version = version,
@@ -64,8 +64,8 @@ setup(name = 'gphoto2',
       long_description = long_description,
       author = 'Jim Easterbrook',
       author_email = 'jim@jim-easterbrook.me.uk',
-      url = 'https://github.com/jim-easterbrook/python-gphoto2',
-      download_url = 'https://github.com/jim-easterbrook/python-gphoto2/archive/master.zip#egg=gphoto2-%s' % version,
+      url = url,
+      download_url = url + '/archive/gphoto2-' + version + '.tar.gz',
       classifiers = [
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',

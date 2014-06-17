@@ -42,10 +42,10 @@ def main():
         gp.check_result(gp.gp_abilities_list_free(abilities_list))
         gp.check_result(gp.gp_port_info_list_free(port_info_list))
     for n in range(gp.gp_list_count(cameras)):
-        print 'camera number', n
-        print '==============='
-        print gp.check_result(gp.gp_list_get_name(cameras, n))
-        print gp.check_result(gp.gp_list_get_value(cameras, n))
+        print('camera number', n)
+        print('===============')
+        print(gp.check_result(gp.gp_list_get_name(cameras, n)))
+        print(gp.check_result(gp.gp_list_get_value(cameras, n)))
         print
     gp.gp_list_unref(cameras)
     return 0

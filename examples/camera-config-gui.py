@@ -120,7 +120,7 @@ class SectionWidget(QtGui.QWidget):
             elif child_type == gp.GP_WIDGET_MENU:
                 self.layout().addRow(label, MenuWidget(config_changed, child))
             else:
-                print 'Cannot make widget type %d for %s' % (child_type, label)
+                print('Cannot make widget type %d for %s' % (child_type, label))
 
 class TextWidget(QtGui.QLineEdit):
     def __init__(self, config_changed, config, parent=None):

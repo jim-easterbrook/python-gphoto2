@@ -81,12 +81,12 @@ def main():
     camera = gp.check_result(gp.gp_camera_new())
     context = gp.gp_context_new()
     gp.check_result(gp.gp_camera_init(camera, context))
-    print 'Getting list of files from camera...'
+    print('Getting list of files from camera...')
     camera_files = list_camera_files(camera, context)
     if not camera_files:
-        print 'No files found'
+        print('No files found')
         return 1
-    print 'Copying files...'
+    print('Copying files...')
     for path in camera_files:
         info = get_camera_file_info(camera, context, path)
         timestamp = datetime.fromtimestamp(info.file.mtime)
@@ -95,7 +95,7 @@ def main():
         dest = os.path.join(dest_dir, name)
         if dest in computer_files:
             continue
-        print '%s -> %s' % (path, dest_dir)
+        print('%s -> %s' % (path, dest_dir))
         if not os.path.isdir(dest_dir):
             os.makedirs(dest_dir)
         camera_file = gp.check_result(gp.gp_file_new())

@@ -31,9 +31,9 @@ def main():
     gp.check_result(gp.gp_camera_init(camera, context))
     text = gp.CameraText()
     gp.check_result(gp.gp_camera_get_summary(camera, text, context))
-    print 'Summary'
-    print '======='
-    print text.text
+    print('Summary')
+    print('=======')
+    print(text.text)
     gp.check_result(gp.gp_camera_exit(camera, context))
     gp.check_result(gp.gp_camera_unref(camera))
     return 0

@@ -30,9 +30,9 @@ def main():
             camera.init()
             text = gp.CameraText()
             camera.get_summary(text)
-            print 'Summary'
-            print '======='
-            print text.text
+            print('Summary')
+            print('=======')
+            print(text.text)
             camera.exit()
     return 0
 

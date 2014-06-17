@@ -56,22 +56,22 @@ def main():
             camera.init()
             files = list_files(camera)
             if not files:
-                print 'No files found'
+                print('No files found')
                 return 1
-            print 'File list'
-            print '========='
+            print('File list')
+            print('=========')
             for path in files[:10]:
-                print path
-            print '...'
+                print(path)
+            print('...')
             for path in files[-10:]:
-                print path
+                print(path)
             info = get_file_info(camera, files[-1])
             print
-            print 'File info'
-            print '========='
-            print 'image dimensions:', info.file.width, info.file.height
-            print 'image type:', info.file.type
-            print 'file mtime:', datetime.fromtimestamp(info.file.mtime).isoformat(' ')
+            print('File info')
+            print('=========')
+            print('image dimensions:', info.file.width, info.file.height)
+            print('image type:', info.file.type)
+            print('file mtime:', datetime.fromtimestamp(info.file.mtime).isoformat(' '))
             camera.exit()
     return 0
 

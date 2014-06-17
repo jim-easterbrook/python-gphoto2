@@ -39,10 +39,10 @@ def main():
                         abilities_list.detect(
                             port_info_list.list, cameras.list, context.context)
             for n in range(cameras.count()):
-                print 'camera number', n
-                print '==============='
-                print cameras.get_name(n)
-                print cameras.get_value(n)
+                print('camera number', n)
+                print('===============')
+                print(cameras.get_name(n))
+                print(cameras.get_value(n))
                 print
     return 0
 

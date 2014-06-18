@@ -66,7 +66,7 @@ class SWIG_build(build):
         self.run_command('build_ext')
         return build.run(self)
 
-version = '0.2.1'
+version = '0.3.0'
 with open('README.rst') as ldf:
     long_description = ldf.read()
 url = 'https://github.com/jim-easterbrook/python-gphoto2'

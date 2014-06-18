@@ -26,6 +26,10 @@
 // SWIG can't wrap functions with var args
 %ignore gp_logv;
 
+// List of python callbacks is private
+%ignore func_list;
+
+// Check user supplies a callable Python function
 %typemap(in) PyObject *func {
   if (!PyCallable_Check($input)) {
       PyErr_SetString(PyExc_TypeError, "Object not callable");
@@ -35,62 +39,12 @@
 }
 
 %inline %{
-// Python logging callback
-static PyObject *log_error = NULL;
-static PyObject *log_info  = NULL;
-static PyObject *log_debug = NULL;
-
-static void logging_callback(GPLogLevel level, const char *domain,
-                             const char *str, void *data) {
-  PyObject *log;
-  if (level == GP_LOG_ERROR)
-    log = log_error;
-  else if (level == GP_LOG_VERBOSE)
-    log = log_info;
-  else
-    log = log_debug;
-  if (!log)
-    return;
-  PyGILState_STATE gstate = PyGILState_Ensure();
-  PyObject *arglist = Py_BuildValue("(sss)", "%s: %s", domain, str);
-  PyObject *result = PyObject_CallObject(log, arglist);
-  Py_DECREF(arglist);
-  if (result)
-    Py_DECREF(result);
-  else
-    PyErr_Clear();
-  PyGILState_Release(gstate);
-};
-
-static int use_python_logging(void) {
-  if (log_error)
-    return GP_OK;
-  PyObject *logging = PyImport_ImportModule("logging");
-  if (logging) {
-    PyObject *get_logger = PyObject_GetAttrString(logging, "getLogger");
-    if (get_logger) {
-      PyObject *arglist = Py_BuildValue("(s)", "gphoto2");
-      PyObject *logger = PyObject_CallObject(get_logger, arglist);
-      Py_DECREF(arglist);
-      if (logger) {
-        log_error = PyObject_GetAttrString(logger, "error");
-        log_info  = PyObject_GetAttrString(logger, "info");
-        log_debug = PyObject_GetAttrString(logger, "debug");
-        Py_DECREF(logger);
-      }
-      Py_DECREF(get_logger);
-    }
-    Py_DECREF(logging);
-  }
-  return gp_log_add_func(GP_LOG_DATA, logging_callback, NULL);
-};
-
 // General Python function callback
 static void _callback_wrapper(GPLogLevel level, const char *domain,
                               const char *str, void *data) {
   PyGILState_STATE gstate = PyGILState_Ensure();
   PyObject *result = NULL;
-  PyObject *arglist = Py_BuildValue("(ss)", domain, str);
+  PyObject *arglist = Py_BuildValue("(iss)", level, domain, str);
   result = PyObject_CallObject(data, arglist);
   Py_DECREF(arglist);
   if (result == NULL)
@@ -100,6 +54,7 @@ static void _callback_wrapper(GPLogLevel level, const char *domain,
   PyGILState_Release(gstate);
 };
 
+// Keep list of Python callback function associated with each id
 struct LogFuncItem {
   int id;
   PyObject *func;
@@ -108,6 +63,7 @@ struct LogFuncItem {
 
 static struct LogFuncItem *func_list = NULL;
 
+// Add Python callback to front of list
 static int gp_log_add_func_py(GPLogLevel level, PyObject *func) {
   int id = gp_log_add_func(level, _callback_wrapper, func);
   if (id >= 0) {
@@ -121,6 +77,7 @@ static int gp_log_add_func_py(GPLogLevel level, PyObject *func) {
   return id;
 };
 
+// Remove Python callback from list
 static int gp_log_remove_func_py(int id) {
   struct LogFuncItem *last_item = NULL;
   struct LogFuncItem *this_item = func_list;
@@ -142,3 +99,25 @@ static int gp_log_remove_func_py(int id) {
 %}
 
 %include "gphoto2/gphoto2-port-log.h"
+
+// Python code to route gphoto2 log messages into Python logging system
+%pythoncode %{
+_logger = None
+
+def use_python_logging():
+    def python_logging_callback(level, domain, str):
+      if level == GP_LOG_ERROR:
+        lvl = logging.ERROR
+      elif level == GP_LOG_VERBOSE:
+        lvl = logging.INFO
+      else:
+        lvl = logging.DEBUG
+      _logger(lvl, '(%s) %s', domain, str)
+
+    global _logger
+    if _logger:
+        return
+    import logging
+    _logger = logging.getLogger('gphoto2').log
+    return gp_log_add_func_py(GP_LOG_DATA, python_logging_callback)
+%}

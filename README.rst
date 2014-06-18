@@ -28,21 +28,45 @@ Look for ``libgphoto2-2-dev`` or ``libgphoto2-devel`` or something similar.
 Installation and testing
 ------------------------
 
-Use ``git`` to "clone" the GitHub repository, then change to the new directory::
+There are several ways to install python-gphoto2, with varying levels of control over the installation process.
+Note that they all need SWIG and the other dependencies - there are no "binary" packages at present.
+
+Install with ``pip``
+^^^^^^^^^^^^^^^^^^^^
+
+The easiest installation method is to use the `pip <https://pip.pypa.io/>`_ command::
+
+    sudo pip install gphoto2 --allow-unverified gphoto2
+
+Install with ``git``
+^^^^^^^^^^^^^^^^^^^^
+
+To install the very latest version, use `git <http://git-scm.com/>`_ to "clone" the GitHub repository, then change to the new directory::
 
     git clone https://github.com/jim-easterbrook/python-gphoto2.git
     cd python-gphoto2
 
-Python's ``distutils`` are used to build and install python-gphoto2::
+Python's `distutils <https://docs.python.org/2/library/distutils.html>`_ are used to build and install python-gphoto2::
 
     python setup.py build
     sudo python setup.py install
 
-If you prefer not to use git you can install using ``pip``::
+Install a downloaded archive
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    sudo pip install gphoto2 --allow-unverified gphoto2
+Visit the `project releases page <https://github.com/jim-easterbrook/python-gphoto2/releases>`_ and download one of the zip or tar.gz files, then extract it and change to the new directory.
+For example::
 
-(Note that you still need SWIG and the other dependencies when using ``pip`` to install.)
+    tar xf python-gphoto2-gphoto2-0.2.1.tar.gz
+    cd python-gphoto2-gphoto2-0.2.1
+
+As before, Python's ``distutils`` are used to build and install python-gphoto2::
+
+    python setup.py build
+    sudo python setup.py install
+
+Testing
+^^^^^^^
 
 Connect a digital camera to your computer, switch it on, and try one of the example programs::
 

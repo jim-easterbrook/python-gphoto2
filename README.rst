@@ -38,6 +38,12 @@ Python's ``distutils`` are used to build and install python-gphoto2::
     python setup.py build
     sudo python setup.py install
 
+If you prefer not to use git you can install using ``pip``::
+
+    sudo pip install gphoto2 --allow-unverified gphoto2
+
+(Note that you still need SWIG and the other dependencies when using ``pip`` to install.)
+
 Connect a digital camera to your computer, switch it on, and try one of the example programs::
 
     python examples/camera-summary.py

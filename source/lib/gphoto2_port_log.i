@@ -116,7 +116,8 @@ def use_python_logging():
 
     global _logger
     if _logger:
-        return
+        from . import GP_OK
+        return GP_OK
     import logging
     _logger = logging.getLogger('gphoto2').log
     return gp_log_add_func_py(GP_LOG_DATA, python_logging_callback)

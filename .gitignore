@@ -1,3 +1,5 @@
 build
+dist
+MANIFEST
 src/gphoto2/lib/gphoto2*.py
 src/gphoto2/lib/gphoto2*_wrap.c

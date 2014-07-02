@@ -17,6 +17,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Changes in 0.3.2:
   1/ Reorganised source directory structure
+  2/ Include example scripts in pip installs.
+  3/ Start putting releases on PyPI.
 
 Changes in 0.3.1:
   1/ Fixed bug in 0.3.0 logging initialisation.

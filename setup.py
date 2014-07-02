@@ -33,7 +33,7 @@ gphoto2_version = tuple(gphoto2_version.split()[1].split('.'))
 # get list of modules
 mod_names = list(map(lambda x: x[0],
                      filter(lambda x: x[1] == '.i',
-                            map(os.path.splitext, os.listdir('source/lib')))))
+                            map(os.path.splitext, os.listdir('src/gphoto2/lib')))))
 mod_names.sort()
 
 # create extension modules list
@@ -48,7 +48,7 @@ elif gphoto2_version[0:2] == ('2', '5'):
 for mod_name in mod_names:
     ext_modules.append(Extension(
         '_%s' % mod_name,
-        sources = ['source/lib/%s.i' % mod_name],
+        sources = ['src/gphoto2/lib/%s.i' % mod_name],
         swig_opts = swig_opts,
         libraries = ['gphoto2', 'gphoto2_port'],
         extra_compile_args = ['-O3', '-Wno-unused-variable'],
@@ -58,9 +58,9 @@ for mod_name in mod_names:
 init_module = '__version__ = "%s"\n\n' % version
 for mod_name in mod_names:
     init_module += 'from .%s import *\n' % mod_name
-old_init_module = open('source/lib/__init__.py', 'r').read()
+old_init_module = open('src/gphoto2/lib/__init__.py', 'r').read()
 if init_module != old_init_module:
-    open('source/lib/__init__.py', 'w').write(init_module)
+    open('src/gphoto2/lib/__init__.py', 'w').write(init_module)
 
 # redefine 'build' command so SWIG extensions get compiled first, as
 # they create .py files that then need to be installed
@@ -105,5 +105,5 @@ setup(name = 'gphoto2',
       ext_package = 'gphoto2.lib',
       ext_modules = ext_modules,
       packages = ['gphoto2', 'gphoto2.lib'],
-      package_dir = {'gphoto2' : 'source'},
+      package_dir = {'' : 'src'},
       )

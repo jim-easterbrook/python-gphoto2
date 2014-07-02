@@ -1,3 +1,3 @@
 build
-source/lib/gphoto2*.py
-source/lib/gphoto2*_wrap.c
+src/gphoto2/lib/gphoto2*.py
+src/gphoto2/lib/gphoto2*_wrap.c

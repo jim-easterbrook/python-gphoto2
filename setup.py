@@ -19,12 +19,13 @@
 
 from distutils.core import setup, Extension
 from distutils.command.build import build
+from distutils.command.upload import upload
 import os
 import subprocess
 import sys
 
 # python-gphoto2 version
-version = '0.3.2.dev'
+version = '0.3.2'
 
 # get gphoto2 version
 gphoto2_version = str(subprocess.check_output(['gphoto2-config', '--version']))
@@ -62,12 +63,45 @@ old_init_module = open('src/gphoto2/lib/__init__.py', 'r').read()
 if init_module != old_init_module:
     open('src/gphoto2/lib/__init__.py', 'w').write(init_module)
 
+cmdclass = {}
+command_options = {}
+
 # redefine 'build' command so SWIG extensions get compiled first, as
 # they create .py files that then need to be installed
 class SWIG_build(build):
     def run(self):
         self.run_command('build_ext')
         return build.run(self)
+cmdclass['build'] = SWIG_build
+
+# modify upload class to add appropriate git tag
+# requires GitPython - 'sudo pip install gitpython --pre'
+try:
+    import git
+    class upload_and_tag(upload):
+        def run(self):
+            message = ''
+            with open('CHANGELOG.txt') as cl:
+                while not cl.readline().startswith('Changes'):
+                    pass
+                while True:
+                    line = cl.readline().strip()
+                    if not line:
+                        break
+                    message += line + '\n'
+            repo = git.Repo()
+            tag = repo.create_tag('gphoto2-%s' % version, message=message)
+            remote = repo.remotes.origin
+            remote.push(tags=True)
+            return upload.run(self)
+    cmdclass['upload'] = upload_and_tag
+except ImportError:
+    pass
+
+# set options for building distributions
+command_options['sdist'] = {
+    'formats' : ('setup.py', 'gztar zip'),
+    }
 
 # list example scripts
 examples = list(map(
@@ -106,13 +140,15 @@ setup(name = 'gphoto2',
           ],
       platforms = ['POSIX', 'MacOS'],
       license = 'GNU GPL',
-      cmdclass = {'build': SWIG_build},
+      cmdclass = cmdclass,
+      command_options = command_options,
       ext_package = 'gphoto2.lib',
       ext_modules = ext_modules,
       packages = ['gphoto2', 'gphoto2.lib'],
       package_dir = {'' : 'src'},
       data_files = [
           ('share/python-gphoto2/examples', examples),
-          ('share/python-gphoto2', ['LICENSE.txt', 'README.rst']),
+          ('share/python-gphoto2', [
+              'CHANGELOG.txt', 'LICENSE.txt', 'MANIFEST.in', 'README.rst']),
           ],
       )

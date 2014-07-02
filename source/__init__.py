@@ -17,6 +17,7 @@
 
 # make all SWIG objects available at top level
 from .lib import *
+from .lib import __version__
 
 # define some higher level Python classes
 class Context(object):

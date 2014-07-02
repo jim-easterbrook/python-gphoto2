@@ -23,6 +23,9 @@ import os
 import subprocess
 import sys
 
+# python-gphoto2 version
+version = '0.3.2.dev'
+
 # get gphoto2 version
 gphoto2_version = str(subprocess.check_output(['gphoto2-config', '--version']))
 gphoto2_version = tuple(gphoto2_version.split()[1].split('.'))
@@ -52,7 +55,7 @@ for mod_name in mod_names:
         ))
 
 # rewrite init module, if needed
-init_module = ''
+init_module = '__version__ = "%s"\n\n' % version
 for mod_name in mod_names:
     init_module += 'from .%s import *\n' % mod_name
 old_init_module = open('source/lib/__init__.py', 'r').read()
@@ -66,7 +69,6 @@ class SWIG_build(build):
         self.run_command('build_ext')
         return build.run(self)
 
-version = '0.3.1'
 with open('README.rst') as ldf:
     long_description = ldf.read()
 url = 'https://github.com/jim-easterbrook/python-gphoto2'

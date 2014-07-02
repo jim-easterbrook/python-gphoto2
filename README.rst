@@ -11,9 +11,6 @@ This gives direct access to the libgphoto2 functions, but in a rather un-Pythoni
 There are some Python helper classes to ease access to many of the low-level functions.
 This makes the package a bit more Pythonic, but you will still need to deal directly with the lower level at times.
 
-There are still parts of the libgphoto2 API that are not included in python-gphoto2.
-Please let me know if you have any specific requirements.
-
 Dependencies
 ------------
 
@@ -36,7 +33,7 @@ Install with ``pip``
 
 The easiest installation method is to use the `pip <https://pip.pypa.io/>`_ command::
 
-    sudo pip install gphoto2 --allow-unverified gphoto2
+    sudo pip install gphoto2
 
 Install with ``git``
 ^^^^^^^^^^^^^^^^^^^^
@@ -54,11 +51,11 @@ Python's `distutils <https://docs.python.org/2/library/distutils.html>`_ are use
 Install a downloaded archive
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Visit the `project releases page <https://github.com/jim-easterbrook/python-gphoto2/releases>`_ and download one of the zip or tar.gz files, then extract it and change to the new directory.
+Visit the `project releases page <https://github.com/jim-easterbrook/python-gphoto2/releases>`_ or `PyPI <https://pypi.python.org/pypi/gphoto2>`_ and download one of the zip or tar.gz files, then extract it and change to the new directory.
 For example::
 
-    tar xf python-gphoto2-gphoto2-0.2.1.tar.gz
-    cd python-gphoto2-gphoto2-0.2.1
+    tar xf python-gphoto2-gphoto2-0.3.2.tar.gz
+    cd python-gphoto2-gphoto2-0.3.2
 
 As before, Python's ``distutils`` are used to build and install python-gphoto2::
 
@@ -71,6 +68,9 @@ Testing
 Connect a digital camera to your computer, switch it on, and try one of the example programs::
 
     python examples/camera-summary.py
+
+.. note::
+   If you installed with pip the example files should be in ``/usr/share/python-gphoto2/examples`` or somewhere similar (except for versions before 0.3.2, which didn't install the examples at all).
 
 If this works then you're ready to start using python-gphoto2.
 

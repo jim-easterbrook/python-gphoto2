@@ -25,7 +25,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '0.3.2'
+version = '0.3.3'
 
 # get gphoto2 version
 gphoto2_version = str(subprocess.check_output(['gphoto2-config', '--version']))
@@ -40,19 +40,22 @@ mod_names.sort()
 # create extension modules list
 ext_modules = []
 swig_opts = ['-I/usr/include', '-builtin', '-O', '-Wall']
+extra_compile_args = ['-O3', '-Wno-unused-variable']
 if sys.version_info[0] >= 3:
     swig_opts.append('-py3')
 if gphoto2_version[0:2] == ('2', '4'):
-    swig_opts. append('-DGPHOTO2_24')
+    swig_opts.append('-DGPHOTO2_24')
+    extra_compile_args.append('-DGPHOTO2_24')
 elif gphoto2_version[0:2] == ('2', '5'):
-    swig_opts. append('-DGPHOTO2_25')
+    swig_opts.append('-DGPHOTO2_25')
+    extra_compile_args.append('-DGPHOTO2_25')
 for mod_name in mod_names:
     ext_modules.append(Extension(
         '_%s' % mod_name,
         sources = ['src/gphoto2/lib/%s.i' % mod_name],
         swig_opts = swig_opts,
         libraries = ['gphoto2', 'gphoto2_port'],
-        extra_compile_args = ['-O3', '-Wno-unused-variable'],
+        extra_compile_args = extra_compile_args,
         ))
 
 # rewrite init module, if needed

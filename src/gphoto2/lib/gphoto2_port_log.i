@@ -25,9 +25,13 @@
 
 // SWIG can't wrap functions with var args
 %ignore gp_logv;
+#ifdef GPHOTO2_24
+%ignore gp_log_add_func;
+#endif
 
 // List of python callbacks is private
 %ignore func_list;
+%ignore _callback_wrapper;
 
 // Check user supplies a callable Python function
 %typemap(in) PyObject *func {
@@ -40,8 +44,15 @@
 
 %inline %{
 // General Python function callback
+#ifdef GPHOTO2_24
+static void _callback_wrapper(GPLogLevel level, const char *domain,
+                              const char *format, va_list args, void *data) {
+  char str[1024];
+  vsnprintf(str, sizeof(str), format, args);
+#else
 static void _callback_wrapper(GPLogLevel level, const char *domain,
                               const char *str, void *data) {
+#endif
   PyGILState_STATE gstate = PyGILState_Ensure();
   PyObject *result = NULL;
   PyObject *arglist = Py_BuildValue("(iss)", level, domain, str);

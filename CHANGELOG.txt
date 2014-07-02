@@ -15,6 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 0.3.3:
+  1/ Fixed segfault bug in logging callback with libgphoto2 v2.4.
+
 Changes in 0.3.2:
   1/ Reorganised source directory structure
   2/ Include example scripts in pip installs.

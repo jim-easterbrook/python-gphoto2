@@ -72,9 +72,10 @@ command_options = {}
 # redefine 'build' command so SWIG extensions get compiled first, as
 # they create .py files that then need to be installed
 class SWIG_build(build):
-    def run(self):
-        self.run_command('build_ext')
-        return build.run(self)
+    sub_commands = build.sub_commands
+    _build_ext = filter(lambda x: x[0]=='build_ext', sub_commands)[0]
+    sub_commands.remove(_build_ext)
+    sub_commands.insert(0, _build_ext)
 cmdclass['build'] = SWIG_build
 
 # modify upload class to add appropriate git tag

@@ -69,6 +69,11 @@ class SWIG_build(build):
         self.run_command('build_ext')
         return build.run(self)
 
+# list example scripts
+examples = list(map(
+    lambda x: os.path.join('examples', x),
+    filter(lambda x: os.path.splitext(x)[1] == '.py', os.listdir('examples'))))
+
 with open('README.rst') as ldf:
     long_description = ldf.read()
 url = 'https://github.com/jim-easterbrook/python-gphoto2'
@@ -106,4 +111,8 @@ setup(name = 'gphoto2',
       ext_modules = ext_modules,
       packages = ['gphoto2', 'gphoto2.lib'],
       package_dir = {'' : 'src'},
+      data_files = [
+          ('share/python-gphoto2/examples', examples),
+          ('share/python-gphoto2', ['LICENSE.txt', 'README.rst']),
+          ],
       )

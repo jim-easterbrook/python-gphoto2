@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+
 from datetime import datetime
 import logging
 import sys
@@ -50,8 +52,8 @@ def main():
                 camera_time = datetime.strptime(raw_value, fmt)
             else:
                 camera_time = datetime.utcfromtimestamp(float(raw_value))
-            print('Camera clock:   ' + camera_time.isoformat(' '))
-            print('Computer clock: ' + now.isoformat(' '))
+            print('Camera clock:  ', camera_time.isoformat(' '))
+            print('Computer clock:', now.isoformat(' '))
             err = now - camera_time
             if err.days < 0:
                 err = -err

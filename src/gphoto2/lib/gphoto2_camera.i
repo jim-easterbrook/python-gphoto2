@@ -76,4 +76,20 @@
   PyList_Append($result, out_list);
 }
 
+// gp_camera_wait_for_event() returns two pointers in output parameters
+%typemap(in, numinputs=0) CameraEventType * (CameraEventType temp) {
+  $1 = &temp;
+}
+%typemap(in, numinputs=0) void ** eventdata (void* temp) {
+  $1 = &temp;
+}
+%typemap(argout) CameraEventType * {
+  if (!PyList_Check($result)) {
+    PyObject* temp = $result;
+    $result = PyList_New(1);
+    PyList_SetItem($result, 0, temp);
+  }
+  PyList_Append($result, PyInt_FromLong(*$1));
+}
+
 %include "gphoto2/gphoto2-camera.h"

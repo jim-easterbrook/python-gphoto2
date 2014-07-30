@@ -19,6 +19,22 @@
 from .lib import *
 from .lib import __version__
 
+# result error checking function
+class GPhoto2Error(EnvironmentError):
+    pass
+
+def check_result(result):
+    if not isinstance(result, (tuple, list)):
+        error = result
+    elif len(result) == 2:
+        error, result = result
+    else:
+        error = result[0]
+        result = result[1:]
+    if error < 0:
+        raise GPhoto2Error(error, gp_result_as_string(error))
+    return result
+
 # define some higher level Python classes
 class Context(object):
     """Context helper class.

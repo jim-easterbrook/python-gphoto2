@@ -77,7 +77,7 @@ Using python-gphoto2
 --------------------
 
 The Python interface to libgphoto2 should allow you to do anything you could do in a C program.
-However, the project is still quite young and there are probably bits missing.
+However, the project is quite young and there are still bits missing and functions that cannot be called from Python.
 Let me know if you run into any problems.
 
 The following paragraphs show how the Python interfaces differ from C.

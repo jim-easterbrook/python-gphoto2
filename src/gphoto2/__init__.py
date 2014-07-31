@@ -15,6 +15,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import logging
+
 # make all SWIG objects available at top level
 from .lib import *
 from .lib import __version__
@@ -22,6 +24,8 @@ from .lib import __version__
 # result error checking function
 class GPhoto2Error(EnvironmentError):
     pass
+
+return_logger = logging.getLogger('gphoto2.returnvalue')
 
 def check_result(result):
     if not isinstance(result, (tuple, list)):
@@ -31,8 +35,12 @@ def check_result(result):
     else:
         error = result[0]
         result = result[1:]
-    if error < 0:
+    if error in (GP_ERROR_IO_USB_CLAIM,
+                 GP_ERROR_IO_USB_FIND,
+                 GP_ERROR_MODEL_NOT_FOUND):
         raise GPhoto2Error(error, gp_result_as_string(error))
+    elif error < 0:
+        return_logger.error('[%d] %s', error, gp_result_as_string(error))
     return result
 
 # define some higher level Python classes

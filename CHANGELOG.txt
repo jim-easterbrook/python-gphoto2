@@ -15,6 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 0.4.0:
+  1/ Made gp_camera_wait_for_event usable.
+  2/ Made check_result raise exception for fewer error types.
+
 Changes in 0.3.3:
   1/ Fixed segfault bug in logging callback with libgphoto2 v2.4.
 

@@ -65,7 +65,7 @@ As before, Python's ``distutils`` are used to build and install python-gphoto2::
 Testing
 ^^^^^^^
 
-.. note:: If you installed with pip the example files should be in ``/usr/share/python-gphoto2/examples`` or somewhere similar (except for versions before 0.3.2, which didn't install the examples at all).
+.. note:: If you installed with pip the example files should be in ``/usr/share/python-gphoto2/examples`` or ``/usr/local/share/python-gphoto2/examples`` or somewhere similar (except for versions before 0.3.2, which didn't install the examples at all).
 
 Connect a digital camera to your computer, switch it on, and try one of the example programs::
 

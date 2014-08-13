@@ -25,13 +25,13 @@
 
 // SWIG can't wrap functions with var args
 %ignore gp_logv;
-#ifdef GPHOTO2_24
+
+// Should not directly call Python from C
 %ignore gp_log_add_func;
-#endif
 
 // List of python callbacks is private
 %ignore func_list;
-%ignore _callback_wrapper;
+%ignore callback_wrapper;
 
 // Check user supplies a callable Python function
 %typemap(in) PyObject *func {
@@ -45,13 +45,13 @@
 %inline %{
 // General Python function callback
 #ifdef GPHOTO2_24
-static void _callback_wrapper(GPLogLevel level, const char *domain,
-                              const char *format, va_list args, void *data) {
+static void callback_wrapper(GPLogLevel level, const char *domain,
+                             const char *format, va_list args, void *data) {
   char str[1024];
   vsnprintf(str, sizeof(str), format, args);
 #else
-static void _callback_wrapper(GPLogLevel level, const char *domain,
-                              const char *str, void *data) {
+static void callback_wrapper(GPLogLevel level, const char *domain,
+                             const char *str, void *data) {
 #endif
   PyGILState_STATE gstate = PyGILState_Ensure();
   PyObject *result = NULL;
@@ -76,7 +76,7 @@ static struct LogFuncItem *func_list = NULL;
 
 // Add Python callback to front of list
 static int gp_log_add_func_py(GPLogLevel level, PyObject *func) {
-  int id = gp_log_add_func(level, _callback_wrapper, func);
+  int id = gp_log_add_func(level, callback_wrapper, func);
   if (id >= 0) {
     struct LogFuncItem *list_item = malloc(sizeof(struct LogFuncItem));
     list_item->id = id;

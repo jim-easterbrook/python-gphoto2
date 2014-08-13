@@ -25,16 +25,16 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '0.4.0'
+version = '0.4.1'
 
 # get gphoto2 version
 gphoto2_version = str(subprocess.check_output(['gphoto2-config', '--version']))
 gphoto2_version = tuple(gphoto2_version.split()[1].split('.'))
 
 # get list of modules
-mod_names = list(map(lambda x: x[0],
-                     filter(lambda x: x[1] == '.i',
-                            map(os.path.splitext, os.listdir('src/gphoto2/lib')))))
+mod_names = filter(lambda x: x[1] == '.i',
+                   map(os.path.splitext, os.listdir('src/gphoto2/lib')))
+mod_names = list(map(lambda x: x[0], mod_names))
 mod_names.sort()
 
 # create extension modules list
@@ -62,9 +62,11 @@ for mod_name in mod_names:
 init_module = '__version__ = "%s"\n\n' % version
 for mod_name in mod_names:
     init_module += 'from .%s import *\n' % mod_name
-old_init_module = open('src/gphoto2/lib/__init__.py', 'r').read()
+with open('src/gphoto2/lib/__init__.py') as im:
+    old_init_module = im.read()
 if init_module != old_init_module:
-    open('src/gphoto2/lib/__init__.py', 'w').write(init_module)
+    with open('src/gphoto2/lib/__init__.py', 'w') as im:
+        im.write(init_module)
 
 cmdclass = {}
 command_options = {}
@@ -72,8 +74,8 @@ command_options = {}
 # redefine 'build' command so SWIG extensions get compiled first, as
 # they create .py files that then need to be installed
 class SWIG_build(build):
-    sub_commands = build.sub_commands
-    _build_ext = filter(lambda x: x[0]=='build_ext', sub_commands)[0]
+    sub_commands = list(build.sub_commands)
+    _build_ext = list(filter(lambda x: x[0]=='build_ext', sub_commands))[0]
     sub_commands.remove(_build_ext)
     sub_commands.insert(0, _build_ext)
 cmdclass['build'] = SWIG_build
@@ -108,9 +110,9 @@ command_options['sdist'] = {
     }
 
 # list example scripts
-examples = list(map(
+examples = map(
     lambda x: os.path.join('examples', x),
-    filter(lambda x: os.path.splitext(x)[1] == '.py', os.listdir('examples'))))
+    filter(lambda x: os.path.splitext(x)[1] == '.py', os.listdir('examples')))
 
 with open('README.rst') as ldf:
     long_description = ldf.read()

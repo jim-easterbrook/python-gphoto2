@@ -32,6 +32,19 @@
 %apply int *OUTPUT { int * };
 %apply float *OUTPUT { float * };
 
+// several methods return a CameraWidget pointer in an output parameter
+%typemap(in, numinputs=0) CameraWidget ** (CameraWidget *temp) {
+  $1 = &temp;
+}
+%typemap(argout) CameraWidget ** {
+  if (!PyList_Check($result)) {
+    PyObject* temp = $result;
+    $result = PyList_New(1);
+    PyList_SetItem($result, 0, temp);
+  }
+  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, 0));
+}
+
 // some methods return string pointers in output params
 %typemap(in, numinputs=0) char ** (char *temp) {
   $1 = &temp;

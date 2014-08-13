@@ -44,19 +44,6 @@
   PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, 0));
 }
 
-// gp_camera_get_config() returns a pointer in an output parameter
-%typemap(in, numinputs=0) CameraWidget ** (CameraWidget *temp) {
-  $1 = &temp;
-}
-%typemap(argout) CameraWidget ** {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
-  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, 0));
-}
-
 // gp_camera_get_storageinfo() returns an allocated array in an output parameter
 %typemap(in, numinputs=0) CameraStorageInformation ** (CameraStorageInformation* temp) {
   $1 = &temp;

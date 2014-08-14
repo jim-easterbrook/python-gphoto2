@@ -42,7 +42,9 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, 0));
+  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, 0);
+  PyList_Append($result, temp);
+  Py_DECREF(temp);
 }
 
 // some methods return string pointers in output params
@@ -55,8 +57,11 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  if (*$1)
-    PyList_Append($result, PyString_FromString(*$1));
+  if (*$1) {
+    PyObject* temp = PyString_FromString(*$1);
+    PyList_Append($result, temp);
+    Py_DECREF(temp);
+  }
   else
     PyList_Append($result, Py_None);
 }

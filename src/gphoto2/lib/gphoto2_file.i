@@ -35,7 +35,9 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraFile, 0));
+  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraFile, 0);
+  PyList_Append($result, temp);
+  Py_DECREF(temp);
 }
 
 %include "gphoto2/gphoto2-file.h"

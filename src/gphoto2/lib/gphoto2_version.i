@@ -31,7 +31,9 @@
   char **line = $1;
   int i;
   while (*line) {
-    PyList_Append($result, PyString_FromString(*line));
+    PyObject* temp = PyString_FromString(*line);
+    PyList_Append($result, temp);
+    Py_DECREF(temp);
     line++;
   }
 }

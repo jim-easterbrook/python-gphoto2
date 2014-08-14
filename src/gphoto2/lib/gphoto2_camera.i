@@ -41,7 +41,9 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, 0));
+  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, 0);
+  PyList_Append($result, temp);
+  Py_DECREF(temp);
 }
 
 // gp_camera_get_storageinfo() returns an allocated array in an output parameter
@@ -61,6 +63,7 @@
                    SWIG_NewPointerObj($1[n], SWIGTYPE_p__CameraStorageInformation, n == 0));
   }
   PyList_Append($result, out_list);
+  Py_DECREF(out_list);
 }
 
 // gp_camera_wait_for_event() returns two pointers in output parameters
@@ -76,7 +79,9 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyList_Append($result, PyInt_FromLong(*$1));
+  PyObject* temp = PyInt_FromLong(*$1);
+  PyList_Append($result, temp);
+  Py_DECREF(temp);
 }
 
 %include "gphoto2/gphoto2-camera.h"

@@ -40,7 +40,9 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfoList, 0));
+  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfoList, 0);
+  PyList_Append($result, temp);
+  Py_DECREF(temp);
 }
 
 // In libgphoto2 version 2.4 GPPortInfo is a structure, in version 2.5 it's a
@@ -55,7 +57,9 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyList_Append($result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfo, 0));
+  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfo, 0);
+  PyList_Append($result, temp);
+  Py_DECREF(temp);
 }
 #endif
 
@@ -69,8 +73,11 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  if (*$1)
-    PyList_Append($result, PyString_FromString(*$1));
+  if (*$1) {
+    PyObject* temp = PyString_FromString(*$1);
+    PyList_Append($result, temp);
+    Py_DECREF(temp);
+  }
   else
     PyList_Append($result, Py_None);
 }

@@ -40,4 +40,7 @@
   Py_DECREF(temp);
 }
 
+// These structures are private
+%ignore _CameraFileHandler;
+
 %include "gphoto2/gphoto2-file.h"

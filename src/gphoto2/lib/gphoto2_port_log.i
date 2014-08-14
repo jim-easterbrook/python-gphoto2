@@ -32,6 +32,7 @@
 // List of python callbacks is private
 %ignore func_list;
 %ignore callback_wrapper;
+%ignore LogFuncItem;
 
 // Check user supplies a callable Python function
 %typemap(in) PyObject *func {

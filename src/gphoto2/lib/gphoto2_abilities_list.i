@@ -45,4 +45,7 @@
   Py_DECREF(temp);
 }
 
+// Structures are read only
+%immutable;
+
 %include "gphoto2/gphoto2-abilities-list.h"

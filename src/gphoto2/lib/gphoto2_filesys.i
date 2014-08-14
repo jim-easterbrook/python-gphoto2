@@ -56,4 +56,7 @@
 // Some things are defined in .h files but are not in the library
 %ignore gp_filesystem_get_storageinfo;
 
+// Structures are read only
+%immutable;
+
 %include "gphoto2/gphoto2-filesys.h"

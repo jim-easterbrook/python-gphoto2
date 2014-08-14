@@ -84,4 +84,11 @@
   Py_DECREF(temp);
 }
 
+// These structures are private
+%ignore _Camera;
+%ignore _CameraFunctions;
+
+// Other structures are read only
+%immutable;
+
 %include "gphoto2/gphoto2-camera.h"

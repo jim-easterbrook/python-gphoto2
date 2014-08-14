@@ -42,5 +42,13 @@
   Py_DECREF(temp);
 }
 
+// These structures are private
+%ignore _GPPort;
+%ignore _GPPortSettings;
+%ignore _GPPortSettingsSerial;
+%ignore _GPPortSettingsUSB;
+%ignore _GPPortSettingsUsbDiskDirect;
+%ignore _GPPortSettingsUsbScsi;
+
 %include "gphoto2/gphoto2-port.h"
 %include "gphoto2/gphoto2-port-portability.h"

@@ -40,10 +40,16 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraAbilitiesList, 0);
+  PyObject* temp = SWIG_NewPointerObj(
+      *$1, SWIGTYPE_p__CameraAbilitiesList, SWIG_POINTER_NEW);
   PyList_Append($result, temp);
   Py_DECREF(temp);
 }
+
+// Mark gp_abilities_list_free as destructor and add default destructor
+%delobject gp_abilities_list_free;
+struct _CameraAbilitiesList {};
+%ignore _CameraAbilitiesList;
 
 // Structures are read only
 %immutable;

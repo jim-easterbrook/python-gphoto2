@@ -37,13 +37,20 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPort, 0);
+  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPort, SWIG_POINTER_NEW);
   PyList_Append($result, temp);
   Py_DECREF(temp);
 }
 
+// Mark gp_port_free as destructor and add default destructor
+%delobject gp_port_free;
+%extend _GPPort {
+  ~_GPPort() {
+    gp_port_free($self);
+  }
+};
+
 // These structures are private
-%ignore _GPPort;
 %ignore _GPPortSettings;
 %ignore _GPPortSettingsSerial;
 %ignore _GPPortSettingsUSB;

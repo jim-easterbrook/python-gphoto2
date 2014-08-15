@@ -35,10 +35,15 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraFile, 0);
+  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraFile, SWIG_POINTER_NEW);
   PyList_Append($result, temp);
   Py_DECREF(temp);
 }
+
+// Mark gp_file_unref as destructor and add default destructor
+%delobject gp_file_unref;
+struct _CameraFile {};
+%ignore _CameraFile;
 
 // These structures are private
 %ignore _CameraFileHandler;

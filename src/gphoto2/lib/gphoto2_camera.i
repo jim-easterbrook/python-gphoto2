@@ -41,13 +41,28 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, 0);
+  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, SWIG_POINTER_NEW);
   PyList_Append($result, temp);
   Py_DECREF(temp);
 }
 
+// Mark gp_camera_unref as destructor and add default destructor
+%delobject gp_camera_unref;
+%extend _Camera {
+  ~_Camera() {
+    gp_camera_unref($self);
+  }
+};
+
+// gp_camera_get_config returns a new CameraWidget pointer in an output parameter
+// (see gphoto2_widget.i)
+%inline %{
+#define OWN_gp_camera_get_config         SWIG_POINTER_NEW
+%}
+
 // gp_camera_get_storageinfo() returns an allocated array in an output parameter
-%typemap(in, numinputs=0) CameraStorageInformation ** (CameraStorageInformation* temp) {
+%typemap(in, numinputs=0)
+    CameraStorageInformation ** (CameraStorageInformation* temp) {
   $1 = &temp;
 }
 %typemap(argout) (CameraStorageInformation **, int *) {
@@ -58,9 +73,11 @@
   }
   PyObject* out_list = PyList_New(*$2);
   int n;
+  int own = SWIG_POINTER_NEW;
   for (n = 0; n < *$2; n++) {
     PyList_SetItem(out_list, n,
-                   SWIG_NewPointerObj($1[n], SWIGTYPE_p__CameraStorageInformation, n == 0));
+        SWIG_NewPointerObj($1[n], SWIGTYPE_p__CameraStorageInformation, own));
+    own = 0;
   }
   PyList_Append($result, out_list);
   Py_DECREF(out_list);
@@ -84,8 +101,10 @@
   Py_DECREF(temp);
 }
 
+// Don't wrap deprecated functions
+%ignore gp_camera_free;
+
 // These structures are private
-%ignore _Camera;
 %ignore _CameraFunctions;
 
 // Other structures are read only

@@ -23,4 +23,12 @@
 
 %feature("autodoc", "2");
 
+// Mark gp_context_new as constructor
+%newobject gp_context_new;
+
+// Mark gp_context_unref as destructor
+%delobject gp_context_unref;
+struct _GPContext {};
+%ignore _GPContext;
+
 %include "gphoto2/gphoto2-context.h"

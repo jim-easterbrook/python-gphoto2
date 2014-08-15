@@ -33,6 +33,16 @@
 %apply float *OUTPUT { float * };
 
 // several methods return a CameraWidget pointer in an output parameter
+// most of them do not create a new object
+%inline %{
+#define OWN_gp_widget_new                SWIG_POINTER_NEW
+#define OWN_gp_widget_get_child          0
+#define OWN_gp_widget_get_child_by_id    0
+#define OWN_gp_widget_get_child_by_label 0
+#define OWN_gp_widget_get_child_by_name  0
+#define OWN_gp_widget_get_parent         0
+#define OWN_gp_widget_get_root           0
+%}
 %typemap(in, numinputs=0) CameraWidget ** (CameraWidget *temp) {
   $1 = &temp;
 }
@@ -42,10 +52,15 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, 0);
+  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, OWN_$symname);
   PyList_Append($result, temp);
   Py_DECREF(temp);
 }
+
+// Mark gp_widget_unref as destructor an add default destructor
+%delobject gp_widget_unref;
+struct _CameraWidget {};
+%ignore _CameraWidget;
 
 // some methods return string pointers in output params
 %typemap(in, numinputs=0) char ** (char *temp) {

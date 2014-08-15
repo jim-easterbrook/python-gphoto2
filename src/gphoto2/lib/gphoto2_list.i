@@ -35,12 +35,18 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraList, 0);
+  PyObject* temp = SWIG_NewPointerObj(
+      *$1, SWIGTYPE_p__CameraList, SWIG_POINTER_NEW);
   PyList_Append($result, temp);
   Py_DECREF(temp);
 }
 
-// gp_list_get_name() and gp_list_get_value() return string pointers in output params
+// Mark gp_list_unref as destructor and add default destructor
+%delobject gp_list_unref;
+struct _CameraList {};
+%ignore _CameraList;
+
+// gp_list_get_name() & gp_list_get_value() return pointers in output params
 %typemap(in, numinputs=0) char ** (char *temp) {
   $1 = &temp;
 }

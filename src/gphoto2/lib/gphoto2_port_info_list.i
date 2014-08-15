@@ -40,10 +40,16 @@
     $result = PyList_New(1);
     PyList_SetItem($result, 0, temp);
   }
-  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfoList, 0);
+  PyObject* temp = SWIG_NewPointerObj(
+      *$1, SWIGTYPE_p__GPPortInfoList, SWIG_POINTER_NEW);
   PyList_Append($result, temp);
   Py_DECREF(temp);
 }
+
+// Mark gp_port_info_list_free as destructor and add default destructor
+%delobject gp_port_info_list_free;
+struct _GPPortInfoList {};
+%ignore _GPPortInfoList;
 
 // In libgphoto2 version 2.4 GPPortInfo is a structure, in version 2.5 it's a
 // pointer to a structure.
@@ -81,5 +87,11 @@
   else
     PyList_Append($result, Py_None);
 }
+
+// Don't wrap internal functions
+%ignore gp_port_info_new;
+%ignore gp_port_info_set_name;
+%ignore gp_port_info_set_path;
+%ignore gp_port_info_set_type;
 
 %include "gphoto2/gphoto2-port-info-list.h"

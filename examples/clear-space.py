@@ -42,7 +42,6 @@ def list_files(camera, context, path='/'):
         gp.gp_camera_folder_list_folders(camera, path, gp_list, context))
     for n in range(gp.gp_list_count(gp_list)):
         folders.append(gp.check_result(gp.gp_list_get_name(gp_list, n)))
-    gp.gp_list_unref(gp_list)
     # recurse over subfolders
     for name in folders:
         result.extend(list_files(camera, context, os.path.join(path, name)))
@@ -117,7 +116,6 @@ def main(argv=None):
         if free_space >= target:
             break
     gp.check_result(gp.gp_camera_exit(camera, context))
-    gp.check_result(gp.gp_camera_unref(camera))
     return 0
 
 if __name__ == "__main__":

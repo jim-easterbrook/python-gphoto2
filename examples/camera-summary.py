@@ -37,7 +37,6 @@ def main():
     print('=======')
     print(text.text)
     gp.check_result(gp.gp_camera_exit(camera, context))
-    gp.check_result(gp.gp_camera_unref(camera))
     return 0
 
 if __name__ == "__main__":

@@ -56,12 +56,6 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QApplication.postEvent(
             self, QtCore.QEvent(self.do_init), Qt.LowEventPriority - 1)
 
-    def closeEvent(self, event):
-        gp.check_result(gp.gp_widget_unref(self.camera_config))
-        gp.check_result(gp.gp_camera_unref(self.camera))
-        gp.gp_context_unref(self.context)
-        return QtGui.QMainWindow.closeEvent(self, event)
-
     def event(self, event):
         if event.type() != self.do_init:
             return QtGui.QMainWindow.event(self, event)

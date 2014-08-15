@@ -66,10 +66,8 @@ def main():
             break
     else:
         print('Unknown date/time config item')
-    # free allocated data
-    gp.check_result(gp.gp_widget_unref(config))
+    # clean up
     gp.check_result(gp.gp_camera_exit(camera, context))
-    gp.check_result(gp.gp_camera_unref(camera))
     return 0
 
 if __name__ == "__main__":

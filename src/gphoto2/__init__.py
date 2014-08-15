@@ -25,7 +25,7 @@ from .lib import __version__
 class GPhoto2Error(EnvironmentError):
     pass
 
-return_logger = logging.getLogger('gphoto2.returnvalue')
+_return_logger = logging.getLogger('gphoto2.returnvalue')
 
 def check_result(result):
     if not isinstance(result, (tuple, list)):
@@ -40,7 +40,7 @@ def check_result(result):
                  GP_ERROR_MODEL_NOT_FOUND):
         raise GPhoto2Error(error, gp_result_as_string(error))
     elif error < 0:
-        return_logger.error('[%d] %s', error, gp_result_as_string(error))
+        _return_logger.error('[%d] %s', error, gp_result_as_string(error))
     return result
 
 # define some higher level Python classes
@@ -71,9 +71,6 @@ class Context(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback):
-        self.cleanup()
-
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_%s' % name)
         return self._call
@@ -81,10 +78,6 @@ class Context(object):
     def _call(self, *arg):
         return check_result(
             (self._next_call)(*(arg + (self.context,))))
-
-    def cleanup(self):
-        """Release resources allocated during object creation."""
-        gp_context_unref(self.context)
 
 class Camera(object):
     """Camera helper class.
@@ -112,9 +105,6 @@ class Camera(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback):
-        self.cleanup()
-
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_camera_%s' % name)
         if name in ('get_abilities',  'set_abilities',
@@ -131,10 +121,6 @@ class Camera(object):
     def _call_no_context(self, *arg):
         return check_result((self._next_call)(self.camera, *arg))
 
-    def cleanup(self):
-        """Release resources allocated during object creation."""
-        check_result(gp_camera_unref(self.camera))
-
 class CameraWidget(object):
     """CameraWidget helper class.
 
@@ -149,8 +135,8 @@ class CameraWidget(object):
     def __init__(self, widget):
         """Constructor.
 
-        Arguments:
-        widget -- a CameraWidget object.
+        Arguments: widget -- a CameraWidget object, e.g. as returned
+        by gp_camera_get_config.
 
         """
         self.widget = widget
@@ -158,19 +144,12 @@ class CameraWidget(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback):
-        self.cleanup()
-
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_widget_%s' % name)
         return self._call
 
     def _call(self, *arg):
         return check_result((self._next_call)(self.widget, *arg))
-
-    def cleanup(self):
-        """Release resources allocated during object creation."""
-        check_result(gp_widget_unref(self.widget))
 
 class CameraFile(object):
     """CameraFile helper class.
@@ -190,19 +169,12 @@ class CameraFile(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback):
-        self.cleanup()
-
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_file_%s' % name)
         return self._call
 
     def _call(self, *arg):
         return check_result((self._next_call)(self.file, *arg))
-
-    def cleanup(self):
-        """Release resources allocated during object creation."""
-        check_result(gp_file_unref(self.file))
 
 class CameraAbilitiesList(object):
     """CameraAbilitiesList helper class.
@@ -222,19 +194,12 @@ class CameraAbilitiesList(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback):
-        self.cleanup()
-
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_abilities_list_%s' % name)
         return self._call
 
     def _call(self, *arg):
         return check_result((self._next_call)(self.list, *arg))
-
-    def cleanup(self):
-        """Release resources allocated during object creation."""
-        check_result(gp_abilities_list_free(self.list))
 
 class CameraList(object):
     """CameraList helper class.
@@ -254,19 +219,12 @@ class CameraList(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback):
-        self.cleanup()
-
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_list_%s' % name)
         return self._call
 
     def _call(self, *arg):
         return check_result((self._next_call)(self.list, *arg))
-
-    def cleanup(self):
-        """Release resources allocated during object creation."""
-        check_result(gp_list_unref(self.list))
 
 class PortInfoList(object):
     """PortInfoList helper class.
@@ -286,16 +244,9 @@ class PortInfoList(object):
     def __enter__(self):
         return self
 
-    def __exit__(self, type, value, traceback):
-        self.cleanup()
-
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_port_info_list_%s' % name)
         return self._call
 
     def _call(self, *arg):
         return check_result((self._next_call)(self.list, *arg))
-
-    def cleanup(self):
-        """Release resources allocated during object creation."""
-        check_result(gp_port_info_list_free(self.list))

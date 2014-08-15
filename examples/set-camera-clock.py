@@ -39,10 +39,8 @@ def main():
     gp.check_result(gp.gp_widget_set_value_int(sync_config, 1))
     # apply the changed config
     gp.check_result(gp.gp_camera_set_config(camera, config, context))
-    # free allocated data
-    gp.check_result(gp.gp_widget_unref(config))
+    # clean up
     gp.check_result(gp.gp_camera_exit(camera, context))
-    gp.check_result(gp.gp_camera_unref(camera))
     return 0
 
 if __name__ == "__main__":

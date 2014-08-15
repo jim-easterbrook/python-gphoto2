@@ -58,12 +58,6 @@ class MainWindow(QtGui.QMainWindow):
         QtGui.QApplication.postEvent(
             self, QtCore.QEvent(self.do_init), Qt.LowEventPriority - 1)
 
-    def closeEvent(self, event):
-        self.camera_config.cleanup()
-        self.camera.cleanup()
-        self.context.cleanup()
-        return QtGui.QMainWindow.closeEvent(self, event)
-
     def event(self, event):
         if event.type() != self.do_init:
             return QtGui.QMainWindow.event(self, event)

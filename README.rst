@@ -1,15 +1,15 @@
 python-gphoto2
 ==============
 
-.. contents::
-   :backlinks: top
-
 python-gphoto2 is a very basic (low-level) Python interface (or binding) to `libgphoto2 <http://www.gphoto.org/proj/libgphoto2/>`_.
 It is built using `SWIG <http://swig.org/>`_ to automatically generate the interface code.
 This gives direct access to the libgphoto2 functions, but in a rather un-Pythonic manner.
 
 There are some Python helper classes to ease access to many of the low-level functions.
 This makes the package a bit more Pythonic, but you will still need to deal directly with the lower level at times.
+
+.. contents::
+   :backlinks: top
 
 Dependencies
 ------------
@@ -124,7 +124,9 @@ has this Python equivalent:
     import gphoto2 as gp
     error, camera = gp.gp_camera_new()
     ...
-    error = gp.gp_camera_unref(camera)
+
+Note that the gp_camera_unref() call is not needed (since version 0.5.0).
+It is called automatically when the python camera object is deleted.
 
 Some functions, such as `gp_widget_get_value() <http://www.gphoto.org/doc/api/gphoto2-widget_8h.html>`_, can return different types using a ``void *`` pointer in C.
 The Python interface includes type specific functions such as ``gp_widget_get_value_text()``.
@@ -142,7 +144,6 @@ Using this function the example becomes:
     import gphoto2 as gp
     camera = gp.check_result(gp.gp_camera_new())
     ...
-    gp.check_result(gp.gp_camera_unref(camera))
 
 Higher-level interface
 ^^^^^^^^^^^^^^^^^^^^^^

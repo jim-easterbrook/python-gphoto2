@@ -21,6 +21,7 @@ from distutils.core import setup, Extension
 from distutils.command.build import build
 from distutils.command.upload import upload
 import os
+import shlex
 import subprocess
 import sys
 
@@ -40,7 +41,7 @@ mod_names.sort()
 
 # create extension modules list
 ext_modules = []
-swig_opts = ['-I/usr/include', '-builtin', '-O', '-Wall']
+swig_opts = ['-I/usr/include', '-builtin', '-O', '-Wall', '-MM']
 extra_compile_args = ['-O3', '-Wno-unused-variable']
 if sys.version_info[0] >= 3:
     swig_opts.append('-py3')
@@ -51,12 +52,20 @@ elif gphoto2_version[0:2] == ('2', '5'):
     swig_opts.append('-DGPHOTO2_25')
     extra_compile_args.append('-DGPHOTO2_25')
 for mod_name in mod_names:
+    depends = []
+    dep_file = 'src/gphoto2/lib/%s_wrap.d' % mod_name
+    if os.path.exists(dep_file):
+        for token in shlex.split(open(dep_file).read()):
+            token = token.strip()
+            if token and not token.endswith(':'):
+                depends.append(token)
     ext_modules.append(Extension(
         '_%s' % mod_name,
         sources = ['src/gphoto2/lib/%s.i' % mod_name],
         swig_opts = swig_opts,
         libraries = ['gphoto2', 'gphoto2_port'],
         extra_compile_args = extra_compile_args,
+        depends = depends,
         ))
 
 # rewrite init module, if needed

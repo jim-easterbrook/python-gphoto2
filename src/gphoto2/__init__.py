@@ -71,6 +71,9 @@ class Context(object):
     def __enter__(self):
         return self
 
+    def __exit__(self, type, value, traceback):
+        pass
+
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_%s' % name)
         return self._call
@@ -104,6 +107,9 @@ class Camera(object):
 
     def __enter__(self):
         return self
+
+    def __exit__(self, type, value, traceback):
+        pass
 
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_camera_%s' % name)
@@ -144,6 +150,9 @@ class CameraWidget(object):
     def __enter__(self):
         return self
 
+    def __exit__(self, type, value, traceback):
+        pass
+
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_widget_%s' % name)
         return self._call
@@ -168,6 +177,9 @@ class CameraFile(object):
 
     def __enter__(self):
         return self
+
+    def __exit__(self, type, value, traceback):
+        pass
 
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_file_%s' % name)
@@ -194,6 +206,9 @@ class CameraAbilitiesList(object):
     def __enter__(self):
         return self
 
+    def __exit__(self, type, value, traceback):
+        pass
+
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_abilities_list_%s' % name)
         return self._call
@@ -219,6 +234,9 @@ class CameraList(object):
     def __enter__(self):
         return self
 
+    def __exit__(self, type, value, traceback):
+        pass
+
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_list_%s' % name)
         return self._call
@@ -243,6 +261,9 @@ class PortInfoList(object):
 
     def __enter__(self):
         return self
+
+    def __exit__(self, type, value, traceback):
+        pass
 
     def __getattr__(self, name):
         self._next_call = getattr(lib, 'gp_port_info_list_%s' % name)

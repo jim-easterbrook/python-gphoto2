@@ -25,7 +25,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '0.5.0'
+version = '0.5.1'
 
 # get gphoto2 version
 gphoto2_version = str(subprocess.check_output(['gphoto2-config', '--version']))
@@ -34,7 +34,8 @@ gphoto2_version = tuple(gphoto2_version.split()[1].split('.'))
 # get list of modules
 mod_names = filter(lambda x: x[1] == '.i',
                    map(os.path.splitext, os.listdir('src/gphoto2/lib')))
-mod_names = list(map(lambda x: x[0], mod_names))
+mod_names = map(lambda x: x[0], mod_names)
+mod_names = list(filter(lambda x: x.startswith('gphoto2'), mod_names))
 mod_names.sort()
 
 # create extension modules list

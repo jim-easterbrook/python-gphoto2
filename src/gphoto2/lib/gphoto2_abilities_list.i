@@ -30,20 +30,15 @@
 
 %include "typemaps.i"
 
+%include "macros.i"
+
 // gp_abilities_list_new() returns a pointer in an output parameter
 %typemap(in, numinputs=0) CameraAbilitiesList ** (CameraAbilitiesList *temp) {
   $1 = &temp;
 }
 %typemap(argout) CameraAbilitiesList ** {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
-  PyObject* temp = SWIG_NewPointerObj(
-      *$1, SWIGTYPE_p__CameraAbilitiesList, SWIG_POINTER_NEW);
-  PyList_Append($result, temp);
-  Py_DECREF(temp);
+  RESULT_APPEND(
+    SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraAbilitiesList, SWIG_POINTER_NEW))
 }
 
 // Mark gp_abilities_list_free as destructor and add default destructor

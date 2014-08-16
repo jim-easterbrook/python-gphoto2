@@ -25,20 +25,15 @@
 
 %include "typemaps.i"
 
+%include "macros.i"
+
 // gp_list_new() returns a pointer in an output parameter
 %typemap(in, numinputs=0) CameraList ** (CameraList *temp) {
   $1 = &temp;
 }
 %typemap(argout) CameraList ** {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
-  PyObject* temp = SWIG_NewPointerObj(
-      *$1, SWIGTYPE_p__CameraList, SWIG_POINTER_NEW);
-  PyList_Append($result, temp);
-  Py_DECREF(temp);
+  RESULT_APPEND(
+    SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraList, SWIG_POINTER_NEW))
 }
 
 // Mark gp_list_unref as destructor and add default destructor
@@ -51,18 +46,13 @@ struct _CameraList {};
   $1 = &temp;
 }
 %typemap(argout) char ** {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
   if (*$1) {
-    PyObject* temp = PyString_FromString(*$1);
-    PyList_Append($result, temp);
-    Py_DECREF(temp);
+    RESULT_APPEND(PyString_FromString(*$1))
   }
-  else
-    PyList_Append($result, Py_None);
+  else {
+    Py_INCREF(Py_None);
+    RESULT_APPEND(Py_None)
+  }
 }
 
 %include "gphoto2/gphoto2-list.h"

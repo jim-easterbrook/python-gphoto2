@@ -30,20 +30,15 @@
 
 %include "typemaps.i"
 
+%include "macros.i"
+
 // gp_port_info_list_new() returns a pointer in an output parameter
 %typemap(in, numinputs=0) GPPortInfoList ** (GPPortInfoList *temp) {
   $1 = &temp;
 }
 %typemap(argout) GPPortInfoList ** {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
-  PyObject* temp = SWIG_NewPointerObj(
-      *$1, SWIGTYPE_p__GPPortInfoList, SWIG_POINTER_NEW);
-  PyList_Append($result, temp);
-  Py_DECREF(temp);
+  RESULT_APPEND(
+    SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfoList, SWIG_POINTER_NEW))
 }
 
 // Mark gp_port_info_list_free as destructor and add default destructor
@@ -58,14 +53,7 @@ struct _GPPortInfoList {};
   $1 = &temp;
 }
 %typemap(argout) GPPortInfo * {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
-  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfo, 0);
-  PyList_Append($result, temp);
-  Py_DECREF(temp);
+  RESULT_APPEND(SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfo, 0))
 }
 #endif
 
@@ -74,18 +62,13 @@ struct _GPPortInfoList {};
   $1 = &temp;
 }
 %typemap(argout) char ** {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
   if (*$1) {
-    PyObject* temp = PyString_FromString(*$1);
-    PyList_Append($result, temp);
-    Py_DECREF(temp);
+    RESULT_APPEND(PyString_FromString(*$1))
   }
-  else
-    PyList_Append($result, Py_None);
+  else {
+    Py_INCREF(Py_None);
+    RESULT_APPEND(Py_None)
+  }
 }
 
 // Don't wrap internal functions

@@ -27,19 +27,14 @@
 
 %include "typemaps.i"
 
+%include "macros.i"
+
 // gp_port_new() returns a pointer in an output parameter
 %typemap(in, numinputs=0) GPPort ** (GPPort *temp) {
   $1 = &temp;
 }
 %typemap(argout) GPPort ** {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
-  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPort, SWIG_POINTER_NEW);
-  PyList_Append($result, temp);
-  Py_DECREF(temp);
+  RESULT_APPEND(SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPort, SWIG_POINTER_NEW))
 }
 
 // Mark gp_port_free as destructor and add default destructor

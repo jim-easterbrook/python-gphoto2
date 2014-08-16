@@ -31,19 +31,14 @@
 
 %include "typemaps.i"
 
+%include "macros.i"
+
 // gp_camera_new() returns a pointer in an output parameter
 %typemap(in, numinputs=0) Camera ** (Camera *temp) {
   $1 = &temp;
 }
 %typemap(argout) Camera ** {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
-  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, SWIG_POINTER_NEW);
-  PyList_Append($result, temp);
-  Py_DECREF(temp);
+  RESULT_APPEND(SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, SWIG_POINTER_NEW))
 }
 
 // Mark gp_camera_unref as destructor and add default destructor
@@ -66,11 +61,6 @@
   $1 = &temp;
 }
 %typemap(argout) (CameraStorageInformation **, int *) {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
   PyObject* out_list = PyList_New(*$2);
   int n;
   int own = SWIG_POINTER_NEW;
@@ -79,8 +69,7 @@
         SWIG_NewPointerObj($1[n], SWIGTYPE_p__CameraStorageInformation, own));
     own = 0;
   }
-  PyList_Append($result, out_list);
-  Py_DECREF(out_list);
+  RESULT_APPEND(out_list)
 }
 
 // gp_camera_wait_for_event() returns two pointers in output parameters
@@ -91,14 +80,7 @@
   $1 = &temp;
 }
 %typemap(argout) CameraEventType * {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
-  PyObject* temp = PyInt_FromLong(*$1);
-  PyList_Append($result, temp);
-  Py_DECREF(temp);
+  RESULT_APPEND(PyInt_FromLong(*$1))
 }
 
 // Don't wrap deprecated functions

@@ -28,6 +28,8 @@
 
 %include "typemaps.i"
 
+%include "macros.i"
+
 %apply int *OUTPUT { CameraWidgetType * };
 %apply int *OUTPUT { int * };
 %apply float *OUTPUT { float * };
@@ -47,14 +49,7 @@
   $1 = &temp;
 }
 %typemap(argout) CameraWidget ** {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
-  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, OWN_$symname);
-  PyList_Append($result, temp);
-  Py_DECREF(temp);
+  RESULT_APPEND(SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, OWN_$symname))
 }
 
 // Mark gp_widget_unref as destructor an add default destructor
@@ -67,18 +62,13 @@ struct _CameraWidget {};
   $1 = &temp;
 }
 %typemap(argout) char ** {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
   if (*$1) {
-    PyObject* temp = PyString_FromString(*$1);
-    PyList_Append($result, temp);
-    Py_DECREF(temp);
+    RESULT_APPEND(PyString_FromString(*$1))
   }
-  else
-    PyList_Append($result, Py_None);
+  else {
+    Py_INCREF(Py_None);
+    RESULT_APPEND(Py_None)
+  }
 }
 
 %inline %{

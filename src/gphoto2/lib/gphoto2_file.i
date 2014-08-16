@@ -25,19 +25,15 @@
 
 %include "typemaps.i"
 
+%include "macros.i"
+
 // gp_file_new() returns a pointer in an output parameter
 %typemap(in, numinputs=0) CameraFile ** (CameraFile *temp) {
   $1 = &temp;
 }
 %typemap(argout) CameraFile ** {
-  if (!PyList_Check($result)) {
-    PyObject* temp = $result;
-    $result = PyList_New(1);
-    PyList_SetItem($result, 0, temp);
-  }
-  PyObject* temp = SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraFile, SWIG_POINTER_NEW);
-  PyList_Append($result, temp);
-  Py_DECREF(temp);
+  RESULT_APPEND(
+    SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraFile, SWIG_POINTER_NEW))
 }
 
 // Mark gp_file_unref as destructor and add default destructor

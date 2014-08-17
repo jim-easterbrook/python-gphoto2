@@ -15,6 +15,16 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 0.5.1:
+  1/ Restored '__exit__' methods removed from helper classes in v0.5.0.
+  2/ Defined some macros to simplify SWIG interface files.
+
+Changes in 0.5.0:
+  1/ Added default destructors for most objects created by gp_xxx_new()
+     functions.
+  2/ Fixed some memory leaks.
+  3/ Hid details of some private structures and functions.
+
 Changes in 0.4.0:
   1/ Made gp_camera_wait_for_event usable.
   2/ Made check_result raise exception for fewer error types.

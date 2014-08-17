@@ -58,18 +58,7 @@ struct _CameraWidget {};
 %ignore _CameraWidget;
 
 // some methods return string pointers in output params
-%typemap(in, numinputs=0) char ** (char *temp) {
-  $1 = &temp;
-}
-%typemap(argout) char ** {
-  if (*$1) {
-    RESULT_APPEND(PyString_FromString(*$1))
-  }
-  else {
-    Py_INCREF(Py_None);
-    RESULT_APPEND(Py_None)
-  }
-}
+STRING_ARGOUT()
 
 %inline %{
 // Add type specific gp_widget_get_value methods

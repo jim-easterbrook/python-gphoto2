@@ -58,18 +58,7 @@ struct _GPPortInfoList {};
 #endif
 
 // several getter functions return string pointers in output params
-%typemap(in, numinputs=0) char ** (char *temp) {
-  $1 = &temp;
-}
-%typemap(argout) char ** {
-  if (*$1) {
-    RESULT_APPEND(PyString_FromString(*$1))
-  }
-  else {
-    Py_INCREF(Py_None);
-    RESULT_APPEND(Py_None)
-  }
-}
+STRING_ARGOUT()
 
 // Don't wrap internal functions
 %ignore gp_port_info_new;

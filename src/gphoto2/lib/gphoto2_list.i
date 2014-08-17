@@ -42,17 +42,6 @@ struct _CameraList {};
 %ignore _CameraList;
 
 // gp_list_get_name() & gp_list_get_value() return pointers in output params
-%typemap(in, numinputs=0) char ** (char *temp) {
-  $1 = &temp;
-}
-%typemap(argout) char ** {
-  if (*$1) {
-    RESULT_APPEND(PyString_FromString(*$1))
-  }
-  else {
-    Py_INCREF(Py_None);
-    RESULT_APPEND(Py_None)
-  }
-}
+STRING_ARGOUT()
 
 %include "gphoto2/gphoto2-list.h"

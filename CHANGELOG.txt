@@ -15,6 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 0.5.2:
+  1/ Fixed some bugs in default destructor code introduced in v0.5.0.
+
 Changes in 0.5.1:
   1/ Restored '__exit__' methods removed from helper classes in v0.5.0.
   2/ Defined some macros to simplify SWIG interface files.

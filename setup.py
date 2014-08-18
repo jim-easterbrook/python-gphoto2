@@ -26,7 +26,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '0.5.1'
+version = '0.5.2'
 
 # get gphoto2 version
 gphoto2_version = str(subprocess.check_output(['gphoto2-config', '--version']))
@@ -41,7 +41,7 @@ mod_names.sort()
 
 # create extension modules list
 ext_modules = []
-swig_opts = ['-I/usr/include', '-builtin', '-O', '-Wall', '-MM']
+swig_opts = ['-I/usr/include', '-builtin', '-O', '-Wall', '-MMD']
 extra_compile_args = ['-O3', '-Wno-unused-variable']
 if sys.version_info[0] >= 3:
     swig_opts.append('-py3')

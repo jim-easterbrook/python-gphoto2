@@ -55,6 +55,11 @@
 // Mark gp_widget_unref as destructor an add default destructor
 %delobject gp_widget_unref;
 struct _CameraWidget {};
+%extend _CameraWidget {
+  ~_CameraWidget() {
+    gp_widget_unref($self);
+  }
+};
 %ignore _CameraWidget;
 
 // some methods return string pointers in output params

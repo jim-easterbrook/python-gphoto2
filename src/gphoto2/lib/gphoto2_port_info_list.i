@@ -44,6 +44,11 @@
 // Mark gp_port_info_list_free as destructor and add default destructor
 %delobject gp_port_info_list_free;
 struct _GPPortInfoList {};
+%extend _GPPortInfoList {
+  ~_GPPortInfoList() {
+    gp_port_info_list_free($self);
+  }
+};
 %ignore _GPPortInfoList;
 
 // In libgphoto2 version 2.4 GPPortInfo is a structure, in version 2.5 it's a

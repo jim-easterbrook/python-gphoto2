@@ -44,6 +44,11 @@
 // Mark gp_abilities_list_free as destructor and add default destructor
 %delobject gp_abilities_list_free;
 struct _CameraAbilitiesList {};
+%extend _CameraAbilitiesList {
+  ~_CameraAbilitiesList() {
+    gp_abilities_list_free($self);
+  }
+};
 %ignore _CameraAbilitiesList;
 
 // Structures are read only

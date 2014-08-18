@@ -29,6 +29,11 @@
 // Mark gp_context_unref as destructor
 %delobject gp_context_unref;
 struct _GPContext {};
+%extend _GPContext {
+  ~_GPContext() {
+    gp_context_unref($self);
+  }
+};
 %ignore _GPContext;
 
 %include "gphoto2/gphoto2-context.h"

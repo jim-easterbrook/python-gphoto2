@@ -39,6 +39,11 @@
 // Mark gp_list_unref as destructor and add default destructor
 %delobject gp_list_unref;
 struct _CameraList {};
+%extend _CameraList {
+  ~_CameraList() {
+    gp_list_unref($self);
+  }
+};
 %ignore _CameraList;
 
 // gp_list_get_name() & gp_list_get_value() return pointers in output params

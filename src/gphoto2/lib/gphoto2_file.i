@@ -39,6 +39,11 @@
 // Mark gp_file_unref as destructor and add default destructor
 %delobject gp_file_unref;
 struct _CameraFile {};
+%extend _CameraFile {
+  ~_CameraFile() {
+    gp_file_unref($self);
+  }
+};
 %ignore _CameraFile;
 
 // These structures are private

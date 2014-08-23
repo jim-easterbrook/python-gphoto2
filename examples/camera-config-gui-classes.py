@@ -19,6 +19,7 @@
 
 from __future__ import print_function
 
+from datetime import datetime
 import logging
 import sys
 
@@ -112,6 +113,8 @@ class SectionWidget(QtGui.QWidget):
                 self.layout().addRow(label, RadioWidget(config_changed, child))
             elif child_type == gp.GP_WIDGET_MENU:
                 self.layout().addRow(label, MenuWidget(config_changed, child))
+            elif child_type == gp.GP_WIDGET_DATE:
+                self.layout().addRow(label, DateWidget(config_changed, child))
             else:
                 print('Cannot make widget type %d for %s' % (child_type, label))
 
@@ -209,6 +212,24 @@ class MenuWidget(QtGui.QComboBox):
     def new_value(self, value):
         value = str(self.itemText(value))
         self.config.set_value_text(value)
+        self.config_changed()
+
+class DateWidget(QtGui.QDateTimeEdit):
+    def __init__(self, config_changed, config, parent=None):
+        QtGui.QDateTimeEdit.__init__(self, parent)
+        self.config_changed = config_changed
+        self.config = config
+        assert self.config.count_children() == 0
+        value = self.config.get_value_int()
+        if value:
+            self.setDateTime(datetime.fromtimestamp(value))
+        self.dateTimeChanged.connect(self.new_value)
+        self.setDisplayFormat('yyyy-MM-dd hh:mm:ss')
+
+    def new_value(self, value):
+        value = value.toPyDateTime() - datetime.fromtimestamp(0)
+        value = int(value.total_seconds())
+        self.config.set_value_int(value)
         self.config_changed()
 
 if __name__ == "__main__":

@@ -46,12 +46,18 @@ def main():
         now = datetime.now()
         OK, datetime_config = gp.gp_widget_get_child_by_name(config, name)
         if OK >= gp.GP_OK:
-            raw_value = gp.check_result(
-                gp.gp_widget_get_value_text(datetime_config))
-            if fmt:
-                camera_time = datetime.strptime(raw_value, fmt)
+            widget_type = gp.check_result(gp.gp_widget_get_type(datetime_config))
+            if widget_type == gp.GP_WIDGET_DATE:
+                raw_value = gp.check_result(
+                    gp.gp_widget_get_value_int(datetime_config))
+                camera_time = datetime.fromtimestamp(raw_value)
             else:
-                camera_time = datetime.utcfromtimestamp(float(raw_value))
+                raw_value = gp.check_result(
+                    gp.gp_widget_get_value_text(datetime_config))
+                if fmt:
+                    camera_time = datetime.strptime(raw_value, fmt)
+                else:
+                    camera_time = datetime.utcfromtimestamp(float(raw_value))
             print('Camera clock:  ', camera_time.isoformat(' '))
             print('Computer clock:', now.isoformat(' '))
             err = now - camera_time

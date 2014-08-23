@@ -43,10 +43,15 @@
 
 // Mark gp_port_info_list_free as destructor and add default destructor
 %delobject gp_port_info_list_free;
+DECLARE_GP_ERROR()
+%exception ~_GPPortInfoList {
+  $action
+  CHECK_GP_ERROR()
+}
 struct _GPPortInfoList {};
 %extend _GPPortInfoList {
   ~_GPPortInfoList() {
-    gp_port_info_list_free($self);
+    _gp_error = gp_port_info_list_free($self);
   }
 };
 %ignore _GPPortInfoList;

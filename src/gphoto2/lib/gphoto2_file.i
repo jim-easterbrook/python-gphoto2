@@ -38,10 +38,15 @@
 
 // Mark gp_file_unref as destructor and add default destructor
 %delobject gp_file_unref;
+DECLARE_GP_ERROR()
+%exception ~_CameraFile {
+  $action
+  CHECK_GP_ERROR()
+}
 struct _CameraFile {};
 %extend _CameraFile {
   ~_CameraFile() {
-    gp_file_unref($self);
+    _gp_error = gp_file_unref($self);
   }
 };
 %ignore _CameraFile;

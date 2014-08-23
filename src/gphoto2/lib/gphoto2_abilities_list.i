@@ -43,10 +43,15 @@
 
 // Mark gp_abilities_list_free as destructor and add default destructor
 %delobject gp_abilities_list_free;
+DECLARE_GP_ERROR()
+%exception ~_CameraAbilitiesList {
+  $action
+  CHECK_GP_ERROR()
+}
 struct _CameraAbilitiesList {};
 %extend _CameraAbilitiesList {
   ~_CameraAbilitiesList() {
-    gp_abilities_list_free($self);
+    _gp_error = gp_abilities_list_free($self);
   }
 };
 %ignore _CameraAbilitiesList;

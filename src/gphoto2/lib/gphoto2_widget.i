@@ -54,10 +54,15 @@
 
 // Mark gp_widget_unref as destructor an add default destructor
 %delobject gp_widget_unref;
+DECLARE_GP_ERROR()
+%exception ~_CameraWidget {
+  $action
+  CHECK_GP_ERROR()
+}
 struct _CameraWidget {};
 %extend _CameraWidget {
   ~_CameraWidget() {
-    gp_widget_unref($self);
+    _gp_error = gp_widget_unref($self);
   }
 };
 %ignore _CameraWidget;

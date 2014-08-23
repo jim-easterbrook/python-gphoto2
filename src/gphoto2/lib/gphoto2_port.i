@@ -39,9 +39,14 @@
 
 // Mark gp_port_free as destructor and add default destructor
 %delobject gp_port_free;
+DECLARE_GP_ERROR()
+%exception ~_GPPort {
+  $action
+  CHECK_GP_ERROR()
+}
 %extend _GPPort {
   ~_GPPort() {
-    gp_port_free($self);
+    _gp_error = gp_port_free($self);
   }
 };
 

@@ -43,9 +43,14 @@
 
 // Mark gp_camera_unref as destructor and add default destructor
 %delobject gp_camera_unref;
+DECLARE_GP_ERROR()
+%exception ~_Camera {
+  $action
+  CHECK_GP_ERROR()
+}
 %extend _Camera {
   ~_Camera() {
-    gp_camera_unref($self);
+    _gp_error = gp_camera_unref($self);
   }
 };
 

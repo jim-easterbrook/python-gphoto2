@@ -38,10 +38,15 @@
 
 // Mark gp_list_unref as destructor and add default destructor
 %delobject gp_list_unref;
+DECLARE_GP_ERROR()
+%exception ~_CameraList {
+  $action
+  CHECK_GP_ERROR()
+}
 struct _CameraList {};
 %extend _CameraList {
   ~_CameraList() {
-    gp_list_unref($self);
+    _gp_error = gp_list_unref($self);
   }
 };
 %ignore _CameraList;

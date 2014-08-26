@@ -90,6 +90,8 @@ class SectionWidget(QtGui.QWidget):
     def __init__(self, config_changed, camera_config, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.setLayout(QtGui.QFormLayout())
+        if camera_config.get_readonly():
+            self.setDisabled(True)
         child_count = camera_config.count_children()
         if child_count < 1:
             return
@@ -123,6 +125,8 @@ class TextWidget(QtGui.QLineEdit):
         QtGui.QLineEdit.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
+        if self.config.get_readonly():
+            self.setDisabled(True)
         assert self.config.count_children() == 0
         value = self.config.get_value_text()
         if value:
@@ -139,6 +143,8 @@ class RangeWidget(QtGui.QSlider):
         QtGui.QSlider.__init__(self, Qt.Horizontal, parent)
         self.config_changed = config_changed
         self.config = config
+        if self.config.get_readonly():
+            self.setDisabled(True)
         assert self.config.count_children() == 0
         lo, hi, self.inc = self.config.get_range()
         value = self.config.get_value_float()
@@ -156,6 +162,8 @@ class ToggleWidget(QtGui.QCheckBox):
         QtGui.QCheckBox.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
+        if self.config.get_readonly():
+            self.setDisabled(True)
         assert self.config.count_children() == 0
         value = self.config.get_value_int()
         self.setChecked(value != 0)
@@ -171,6 +179,8 @@ class RadioWidget(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
+        if self.config.get_readonly():
+            self.setDisabled(True)
         assert self.config.count_children() == 0
         self.setLayout(QtGui.QHBoxLayout())
         value = self.config.get_value_text()
@@ -198,6 +208,8 @@ class MenuWidget(QtGui.QComboBox):
         QtGui.QComboBox.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
+        if self.config.get_readonly():
+            self.setDisabled(True)
         assert self.config.count_children() == 0
         value = self.config.get_value_text()
         choice_count = self.config.count_choices()
@@ -219,6 +231,8 @@ class DateWidget(QtGui.QDateTimeEdit):
         QtGui.QDateTimeEdit.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
+        if self.config.get_readonly():
+            self.setDisabled(True)
         assert self.config.count_children() == 0
         value = self.config.get_value_int()
         if value:

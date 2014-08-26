@@ -93,6 +93,8 @@ class SectionWidget(QtGui.QWidget):
     def __init__(self, config_changed, camera_config, parent=None):
         QtGui.QWidget.__init__(self, parent)
         self.setLayout(QtGui.QFormLayout())
+        if gp.check_result(gp.gp_widget_get_readonly(camera_config)):
+            self.setDisabled(True)
         child_count = gp.check_result(gp.gp_widget_count_children(camera_config))
         if child_count < 1:
             return
@@ -126,6 +128,8 @@ class TextWidget(QtGui.QLineEdit):
         QtGui.QLineEdit.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
+        if gp.check_result(gp.gp_widget_get_readonly(config)):
+            self.setDisabled(True)
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
         value = gp.check_result(gp.gp_widget_get_value_text(config))
         if value:
@@ -142,6 +146,8 @@ class RangeWidget(QtGui.QSlider):
         QtGui.QSlider.__init__(self, Qt.Horizontal, parent)
         self.config_changed = config_changed
         self.config = config
+        if gp.check_result(gp.gp_widget_get_readonly(config)):
+            self.setDisabled(True)
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
         lo, hi, self.inc = gp.check_result(gp.gp_widget_get_range(config))
         value = gp.check_result(gp.gp_widget_get_value_float(config))
@@ -159,6 +165,8 @@ class ToggleWidget(QtGui.QCheckBox):
         QtGui.QCheckBox.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
+        if gp.check_result(gp.gp_widget_get_readonly(config)):
+            self.setDisabled(True)
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
         value = gp.check_result(gp.gp_widget_get_value_int(config))
         self.setChecked(value != 0)
@@ -174,6 +182,8 @@ class RadioWidget(QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
+        if gp.check_result(gp.gp_widget_get_readonly(config)):
+            self.setDisabled(True)
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
         self.setLayout(QtGui.QHBoxLayout())
         value = gp.check_result(gp.gp_widget_get_value_text(config))
@@ -201,6 +211,8 @@ class MenuWidget(QtGui.QComboBox):
         QtGui.QComboBox.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
+        if gp.check_result(gp.gp_widget_get_readonly(config)):
+            self.setDisabled(True)
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
         value = gp.check_result(gp.gp_widget_get_value_text(config))
         choice_count = gp.check_result(gp.gp_widget_count_choices(config))
@@ -222,6 +234,8 @@ class DateWidget(QtGui.QDateTimeEdit):
         QtGui.QDateTimeEdit.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
+        if gp.check_result(gp.gp_widget_get_readonly(config)):
+            self.setDisabled(True)
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
         value = gp.check_result(gp.gp_widget_get_value_int(config))
         if value:

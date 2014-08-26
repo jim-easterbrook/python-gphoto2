@@ -36,9 +36,10 @@
     SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraFile, SWIG_POINTER_NEW))
 }
 
-// Add default destructor to _CameraFile
+// Add default constructor and destructor to _CameraFile
 DECLARE_GP_ERROR()
 struct _CameraFile {};
+DEFAULT_CTOR(_CameraFile, gp_file_new)
 DEFAULT_DTOR(_CameraFile, gp_file_unref)
 %ignore _CameraFile;
 

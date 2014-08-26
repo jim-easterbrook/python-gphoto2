@@ -41,8 +41,9 @@
   RESULT_APPEND(SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, SWIG_POINTER_NEW))
 }
 
-// Add default destructor to _Camera
+// Add default constructor and destructor to _Camera
 DECLARE_GP_ERROR()
+DEFAULT_CTOR(_Camera, gp_camera_new)
 DEFAULT_DTOR(_Camera, gp_camera_unref)
 
 // gp_camera_get_config returns a new CameraWidget pointer in an output parameter

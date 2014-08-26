@@ -28,8 +28,13 @@
 
 // Mark gp_context_unref as destructor
 %delobject gp_context_unref;
+
+// Add default constructor and destructor
 struct _GPContext {};
 %extend _GPContext {
+  _GPContext() {
+    return gp_context_new();
+  }
   ~_GPContext() {
     gp_context_unref($self);
   }

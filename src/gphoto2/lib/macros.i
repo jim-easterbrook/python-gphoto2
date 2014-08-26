@@ -33,6 +33,24 @@ static int _gp_error = GP_OK;
 %}
 %enddef
 
+%define DEFAULT_CTOR(name, alloc_func)
+%exception name {
+  $action
+  if (_gp_error != GP_OK) {
+    PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(_gp_error));
+    _gp_error = GP_OK;
+    result = NULL;
+  }
+}
+%extend name {
+  name() {
+    struct name *result;
+    _gp_error = alloc_func(&result);
+    return result;
+  }
+};
+%enddef
+
 %define DEFAULT_DTOR(name, free_func)
 %delobject free_func;
 %exception ~name {

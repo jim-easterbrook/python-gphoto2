@@ -41,9 +41,10 @@
     SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfoList, SWIG_POINTER_NEW))
 }
 
-// Add default destructor to _GPPortInfoList
+// Add default constructor and destructor to _GPPortInfoList
 DECLARE_GP_ERROR()
 struct _GPPortInfoList {};
+DEFAULT_CTOR(_GPPortInfoList, gp_port_info_list_new)
 DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
 %ignore _GPPortInfoList;
 

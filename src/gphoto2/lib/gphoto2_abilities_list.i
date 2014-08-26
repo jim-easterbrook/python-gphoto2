@@ -41,9 +41,10 @@
     SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraAbilitiesList, SWIG_POINTER_NEW))
 }
 
-// Add default destructor to _CameraAbilitiesList
+// Add default constructor and destructor to _CameraAbilitiesList
 DECLARE_GP_ERROR()
 struct _CameraAbilitiesList {};
+DEFAULT_CTOR(_CameraAbilitiesList, gp_abilities_list_new)
 DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
 %ignore _CameraAbilitiesList;
 

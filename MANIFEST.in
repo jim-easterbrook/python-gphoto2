@@ -1,1 +1,2 @@
+recursive-include src *.i
 recursive-exclude src gphoto2_*.py

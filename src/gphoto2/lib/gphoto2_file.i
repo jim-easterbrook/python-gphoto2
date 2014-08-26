@@ -32,8 +32,8 @@
   $1 = &temp;
 }
 %typemap(argout) CameraFile ** {
-  RESULT_APPEND(
-    SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraFile, SWIG_POINTER_NEW))
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraFile, SWIG_POINTER_NEW));
 }
 
 // Add default constructor and destructor to _CameraFile

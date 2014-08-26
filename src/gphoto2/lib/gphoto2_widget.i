@@ -49,7 +49,8 @@
   $1 = &temp;
 }
 %typemap(argout) CameraWidget ** {
-  RESULT_APPEND(SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, OWN_$symname))
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, OWN_$symname));
 }
 
 // Add default constructor and destructor to _CameraWidget

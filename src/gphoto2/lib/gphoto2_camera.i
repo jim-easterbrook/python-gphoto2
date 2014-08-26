@@ -38,7 +38,8 @@
   $1 = &temp;
 }
 %typemap(argout) Camera ** {
-  RESULT_APPEND(SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, SWIG_POINTER_NEW))
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, SWIG_POINTER_NEW));
 }
 
 // Add default constructor and destructor to _Camera
@@ -66,7 +67,7 @@ DEFAULT_DTOR(_Camera, gp_camera_unref)
         SWIG_NewPointerObj($1[n], SWIGTYPE_p__CameraStorageInformation, own));
     own = 0;
   }
-  RESULT_APPEND(out_list)
+  $result = SWIG_Python_AppendOutput($result, out_list);
 }
 
 // gp_camera_wait_for_event() returns two pointers in output parameters
@@ -77,7 +78,7 @@ DEFAULT_DTOR(_Camera, gp_camera_unref)
   $1 = &temp;
 }
 %typemap(argout) CameraEventType * {
-  RESULT_APPEND(PyInt_FromLong(*$1))
+  $result = SWIG_Python_AppendOutput($result, PyInt_FromLong(*$1));
 }
 
 // Don't wrap deprecated functions

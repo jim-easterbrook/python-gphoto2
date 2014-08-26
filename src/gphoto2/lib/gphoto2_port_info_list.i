@@ -37,8 +37,8 @@
   $1 = &temp;
 }
 %typemap(argout) GPPortInfoList ** {
-  RESULT_APPEND(
-    SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfoList, SWIG_POINTER_NEW))
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfoList, SWIG_POINTER_NEW));
 }
 
 // Add default constructor and destructor to _GPPortInfoList
@@ -55,7 +55,8 @@ DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
   $1 = &temp;
 }
 %typemap(argout) GPPortInfo * {
-  RESULT_APPEND(SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfo, 0))
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfo, 0));
 }
 #endif
 

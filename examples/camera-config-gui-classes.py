@@ -83,7 +83,7 @@ class MainWindow(QtGui.QMainWindow):
         self.apply_button.setEnabled(True)
 
     def apply_changes(self):
-        self.camera.set_config(self.camera_config.widget)
+        self.camera.set_config(self.camera_config)
         QtGui.qApp.closeAllWindows()
 
 class SectionWidget(QtGui.QWidget):

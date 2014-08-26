@@ -129,7 +129,7 @@ class Camera(gphoto2_camera._Camera):
     def _call_no_context(self, *arg):
         return check_result((self._next_call)(self, *arg))
 
-class CameraWidget(object):
+class CameraWidget(gphoto2_widget._CameraWidget):
     """CameraWidget helper class.
 
     Wraps all gp_widget_*(widget, ...) function calls. For example
@@ -147,7 +147,8 @@ class CameraWidget(object):
         by gp_camera_get_config.
 
         """
-        self.widget = widget
+        gphoto2_widget._CameraWidget.__init__(self, widget)
+        self.widget = self
 
     def __enter__(self):
         return self
@@ -160,7 +161,7 @@ class CameraWidget(object):
         return self._call
 
     def _call(self, *arg):
-        return check_result((self._next_call)(self.widget, *arg))
+        return check_result((self._next_call)(self, *arg))
 
 class CameraFile(gphoto2_file._CameraFile):
     """CameraFile helper class.

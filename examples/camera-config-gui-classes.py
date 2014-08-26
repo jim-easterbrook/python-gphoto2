@@ -55,7 +55,7 @@ class MainWindow(QtGui.QMainWindow):
         widget.layout().addWidget(quit_button, 1, 2)
         # defer full initialisation (slow operation) until gui is visible
         self.context = gp.Context()
-        self.camera = gp.Camera(self.context.context)
+        self.camera = gp.Camera(self.context)
         QtGui.QApplication.postEvent(
             self, QtCore.QEvent(self.do_init), Qt.LowEventPriority - 1)
 

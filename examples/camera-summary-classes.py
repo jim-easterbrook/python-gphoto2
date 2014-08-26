@@ -28,7 +28,7 @@ def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     with gp.Context() as context:
-        with gp.Camera(context.context) as camera:
+        with gp.Camera(context) as camera:
             camera.init()
             text = gp.CameraText()
             camera.get_summary(text)

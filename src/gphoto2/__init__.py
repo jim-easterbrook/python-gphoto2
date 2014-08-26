@@ -44,7 +44,7 @@ def check_result(result):
     return result
 
 # define some higher level Python classes
-class Context(object):
+class Context(gphoto2_context._GPContext):
     """Context helper class.
 
     Wraps all gp_*(..., context) function calls. For example
@@ -64,9 +64,10 @@ class Context(object):
         logging package.
 
         """
+        gphoto2_context._GPContext.__init__(self)
         if use_python_logging:
             check_result(lib.use_python_logging())
-        self.context = gp_context_new()
+        self.context = self
 
     def __enter__(self):
         return self
@@ -80,9 +81,9 @@ class Context(object):
 
     def _call(self, *arg):
         return check_result(
-            (self._next_call)(*(arg + (self.context,))))
+            (self._next_call)(*(arg + (self,))))
 
-class Camera(object):
+class Camera(gphoto2_camera._Camera):
     """Camera helper class.
 
     Wraps all gp_camera_*(camera, ..., context) function calls. For
@@ -102,8 +103,9 @@ class Camera(object):
         context -- a GPContext object.
 
         """
+        gphoto2_camera._Camera.__init__(self)
         self.context = context
-        self.camera = check_result(gp_camera_new())
+        self.camera = self
 
     def __enter__(self):
         return self
@@ -122,10 +124,10 @@ class Camera(object):
 
     def _call(self, *arg):
         return check_result(
-            (self._next_call)(self.camera, *(arg + (self.context,))))
+            (self._next_call)(self, *(arg + (self.context,))))
 
     def _call_no_context(self, *arg):
-        return check_result((self._next_call)(self.camera, *arg))
+        return check_result((self._next_call)(self, *arg))
 
 class CameraWidget(object):
     """CameraWidget helper class.
@@ -160,7 +162,7 @@ class CameraWidget(object):
     def _call(self, *arg):
         return check_result((self._next_call)(self.widget, *arg))
 
-class CameraFile(object):
+class CameraFile(gphoto2_file._CameraFile):
     """CameraFile helper class.
 
     Wraps all gp_file_*(file, ...) function calls. For example
@@ -173,7 +175,8 @@ class CameraFile(object):
     
     """
     def __init__(self):
-        self.file = check_result(gp_file_new())
+        gphoto2_file._CameraFile.__init__(self)
+        self.file = self
 
     def __enter__(self):
         return self
@@ -186,9 +189,9 @@ class CameraFile(object):
         return self._call
 
     def _call(self, *arg):
-        return check_result((self._next_call)(self.file, *arg))
+        return check_result((self._next_call)(self, *arg))
 
-class CameraAbilitiesList(object):
+class CameraAbilitiesList(gphoto2_abilities_list._CameraAbilitiesList):
     """CameraAbilitiesList helper class.
 
     Wraps all gp_abilities_list_*(list, ...) function calls. For example
@@ -201,7 +204,8 @@ class CameraAbilitiesList(object):
     
     """
     def __init__(self):
-        self.list = check_result(gp_abilities_list_new())
+        gphoto2_abilities_list._CameraAbilitiesList.__init__(self)
+        self.list = self
 
     def __enter__(self):
         return self
@@ -214,9 +218,9 @@ class CameraAbilitiesList(object):
         return self._call
 
     def _call(self, *arg):
-        return check_result((self._next_call)(self.list, *arg))
+        return check_result((self._next_call)(self, *arg))
 
-class CameraList(object):
+class CameraList(gphoto2_list._CameraList):
     """CameraList helper class.
 
     Wraps all gp_list_*(list, ...) function calls. For example
@@ -229,7 +233,8 @@ class CameraList(object):
     
     """
     def __init__(self):
-        self.list = check_result(gp_list_new())
+        gphoto2_list._CameraList.__init__(self)
+        self.list = self
 
     def __enter__(self):
         return self
@@ -242,9 +247,9 @@ class CameraList(object):
         return self._call
 
     def _call(self, *arg):
-        return check_result((self._next_call)(self.list, *arg))
+        return check_result((self._next_call)(self, *arg))
 
-class PortInfoList(object):
+class PortInfoList(gphoto2_port_info_list._GPPortInfoList):
     """PortInfoList helper class.
 
     Wraps all gp_port_info_list_*(list, ...) function calls. For example
@@ -257,7 +262,8 @@ class PortInfoList(object):
     
     """
     def __init__(self):
-        self.list = check_result(gp_port_info_list_new())
+        gphoto2_port_info_list._GPPortInfoList.__init__(self)
+        self.list = self
 
     def __enter__(self):
         return self
@@ -270,4 +276,4 @@ class PortInfoList(object):
         return self._call
 
     def _call(self, *arg):
-        return check_result((self._next_call)(self.list, *arg))
+        return check_result((self._next_call)(self, *arg))

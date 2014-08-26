@@ -31,12 +31,12 @@ def list_files(camera, path='/'):
     folders = []
     with gp.CameraList() as camera_list:
         # get files
-        camera.folder_list_files(path, camera_list.list)
+        camera.folder_list_files(path, camera_list)
         for n in range(camera_list.count()):
             result.append(os.path.join(path, camera_list.get_name(n)))
         # read folders
         camera_list.reset()
-        camera.folder_list_folders(path, camera_list.list)
+        camera.folder_list_folders(path, camera_list)
         for n in range(camera_list.count()):
             folders.append(camera_list.get_name(n))
     # recurse over subfolders
@@ -54,7 +54,7 @@ def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     with gp.Context() as context:
-        with gp.Camera(context.context) as camera:
+        with gp.Camera(context) as camera:
             camera.init()
             files = list_files(camera)
             if not files:

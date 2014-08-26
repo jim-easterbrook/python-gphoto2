@@ -156,7 +156,7 @@ Here is a complete example program:
 
     import gphoto2 as gp
     with gp.Context() as context:
-        with gp.Camera(context.context) as camera:
+        with gp.Camera(context) as camera:
             camera.init()
             text = gp.CameraText()
             camera.get_summary(text)
@@ -166,19 +166,20 @@ Here is a complete example program:
             camera.exit()
 
 The higher level classes and the functions they wrap are as follows.
-Each class also "owns" a low-level object which is available as an attribute (e.g. to pass to other functions).
+Each class is sub-classed from a low-level object and can be passed to gphoto2 functions in place of the low-level object.
+(Prior to version 0.6.0 the low-level object was stored in a class attribute.)
 
 =================== =================================== ============= =============
-Python class        C function                          Python method Data & C type
+Python class        C function                          Python method Inherited low-level type
 =================== =================================== ============= =============
-Camera              gp_camera_xxx(camera, ..., context) xxx(...)      camera (Camera)
+Camera              gp_camera_xxx(camera, ..., context) xxx(...)      Camera
                     gp_camera_xxx(camera, ...)
-CameraAbilitiesList gp_abilities_list_xxx(list, ...)    xxx(...)      list (CameraAbilitiesList)
-CameraFile          gp_file_xxx(file, ...)              xxx(...)      file (CameraFile)
-CameraList          gp_list_xxx(list, ...)              xxx(...)      list (CameraList)
-CameraWidget        gp_widget_xxx(widget, ...)          xxx(...)      widget (CameraWidget)
-Context             gp_xxx(..., context)                xxx(...)      context (GPContext)
-PortInfoList        gp_port_info_list_xxx(list, ...)    xxx(...)      list (GPPortInfoList)
+CameraAbilitiesList gp_abilities_list_xxx(list, ...)    xxx(...)      CameraAbilitiesList
+CameraFile          gp_file_xxx(file, ...)              xxx(...)      CameraFile
+CameraList          gp_list_xxx(list, ...)              xxx(...)      CameraList
+CameraWidget        gp_widget_xxx(widget, ...)          xxx(...)      CameraWidget
+Context             gp_xxx(..., context)                xxx(...)      GPContext
+PortInfoList        gp_port_info_list_xxx(list, ...)    xxx(...)      GPPortInfoList
 =================== =================================== ============= =============
 
 Legalese

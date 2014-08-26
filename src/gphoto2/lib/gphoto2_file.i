@@ -36,19 +36,10 @@
     SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraFile, SWIG_POINTER_NEW))
 }
 
-// Mark gp_file_unref as destructor and add default destructor
-%delobject gp_file_unref;
+// Add default destructor to _CameraFile
 DECLARE_GP_ERROR()
-%exception ~_CameraFile {
-  $action
-  CHECK_GP_ERROR()
-}
 struct _CameraFile {};
-%extend _CameraFile {
-  ~_CameraFile() {
-    _gp_error = gp_file_unref($self);
-  }
-};
+DEFAULT_DTOR(_CameraFile, gp_file_unref)
 %ignore _CameraFile;
 
 // These structures are private

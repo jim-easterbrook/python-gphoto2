@@ -36,19 +36,10 @@
     SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraList, SWIG_POINTER_NEW))
 }
 
-// Mark gp_list_unref as destructor and add default destructor
-%delobject gp_list_unref;
+// Add default destructor to _CameraList
 DECLARE_GP_ERROR()
-%exception ~_CameraList {
-  $action
-  CHECK_GP_ERROR()
-}
 struct _CameraList {};
-%extend _CameraList {
-  ~_CameraList() {
-    _gp_error = gp_list_unref($self);
-  }
-};
+DEFAULT_DTOR(_CameraList, gp_list_unref)
 %ignore _CameraList;
 
 // gp_list_get_name() & gp_list_get_value() return pointers in output params

@@ -33,10 +33,19 @@ static int _gp_error = GP_OK;
 %}
 %enddef
 
-%define CHECK_GP_ERROR()
+%define DEFAULT_DTOR(name, free_func)
+%delobject free_func;
+%exception ~name {
+  $action
   if (_gp_error != GP_OK) {
     PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(_gp_error));
     _gp_error = GP_OK;
     return NULL;
   }
+}
+%extend name {
+  ~name() {
+    _gp_error = free_func($self);
+  }
+};
 %enddef

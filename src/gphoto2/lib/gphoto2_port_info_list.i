@@ -41,19 +41,10 @@
     SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfoList, SWIG_POINTER_NEW))
 }
 
-// Mark gp_port_info_list_free as destructor and add default destructor
-%delobject gp_port_info_list_free;
+// Add default destructor to _GPPortInfoList
 DECLARE_GP_ERROR()
-%exception ~_GPPortInfoList {
-  $action
-  CHECK_GP_ERROR()
-}
 struct _GPPortInfoList {};
-%extend _GPPortInfoList {
-  ~_GPPortInfoList() {
-    _gp_error = gp_port_info_list_free($self);
-  }
-};
+DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
 %ignore _GPPortInfoList;
 
 // In libgphoto2 version 2.4 GPPortInfo is a structure, in version 2.5 it's a

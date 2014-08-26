@@ -37,18 +37,9 @@
   RESULT_APPEND(SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPort, SWIG_POINTER_NEW))
 }
 
-// Mark gp_port_free as destructor and add default destructor
-%delobject gp_port_free;
+// Add default destructor to _GPPort
 DECLARE_GP_ERROR()
-%exception ~_GPPort {
-  $action
-  CHECK_GP_ERROR()
-}
-%extend _GPPort {
-  ~_GPPort() {
-    _gp_error = gp_port_free($self);
-  }
-};
+DEFAULT_DTOR(_GPPort, gp_port_free)
 
 // These structures are private
 %ignore _GPPortSettings;

@@ -41,18 +41,9 @@
   RESULT_APPEND(SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, SWIG_POINTER_NEW))
 }
 
-// Mark gp_camera_unref as destructor and add default destructor
-%delobject gp_camera_unref;
+// Add default destructor to _Camera
 DECLARE_GP_ERROR()
-%exception ~_Camera {
-  $action
-  CHECK_GP_ERROR()
-}
-%extend _Camera {
-  ~_Camera() {
-    _gp_error = gp_camera_unref($self);
-  }
-};
+DEFAULT_DTOR(_Camera, gp_camera_unref)
 
 // gp_camera_get_config returns a new CameraWidget pointer in an output parameter
 // (see gphoto2_widget.i)

@@ -41,19 +41,10 @@
     SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraAbilitiesList, SWIG_POINTER_NEW))
 }
 
-// Mark gp_abilities_list_free as destructor and add default destructor
-%delobject gp_abilities_list_free;
+// Add default destructor to _CameraAbilitiesList
 DECLARE_GP_ERROR()
-%exception ~_CameraAbilitiesList {
-  $action
-  CHECK_GP_ERROR()
-}
 struct _CameraAbilitiesList {};
-%extend _CameraAbilitiesList {
-  ~_CameraAbilitiesList() {
-    _gp_error = gp_abilities_list_free($self);
-  }
-};
+DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
 %ignore _CameraAbilitiesList;
 
 // Structures are read only

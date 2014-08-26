@@ -52,19 +52,10 @@
   RESULT_APPEND(SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, OWN_$symname))
 }
 
-// Mark gp_widget_unref as destructor an add default destructor
-%delobject gp_widget_unref;
+// Add default destructor to _CameraWidget
 DECLARE_GP_ERROR()
-%exception ~_CameraWidget {
-  $action
-  CHECK_GP_ERROR()
-}
 struct _CameraWidget {};
-%extend _CameraWidget {
-  ~_CameraWidget() {
-    _gp_error = gp_widget_unref($self);
-  }
-};
+DEFAULT_DTOR(_CameraWidget, gp_widget_unref)
 %ignore _CameraWidget;
 
 // some methods return string pointers in output params

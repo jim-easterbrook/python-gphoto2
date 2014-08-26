@@ -52,9 +52,16 @@
   RESULT_APPEND(SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, OWN_$symname))
 }
 
-// Add default destructor to _CameraWidget
+// Add default constructor and destructor to _CameraWidget
 DECLARE_GP_ERROR()
 struct _CameraWidget {};
+// Constructor is a copy constructor
+%extend _CameraWidget {
+  _CameraWidget(struct _CameraWidget *widget) {
+    gp_widget_ref(widget);
+    return widget;
+  }
+};
 DEFAULT_DTOR(_CameraWidget, gp_widget_unref)
 %ignore _CameraWidget;
 

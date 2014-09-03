@@ -21,13 +21,30 @@ import logging
 from .lib import *
 from .lib import __version__
 
-# result error checking function
 class GPhoto2Error(EnvironmentError):
+    """Raised by check_result if error_severity[error] >=
+    error_exception"""
     pass
 
 _return_logger = logging.getLogger('gphoto2.returnvalue')
 
+error_severity = {
+    GP_ERROR_CANCEL           : logging.INFO,
+    GP_ERROR_DIRECTORY_EXISTS : logging.WARNING,
+    }
+error_exception = logging.ERROR
+
 def check_result(result):
+    """Pops gphoto2 'error' value from 'result' list and checks it.
+
+    If there is no error the remaining result is returned. For other
+    errors a severity level is taken from the error_severity dict, or
+    set to logging.CRITICAL if the error is not in error_severity.
+
+    If the severity >= error_severity an exception is raised.
+    Otherwise a message is logged at the appropriate severity level.
+    """
+
     if not isinstance(result, (tuple, list)):
         error = result
     elif len(result) == 2:
@@ -35,12 +52,14 @@ def check_result(result):
     else:
         error = result[0]
         result = result[1:]
-    if error in (GP_ERROR_IO_USB_CLAIM,
-                 GP_ERROR_IO_USB_FIND,
-                 GP_ERROR_MODEL_NOT_FOUND):
+    if error >= GP_OK:
+        return result
+    severity = logging.CRITICAL
+    if error in error_severity:
+        severity = error_severity[error]
+    if severity >= error_exception:
         raise GPhoto2Error(error, gp_result_as_string(error))
-    elif error < 0:
-        _return_logger.error('[%d] %s', error, gp_result_as_string(error))
+    _return_logger.log(severity, '[%d] %s', error, gp_result_as_string(error))
     return result
 
 # define some higher level Python classes

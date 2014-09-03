@@ -111,26 +111,3 @@ static int gp_log_remove_func_py(int id) {
 %}
 
 %include "gphoto2/gphoto2-port-log.h"
-
-// Python code to route gphoto2 log messages into Python logging system
-%pythoncode %{
-_logger = None
-
-def use_python_logging():
-    def python_logging_callback(level, domain, str):
-      if level == GP_LOG_ERROR:
-        lvl = logging.ERROR
-      elif level == GP_LOG_VERBOSE:
-        lvl = logging.INFO
-      else:
-        lvl = logging.DEBUG
-      _logger(lvl, '(%s) %s', domain, str)
-
-    global _logger
-    if _logger:
-        from . import GP_OK
-        return GP_OK
-    import logging
-    _logger = logging.getLogger('gphoto2').log
-    return gp_log_add_func_py(GP_LOG_DATA, python_logging_callback)
-%}

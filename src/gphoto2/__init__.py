@@ -62,6 +62,28 @@ def check_result(result):
     _return_logger.log(severity, '[%d] %s', error, gp_result_as_string(error))
     return result
 
+_logger = None
+
+def use_python_logging():
+    """Install a callback to receive gphoto2 errors and forward them
+    to Python's logging system.
+
+    """
+    def python_logging_callback(level, domain, msg):
+      if level == GP_LOG_ERROR:
+        lvl = logging.ERROR
+      elif level == GP_LOG_VERBOSE:
+        lvl = logging.INFO
+      else:
+        lvl = logging.DEBUG
+      _logger(lvl, '(%s) %s', domain, msg)
+
+    global _logger
+    if _logger:
+        return GP_OK
+    _logger = logging.getLogger('gphoto2').log
+    return gp_log_add_func_py(GP_LOG_DATA, python_logging_callback)
+
 # define some higher level Python classes
 class Context(gphoto2_context._GPContext):
     """Context helper class.
@@ -75,7 +97,7 @@ class Context(gphoto2_context._GPContext):
     created by the helper class.
     
     """
-    def __init__(self, use_python_logging=True):
+    def __init__(self, with_python_logging=True):
         """Constructor.
 
         Arguments:
@@ -84,8 +106,8 @@ class Context(gphoto2_context._GPContext):
 
         """
         gphoto2_context._GPContext.__init__(self)
-        if use_python_logging:
-            check_result(lib.use_python_logging())
+        if with_python_logging:
+            check_result(use_python_logging())
         self.context = self
 
     def __enter__(self):

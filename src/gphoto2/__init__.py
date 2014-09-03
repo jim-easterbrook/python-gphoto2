@@ -101,7 +101,7 @@ class Context(gphoto2_context._GPContext):
         """Constructor.
 
         Arguments:
-        use_python_logging -- should errors be logged via Python's
+        with_python_logging -- should errors be logged via Python's
         logging package.
 
         """

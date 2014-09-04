@@ -47,12 +47,6 @@ DECLARE_GP_ERROR()
 DEFAULT_CTOR(_Camera, gp_camera_new)
 DEFAULT_DTOR(_Camera, gp_camera_unref)
 
-// gp_camera_get_config returns a new CameraWidget pointer in an output parameter
-// (see gphoto2_widget.i)
-%inline %{
-#define OWN_gp_camera_get_config         SWIG_POINTER_NEW
-%}
-
 // gp_camera_get_storageinfo() returns an allocated array in an output parameter
 %typemap(in, numinputs=0)
     CameraStorageInformation ** (CameraStorageInformation* temp) {

@@ -34,36 +34,47 @@
 %apply int *OUTPUT { int * };
 %apply float *OUTPUT { float * };
 
-// several methods return a CameraWidget pointer in an output parameter
-// most of them do not create a new object
-%inline %{
-#define OWN_gp_widget_new                SWIG_POINTER_NEW
-#define OWN_gp_widget_get_child          0
-#define OWN_gp_widget_get_child_by_id    0
-#define OWN_gp_widget_get_child_by_label 0
-#define OWN_gp_widget_get_child_by_name  0
-#define OWN_gp_widget_get_parent         0
-#define OWN_gp_widget_get_root           0
-%}
 %typemap(in, numinputs=0) CameraWidget ** (CameraWidget *temp) {
   $1 = &temp;
 }
 %typemap(argout) CameraWidget ** {
+  // Increment refcount on root widget
+  CameraWidget *root;
+  if (PyInt_AS_LONG($result) == GP_OK)
+    $result = SWIG_From_int(gp_widget_get_root(*$1, &root));
+  if (PyInt_AS_LONG($result) == GP_OK)
+    $result = SWIG_From_int(gp_widget_ref(root));
+  // Append result to output object
   $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, OWN_$symname));
+    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, SWIG_POINTER_NEW));
 }
 
 // Add default constructor and destructor to _CameraWidget
 DECLARE_GP_ERROR()
+// Destructor decrefs root widget
+%inline %{
+static int widget_dtor(CameraWidget *widget) {
+  CameraWidget *root;
+  int error;
+  error = gp_widget_get_root(widget, &root);
+  if (error != GP_OK)
+    return error;
+  return gp_widget_unref(root);
+}
+%}
 struct _CameraWidget {};
-// Constructor is a copy constructor
+// Constructor is a copy constructor that increfs root widget
 %extend _CameraWidget {
   _CameraWidget(struct _CameraWidget *widget) {
-    gp_widget_ref(widget);
+    CameraWidget *root;
+    if (gp_widget_get_root(widget, &root) != GP_OK)
+      return NULL;
+    if (gp_widget_ref(root) != GP_OK)
+      return NULL;
     return widget;
   }
 };
-DEFAULT_DTOR(_CameraWidget, gp_widget_unref)
+DEFAULT_DTOR(_CameraWidget, widget_dtor)
 %ignore _CameraWidget;
 
 // some methods return string pointers in output params

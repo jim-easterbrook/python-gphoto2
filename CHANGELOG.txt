@@ -15,6 +15,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 0.7.0:
+  1/ Changed API of gp_abilities_list_get_abilities and
+     gp_camera_get_abilities.
+  2/ Made check_result() much more user-configurable.
+  3/ Improved memory safety of several functions.
+
 Changes in 0.6.0:
   1/ Helper classes now sub-class the corresponding low-level type.
   2/ Improved example scripts.

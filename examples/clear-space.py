@@ -26,6 +26,9 @@ import sys
 
 import gphoto2 as gp
 
+# my Canon dSLR raises an error on every deletion, but still does it OK
+gp.error_severity[gp.GP_ERROR] = logging.WARNING
+
 def list_files(camera, context, path='/'):
     result = []
     gp_list = gp.check_result(gp.gp_list_new())

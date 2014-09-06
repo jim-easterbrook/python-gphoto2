@@ -45,8 +45,13 @@
   if (PyInt_AS_LONG($result) == GP_OK)
     $result = SWIG_From_int(gp_widget_ref(root));
   // Append result to output object
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, SWIG_POINTER_NEW));
+  if (PyInt_AS_LONG($result) == GP_OK)
+    $result = SWIG_Python_AppendOutput(
+      $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraWidget, SWIG_POINTER_NEW));
+  else {
+    Py_INCREF(Py_None);
+    $result = SWIG_Python_AppendOutput($result, Py_None);
+  }
 }
 
 // Add default constructor and destructor to _CameraWidget

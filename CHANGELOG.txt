@@ -15,6 +15,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 0.7.1:
+  1/ Fixed segfault bug with invalid CameraWidget** return values.
+  2/ Removed need for type-specific gp_widget_get_value_xxx and
+     gp_widget_set_value_xxx functions.
+
 Changes in 0.7.0:
   1/ Changed API of gp_abilities_list_get_abilities and
      gp_camera_get_abilities.

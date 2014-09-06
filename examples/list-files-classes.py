@@ -46,9 +46,7 @@ def list_files(camera, path='/'):
 
 def get_file_info(camera, path):
     folder, name = os.path.split(path)
-    info = gp.CameraFileInfo()
-    camera.file_get_info(folder, name, info)
-    return info
+    return camera.file_get_info(folder, name)
 
 def main():
     logging.basicConfig(

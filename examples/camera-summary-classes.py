@@ -30,8 +30,7 @@ def main():
     with gp.Context() as context:
         with gp.Camera(context) as camera:
             camera.init()
-            text = gp.CameraText()
-            camera.get_summary(text)
+            text = camera.get_summary()
             print('Summary')
             print('=======')
             print(text.text)

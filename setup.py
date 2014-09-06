@@ -26,7 +26,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '0.7.1'
+version = '0.7.2'
 
 # get gphoto2 version
 gphoto2_version = str(subprocess.check_output(['gphoto2-config', '--version']))

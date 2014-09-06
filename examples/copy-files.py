@@ -69,10 +69,8 @@ def list_camera_files(camera, context, path='/'):
 
 def get_camera_file_info(camera, context, path):
     folder, name = os.path.split(path)
-    info = gp.CameraFileInfo()
-    gp.check_result(
-        gp.gp_camera_file_get_info(camera, folder, name, info, context))
-    return info
+    return gp.check_result(
+        gp.gp_camera_file_get_info(camera, folder, name, context))
 
 def main():
     logging.basicConfig(

@@ -42,6 +42,33 @@
     $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, SWIG_POINTER_NEW));
 }
 
+// gp_camera_get_summary() etc. return a pointer in an output parameter
+%typemap(in, numinputs=0) CameraText *summary, CameraText *manual, CameraText *about () {
+  $1 = (CameraText *)calloc(1, sizeof(CameraText));
+}
+%typemap(argout) CameraText *summary, CameraText *manual, CameraText *about {
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj($1, SWIGTYPE_p_CameraText, SWIG_POINTER_NEW));
+}
+
+// gp_camera_capture() returns a pointer in an output parameter
+%typemap(in, numinputs=0) CameraFilePath *path () {
+  $1 = (CameraFilePath *)calloc(1, sizeof(CameraFilePath));
+}
+%typemap(argout) CameraFilePath *path {
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj($1, SWIGTYPE_p_CameraFilePath, SWIG_POINTER_NEW));
+}
+
+// gp_camera_file_get_info() returns a pointer in an output parameter
+%typemap(in, numinputs=0) CameraFileInfo *info () {
+  $1 = (CameraFileInfo *)calloc(1, sizeof(CameraFileInfo));
+}
+%typemap(argout) CameraFileInfo *info {
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj($1, SWIGTYPE_p__CameraFileInfo, SWIG_POINTER_NEW));
+}
+
 // Add default constructor and destructor to _Camera
 DECLARE_GP_ERROR()
 DEFAULT_CTOR(_Camera, gp_camera_new)

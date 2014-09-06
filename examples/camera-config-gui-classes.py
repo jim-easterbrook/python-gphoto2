@@ -128,14 +128,14 @@ class TextWidget(QtGui.QLineEdit):
         if self.config.get_readonly():
             self.setDisabled(True)
         assert self.config.count_children() == 0
-        value = self.config.get_value_text()
+        value = self.config.get_value()
         if value:
             self.setText(value)
         self.editingFinished.connect(self.new_value)
 
     def new_value(self):
         value = str(self.text())
-        self.config.set_value_text(value)
+        self.config.set_value(value)
         self.config_changed()
 
 class RangeWidget(QtGui.QSlider):
@@ -147,14 +147,14 @@ class RangeWidget(QtGui.QSlider):
             self.setDisabled(True)
         assert self.config.count_children() == 0
         lo, hi, self.inc = self.config.get_range()
-        value = self.config.get_value_float()
+        value = self.config.get_value()
         self.setRange(int(lo * self.inc), int(hi * self.inc))
         self.setValue(int(value * self.inc))
         self.sliderReleased.connect(self.new_value)
 
     def new_value(self):
         value = float(self.value()) * self.inc
-        self.config.set_value_float(value)
+        self.config.set_value(value)
         self.config_changed()
 
 class ToggleWidget(QtGui.QCheckBox):
@@ -165,13 +165,13 @@ class ToggleWidget(QtGui.QCheckBox):
         if self.config.get_readonly():
             self.setDisabled(True)
         assert self.config.count_children() == 0
-        value = self.config.get_value_int()
+        value = self.config.get_value()
         self.setChecked(value != 0)
         self.clicked.connect(self.new_value)
 
     def new_value(self):
         value = self.isChecked()
-        self.config.set_value_int((0, 1)[value])
+        self.config.set_value((0, 1)[value])
         self.config_changed()
 
 class RadioWidget(QtGui.QWidget):
@@ -183,7 +183,7 @@ class RadioWidget(QtGui.QWidget):
             self.setDisabled(True)
         assert self.config.count_children() == 0
         self.setLayout(QtGui.QHBoxLayout())
-        value = self.config.get_value_text()
+        value = self.config.get_value()
         choice_count = self.config.count_choices()
         self.buttons = []
         for n in range(choice_count):
@@ -199,7 +199,7 @@ class RadioWidget(QtGui.QWidget):
     def new_value(self):
         for button, choice in self.buttons:
             if button.isChecked():
-                self.config.set_value_text(choice)
+                self.config.set_value(choice)
                 self.config_changed()
                 return
 
@@ -211,7 +211,7 @@ class MenuWidget(QtGui.QComboBox):
         if self.config.get_readonly():
             self.setDisabled(True)
         assert self.config.count_children() == 0
-        value = self.config.get_value_text()
+        value = self.config.get_value()
         choice_count = self.config.count_choices()
         for n in range(choice_count):
             choice = self.config.get_choice(n)
@@ -223,7 +223,7 @@ class MenuWidget(QtGui.QComboBox):
 
     def new_value(self, value):
         value = str(self.itemText(value))
-        self.config.set_value_text(value)
+        self.config.set_value(value)
         self.config_changed()
 
 class DateWidget(QtGui.QDateTimeEdit):
@@ -234,7 +234,7 @@ class DateWidget(QtGui.QDateTimeEdit):
         if self.config.get_readonly():
             self.setDisabled(True)
         assert self.config.count_children() == 0
-        value = self.config.get_value_int()
+        value = self.config.get_value()
         if value:
             self.setDateTime(datetime.fromtimestamp(value))
         self.dateTimeChanged.connect(self.new_value)
@@ -243,7 +243,7 @@ class DateWidget(QtGui.QDateTimeEdit):
     def new_value(self, value):
         value = value.toPyDateTime() - datetime.fromtimestamp(0)
         value = int(value.total_seconds())
-        self.config.set_value_int(value)
+        self.config.set_value(value)
         self.config_changed()
 
 if __name__ == "__main__":

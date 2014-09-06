@@ -49,11 +49,11 @@ def main():
             widget_type = gp.check_result(gp.gp_widget_get_type(datetime_config))
             if widget_type == gp.GP_WIDGET_DATE:
                 raw_value = gp.check_result(
-                    gp.gp_widget_get_value_int(datetime_config))
+                    gp.gp_widget_get_value(datetime_config))
                 camera_time = datetime.fromtimestamp(raw_value)
             else:
                 raw_value = gp.check_result(
-                    gp.gp_widget_get_value_text(datetime_config))
+                    gp.gp_widget_get_value(datetime_config))
                 if fmt:
                     camera_time = datetime.strptime(raw_value, fmt)
                 else:

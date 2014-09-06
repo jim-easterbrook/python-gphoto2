@@ -131,14 +131,14 @@ class TextWidget(QtGui.QLineEdit):
         if gp.check_result(gp.gp_widget_get_readonly(config)):
             self.setDisabled(True)
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
-        value = gp.check_result(gp.gp_widget_get_value_text(config))
+        value = gp.check_result(gp.gp_widget_get_value(config))
         if value:
             self.setText(value)
         self.editingFinished.connect(self.new_value)
 
     def new_value(self):
         value = str(self.text())
-        gp.check_result(gp.gp_widget_set_value_text(self.config, value))
+        gp.check_result(gp.gp_widget_set_value(self.config, value))
         self.config_changed()
 
 class RangeWidget(QtGui.QSlider):
@@ -150,14 +150,14 @@ class RangeWidget(QtGui.QSlider):
             self.setDisabled(True)
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
         lo, hi, self.inc = gp.check_result(gp.gp_widget_get_range(config))
-        value = gp.check_result(gp.gp_widget_get_value_float(config))
+        value = gp.check_result(gp.gp_widget_get_value(config))
         self.setRange(int(lo * self.inc), int(hi * self.inc))
         self.setValue(int(value * self.inc))
         self.sliderReleased.connect(self.new_value)
 
     def new_value(self):
         value = float(self.value()) * self.inc
-        gp.check_result(gp.gp_widget_set_value_float(self.config, value))
+        gp.check_result(gp.gp_widget_set_value(self.config, value))
         self.config_changed()
 
 class ToggleWidget(QtGui.QCheckBox):
@@ -168,13 +168,13 @@ class ToggleWidget(QtGui.QCheckBox):
         if gp.check_result(gp.gp_widget_get_readonly(config)):
             self.setDisabled(True)
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
-        value = gp.check_result(gp.gp_widget_get_value_int(config))
+        value = gp.check_result(gp.gp_widget_get_value(config))
         self.setChecked(value != 0)
         self.clicked.connect(self.new_value)
 
     def new_value(self):
         value = self.isChecked()
-        gp.check_result(gp.gp_widget_set_value_int(self.config, (0, 1)[value]))
+        gp.check_result(gp.gp_widget_set_value(self.config, (0, 1)[value]))
         self.config_changed()
 
 class RadioWidget(QtGui.QWidget):
@@ -186,7 +186,7 @@ class RadioWidget(QtGui.QWidget):
             self.setDisabled(True)
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
         self.setLayout(QtGui.QHBoxLayout())
-        value = gp.check_result(gp.gp_widget_get_value_text(config))
+        value = gp.check_result(gp.gp_widget_get_value(config))
         choice_count = gp.check_result(gp.gp_widget_count_choices(config))
         self.buttons = []
         for n in range(choice_count):
@@ -202,7 +202,7 @@ class RadioWidget(QtGui.QWidget):
     def new_value(self):
         for button, choice in self.buttons:
             if button.isChecked():
-                gp.check_result(gp.gp_widget_set_value_text(self.config, choice))
+                gp.check_result(gp.gp_widget_set_value(self.config, choice))
                 self.config_changed()
                 return
 
@@ -214,7 +214,7 @@ class MenuWidget(QtGui.QComboBox):
         if gp.check_result(gp.gp_widget_get_readonly(config)):
             self.setDisabled(True)
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
-        value = gp.check_result(gp.gp_widget_get_value_text(config))
+        value = gp.check_result(gp.gp_widget_get_value(config))
         choice_count = gp.check_result(gp.gp_widget_count_choices(config))
         for n in range(choice_count):
             choice = gp.check_result(gp.gp_widget_get_choice(config, n))
@@ -226,7 +226,7 @@ class MenuWidget(QtGui.QComboBox):
 
     def new_value(self, value):
         value = str(self.itemText(value))
-        gp.check_result(gp.gp_widget_set_value_text(self.config, value))
+        gp.check_result(gp.gp_widget_set_value(self.config, value))
         self.config_changed()
 
 class DateWidget(QtGui.QDateTimeEdit):
@@ -237,7 +237,7 @@ class DateWidget(QtGui.QDateTimeEdit):
         if gp.check_result(gp.gp_widget_get_readonly(config)):
             self.setDisabled(True)
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
-        value = gp.check_result(gp.gp_widget_get_value_int(config))
+        value = gp.check_result(gp.gp_widget_get_value(config))
         if value:
             self.setDateTime(datetime.fromtimestamp(value))
         self.dateTimeChanged.connect(self.new_value)
@@ -246,7 +246,7 @@ class DateWidget(QtGui.QDateTimeEdit):
     def new_value(self, value):
         value = value.toPyDateTime() - datetime.fromtimestamp(0)
         value = int(value.total_seconds())
-        gp.check_result(gp.gp_widget_set_value_int(self.config, value))
+        gp.check_result(gp.gp_widget_set_value(self.config, value))
         self.config_changed()
 
 if __name__ == "__main__":

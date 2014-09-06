@@ -114,3 +114,103 @@ static int gp_widget_set_value_float(CameraWidget *widget, const float value) {
 %}
 
 %include "gphoto2/gphoto2-widget.h"
+
+// Replacement gp_widget_get_value() that returns correct type
+%rename(gp_widget_get_value) wrap_gp_widget_get_value;
+%inline %{
+PyObject *wrap_gp_widget_get_value(CameraWidget *widget) {
+  CameraWidgetType type;
+  int error = gp_widget_get_type(widget, &type);
+  PyObject *result = PyList_New(2);
+  if (error != GP_OK)
+    goto fail;
+  char *char_value = NULL;
+  float float_value;
+  int int_value;
+  PyObject *py_value;
+  switch (type) {
+    case GP_WIDGET_TEXT:
+    case GP_WIDGET_RADIO:
+    case GP_WIDGET_MENU:
+      error = gp_widget_get_value(widget, &char_value);
+      if (error != GP_OK || char_value == NULL)
+        goto fail;
+      py_value = PyString_FromString(char_value);
+      break;
+    case GP_WIDGET_RANGE:
+      error = gp_widget_get_value(widget, &float_value);
+      if (error != GP_OK)
+        goto fail;
+      py_value = PyFloat_FromDouble(float_value);
+      break;
+    case GP_WIDGET_TOGGLE:
+    case GP_WIDGET_DATE:
+      error = gp_widget_get_value(widget, &int_value);
+      if (error != GP_OK)
+        goto fail;
+      py_value = PyInt_FromLong(int_value);
+      break;
+    default:
+      goto fail;
+  }
+  PyList_SetItem(result, 0, PyInt_FromLong(error));
+  PyList_SetItem(result, 1, py_value);
+  return result;
+fail:
+  PyList_SetItem(result, 0, PyInt_FromLong(error));
+  Py_INCREF(Py_None);
+  PyList_SetItem(result, 1, Py_None);
+  return result;
+}
+%}
+
+// Replacement gp_widget_set_value() that accepts correct type
+%rename(gp_widget_set_value) wrap_gp_widget_set_value;
+%inline %{
+PyObject *wrap_gp_widget_set_value(CameraWidget *widget, PyObject *py_value) {
+  CameraWidgetType type;
+  int error = gp_widget_get_type(widget, &type);
+  if (error != GP_OK)
+    goto gp_error;
+  char *char_value = NULL;
+  int char_count = 0;
+  float float_value;
+  int int_value;
+  int ecode = 0;
+  switch (type) {
+    case GP_WIDGET_TEXT:
+    case GP_WIDGET_RADIO:
+    case GP_WIDGET_MENU:
+      ecode = SWIG_AsCharPtrAndSize(py_value, &char_value, NULL, &char_count);
+      if (!SWIG_IsOK(ecode)) {
+        SWIG_exception_fail(SWIG_ArgError(ecode),
+          "in method '" "gp_widget_set_value" "', argument " "2"" of type '" "char *""'");
+      }
+      error = gp_widget_set_value(widget, char_value);
+      break;
+    case GP_WIDGET_RANGE:
+      ecode = SWIG_AsVal_float(py_value, &float_value);
+      if (!SWIG_IsOK(ecode)) {
+        SWIG_exception_fail(SWIG_ArgError(ecode),
+          "in method '" "gp_widget_set_value" "', argument " "2"" of type '" "float""'");
+      }
+      error = gp_widget_set_value(widget, &float_value);
+      break;
+    case GP_WIDGET_TOGGLE:
+    case GP_WIDGET_DATE:
+      ecode = SWIG_AsVal_int(py_value, &int_value);
+      if (!SWIG_IsOK(ecode)) {
+        SWIG_exception_fail(SWIG_ArgError(ecode),
+          "in method '" "gp_widget_set_value" "', argument " "2"" of type '" "int""'");
+      }
+      error = gp_widget_set_value(widget, &int_value);
+      break;
+    default:
+      break;
+  }
+gp_error:
+  return SWIG_From_int(error);
+fail:
+  return NULL;
+}
+%}

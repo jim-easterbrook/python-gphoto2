@@ -26,17 +26,17 @@ import gphoto2 as gp
 def set_datetime(config):
     OK, sync_config = gp.gp_widget_get_child_by_name(config, 'syncdatetime')
     if OK >= gp.GP_OK:
-        gp.check_result(gp.gp_widget_set_value_int(sync_config, 1))
+        gp.check_result(gp.gp_widget_set_value(sync_config, 1))
         return True
     OK, date_config = gp.gp_widget_get_child_by_name(config, 'datetime')
     if OK >= gp.GP_OK:
         widget_type = gp.check_result(gp.gp_widget_get_type(date_config))
         if widget_type == gp.GP_WIDGET_DATE:
             now = int(time.time())
-            gp.check_result(gp.gp_widget_set_value_int(date_config, now))
+            gp.check_result(gp.gp_widget_set_value(date_config, now))
         else:
             now = time.strftime('%Y-%m-%d %H:%M:%S')
-            gp.check_result(gp.gp_widget_set_value_text(date_config, now))
+            gp.check_result(gp.gp_widget_set_value(date_config, now))
         return True
     return False
 

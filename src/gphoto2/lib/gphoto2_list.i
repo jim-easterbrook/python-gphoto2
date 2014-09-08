@@ -33,7 +33,7 @@
 }
 %typemap(argout) CameraList ** {
   $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraList, SWIG_POINTER_NEW));
+    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraList, SWIG_POINTER_OWN));
 }
 
 // Add default constructor and destructor to _CameraList

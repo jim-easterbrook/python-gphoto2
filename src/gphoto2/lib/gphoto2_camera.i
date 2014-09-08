@@ -39,7 +39,7 @@
 }
 %typemap(argout) Camera ** {
   $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, SWIG_POINTER_NEW));
+    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, SWIG_POINTER_OWN));
 }
 
 // gp_camera_get_summary() etc. return a pointer in an output parameter
@@ -48,7 +48,7 @@
 }
 %typemap(argout) CameraText *summary, CameraText *manual, CameraText *about {
   $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj($1, SWIGTYPE_p_CameraText, SWIG_POINTER_NEW));
+    $result, SWIG_NewPointerObj($1, SWIGTYPE_p_CameraText, SWIG_POINTER_OWN));
 }
 
 // gp_camera_capture() returns a pointer in an output parameter
@@ -57,7 +57,7 @@
 }
 %typemap(argout) CameraFilePath *path {
   $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj($1, SWIGTYPE_p_CameraFilePath, SWIG_POINTER_NEW));
+    $result, SWIG_NewPointerObj($1, SWIGTYPE_p_CameraFilePath, SWIG_POINTER_OWN));
 }
 
 // gp_camera_file_get_info() returns a pointer in an output parameter
@@ -66,7 +66,7 @@
 }
 %typemap(argout) CameraFileInfo *info {
   $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj($1, SWIGTYPE_p__CameraFileInfo, SWIG_POINTER_NEW));
+    $result, SWIG_NewPointerObj($1, SWIGTYPE_p__CameraFileInfo, SWIG_POINTER_OWN));
 }
 
 // Add default constructor and destructor to _Camera
@@ -82,7 +82,7 @@ DEFAULT_DTOR(_Camera, gp_camera_unref)
 %typemap(argout) (CameraStorageInformation **, int *) {
   PyObject* out_list = PyList_New(*$2);
   int n;
-  int own = SWIG_POINTER_NEW;
+  int own = SWIG_POINTER_OWN;
   for (n = 0; n < *$2; n++) {
     PyList_SetItem(out_list, n,
         SWIG_NewPointerObj($1[n], SWIGTYPE_p__CameraStorageInformation, own));

@@ -28,15 +28,13 @@ import gphoto2 as gp
 
 def list_files(camera, path='/'):
     result = []
+    # get files
+    for name, value in camera.folder_list_files(path):
+        result.append(os.path.join(path, name))
+    # read folders
     folders = []
-    with gp.CameraList(camera.folder_list_files(path)) as camera_list:
-        # get files
-        for n in range(camera_list.count()):
-            result.append(os.path.join(path, camera_list.get_name(n)))
-    with gp.CameraList(camera.folder_list_folders(path)) as camera_list:
-        # read folders
-        for n in range(camera_list.count()):
-            folders.append(camera_list.get_name(n))
+    for name, value in camera.folder_list_folders(path):
+        folders.append(name)
     # recurse over subfolders
     for name in folders:
         result.extend(list_files(camera, os.path.join(path, name)))

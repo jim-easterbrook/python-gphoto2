@@ -37,13 +37,14 @@ def main():
                 with gp.CameraAbilitiesList() as abilities_list:
                     abilities_list.load(context)
                     cameras = abilities_list.detect(port_info_list, context)
-        with gp.CameraList(cameras) as cameras:
-            for n in range(cameras.count()):
-                print('camera number', n)
-                print('===============')
-                print(cameras.get_name(n))
-                print(cameras.get_value(n))
-                print
+    n = 0
+    for name, value in cameras:
+        print('camera number', n)
+        print('===============')
+        print(name)
+        print(value)
+        print
+        n += 1
     return 0
 
 if __name__ == "__main__":

@@ -28,7 +28,6 @@ def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
-    cameras = gp.check_result(gp.gp_list_new())
     context = gp.gp_context_new()
     if hasattr(gp, 'gp_camera_autodetect'):
         # gphoto2 version 2.5+
@@ -40,12 +39,14 @@ def main():
         gp.check_result(gp.gp_abilities_list_load(abilities_list, context))
         cameras = gp.check_result(gp.gp_abilities_list_detect(
             abilities_list, port_info_list, context))
-    for n in range(gp.gp_list_count(cameras)):
+    n = 0
+    for name, value in cameras:
         print('camera number', n)
         print('===============')
-        print(gp.check_result(gp.gp_list_get_name(cameras, n)))
-        print(gp.check_result(gp.gp_list_get_value(cameras, n)))
+        print(name)
+        print(value)
         print
+        n += 1
     return 0
 
 if __name__ == "__main__":

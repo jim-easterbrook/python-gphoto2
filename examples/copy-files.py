@@ -50,14 +50,14 @@ def list_camera_files(camera, context, path='/'):
     # get files
     gp_list = gp.check_result(
         gp.gp_camera_folder_list_files(camera, path, context))
-    for n in range(gp.gp_list_count(gp_list)):
+    for n in range(len(gp_list)):
         result.append(os.path.join(
             path, gp.check_result(gp.gp_list_get_name(gp_list, n))))
     # read folders
     folders = []
     gp_list = gp.check_result(
         gp.gp_camera_folder_list_folders(camera, path, context))
-    for n in range(gp.gp_list_count(gp_list)):
+    for n in range(len(gp_list)):
         folders.append(gp.check_result(gp.gp_list_get_name(gp_list, n)))
     # recurse over subfolders
     for name in folders:

@@ -36,13 +36,59 @@
     $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraList, SWIG_POINTER_OWN));
 }
 
-// Add default constructor and destructor to _CameraList
+// Add constructors and destructor to _CameraList
 DECLARE_GP_ERROR()
 struct _CameraList {};
 DEFAULT_CTOR(_CameraList, gp_list_new)
 COPY_CTOR(_CameraList, gp_list_ref)
 DEFAULT_DTOR(_CameraList, gp_list_unref)
 %ignore _CameraList;
+
+// Make CameraList more like a Python list
+#if defined(SWIGPYTHON_BUILTIN)
+%feature("python:slot", "sq_length", functype="lenfunc")      _CameraList::__len__;
+%feature("python:slot", "sq_item",   functype="ssizeargfunc") _CameraList::__getitem__;
+#endif // SWIGPYTHON_BUILTIN
+%extend _CameraList {
+  size_t __len__() {
+    return gp_list_count($self);
+  }
+  PyObject *__getitem__(int idx) {
+    if (idx < 0 || idx >= gp_list_count($self)) {
+      PyErr_SetString(PyExc_IndexError, "CameraList index out of range");
+      return NULL;
+    }
+    int error = 0;
+    const char *name = NULL;
+    const char *value = NULL;
+    error = gp_list_get_name($self, idx, &name);
+    if (error != GP_OK) {
+      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+      return NULL;
+    }
+    error = gp_list_get_value($self, idx, &value);
+    if (error != GP_OK) {
+      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+      return NULL;
+    }
+    PyObject* result = PyList_New(2);
+    if (name == NULL) {
+      Py_INCREF(Py_None);
+      PyList_SetItem(result, 0, Py_None);
+    }
+    else {
+      PyList_SetItem(result, 0, PyString_FromString(name));
+    }
+    if (value == NULL) {
+      Py_INCREF(Py_None);
+      PyList_SetItem(result, 1, Py_None);
+    }
+    else {
+      PyList_SetItem(result, 1, PyString_FromString(value));
+    }
+    return result;
+  }
+};
 
 // gp_list_get_name() & gp_list_get_value() return pointers in output params
 STRING_ARGOUT()

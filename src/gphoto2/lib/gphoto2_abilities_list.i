@@ -43,8 +43,8 @@
 }
 
 // gp_abilities_list_new() returns a pointer in an output parameter
-%typemap(in, numinputs=0) CameraAbilitiesList ** (CameraAbilitiesList *temp) {
-  $1 = &temp;
+%typemap(in, numinputs=0) CameraAbilitiesList ** () {
+  $1 = NULL;
 }
 %typemap(argout) CameraAbilitiesList ** {
   $result = SWIG_Python_AppendOutput(
@@ -57,6 +57,35 @@ struct _CameraAbilitiesList {};
 DEFAULT_CTOR(_CameraAbilitiesList, gp_abilities_list_new)
 DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
 %ignore _CameraAbilitiesList;
+
+// Make CameraAbilitiesList more like a Python list
+#if defined(SWIGPYTHON_BUILTIN)
+%feature("python:slot", "sq_length", functype="lenfunc")
+    _CameraAbilitiesList::__len__;
+%feature("python:slot", "sq_item",   functype="ssizeargfunc")
+    _CameraAbilitiesList::__getitem__;
+#endif // SWIGPYTHON_BUILTIN
+%extend _CameraAbilitiesList {
+  size_t __len__() {
+    return gp_abilities_list_count($self);
+  }
+  PyObject *__getitem__(int idx) {
+    if (idx < 0 || idx >= gp_abilities_list_count($self)) {
+      PyErr_SetString(PyExc_IndexError, "CameraAbilitiesList index out of range");
+      return NULL;
+    }
+    int error = 0;
+    CameraAbilities *abilities = (CameraAbilities *)calloc(1, sizeof(CameraAbilities));
+    error = gp_abilities_list_get_abilities($self, idx, abilities);
+    if (error != GP_OK) {
+      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+      free(abilities);
+      return NULL;
+    }
+    return SWIG_Python_NewPointerObj(
+        NULL, abilities, SWIGTYPE_p_CameraAbilities, SWIG_POINTER_OWN);
+  }
+};
 
 // Structures are read only
 %immutable;

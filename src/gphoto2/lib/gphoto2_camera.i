@@ -115,6 +115,16 @@ DEFAULT_DTOR(_Camera, gp_camera_unref)
   $result = SWIG_Python_AppendOutput($result, PyInt_FromLong(*$1));
 }
 
+// Add __str__ method to CameraText
+#if defined(SWIGPYTHON_BUILTIN)
+%feature("python:slot", "tp_str", functype="reprfunc") CameraText::__str__;
+#endif // SWIGPYTHON_BUILTIN
+%extend CameraText {
+  char *__str__() {
+    return $self->text;
+  }
+};
+
 // Don't wrap deprecated functions
 %ignore gp_camera_free;
 

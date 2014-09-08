@@ -34,7 +34,7 @@ def main():
     text = gp.check_result(gp.gp_camera_get_summary(camera, context))
     print('Summary')
     print('=======')
-    print(text.text)
+    print(str(text))
     gp.check_result(gp.gp_camera_exit(camera, context))
     return 0
 

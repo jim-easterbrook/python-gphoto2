@@ -33,7 +33,7 @@ def main():
             text = camera.get_summary()
             print('Summary')
             print('=======')
-            print(text.text)
+            print(str(text))
             camera.exit()
     return 0
 

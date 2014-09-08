@@ -31,18 +31,16 @@ gp.error_severity[gp.GP_ERROR] = logging.WARNING
 
 def list_files(camera, context, path='/'):
     result = []
-    gp_list = gp.check_result(gp.gp_list_new())
     # get files
-    gp.check_result(
-        gp.gp_camera_folder_list_files(camera, path, gp_list, context))
+    gp_list = gp.check_result(
+        gp.gp_camera_folder_list_files(camera, path, context))
     for n in range(gp.gp_list_count(gp_list)):
         result.append(os.path.join(
             path, gp.check_result(gp.gp_list_get_name(gp_list, n))))
     # read folders
     folders = []
-    gp.check_result(gp.gp_list_reset(gp_list))
-    gp.check_result(
-        gp.gp_camera_folder_list_folders(camera, path, gp_list, context))
+    gp_list = gp.check_result(
+        gp.gp_camera_folder_list_folders(camera, path, context))
     for n in range(gp.gp_list_count(gp_list)):
         folders.append(gp.check_result(gp.gp_list_get_name(gp_list, n)))
     # recurse over subfolders

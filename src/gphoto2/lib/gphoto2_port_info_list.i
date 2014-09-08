@@ -72,6 +72,41 @@ DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
 // several getter functions return string pointers in output params
 STRING_ARGOUT()
 
+// Make _GPPortInfoList more like a Python list
+#if defined(SWIGPYTHON_BUILTIN)
+%feature("python:slot", "sq_length", functype="lenfunc")      _GPPortInfoList::__len__;
+%feature("python:slot", "sq_item",   functype="ssizeargfunc") _GPPortInfoList::__getitem__;
+#endif // SWIGPYTHON_BUILTIN
+%extend _GPPortInfoList {
+  size_t __len__() {
+    return gp_port_info_list_count($self);
+  }
+  PyObject *__getitem__(int idx) {
+    if (idx < 0 || idx >= gp_port_info_list_count($self)) {
+      PyErr_SetString(PyExc_IndexError, "GPPortInfoList index out of range");
+      return NULL;
+    }
+    int error = 0;
+    int own = 0;
+#ifdef GPHOTO2_24
+    own = SWIG_POINTER_OWN;
+    GPPortInfo *result = (GPPortInfo *)calloc(1, sizeof(GPPortInfo));
+    error = gp_port_info_list_get_info($self, idx, result);
+#else
+    GPPortInfo result = NULL;
+    error = gp_port_info_list_get_info($self, idx, &result);
+#endif
+    if (error != GP_OK) {
+      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+#ifdef GPHOTO2_24
+      free(result);
+#endif
+      return NULL;
+    }
+    return SWIG_Python_NewPointerObj(NULL, result, SWIGTYPE_p__GPPortInfo, own);
+  }
+};
+
 // Don't wrap internal functions
 %ignore gp_port_info_new;
 %ignore gp_port_info_set_name;

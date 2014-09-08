@@ -38,6 +38,16 @@ static int _gp_error = GP_OK;
 };
 %enddef
 
+%define COPY_CTOR(name, ref_func)
+%extend name {
+  name(struct name *other) {
+    struct name *result = other;
+    _gp_error = ref_func(other);
+    return result;
+  }
+};
+%enddef
+
 %define DEFAULT_DTOR(name, free_func)
 %delobject free_func;
 %exception ~name {

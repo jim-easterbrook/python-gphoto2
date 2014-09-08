@@ -274,8 +274,17 @@ class CameraList(gphoto2_list._CameraList):
     by the helper class.
     
     """
-    def __init__(self):
-        gphoto2_list._CameraList.__init__(self)
+    def __init__(self, list_=None):
+        """Constructor.
+
+        Arguments: list_ -- a CameraList object, e.g. as returned by
+        gp_camera_folder_list_files.
+
+        """
+        if list_:
+            gphoto2_list._CameraList.__init__(self, list_)
+        else:
+            gphoto2_list._CameraList.__init__(self)
         self.list = self
 
     def __enter__(self):

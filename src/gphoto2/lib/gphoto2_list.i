@@ -40,6 +40,7 @@
 DECLARE_GP_ERROR()
 struct _CameraList {};
 DEFAULT_CTOR(_CameraList, gp_list_new)
+COPY_CTOR(_CameraList, gp_list_ref)
 DEFAULT_DTOR(_CameraList, gp_list_unref)
 %ignore _CameraList;
 

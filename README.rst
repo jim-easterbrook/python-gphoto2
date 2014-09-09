@@ -1,9 +1,9 @@
 python-gphoto2
 ==============
 
-python-gphoto2 is a very basic (low-level) Python interface (or binding) to `libgphoto2 <http://www.gphoto.org/proj/libgphoto2/>`_.
+python-gphoto2 is a basic (low-level) Python interface (or binding) to `libgphoto2 <http://www.gphoto.org/proj/libgphoto2/>`_.
 It is built using `SWIG <http://swig.org/>`_ to automatically generate the interface code.
-This gives direct access to the libgphoto2 functions, but in a rather un-Pythonic manner.
+This gives direct access to nearly all the libgphoto2 functions, but sometimes in a rather un-Pythonic manner.
 
 There are some Python helper classes to ease access to many of the low-level functions.
 This makes the package a bit more Pythonic, but you will still need to deal directly with the lower level at times.
@@ -93,12 +93,11 @@ The ``pydoc`` command can be used to show basic information about a function::
    Help on built-in function gp_camera_folder_list_files in gphoto2:
 
    gphoto2.gp_camera_folder_list_files = gp_camera_folder_list_files(...)
-       gp_camera_folder_list_files(camera, folder, list, context) -> int
+       gp_camera_folder_list_files(camera, folder, context) -> int
 
        Parameters:
            camera: Camera *
            folder: char const *
-           list: CameraList *
            context: GPContext *
    jim@firefly ~/python-gphoto2 $
 
@@ -106,6 +105,12 @@ In general it is easier to use the C `API documentation <http://www.gphoto.org/d
 
 Note that there is one major difference between the Python and C APIs.
 C functions that use a pointer parameter to return a value (and often do some memory allocation) such as `gp_camera_new() <http://www.gphoto.org/doc/api/gphoto2-camera_8h.html>`_ have Python equivalents that create the required pointer and return it in a list with the gphoto2 error code.
+
+In the above example of ``gp_camera_folder_list_files()``, the C documentation shows an extra parameter: ``list: CameraList *``.
+In C this is an "output" parameter.
+In Python a new ``CameraList`` object is created and added to the returned value list.
+This is much more Pythonic behaviour.
+
 For example, the C code:
 
 .. code:: c
@@ -128,14 +133,12 @@ has this Python equivalent:
 Note that the gp_camera_unref() call is not needed (since version 0.5.0).
 It is called automatically when the python camera object is deleted.
 
-Some functions, such as `gp_widget_get_value() <http://www.gphoto.org/doc/api/gphoto2-widget_8h.html>`_, can return different types using a ``void *`` pointer in C.
-The Python interface includes type specific functions such as ``gp_widget_get_value_text()``.
-
 Error checking
 ^^^^^^^^^^^^^^
 
 Most of the libgphoto2 functions return an integer to indicate success or failure.
 The Python interface includes a function to check these values and raise an exception if an error occurs.
+
 This function also unwraps lists such as that returned by ``gp_camera_new()`` in the example.
 Using this function the example becomes:
 
@@ -144,6 +147,17 @@ Using this function the example becomes:
     import gphoto2 as gp
     camera = gp.check_result(gp.gp_camera_new())
     ...
+
+There may be some circumstances where you don't want an exception to be raised when some errors occur.
+You can "fine tune" the behaviour of the ``check_result()`` function by adjusting the ``error_severity`` variable:
+
+.. code:: python
+
+    import gphoto2 as gp
+    gp.error_severity[gp.GP_ERROR] = logging.WARNING
+    ...
+
+In this case a warning message will be logged (using Python's standard logging module) but no exception will be raised when a ``GP_ERROR`` error occurs.
 
 Higher-level interface
 ^^^^^^^^^^^^^^^^^^^^^^
@@ -158,11 +172,10 @@ Here is a complete example program:
     with gp.Context() as context:
         with gp.Camera(context) as camera:
             camera.init()
-            text = gp.CameraText()
-            camera.get_summary(text)
+            text = camera.get_summary()
             print('Summary')
             print('=======')
-            print(text.text)
+            print(str(text))
             camera.exit()
 
 The higher level classes and the functions they wrap are as follows.
@@ -182,8 +195,8 @@ Context             gp_xxx(..., context)                xxx(...)      GPContext
 PortInfoList        gp_port_info_list_xxx(list, ...)    xxx(...)      GPPortInfoList
 =================== =================================== ============= =============
 
-Legalese
---------
+Licence
+-------
 
 python-gphoto2 - Python interface to libgphoto2
 http://github.com/jim-easterbrook/python-gphoto2

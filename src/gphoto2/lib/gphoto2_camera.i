@@ -52,17 +52,12 @@
 }
 
 // gp_camera_folder_list_files() etc. return a pointer in an output parameter
-%typemap(in, numinputs=0) CameraList * () {
-  int error = gp_list_new(&$1);
-  if (error != GP_OK) {
-    PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
-    goto fail;
-  }
-}
-%typemap(argout) CameraList * {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj($1, SWIGTYPE_p__CameraList, SWIG_POINTER_OWN));
-}
+RETURN_CameraList(CameraList *)
+
+// gp_camera_capture_preview() returns a pointer in an output parameter
+RETURN_CameraFile(CameraFile *file_out)
+// Redefine signature so other functions that take CameraFile *file aren't affected
+int gp_camera_capture_preview(Camera *camera, CameraFile *file_out, GPContext *context);
 
 // gp_camera_capture() returns a pointer in an output parameter
 %typemap(in, numinputs=0) CameraFilePath *path () {

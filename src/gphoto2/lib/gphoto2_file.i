@@ -36,6 +36,21 @@
     $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraFile, SWIG_POINTER_OWN));
 }
 
+// Macro for functions that return a CameraFile value
+%define RETURN_CameraFile(typepattern)
+%typemap(in, numinputs=0) typepattern () {
+  int error = gp_file_new(&$1);
+  if (error != GP_OK) {
+    PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+    goto fail;
+  }
+}
+%typemap(argout) typepattern {
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj($1, SWIGTYPE_p__CameraFile, SWIG_POINTER_OWN));
+}
+%enddef
+
 // Add default constructor and destructor to _CameraFile
 DECLARE_GP_ERROR()
 struct _CameraFile {};

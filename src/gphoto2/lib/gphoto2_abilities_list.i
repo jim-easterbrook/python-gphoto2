@@ -42,18 +42,8 @@
     $result, SWIG_NewPointerObj($1, SWIGTYPE_p_CameraAbilities, SWIG_POINTER_OWN));
 }
 
-// gp_abilities_list_detect() etc. return a pointer in an output parameter
-%typemap(in, numinputs=0) CameraList * () {
-  int error = gp_list_new(&$1);
-  if (error != GP_OK) {
-    PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
-    goto fail;
-  }
-}
-%typemap(argout) CameraList * {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj($1, SWIGTYPE_p__CameraList, SWIG_POINTER_OWN));
-}
+// gp_abilities_list_detect() returns a pointer in an output parameter
+RETURN_CameraList(CameraList *)
 
 // gp_abilities_list_new() returns a pointer in an output parameter
 %typemap(in, numinputs=0) CameraAbilitiesList ** (CameraAbilitiesList *temp) {

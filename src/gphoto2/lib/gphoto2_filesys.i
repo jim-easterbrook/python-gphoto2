@@ -29,6 +29,9 @@
 
 %include "typemaps.i"
 
+// gp_filesystem_list_files() etc. return a pointer in an output parameter
+RETURN_CameraList(CameraList *)
+
 // image dimensions use uint32_t
 %typemap(in) uint32_t {
   $1 = PyLong_AsUnsignedLong($input);

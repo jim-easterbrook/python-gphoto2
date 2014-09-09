@@ -30,13 +30,7 @@
 %include "macros.i"
 
 // gp_port_new() returns a pointer in an output parameter
-%typemap(in, numinputs=0) GPPort ** (GPPort *temp) {
-  $1 = &temp;
-}
-%typemap(argout) GPPort ** {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPort, SWIG_POINTER_OWN));
-}
+PLAIN_ARGOUT(GPPort **)
 
 // Add default constructor and destructor to _GPPort
 DECLARE_GP_ERROR()

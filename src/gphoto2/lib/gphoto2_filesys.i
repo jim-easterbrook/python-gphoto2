@@ -30,16 +30,10 @@
 %include "typemaps.i"
 
 // gp_filesystem_list_files() etc. return a pointer in an output parameter
-RETURN_CameraList(CameraList *)
+NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
 // gp_camera_file_get_info() etc. return a pointer in an output parameter
-%typemap(in, numinputs=0) CameraFileInfo *info () {
-  $1 = (CameraFileInfo *)calloc(1, sizeof(CameraFileInfo));
-}
-%typemap(argout) CameraFileInfo *info {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj($1, SWIGTYPE_p__CameraFileInfo, SWIG_POINTER_OWN));
-}
+CALLOC_ARGOUT(CameraFileInfo *info)
 
 // image dimensions use uint32_t
 %typemap(in) uint32_t {

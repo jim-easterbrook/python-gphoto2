@@ -33,26 +33,13 @@
 %include "macros.i"
 
 // gp_abilities_list_get_abilities() returns a pointer in an output parameter
-// (tighter typepattern than usual to avoid changing struct getters/setters)
-%typemap(in, numinputs=0) CameraAbilities *abilities () {
-  $1 = (CameraAbilities *)calloc(1, sizeof(CameraAbilities));
-}
-%typemap(argout) CameraAbilities *abilities {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj($1, SWIGTYPE_p_CameraAbilities, SWIG_POINTER_OWN));
-}
+CALLOC_ARGOUT(CameraAbilities *abilities)
 
 // gp_abilities_list_detect() returns a pointer in an output parameter
-RETURN_CameraList(CameraList *)
+NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
 // gp_abilities_list_new() returns a pointer in an output parameter
-%typemap(in, numinputs=0) CameraAbilitiesList ** (CameraAbilitiesList *temp) {
-  $1 = &temp;
-}
-%typemap(argout) CameraAbilitiesList ** {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraAbilitiesList, SWIG_POINTER_OWN));
-}
+PLAIN_ARGOUT(CameraAbilitiesList **)
 
 // Add default constructor and destructor to _CameraAbilitiesList
 DECLARE_GP_ERROR()
@@ -77,9 +64,12 @@ DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
       PyErr_SetString(PyExc_IndexError, "CameraAbilitiesList index out of range");
       return NULL;
     }
-    int error = 0;
     CameraAbilities *abilities = (CameraAbilities *)calloc(1, sizeof(CameraAbilities));
-    error = gp_abilities_list_get_abilities($self, idx, abilities);
+    if (abilities == NULL) {
+      PyErr_SetString(PyExc_MemoryError, "Cannot allocate CameraAbilities");
+      return NULL;
+    }
+    int error = gp_abilities_list_get_abilities($self, idx, abilities);
     if (error != GP_OK) {
       PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
       free(abilities);

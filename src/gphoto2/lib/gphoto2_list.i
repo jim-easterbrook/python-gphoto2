@@ -28,28 +28,7 @@
 %include "macros.i"
 
 // gp_list_new() returns a pointer in an output parameter
-%typemap(in, numinputs=0) CameraList ** (CameraList *temp) {
-  $1 = &temp;
-}
-%typemap(argout) CameraList ** {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__CameraList, SWIG_POINTER_OWN));
-}
-
-// Macro for functions that return a CameraList value
-%define RETURN_CameraList(typepattern)
-%typemap(in, numinputs=0) typepattern () {
-  int error = gp_list_new(&$1);
-  if (error != GP_OK) {
-    PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
-    goto fail;
-  }
-}
-%typemap(argout) typepattern {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj($1, SWIGTYPE_p__CameraList, SWIG_POINTER_OWN));
-}
-%enddef
+PLAIN_ARGOUT(CameraList **)
 
 // Add constructors and destructor to _CameraList
 DECLARE_GP_ERROR()

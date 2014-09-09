@@ -13,6 +13,58 @@
 }
 %enddef
 
+%define PLAIN_ARGOUT(typepattern)
+%typemap(in, numinputs=0) typepattern ($*1_type temp) {
+  $1 = &temp;
+}
+%typemap(argout) typepattern {
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
+}
+%enddef
+
+%define CALLOC_ARGOUT(typepattern)
+%typemap(in, numinputs=0) typepattern () {
+  $1 = ($1_type)calloc(1, sizeof($*1_type));
+  if ($1 == NULL) {
+    PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "$*1_type");
+    goto fail;
+  }
+}
+%typemap(freearg) typepattern {
+  free($1);
+}
+%typemap(argout) typepattern {
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj($1, $1_descriptor, SWIG_POINTER_OWN));
+  $1 = NULL;
+}
+%enddef
+
+%define NEW_ARGOUT(typepattern, alloc_func, free_func)
+%typemap(in, numinputs=0) typepattern () {
+  $1 = NULL;
+  int error = alloc_func(&$1);
+  if (error != GP_OK) {
+    PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+    goto fail;
+  }
+}
+%typemap(freearg) typepattern {
+  if ($1 != NULL) {
+    int error = free_func($1);
+    if (error != GP_OK) {
+      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+    }
+  }
+}
+%typemap(argout) typepattern {
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj($1, $1_descriptor, SWIG_POINTER_OWN));
+  $1 = NULL;
+}
+%enddef
+
 %define DECLARE_GP_ERROR()
 %ignore _gp_error;
 %inline %{

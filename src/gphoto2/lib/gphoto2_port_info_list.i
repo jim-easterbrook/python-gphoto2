@@ -33,13 +33,7 @@
 %include "macros.i"
 
 // gp_port_info_list_new() returns a pointer in an output parameter
-%typemap(in, numinputs=0) GPPortInfoList ** (GPPortInfoList *temp) {
-  $1 = &temp;
-}
-%typemap(argout) GPPortInfoList ** {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfoList, SWIG_POINTER_OWN));
-}
+PLAIN_ARGOUT(GPPortInfoList **)
 
 // Add default constructor and destructor to _GPPortInfoList
 DECLARE_GP_ERROR()
@@ -51,15 +45,8 @@ DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
 // In libgphoto2 version 2.4 GPPortInfo is a structure, in version 2.5 it's a
 // pointer to a structure.
 #ifdef GPHOTO2_24
-%typemap(in, numinputs=0) GPPortInfo * () {
-  $1 = (GPPortInfo *)calloc(1, sizeof(GPPortInfo));
-}
-%typemap(argout) GPPortInfo * {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj($1, SWIGTYPE_p__GPPortInfo, SWIG_POINTER_OWN));
-}
-#endif
-#ifdef GPHOTO2_25
+CALLOC_ARGOUT(GPPortInfo *)
+#else
 %typemap(in, numinputs=0) GPPortInfo * (GPPortInfo temp) {
   $1 = &temp;
 }

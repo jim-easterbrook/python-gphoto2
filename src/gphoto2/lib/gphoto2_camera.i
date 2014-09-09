@@ -34,39 +34,24 @@
 %include "macros.i"
 
 // gp_camera_new() returns a pointer in an output parameter
-%typemap(in, numinputs=0) Camera ** (Camera *temp) {
-  $1 = &temp;
-}
-%typemap(argout) Camera ** {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__Camera, SWIG_POINTER_OWN));
-}
+PLAIN_ARGOUT(Camera **)
 
 // gp_camera_get_summary() etc. return a pointer in an output parameter
-%typemap(in, numinputs=0) CameraText *summary, CameraText *manual, CameraText *about () {
-  $1 = (CameraText *)calloc(1, sizeof(CameraText));
-}
-%typemap(argout) CameraText *summary, CameraText *manual, CameraText *about {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj($1, SWIGTYPE_p_CameraText, SWIG_POINTER_OWN));
-}
+CALLOC_ARGOUT(CameraText *summary)
+CALLOC_ARGOUT(CameraText *manual)
+CALLOC_ARGOUT(CameraText *about)
 
 // gp_camera_folder_list_files() etc. return a pointer in an output parameter
-RETURN_CameraList(CameraList *)
+NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
 // gp_camera_capture_preview() returns a pointer in an output parameter
-RETURN_CameraFile(CameraFile *file_out)
+NEW_ARGOUT(CameraFile *file_out, gp_file_new, gp_file_unref)
 // Redefine signature so other functions that take CameraFile *file aren't affected
 int gp_camera_capture_preview(Camera *camera, CameraFile *file_out, GPContext *context);
+%ignore gp_camera_capture_preview;
 
 // gp_camera_capture() returns a pointer in an output parameter
-%typemap(in, numinputs=0) CameraFilePath *path () {
-  $1 = (CameraFilePath *)calloc(1, sizeof(CameraFilePath));
-}
-%typemap(argout) CameraFilePath *path {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj($1, SWIGTYPE_p_CameraFilePath, SWIG_POINTER_OWN));
-}
+CALLOC_ARGOUT(CameraFilePath *path)
 
 // Add default constructor and destructor to _Camera
 DECLARE_GP_ERROR()

@@ -68,15 +68,6 @@ int gp_camera_capture_preview(Camera *camera, CameraFile *file_out, GPContext *c
     $result, SWIG_NewPointerObj($1, SWIGTYPE_p_CameraFilePath, SWIG_POINTER_OWN));
 }
 
-// gp_camera_file_get_info() returns a pointer in an output parameter
-%typemap(in, numinputs=0) CameraFileInfo *info () {
-  $1 = (CameraFileInfo *)calloc(1, sizeof(CameraFileInfo));
-}
-%typemap(argout) CameraFileInfo *info {
-  $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj($1, SWIGTYPE_p__CameraFileInfo, SWIG_POINTER_OWN));
-}
-
 // Add default constructor and destructor to _Camera
 DECLARE_GP_ERROR()
 DEFAULT_CTOR(_Camera, gp_camera_new)

@@ -32,6 +32,15 @@
 // gp_filesystem_list_files() etc. return a pointer in an output parameter
 RETURN_CameraList(CameraList *)
 
+// gp_camera_file_get_info() etc. return a pointer in an output parameter
+%typemap(in, numinputs=0) CameraFileInfo *info () {
+  $1 = (CameraFileInfo *)calloc(1, sizeof(CameraFileInfo));
+}
+%typemap(argout) CameraFileInfo *info {
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj($1, SWIGTYPE_p__CameraFileInfo, SWIG_POINTER_OWN));
+}
+
 // image dimensions use uint32_t
 %typemap(in) uint32_t {
   $1 = PyLong_AsUnsignedLong($input);

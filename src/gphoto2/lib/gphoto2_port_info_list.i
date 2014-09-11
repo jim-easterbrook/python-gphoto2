@@ -70,10 +70,11 @@ DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
     goto fail;
   }
 }
+%{
+int (*_GPPortInfoList___len__)(GPPortInfoList *) = gp_port_info_list_count;
+%}
 %extend _GPPortInfoList {
-  size_t __len__() {
-    return gp_port_info_list_count($self);
-  }
+  int __len__();
   void __getitem__(int idx, GPPortInfo * info) {
     if (idx < 0 || idx >= gp_port_info_list_count($self)) {
       PyErr_SetString(PyExc_IndexError, "GPPortInfoList index out of range");

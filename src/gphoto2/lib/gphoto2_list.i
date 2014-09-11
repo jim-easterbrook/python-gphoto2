@@ -42,10 +42,12 @@ DEFAULT_DTOR(_CameraList, gp_list_unref)
 %feature("python:slot", "sq_length", functype="lenfunc")      _CameraList::__len__;
 %feature("python:slot", "sq_item",   functype="ssizeargfunc") _CameraList::__getitem__;
 #endif // SWIGPYTHON_BUILTIN
+
+%{
+int (*_CameraList___len__)(CameraList *) = gp_list_count;
+%}
 %extend _CameraList {
-  size_t __len__() {
-    return gp_list_count($self);
-  }
+  int __len__();
   PyObject *__getitem__(int idx) {
     if (idx < 0 || idx >= gp_list_count($self)) {
       PyErr_SetString(PyExc_IndexError, "CameraList index out of range");

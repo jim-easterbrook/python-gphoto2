@@ -61,10 +61,11 @@ DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
     goto fail;
   }
 }
+%{
+int (*_CameraAbilitiesList___len__)(CameraAbilitiesList *) = gp_abilities_list_count;
+%}
 %extend _CameraAbilitiesList {
-  size_t __len__() {
-    return gp_abilities_list_count($self);
-  }
+  int __len__();
   void __getitem__(int idx, CameraAbilities *abilities) {
     if (idx < 0 || idx >= gp_abilities_list_count($self)) {
       PyErr_SetString(PyExc_IndexError, "CameraAbilitiesList index out of range");

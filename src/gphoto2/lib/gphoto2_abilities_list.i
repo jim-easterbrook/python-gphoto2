@@ -55,28 +55,27 @@ DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
 %feature("python:slot", "sq_item",   functype="ssizeargfunc")
     _CameraAbilitiesList::__getitem__;
 #endif // SWIGPYTHON_BUILTIN
+
+%exception __getitem__ {
+  $action
+  if (PyErr_Occurred() != NULL) {
+    goto fail;
+  }
+}
 %extend _CameraAbilitiesList {
   size_t __len__() {
     return gp_abilities_list_count($self);
   }
-  PyObject *__getitem__(int idx) {
+  void __getitem__(int idx, CameraAbilities *abilities) {
     if (idx < 0 || idx >= gp_abilities_list_count($self)) {
       PyErr_SetString(PyExc_IndexError, "CameraAbilitiesList index out of range");
-      return NULL;
-    }
-    CameraAbilities *abilities = (CameraAbilities *)calloc(1, sizeof(CameraAbilities));
-    if (abilities == NULL) {
-      PyErr_SetString(PyExc_MemoryError, "Cannot allocate CameraAbilities");
-      return NULL;
+      return;
     }
     int error = gp_abilities_list_get_abilities($self, idx, abilities);
-    if (error != GP_OK) {
+    if (error < GP_OK) {
       PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
-      free(abilities);
-      return NULL;
+      return;
     }
-    return SWIG_Python_NewPointerObj(
-        NULL, abilities, SWIGTYPE_p_CameraAbilities, SWIG_POINTER_OWN);
   }
 };
 

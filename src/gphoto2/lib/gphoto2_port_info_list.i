@@ -35,13 +35,6 @@
 // gp_port_info_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(GPPortInfoList **)
 
-// Add default constructor and destructor to _GPPortInfoList
-DECLARE_GP_ERROR()
-struct _GPPortInfoList {};
-DEFAULT_CTOR(_GPPortInfoList, gp_port_info_list_new)
-DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
-%ignore _GPPortInfoList;
-
 // In libgphoto2 version 2.4 GPPortInfo is a structure, in version 2.5 it's a
 // pointer to a structure.
 #ifdef GPHOTO2_24
@@ -59,38 +52,39 @@ CALLOC_ARGOUT(GPPortInfo *)
 // several getter functions return string pointers in output params
 STRING_ARGOUT()
 
-// Make _GPPortInfoList more like a Python list
+// Add default constructor and destructor to _GPPortInfoList
+DECLARE_GP_ERROR()
+struct _GPPortInfoList {};
+DEFAULT_CTOR(_GPPortInfoList, gp_port_info_list_new)
+DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
+%ignore _GPPortInfoList;
+
+// Make GPPortInfoList more like a Python list
 #if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "sq_length", functype="lenfunc")      _GPPortInfoList::__len__;
 %feature("python:slot", "sq_item",   functype="ssizeargfunc") _GPPortInfoList::__getitem__;
 #endif // SWIGPYTHON_BUILTIN
+
+%exception __getitem__ {
+  $action
+  if (PyErr_Occurred() != NULL) {
+    goto fail;
+  }
+}
 %extend _GPPortInfoList {
   size_t __len__() {
     return gp_port_info_list_count($self);
   }
-  PyObject *__getitem__(int idx) {
+  void __getitem__(int idx, GPPortInfo * info) {
     if (idx < 0 || idx >= gp_port_info_list_count($self)) {
       PyErr_SetString(PyExc_IndexError, "GPPortInfoList index out of range");
-      return NULL;
+      return;
     }
-    int error = 0;
-    int own = 0;
-#ifdef GPHOTO2_24
-    own = SWIG_POINTER_OWN;
-    GPPortInfo *result = (GPPortInfo *)calloc(1, sizeof(GPPortInfo));
-    error = gp_port_info_list_get_info($self, idx, result);
-#else
-    GPPortInfo result = NULL;
-    error = gp_port_info_list_get_info($self, idx, &result);
-#endif
-    if (error != GP_OK) {
+    int error = gp_port_info_list_get_info($self, idx, info);
+    if (error < GP_OK) {
       PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
-#ifdef GPHOTO2_24
-      free(result);
-#endif
-      return NULL;
+      return;
     }
-    return SWIG_Python_NewPointerObj(NULL, result, SWIGTYPE_p__GPPortInfo, own);
   }
 };
 

@@ -54,7 +54,6 @@ int gp_camera_capture_preview(Camera *camera, CameraFile *file_out, GPContext *c
 CALLOC_ARGOUT(CameraFilePath *path)
 
 // Add default constructor and destructor to _Camera
-DECLARE_GP_ERROR()
 DEFAULT_CTOR(_Camera, gp_camera_new)
 DEFAULT_DTOR(_Camera, gp_camera_unref)
 

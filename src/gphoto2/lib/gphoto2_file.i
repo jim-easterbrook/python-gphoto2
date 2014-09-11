@@ -31,7 +31,6 @@
 PLAIN_ARGOUT(CameraFile **)
 
 // Add default constructor and destructor to _CameraFile
-DECLARE_GP_ERROR()
 struct _CameraFile {};
 DEFAULT_CTOR(_CameraFile, gp_file_new)
 DEFAULT_DTOR(_CameraFile, gp_file_unref)

@@ -31,7 +31,6 @@
 PLAIN_ARGOUT(CameraList **)
 
 // Add constructors and destructor to _CameraList
-DECLARE_GP_ERROR()
 struct _CameraList {};
 DEFAULT_CTOR(_CameraList, gp_list_new)
 COPY_CTOR(_CameraList, gp_list_ref)

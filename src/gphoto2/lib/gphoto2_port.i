@@ -33,7 +33,6 @@
 PLAIN_ARGOUT(GPPort **)
 
 // Add default constructor and destructor to _GPPort
-DECLARE_GP_ERROR()
 DEFAULT_CTOR(_GPPort, gp_port_new)
 DEFAULT_DTOR(_GPPort, gp_port_free)
 

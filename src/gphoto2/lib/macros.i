@@ -28,7 +28,7 @@
   $1 = ($1_type)calloc(1, sizeof($*1_type));
   if ($1 == NULL) {
     PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "$*1_type");
-    goto fail;
+    SWIG_fail;
   }
 }
 %typemap(freearg) typepattern {
@@ -47,7 +47,7 @@
   int error = alloc_func(&$1);
   if (error != GP_OK) {
     PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
-    goto fail;
+    SWIG_fail;
   }
 }
 %typemap(freearg) typepattern {
@@ -65,26 +65,17 @@
 }
 %enddef
 
-%define DECLARE_GP_ERROR()
-%ignore _gp_error;
-%inline %{
-static int _gp_error = GP_OK;
-%}
-%enddef
-
 %define DEFAULT_CTOR(name, alloc_func)
 %exception name {
   $action
-  if (_gp_error != GP_OK) {
-    PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(_gp_error));
-    _gp_error = GP_OK;
-    result = NULL;
-  }
+  if (PyErr_Occurred() != NULL) SWIG_fail;
 }
 %extend name {
   name() {
     struct name *result;
-    _gp_error = alloc_func(&result);
+    int error = alloc_func(&result);
+    if (error < GP_OK)
+      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
     return result;
   }
 };
@@ -94,7 +85,9 @@ static int _gp_error = GP_OK;
 %extend name {
   name(struct name *other) {
     struct name *result = other;
-    _gp_error = ref_func(other);
+    int error = ref_func(other);
+    if (error < GP_OK)
+      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
     return result;
   }
 };
@@ -104,15 +97,13 @@ static int _gp_error = GP_OK;
 %delobject free_func;
 %exception ~name {
   $action
-  if (_gp_error != GP_OK) {
-    PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(_gp_error));
-    _gp_error = GP_OK;
-    return NULL;
-  }
+  if (PyErr_Occurred() != NULL) SWIG_fail;
 }
 %extend name {
   ~name() {
-    _gp_error = free_func($self);
+    int error = free_func($self);
+    if (error < GP_OK)
+      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
   }
 };
 %enddef

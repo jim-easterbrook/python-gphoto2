@@ -53,7 +53,6 @@ CALLOC_ARGOUT(GPPortInfo *)
 STRING_ARGOUT()
 
 // Add default constructor and destructor to _GPPortInfoList
-DECLARE_GP_ERROR()
 struct _GPPortInfoList {};
 DEFAULT_CTOR(_GPPortInfoList, gp_port_info_list_new)
 DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)

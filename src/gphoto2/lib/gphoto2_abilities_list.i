@@ -42,7 +42,6 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 PLAIN_ARGOUT(CameraAbilitiesList **)
 
 // Add default constructor and destructor to _CameraAbilitiesList
-DECLARE_GP_ERROR()
 struct _CameraAbilitiesList {};
 DEFAULT_CTOR(_CameraAbilitiesList, gp_abilities_list_new)
 DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)

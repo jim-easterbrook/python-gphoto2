@@ -55,7 +55,6 @@
 }
 
 // Add default constructor and destructor to _CameraWidget
-DECLARE_GP_ERROR()
 // Destructor decrefs root widget
 %inline %{
 static int widget_dtor(CameraWidget *widget) {

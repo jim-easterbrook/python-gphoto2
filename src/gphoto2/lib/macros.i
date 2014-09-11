@@ -1,3 +1,7 @@
+%define GPHOTO2_ERROR(error)
+PyErr_Format(PyExc_RuntimeError, "[%d] %s", error, gp_result_as_string(error));
+%enddef
+
 %define STRING_ARGOUT()
 %typemap(in, numinputs=0) char ** (char *temp) {
   $1 = &temp;
@@ -45,16 +49,16 @@
 %typemap(in, numinputs=0) typepattern () {
   $1 = NULL;
   int error = alloc_func(&$1);
-  if (error != GP_OK) {
-    PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+  if (error < GP_OK) {
+    GPHOTO2_ERROR(error)
     SWIG_fail;
   }
 }
 %typemap(freearg) typepattern {
   if ($1 != NULL) {
     int error = free_func($1);
-    if (error != GP_OK) {
-      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+    if (error < GP_OK) {
+      GPHOTO2_ERROR(error)
     }
   }
 }
@@ -75,7 +79,7 @@
     struct name *result;
     int error = alloc_func(&result);
     if (error < GP_OK)
-      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+      GPHOTO2_ERROR(error)
     return result;
   }
 };
@@ -87,7 +91,7 @@
     struct name *result = other;
     int error = ref_func(other);
     if (error < GP_OK)
-      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+      GPHOTO2_ERROR(error)
     return result;
   }
 };
@@ -103,7 +107,7 @@
   ~name() {
     int error = free_func($self);
     if (error < GP_OK)
-      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+      GPHOTO2_ERROR(error)
   }
 };
 %enddef

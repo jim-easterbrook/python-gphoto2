@@ -82,7 +82,7 @@ int (*_GPPortInfoList___len__)(GPPortInfoList *) = gp_port_info_list_count;
     }
     int error = gp_port_info_list_get_info($self, idx, info);
     if (error < GP_OK) {
-      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+      GPHOTO2_ERROR(error)
       return;
     }
   }

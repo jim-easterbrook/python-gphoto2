@@ -73,7 +73,7 @@ int (*_CameraAbilitiesList___len__)(CameraAbilitiesList *) = gp_abilities_list_c
     }
     int error = gp_abilities_list_get_abilities($self, idx, abilities);
     if (error < GP_OK) {
-      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+      GPHOTO2_ERROR(error)
       return;
     }
   }

@@ -57,13 +57,13 @@ int (*_CameraList___len__)(CameraList *) = gp_list_count;
     const char *name = NULL;
     const char *value = NULL;
     error = gp_list_get_name($self, idx, &name);
-    if (error != GP_OK) {
-      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+    if (error < GP_OK) {
+      GPHOTO2_ERROR(error)
       return NULL;
     }
     error = gp_list_get_value($self, idx, &value);
-    if (error != GP_OK) {
-      PyErr_SetString(PyExc_RuntimeError, gp_result_as_string(error));
+    if (error < GP_OK) {
+      GPHOTO2_ERROR(error)
       return NULL;
     }
     PyObject* result = PyList_New(2);

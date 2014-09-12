@@ -41,7 +41,8 @@ mod_names.sort()
 
 # create extension modules list
 ext_modules = []
-swig_opts = ['-I/usr/include', '-builtin', '-O', '-Wall', '-MMD']
+swig_opts = ['-I/usr/include', '-builtin', '-nodefaultctor',
+             '-O', '-Wall', '-MMD']
 extra_compile_args = ['-O3', '-Wno-unused-variable']
 if sys.version_info[0] >= 3:
     swig_opts.append('-py3')

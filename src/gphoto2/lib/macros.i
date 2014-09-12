@@ -1,5 +1,20 @@
+%define IMPORT_GPHOTO2_ERROR()
+%{
+PyObject *PyExc_GPhoto2Error = NULL;
+%}
+%init %{
+{
+  PyObject *module = PyImport_ImportModuleLevel("", PyEval_GetGlobals(), NULL, NULL, 2);
+  if (module != NULL)
+    PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
+  if (PyExc_GPhoto2Error == NULL)
+    return;
+}
+%}
+%enddef
+
 %define GPHOTO2_ERROR(error)
-PyErr_Format(PyExc_RuntimeError, "[%d] %s", error, gp_result_as_string(error));
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %enddef
 
 %define STRING_ARGOUT()

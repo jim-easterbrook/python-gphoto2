@@ -32,6 +32,8 @@
 
 %include "macros.i"
 
+IMPORT_GPHOTO2_ERROR()
+
 // gp_abilities_list_get_abilities() returns a pointer in an output parameter
 CALLOC_ARGOUT(CameraAbilities *abilities)
 

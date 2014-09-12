@@ -32,6 +32,8 @@
 
 %include "macros.i"
 
+IMPORT_GPHOTO2_ERROR()
+
 // gp_port_info_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(GPPortInfoList **)
 

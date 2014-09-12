@@ -17,14 +17,23 @@
 
 import logging
 
+# Define GPhoto2Error before importing sub-modules, as they import GPhoto2Error
+class GPhoto2Error(Exception):
+    """Exception raised by gphoto2 library errors
+
+    Attributes:
+        code   (int): the gphoto2 error code
+        string (str): corresponding error message
+    """
+    def __init__(self, code):
+        string = gp_result_as_string(code)
+        Exception.__init__(self, '[%d] %s' % (code, string))
+        self.code = code
+        self.string = string
+
 # make all SWIG objects available at top level
 from .lib import *
 from .lib import __version__
-
-class GPhoto2Error(EnvironmentError):
-    """Raised by check_result if error_severity[error] >=
-    error_exception"""
-    pass
 
 _return_logger = logging.getLogger('gphoto2.returnvalue')
 
@@ -58,7 +67,7 @@ def check_result(result):
     if error in error_severity:
         severity = error_severity[error]
     if severity >= error_exception:
-        raise GPhoto2Error(error, gp_result_as_string(error))
+        raise GPhoto2Error(error)
     _return_logger.log(severity, '[%d] %s', error, gp_result_as_string(error))
     return result
 

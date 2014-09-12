@@ -30,6 +30,8 @@
 
 %include "macros.i"
 
+IMPORT_GPHOTO2_ERROR()
+
 %apply int *OUTPUT { CameraWidgetType * };
 %apply int *OUTPUT { int * };
 %apply float *OUTPUT { float * };

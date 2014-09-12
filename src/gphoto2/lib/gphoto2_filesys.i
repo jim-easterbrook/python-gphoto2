@@ -29,6 +29,10 @@
 
 %include "typemaps.i"
 
+%include "macros.i"
+
+IMPORT_GPHOTO2_ERROR()
+
 // gp_filesystem_list_files() etc. return a pointer in an output parameter
 NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 

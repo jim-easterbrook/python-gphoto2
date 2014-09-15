@@ -85,9 +85,11 @@ int (*_CameraAbilitiesList___len__)(CameraAbilitiesList *) = gp_abilities_list_c
 MEMBER_FUNCTION(_CameraAbilitiesList,
     load, (GPContext *context),
     gp_abilities_list_load, ($self, context))
+#ifndef GPHOTO2_24
 MEMBER_FUNCTION(_CameraAbilitiesList,
     load_dir, (const char *dir, GPContext *context),
     gp_abilities_list_load_dir, ($self, dir, context))
+#endif
 MEMBER_FUNCTION(_CameraAbilitiesList,
     reset, (),
     gp_abilities_list_reset, ($self))

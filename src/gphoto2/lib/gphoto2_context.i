@@ -50,9 +50,11 @@ struct _GPContext {};
 };
 %ignore _GPContext;
 
+#ifndef GPHOTO2_24
 // Add member methods to _GPContext
 MEMBER_FUNCTION(_GPContext,
     camera_autodetect, (CameraList *list),
     gp_camera_autodetect, (list, $self))
+#endif
 
 %include "gphoto2/gphoto2-context.h"

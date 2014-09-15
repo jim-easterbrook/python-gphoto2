@@ -127,7 +127,7 @@ It is called automatically when the python camera object is deleted.
 
 This conversion of "output" parameters is why the ``CameraList *list`` parameter is not included in the ``pydoc`` example above but is shown in the C documentation.
 In Python a new ``CameraList`` object is created and appended to the return value list.
-Unfortunately I've not found a way to persuade SWIG include this extra return value in the documentation.
+Unfortunately I've not found a way to persuade SWIG to include this extra return value in the documentation.
 
 Here is a complete example program (without any error checking):
 

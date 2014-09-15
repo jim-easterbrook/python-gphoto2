@@ -63,9 +63,11 @@ MEMBER_FUNCTION(_CameraFile,
 MEMBER_FUNCTION(_CameraFile,
     adjust_name_for_mime_type, (),
     gp_file_adjust_name_for_mime_type, ($self))
+#ifndef GPHOTO2_24
 MEMBER_FUNCTION(_CameraFile,
     get_name_by_type, (const char *basename, CameraFileType type, char **newname),
     gp_file_get_name_by_type, ($self, basename, type, newname))
+#endif
 MEMBER_FUNCTION(_CameraFile,
     set_data_and_size, (char *data, unsigned long int size),
     gp_file_set_data_and_size, ($self, data, size))

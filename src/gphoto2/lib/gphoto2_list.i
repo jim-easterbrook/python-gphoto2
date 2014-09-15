@@ -32,10 +32,12 @@ IMPORT_GPHOTO2_ERROR()
 // gp_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraList **)
 
-// Add constructors and destructor to _CameraList
+// gp_list_get_name() & gp_list_get_value() return pointers in output params
+STRING_ARGOUT()
+
+// Add constructor and destructor to _CameraList
 struct _CameraList {};
 DEFAULT_CTOR(_CameraList, gp_list_new)
-COPY_CTOR(_CameraList, gp_list_ref)
 DEFAULT_DTOR(_CameraList, gp_list_unref)
 %ignore _CameraList;
 
@@ -87,7 +89,36 @@ int (*_CameraList___len__)(CameraList *) = gp_list_count;
   }
 };
 
-// gp_list_get_name() & gp_list_get_value() return pointers in output params
-STRING_ARGOUT()
+// Add member methods to _CameraList
+INT_MEMBER_FUNCTION(_CameraList,
+    count, (),
+    gp_list_count, ($self))
+MEMBER_FUNCTION(_CameraList,
+    append, (const char *name, const char *value),
+    gp_list_append, ($self, name, value))
+MEMBER_FUNCTION(_CameraList,
+    reset, (),
+    gp_list_reset, ($self))
+MEMBER_FUNCTION(_CameraList,
+    sort, (),
+    gp_list_sort, ($self))
+MEMBER_FUNCTION(_CameraList,
+    find_by_name, (int *index, const char *name),
+    gp_list_find_by_name, ($self, index, name))
+MEMBER_FUNCTION(_CameraList,
+    get_name, (int index, const char **name),
+    gp_list_get_name, ($self, index, name))
+MEMBER_FUNCTION(_CameraList,
+    get_value, (int index, const char **value),
+    gp_list_get_value, ($self, index, value))
+MEMBER_FUNCTION(_CameraList,
+    set_name, (int index, const char *name),
+    gp_list_set_name, ($self, index, name))
+MEMBER_FUNCTION(_CameraList,
+    set_value, (int index, const char *value),
+    gp_list_set_value, ($self, index, value))
+MEMBER_FUNCTION(_CameraList,
+    populate, (const char *format, int count),
+    gp_list_populate, ($self, format, count))
 
 %include "gphoto2/gphoto2-list.h"

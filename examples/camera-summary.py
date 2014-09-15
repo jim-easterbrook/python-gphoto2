@@ -28,13 +28,13 @@ def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
-    camera = gp.check_result(gp.gp_camera_new())
     context = gp.gp_context_new()
+    camera = gp.check_result(gp.gp_camera_new())
     gp.check_result(gp.gp_camera_init(camera, context))
     text = gp.check_result(gp.gp_camera_get_summary(camera, context))
     print('Summary')
     print('=======')
-    print(str(text))
+    print(text.text)
     gp.check_result(gp.gp_camera_exit(camera, context))
     return 0
 

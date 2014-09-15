@@ -55,7 +55,7 @@ class MainWindow(QtGui.QMainWindow):
         widget.layout().addWidget(quit_button, 1, 2)
         # defer full initialisation (slow operation) until gui is visible
         self.context = gp.Context()
-        self.camera = gp.Camera(self.context)
+        self.camera = gp.Camera()
         QtGui.QApplication.postEvent(
             self, QtCore.QEvent(self.do_init), Qt.LowEventPriority - 1)
 
@@ -72,8 +72,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def initialise(self):
         # get camera config tree
-        self.camera.init()
-        self.camera_config = gp.CameraWidget(self.camera.get_config())
+        self.camera.init(self.context)
+        self.camera_config = self.camera.get_config(self.context)
         # create corresponding tree of tab widgets
         self.setWindowTitle(self.camera_config.get_label())
         self.centralWidget().layout().addWidget(SectionWidget(
@@ -83,7 +83,7 @@ class MainWindow(QtGui.QMainWindow):
         self.apply_button.setEnabled(True)
 
     def apply_changes(self):
-        self.camera.set_config(self.camera_config)
+        self.camera.set_config(self.camera_config, self.context)
         QtGui.qApp.closeAllWindows()
 
 class SectionWidget(QtGui.QWidget):
@@ -97,7 +97,7 @@ class SectionWidget(QtGui.QWidget):
             return
         tabs = None
         for n in range(child_count):
-            child = gp.CameraWidget(camera_config.get_child(n))
+            child = camera_config.get_child(n)
             label = child.get_label()
             child_type = child.get_type()
             if child_type == gp.GP_WIDGET_SECTION:

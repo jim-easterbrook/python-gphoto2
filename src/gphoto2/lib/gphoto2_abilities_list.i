@@ -81,6 +81,32 @@ int (*_CameraAbilitiesList___len__)(CameraAbilitiesList *) = gp_abilities_list_c
   }
 };
 
+// Add member methods to _CameraAbilitiesList
+MEMBER_FUNCTION(_CameraAbilitiesList,
+    load, (GPContext *context),
+    gp_abilities_list_load, ($self, context))
+MEMBER_FUNCTION(_CameraAbilitiesList,
+    load_dir, (const char *dir, GPContext *context),
+    gp_abilities_list_load_dir, ($self, dir, context))
+MEMBER_FUNCTION(_CameraAbilitiesList,
+    reset, (),
+    gp_abilities_list_reset, ($self))
+MEMBER_FUNCTION(_CameraAbilitiesList,
+    detect, (GPPortInfoList *info_list, CameraList *l, GPContext *context),
+    gp_abilities_list_detect, ($self, info_list, l, context))
+MEMBER_FUNCTION(_CameraAbilitiesList,
+    append, (CameraAbilities abilities),
+    gp_abilities_list_append, ($self, abilities))
+INT_MEMBER_FUNCTION(_CameraAbilitiesList,
+    count, (),
+    gp_abilities_list_count, ($self))
+MEMBER_FUNCTION(_CameraAbilitiesList,
+    lookup_model, (const char *model),
+    gp_abilities_list_lookup_model, ($self, model))
+MEMBER_FUNCTION(_CameraAbilitiesList,
+    get_abilities, (int index, CameraAbilities *abilities),
+    gp_abilities_list_get_abilities, ($self, index, abilities))
+
 // Structures are read only
 %immutable;
 

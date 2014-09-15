@@ -27,16 +27,17 @@ import gphoto2 as gp
 def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
-    with gp.Context() as context:
-        if hasattr(gp, 'gp_camera_autodetect'):
-            # gphoto2 version 2.5+
-            cameras = context.camera_autodetect()
-        else:
-            with gp.PortInfoList() as port_info_list:
-                port_info_list.load()
-                with gp.CameraAbilitiesList() as abilities_list:
-                    abilities_list.load(context)
-                    cameras = abilities_list.detect(port_info_list, context)
+    gp.check_result(gp.use_python_logging())
+    context = gp.Context()
+    if hasattr(gp, 'gp_camera_autodetect'):
+        # gphoto2 version 2.5+
+        cameras = context.camera_autodetect()
+    else:
+        port_info_list = gp.PortInfoList()
+        port_info_list.load()
+        abilities_list = gp.CameraAbilitiesList()
+        abilities_list.load(context)
+        cameras = abilities_list.detect(port_info_list, context)
     n = 0
     for name, value in cameras:
         print('camera number', n)

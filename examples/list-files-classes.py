@@ -26,49 +26,50 @@ import sys
 
 import gphoto2 as gp
 
-def list_files(camera, path='/'):
+def list_files(camera, context, path='/'):
     result = []
     # get files
-    for name, value in camera.folder_list_files(path):
+    for name, value in camera.folder_list_files(path, context):
         result.append(os.path.join(path, name))
     # read folders
     folders = []
-    for name, value in camera.folder_list_folders(path):
+    for name, value in camera.folder_list_folders(path, context):
         folders.append(name)
     # recurse over subfolders
     for name in folders:
-        result.extend(list_files(camera, os.path.join(path, name)))
+        result.extend(list_files(camera, context, os.path.join(path, name)))
     return result
 
-def get_file_info(camera, path):
+def get_file_info(camera, context, path):
     folder, name = os.path.split(path)
-    return camera.file_get_info(folder, name)
+    return camera.file_get_info(folder, name, context)
 
 def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
-    with gp.Context() as context:
-        with gp.Camera(context) as camera:
-            camera.init()
-            files = list_files(camera)
-            if not files:
-                print('No files found')
-                return 1
-            print('File list')
-            print('=========')
-            for path in files[:10]:
-                print(path)
-            print('...')
-            for path in files[-10:]:
-                print(path)
-            info = get_file_info(camera, files[-1])
-            print
-            print('File info')
-            print('=========')
-            print('image dimensions:', info.file.width, info.file.height)
-            print('image type:', info.file.type)
-            print('file mtime:', datetime.fromtimestamp(info.file.mtime).isoformat(' '))
-            camera.exit()
+    gp.check_result(gp.use_python_logging())
+    context = gp.Context()
+    camera = gp.Camera()
+    camera.init(context)
+    files = list_files(camera, context)
+    if not files:
+        print('No files found')
+        return 1
+    print('File list')
+    print('=========')
+    for path in files[:10]:
+        print(path)
+    print('...')
+    for path in files[-10:]:
+        print(path)
+    info = get_file_info(camera, context, files[-1])
+    print
+    print('File info')
+    print('=========')
+    print('image dimensions:', info.file.width, info.file.height)
+    print('image type:', info.file.type)
+    print('file mtime:', datetime.fromtimestamp(info.file.mtime).isoformat(' '))
+    camera.exit(context)
     return 0
 
 if __name__ == "__main__":

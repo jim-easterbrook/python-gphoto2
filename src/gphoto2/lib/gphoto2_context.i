@@ -21,7 +21,16 @@
 #include "gphoto2/gphoto2.h"
 %}
 
+%import "gphoto2_list.i"
+
 %feature("autodoc", "2");
+
+%include "macros.i"
+
+IMPORT_GPHOTO2_ERROR()
+
+// gp_camera_autodetect() returns a pointer in an output parameter
+NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
 // Mark gp_context_new as constructor
 %newobject gp_context_new;
@@ -40,5 +49,10 @@ struct _GPContext {};
   }
 };
 %ignore _GPContext;
+
+// Add member methods to _GPContext
+MEMBER_FUNCTION(_GPContext,
+    camera_autodetect, (CameraList *list),
+    gp_camera_autodetect, (list, $self))
 
 %include "gphoto2/gphoto2-context.h"

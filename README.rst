@@ -1,12 +1,9 @@
 python-gphoto2
 ==============
 
-python-gphoto2 is a basic (low-level) Python interface (or binding) to `libgphoto2 <http://www.gphoto.org/proj/libgphoto2/>`_.
+python-gphoto2 is a comprehensive Python interface (or binding) to `libgphoto2 <http://www.gphoto.org/proj/libgphoto2/>`_.
 It is built using `SWIG <http://swig.org/>`_ to automatically generate the interface code.
 This gives direct access to nearly all the libgphoto2 functions, but sometimes in a rather un-Pythonic manner.
-
-There are some Python helper classes to ease access to many of the low-level functions.
-This makes the package a bit more Pythonic, but you will still need to deal directly with the lower level at times.
 
 .. contents::
    :backlinks: top
@@ -15,7 +12,7 @@ Dependencies
 ------------
 
 *   Python: http://python.org/ version 2.6 or greater (including Python 3)
-*   SWIG: http://swig.org/
+*   SWIG: http://swig.org/ version 2.0 or higher
 *   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.4 or greater
 
 Note that you need the "development headers" versions of libgphoto2 and Python.
@@ -83,8 +80,8 @@ Let me know if you run into any problems.
 The following paragraphs show how the Python interfaces differ from C.
 See the example programs for typical usage of the Python gphoto2 API.
 
-Low-level interface
-^^^^^^^^^^^^^^^^^^^
+"C" interface
+^^^^^^^^^^^^^
 
 Using SWIG to generate the Python interfaces automatically means that every function in libgphoto2 *should* be available to Python.
 The ``pydoc`` command can be used to show basic information about a function::
@@ -105,11 +102,6 @@ In general it is easier to use the C `API documentation <http://www.gphoto.org/d
 
 Note that there is one major difference between the Python and C APIs.
 C functions that use a pointer parameter to return a value (and often do some memory allocation) such as `gp_camera_new() <http://www.gphoto.org/doc/api/gphoto2-camera_8h.html>`_ have Python equivalents that create the required pointer and return it in a list with the gphoto2 error code.
-
-In the above example of ``gp_camera_folder_list_files()``, the C documentation shows an extra parameter: ``list: CameraList *``.
-In C this is an "output" parameter.
-In Python a new ``CameraList`` object is created and added to the returned value list.
-This is much more Pythonic behaviour.
 
 For example, the C code:
 
@@ -133,20 +125,69 @@ has this Python equivalent:
 Note that the gp_camera_unref() call is not needed (since version 0.5.0).
 It is called automatically when the python camera object is deleted.
 
-Error checking
-^^^^^^^^^^^^^^
+This conversion of "output" parameters is why the ``CameraList *list`` parameter is not included in the ``pydoc`` example above but is shown in the C documentation.
+In Python a new ``CameraList`` object is created and appended to the return value list.
+Unfortunately I've not found a way to persuade SWIG include this extra return value in the documentation.
 
-Most of the libgphoto2 functions return an integer to indicate success or failure.
-The Python interface includes a function to check these values and raise an exception if an error occurs.
-
-This function also unwraps lists such as that returned by ``gp_camera_new()`` in the example.
-Using this function the example becomes:
+Here is a complete example program (without any error checking):
 
 .. code:: python
 
     import gphoto2 as gp
+    context = gp.gp_context_new()
+    error, camera = gp.gp_camera_new()
+    error = gp.gp_camera_init(camera, context)
+    error, text = gp.gp_camera_get_summary(camera, context)
+    print('Summary')
+    print('=======')
+    print(text.text)
+    error = gp.gp_camera_exit(camera, context)
+
+"Object oriented" interface
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+SWIG has the ability to attach member functions to C structs such as the GPhoto2 ``Camera`` object.
+The Python interface includes many such member functions, allowing GPhoto2 to be used in a more "Pythonic" style.
+These member functions also include error checking.
+If an error occurs they raise a Python ``GPhoto2Error`` exception.
+
+The example program can be re-written as follows:
+
+.. code:: python
+
+    import gphoto2 as gp
+    context = gp.Context()
+    camera = gp.Camera()
+    camera.init(context)
+    text = camera.get_summary(context)
+    print('Summary')
+    print('=======')
+    print(str(text))
+    camera.exit(context)
+
+The member functions are more "hand crafted" than the rest of the Python bindings, which are mostly automatically generated from the library header files.
+This means that there may be some functions in the "C" interface that do not have corresponding member methods.
+
+Error checking
+^^^^^^^^^^^^^^
+
+Most of the libgphoto2 "C" functions return an integer to indicate success or failure.
+The Python interface includes a ``check_result()`` function to check these values and raise a ``GPhoto2Error`` exception if an error occurs.
+
+This function also unwraps lists such as that returned by ``gp_camera_new()`` in the example.
+Using this function the earlier example becomes:
+
+.. code:: python
+
+    import gphoto2 as gp
+    context = gp.gp_context_new()
     camera = gp.check_result(gp.gp_camera_new())
-    ...
+    gp.check_result(gp.gp_camera_init(camera, context))
+    text = gp.check_result(gp.gp_camera_get_summary(camera, context))
+    print('Summary')
+    print('=======')
+    print(text.text)
+    gp.check_result(gp.gp_camera_exit(camera, context))
 
 There may be some circumstances where you don't want an exception to be raised when some errors occur.
 You can "fine tune" the behaviour of the ``check_result()`` function by adjusting the ``error_severity`` variable:
@@ -158,42 +199,53 @@ You can "fine tune" the behaviour of the ``check_result()`` function by adjustin
     ...
 
 In this case a warning message will be logged (using Python's standard logging module) but no exception will be raised when a ``GP_ERROR`` error occurs.
+However, this is a "blanket" approach that treats all ``GP_ERROR`` errors the same.
+It is better to test for particular error conditions after particular operations, as described below.
 
-Higher-level interface
-^^^^^^^^^^^^^^^^^^^^^^
+The ``GPhoto2Error`` exception object has two attributes that may be useful in an exception handler.
+``GPhoto2Error.code`` stores the integer error generated by the library function and ``GPhoto2Error.string`` stores the corresponding error message.
 
-There are some higher-level Python helper classes that handle object creation and deletion and make things even simpler.
-They provide simplified interfaces to many of the libgphoto2 functions, with shortened names and no need to pass shared data such as ``context``.
-Here is a complete example program:
+For example, to wait for a user to connect a camera you could do something like this:
 
 .. code:: python
 
     import gphoto2 as gp
-    with gp.Context() as context:
-        with gp.Camera(context) as camera:
-            camera.init()
-            text = camera.get_summary()
-            print('Summary')
-            print('=======')
-            print(str(text))
-            camera.exit()
+    ...
+    print('Please connect and switch on your camera')
+    while True:
+        try:
+            camera.init(context)
+        except gp.GPhoto2Error as ex:
+            if ex.code == gp.GP_ERROR_MODEL_NOT_FOUND:
+                # no camera, try again in 2 seconds
+                time.sleep(2)
+                continue
+            # some other error we can't handle here
+            raise
+        # operation completed successfully so exit loop
+        break
+    # continue with rest of program
+    ...
 
-The higher level classes and the functions they wrap are as follows.
-Each class is sub-classed from a low-level object and can be passed to gphoto2 functions in place of the low-level object.
-(Prior to version 0.6.0 the low-level object was stored in a class attribute.)
+When just calling a single function like this, it's probably easier to test the error value directly instead of using Python exceptions:
 
-=================== =================================== ============= =============
-Python class        C function                          Python method Inherited low-level type
-=================== =================================== ============= =============
-Camera              gp_camera_xxx(camera, ..., context) xxx(...)      Camera
-                    gp_camera_xxx(camera, ...)
-CameraAbilitiesList gp_abilities_list_xxx(list, ...)    xxx(...)      CameraAbilitiesList
-CameraFile          gp_file_xxx(file, ...)              xxx(...)      CameraFile
-CameraList          gp_list_xxx(list, ...)              xxx(...)      CameraList
-CameraWidget        gp_widget_xxx(widget, ...)          xxx(...)      CameraWidget
-Context             gp_xxx(..., context)                xxx(...)      GPContext
-PortInfoList        gp_port_info_list_xxx(list, ...)    xxx(...)      GPPortInfoList
-=================== =================================== ============= =============
+.. code:: python
+
+    import gphoto2 as gp
+    ...
+    print('Please connect and switch on your camera')
+    while True:
+        error = gp.gp_camera_init(camera, context)
+        if error >= gp.GP_OK:
+            # operation completed successfully so exit loop
+            break
+        if error != gp.GP_ERROR_MODEL_NOT_FOUND:
+            # some other error we can't handle here
+            raise gp.GPhoto2Error(error)
+        # no camera, try again in 2 seconds
+        time.sleep(2)
+    # continue with rest of program
+    ...
 
 Licence
 -------

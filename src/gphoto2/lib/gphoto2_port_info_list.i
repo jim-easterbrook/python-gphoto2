@@ -90,6 +90,26 @@ int (*_GPPortInfoList___len__)(GPPortInfoList *) = gp_port_info_list_count;
   }
 };
 
+// Add member methods to _GPPortInfoList
+MEMBER_FUNCTION(_GPPortInfoList,
+    append, (GPPortInfo info),
+    gp_port_info_list_append, ($self, info))
+MEMBER_FUNCTION(_GPPortInfoList,
+    load, (),
+    gp_port_info_list_load, ($self))
+INT_MEMBER_FUNCTION(_GPPortInfoList,
+    count, (),
+    gp_port_info_list_count, ($self))
+MEMBER_FUNCTION(_GPPortInfoList,
+    lookup_path, (const char *path),
+    gp_port_info_list_lookup_path, ($self, path))
+MEMBER_FUNCTION(_GPPortInfoList,
+    lookup_name, (const char *name),
+    gp_port_info_list_lookup_name, ($self, name))
+MEMBER_FUNCTION(_GPPortInfoList,
+    get_info, (const int n, GPPortInfo *info),
+    gp_port_info_list_get_info, ($self, n, info))
+
 // Don't wrap internal functions
 %ignore gp_port_info_new;
 %ignore gp_port_info_set_name;

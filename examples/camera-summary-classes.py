@@ -27,14 +27,15 @@ import gphoto2 as gp
 def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
-    with gp.Context() as context:
-        with gp.Camera(context) as camera:
-            camera.init()
-            text = camera.get_summary()
-            print('Summary')
-            print('=======')
-            print(str(text))
-            camera.exit()
+    gp.check_result(gp.use_python_logging())
+    context = gp.Context()
+    camera = gp.Camera()
+    camera.init(context)
+    text = camera.get_summary(context)
+    print('Summary')
+    print('=======')
+    print(str(text))
+    camera.exit(context)
     return 0
 
 if __name__ == "__main__":

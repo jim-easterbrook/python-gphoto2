@@ -50,24 +50,16 @@ DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
 %ignore _CameraAbilitiesList;
 
 // Make CameraAbilitiesList more like a Python list
+LEN_MEMBER_FUNCTION(_CameraAbilitiesList, gp_abilities_list_count)
 #if defined(SWIGPYTHON_BUILTIN)
-%feature("python:slot", "sq_length", functype="lenfunc")
-    _CameraAbilitiesList::__len__;
 %feature("python:slot", "sq_item",   functype="ssizeargfunc")
     _CameraAbilitiesList::__getitem__;
-#endif // SWIGPYTHON_BUILTIN
-
+#endif
 %exception __getitem__ {
   $action
-  if (PyErr_Occurred() != NULL) {
-    goto fail;
-  }
+  if (PyErr_Occurred() != NULL) goto fail;
 }
-%{
-int (*_CameraAbilitiesList___len__)(CameraAbilitiesList *) = gp_abilities_list_count;
-%}
 %extend _CameraAbilitiesList {
-  int __len__();
   void __getitem__(int idx, CameraAbilities *abilities) {
     if (idx < 0 || idx >= gp_abilities_list_count($self)) {
       PyErr_SetString(PyExc_IndexError, "CameraAbilitiesList index out of range");

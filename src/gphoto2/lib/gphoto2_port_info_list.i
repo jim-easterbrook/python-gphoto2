@@ -61,23 +61,18 @@ DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
 %ignore _GPPortInfoList;
 
 // Make GPPortInfoList more like a Python list
+LEN_MEMBER_FUNCTION(_GPPortInfoList, gp_port_info_list_count)
 #if defined(SWIGPYTHON_BUILTIN)
-%feature("python:slot", "sq_length", functype="lenfunc")      _GPPortInfoList::__len__;
 %feature("python:slot", "sq_item",   functype="ssizeargfunc") _GPPortInfoList::__getitem__;
-#endif // SWIGPYTHON_BUILTIN
-
+#endif
 %exception __getitem__ {
   $action
   if (PyErr_Occurred() != NULL) {
     goto fail;
   }
 }
-%{
-int (*_GPPortInfoList___len__)(GPPortInfoList *) = gp_port_info_list_count;
-%}
 %extend _GPPortInfoList {
-  int __len__();
-  void __getitem__(int idx, GPPortInfo * info) {
+  void __getitem__(int idx, GPPortInfo *info) {
     if (idx < 0 || idx >= gp_port_info_list_count($self)) {
       PyErr_SetString(PyExc_IndexError, "GPPortInfoList index out of range");
       return;

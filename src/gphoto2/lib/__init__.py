@@ -1,4 +1,4 @@
-__version__ = "0.9.0"
+__version__ = "0.9.1"
 
 from .gphoto2_abilities_list import *
 from .gphoto2_camera import *

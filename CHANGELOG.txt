@@ -15,9 +15,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 0.9.0:
+  1/ Added "member functions" to many gphoto2 types to replace the higher level
+     classes defined in Python.
+  2/ Removed the "higher level classes" defined in Python.
+  3/ Added __len__ and __getitem__ members to list-like gphoto2 types.
+  4/ Improved error handling.
+  5/ Improved memory safety.
+
 Changes in 0.8.0:
   1/ Many more functions now allocate and return their outputs, instead of
-     requiring a new object as a prameter.
+     requiring a new object as a parameter.
   2/ Several of the list-like GPhoto2 types can now be iterated over in Python.
   3/ Improved memory safety.
 

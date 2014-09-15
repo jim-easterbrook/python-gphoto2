@@ -102,7 +102,7 @@ MEMBER_FUNCTION(_CameraAbilitiesList,
 INT_MEMBER_FUNCTION(_CameraAbilitiesList,
     count, (),
     gp_abilities_list_count, ($self))
-MEMBER_FUNCTION(_CameraAbilitiesList,
+INT_MEMBER_FUNCTION(_CameraAbilitiesList,
     lookup_model, (const char *model),
     gp_abilities_list_lookup_model, ($self, model))
 MEMBER_FUNCTION(_CameraAbilitiesList,

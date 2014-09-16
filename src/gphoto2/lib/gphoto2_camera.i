@@ -203,6 +203,13 @@ MEMBER_FUNCTION(_Camera,
 // These structures are private
 %ignore _CameraFunctions;
 
+// Use library functions to access these
+%ignore _Camera::pl;
+%ignore _Camera::pc;
+%ignore _Camera::port;
+%ignore _Camera::fs;
+%ignore _Camera::functions;
+
 // Other structures are read only
 %immutable;
 

@@ -45,5 +45,13 @@ DEFAULT_DTOR(_GPPort, gp_port_free)
 %ignore _GPPortSettingsUsbDiskDirect;
 %ignore _GPPortSettingsUsbScsi;
 
+// Use library functions to access these
+%ignore _GPPort::type;
+%ignore _GPPort::settings;
+%ignore _GPPort::settings_pending;
+%ignore _GPPort::timeout;
+%ignore _GPPort::pl;
+%ignore _GPPort::pc;
+
 %include "gphoto2/gphoto2-port.h"
 %include "gphoto2/gphoto2-port-portability.h"

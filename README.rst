@@ -5,6 +5,10 @@ python-gphoto2 is a comprehensive Python interface (or binding) to `libgphoto2 <
 It is built using `SWIG <http://swig.org/>`_ to automatically generate the interface code.
 This gives direct access to nearly all the libgphoto2 functions, but sometimes in a rather un-Pythonic manner.
 
+Other Python bindings to libgphoto2 are available.
+`piggyphoto <https://github.com/alexdu/piggyphoto>`_ uses ctypes (included in standard Python installations) to interface to the library.
+The gphoto2 source tree includes some `Python bindings <http://sourceforge.net/p/gphoto/code/HEAD/tree/trunk/bindings/libgphoto2-python/>`_ which also use ctypes.
+
 .. contents::
    :backlinks: top
 
@@ -51,8 +55,8 @@ Install a downloaded archive
 Visit the `project releases page <https://github.com/jim-easterbrook/python-gphoto2/releases>`_ or `PyPI <https://pypi.python.org/pypi/gphoto2>`_ and download one of the zip or tar.gz files, then extract it and change to the new directory.
 For example::
 
-    tar xf python-gphoto2-gphoto2-0.3.2.tar.gz
-    cd python-gphoto2-gphoto2-0.3.2
+    tar xf python-gphoto2-gphoto2-0.9.0.tar.gz
+    cd python-gphoto2-gphoto2-0.9.0
 
 As before, Python's ``distutils`` are used to build and install python-gphoto2::
 
@@ -125,7 +129,7 @@ has this Python equivalent:
 Note that the gp_camera_unref() call is not needed (since version 0.5.0).
 It is called automatically when the python camera object is deleted.
 
-This conversion of "output" parameters is why the ``CameraList *list`` parameter is not included in the ``pydoc`` example above but is shown in the C documentation.
+This conversion of "output" parameters is why the ``CameraList *list`` parameter is not listed in the ``pydoc`` example above but is shown in the C documentation.
 In Python a new ``CameraList`` object is created and appended to the return value list.
 Unfortunately I've not found a way to persuade SWIG to include this extra return value in the documentation.
 

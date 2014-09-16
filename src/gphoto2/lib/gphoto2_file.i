@@ -16,6 +16,7 @@
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 %module(package="gphoto2.lib") gphoto2_file
+#pragma SWIG nowarn=321
 
 %{
 #include "gphoto2/gphoto2.h"

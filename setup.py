@@ -42,8 +42,9 @@ mod_names.sort()
 # create extension modules list
 ext_modules = []
 swig_opts = ['-I/usr/include', '-builtin', '-nodefaultctor',
-             '-O', '-Wall', '-MMD']
-extra_compile_args = ['-O3', '-Wno-unused-variable']
+             '-O', '-Wextra', '-Werror', '-MMD']
+extra_compile_args = [
+    '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes', '-Werror']
 if sys.version_info[0] >= 3:
     swig_opts.append('-py3')
 if gphoto2_version[0:2] == ('2', '4'):

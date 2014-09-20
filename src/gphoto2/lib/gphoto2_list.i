@@ -29,6 +29,8 @@
 
 IMPORT_GPHOTO2_ERROR()
 
+%rename(CameraList) _CameraList;
+
 // gp_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraList **)
 

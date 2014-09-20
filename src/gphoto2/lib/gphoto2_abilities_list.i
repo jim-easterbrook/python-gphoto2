@@ -34,6 +34,8 @@
 
 IMPORT_GPHOTO2_ERROR()
 
+%rename(CameraAbilitiesList) _CameraAbilitiesList;
+
 // gp_abilities_list_get_abilities() returns a pointer in an output parameter
 CALLOC_ARGOUT(CameraAbilities *abilities)
 

@@ -34,6 +34,8 @@
 
 IMPORT_GPHOTO2_ERROR()
 
+%rename(PortInfoList) _GPPortInfoList;
+
 // gp_port_info_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(GPPortInfoList **)
 

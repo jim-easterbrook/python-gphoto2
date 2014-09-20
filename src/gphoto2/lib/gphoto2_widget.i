@@ -32,6 +32,8 @@
 
 IMPORT_GPHOTO2_ERROR()
 
+%rename(CameraWidget) _CameraWidget;
+
 %apply int *OUTPUT { CameraWidgetType * };
 %apply int *OUTPUT { int * };
 %apply float *OUTPUT { float * };

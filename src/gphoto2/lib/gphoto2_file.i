@@ -30,6 +30,8 @@
 
 IMPORT_GPHOTO2_ERROR()
 
+%rename(CameraFile) _CameraFile;
+
 // gp_file_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFile **)
 

@@ -29,6 +29,8 @@
 
 IMPORT_GPHOTO2_ERROR()
 
+%rename(Context) _GPContext;
+
 // gp_camera_autodetect() returns a pointer in an output parameter
 NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 

@@ -124,11 +124,13 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
   if (PyErr_Occurred() != NULL) SWIG_fail;
 }
 %extend type {
+%feature("docstring") "See also: gphoto2." #function
   void member member_args {
     int error = function function_args;
     if (error < GP_OK) GPHOTO2_ERROR(error)
   }
 };
+%feature("docstring") function "See also: gphoto2." #type "." #member
 %enddef
 
 %define INT_MEMBER_FUNCTION(type, member, member_args, function, function_args)
@@ -143,8 +145,10 @@ int (*type ## _ ## member)() = function;
   }
 }
 %extend type {
+%feature("docstring") "See also: gphoto2." #function
   int member member_args;
 };
+%feature("docstring") function "See also: gphoto2." #type "." #member
 %enddef
 
 %define PYOBJECT_MEMBER_FUNCTION(type, member, member_args)

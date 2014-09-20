@@ -35,14 +35,23 @@ class GPhoto2Error(Exception):
 from .lib import *
 from .lib import __version__
 
+# names beginning with an underscore don't get imported
+_Camera              = gphoto2_camera._Camera
+_CameraAbilitiesList = gphoto2_abilities_list._CameraAbilitiesList
+_CameraFile          = gphoto2_file._CameraFile
+_CameraList          = gphoto2_list._CameraList
+_CameraWidget        = gphoto2_widget._CameraWidget
+_GPContext           = gphoto2_context._GPContext
+_GPPortInfoList      = gphoto2_port_info_list._GPPortInfoList
+
 # user friendly names for some gphoto2 structs / classes / objects
-Camera              = gphoto2_camera._Camera
-CameraAbilitiesList = gphoto2_abilities_list._CameraAbilitiesList
-CameraFile          = gphoto2_file._CameraFile
-CameraList          = gphoto2_list._CameraList
-CameraWidget        = gphoto2_widget._CameraWidget
-Context             = gphoto2_context._GPContext
-PortInfoList        = gphoto2_port_info_list._GPPortInfoList
+Camera              = _Camera
+CameraAbilitiesList = _CameraAbilitiesList
+CameraFile          = _CameraFile
+CameraList          = _CameraList
+CameraWidget        = _CameraWidget
+Context             = _GPContext
+PortInfoList        = _GPPortInfoList
 
 _return_logger = logging.getLogger('gphoto2.returnvalue')
 

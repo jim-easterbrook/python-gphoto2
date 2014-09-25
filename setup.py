@@ -167,6 +167,6 @@ setup(name = 'gphoto2',
       data_files = [
           ('share/python-gphoto2/examples', examples),
           ('share/python-gphoto2', [
-              'CHANGELOG.txt', 'LICENSE.txt', 'MANIFEST.in', 'README.rst']),
+              'CHANGELOG.txt', 'LICENSE.txt', 'README.rst']),
           ],
       )

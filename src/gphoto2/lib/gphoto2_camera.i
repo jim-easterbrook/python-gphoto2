@@ -15,7 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module(package="gphoto2.lib") gphoto2_camera
+%module(package="gphoto2.lib", threads="1") gphoto2_camera
+%nothread;
 
 %{
 #include "gphoto2/gphoto2.h"
@@ -36,6 +37,28 @@
 IMPORT_GPHOTO2_ERROR()
 
 %rename(Camera) _Camera;
+
+// Allow other Python threads to continue during some function calls
+%thread gp_camera_wait_for_event;
+%thread _Camera::wait_for_event;
+%thread gp_camera_capture;
+%thread _Camera::capture;
+%thread gp_camera_capture_preview;
+%thread _Camera::capture_preview;
+%thread gp_camera_get_config;
+%thread _Camera::get_config;
+%thread gp_camera_folder_list_files;
+%thread _Camera::folder_list_files;
+%thread gp_camera_folder_list_folders;
+%thread _Camera::folder_list_folders;
+%thread gp_camera_folder_delete_all;
+%thread _Camera::folder_delete_all;
+%thread gp_camera_folder_put_file;
+%thread _Camera::folder_put_file;
+%thread gp_camera_file_get;
+%thread _Camera::file_get;
+%thread gp_camera_file_read;
+%thread _Camera::file_read;
 
 // gp_camera_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(Camera **)

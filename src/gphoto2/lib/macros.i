@@ -4,11 +4,16 @@ PyObject *PyExc_GPhoto2Error = NULL;
 %}
 %init %{
 {
-  PyObject *module = PyImport_ImportModuleLevel("", PyEval_GetGlobals(), NULL, NULL, 2);
+  PyObject *mod_dict = PyImport_GetModuleDict();
+  PyObject *module = PyDict_GetItemString(mod_dict, "gphoto2");
   if (module != NULL)
     PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
   if (PyExc_GPhoto2Error == NULL)
+#if PY_VERSION_HEX >= 0x03000000
+    return NULL;
+#else
     return;
+#endif
 }
 %}
 %enddef

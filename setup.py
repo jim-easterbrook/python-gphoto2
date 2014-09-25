@@ -32,6 +32,15 @@ version = '0.9.1'
 gphoto2_version = str(subprocess.check_output(['gphoto2-config', '--version']))
 gphoto2_version = tuple(gphoto2_version.split()[1].split('.'))
 
+# get SWIG version
+swig_version = str(subprocess.check_output(['swig', '-version']))
+for line in swig_version.split('\n'):
+    if 'Version' in line:
+        swig_version = line.split()[-1]
+        break
+else:
+    swig_version = 'unknown'
+
 # get list of modules
 mod_names = filter(lambda x: x[1] == '.i',
                    map(os.path.splitext, os.listdir('src/gphoto2/lib')))
@@ -41,8 +50,10 @@ mod_names.sort()
 
 # create extension modules list
 ext_modules = []
-swig_opts = ['-I/usr/include', '-builtin', '-nodefaultctor',
+swig_opts = ['-I/usr/include', '-nodefaultctor',
              '-O', '-Wextra', '-Werror', '-MMD']
+if swig_version != '2.0.11':
+    swig_opts.append('-builtin')
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes', '-Werror']
 if sys.version_info[0] >= 3:

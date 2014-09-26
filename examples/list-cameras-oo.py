@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# "object oriented" version of list-cameras.py
+
 from __future__ import print_function
 
 import logging
@@ -29,13 +31,23 @@ def main():
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
     context = gp.Context()
-    camera = gp.Camera()
-    camera.init(context)
-    text = camera.get_summary(context)
-    print('Summary')
-    print('=======')
-    print(str(text))
-    camera.exit(context)
+    if hasattr(gp, 'gp_camera_autodetect'):
+        # gphoto2 version 2.5+
+        cameras = context.camera_autodetect()
+    else:
+        port_info_list = gp.PortInfoList()
+        port_info_list.load()
+        abilities_list = gp.CameraAbilitiesList()
+        abilities_list.load(context)
+        cameras = abilities_list.detect(port_info_list, context)
+    n = 0
+    for name, value in cameras:
+        print('camera number', n)
+        print('===============')
+        print(name)
+        print(value)
+        print
+        n += 1
     return 0
 
 if __name__ == "__main__":

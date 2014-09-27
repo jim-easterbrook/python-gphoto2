@@ -38,7 +38,6 @@ gphoto2_libs = str(subprocess.check_output(
 for n in range(len(gphoto2_include)):
     if gphoto2_include[n].endswith('/gphoto2'):
         gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
-print gphoto2_include
 
 # get SWIG version
 swig_version = str(subprocess.check_output(['swig', '-version']))

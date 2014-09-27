@@ -42,57 +42,57 @@ DEFAULT_DTOR(_CameraFile, gp_file_unref)
 %ignore _CameraFile;
 
 // Add member methods to _CameraFile
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     set_name, (const char *name),
     gp_file_set_name, ($self, name))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     get_name, (const char **name),
     gp_file_get_name, ($self, name))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     set_mime_type, (const char *mime_type),
     gp_file_set_mime_type, ($self, mime_type))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     get_mime_type, (const char **mime_type),
     gp_file_get_mime_type, ($self, mime_type))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     set_mtime, (time_t mtime),
     gp_file_set_mtime, ($self, mtime))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     get_mtime, (time_t *mtime),
     gp_file_get_mtime, ($self, mtime))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     detect_mime_type, (),
     gp_file_detect_mime_type, ($self))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     adjust_name_for_mime_type, (),
     gp_file_adjust_name_for_mime_type, ($self))
 #ifndef GPHOTO2_24
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     get_name_by_type, (const char *basename, CameraFileType type, char **newname),
     gp_file_get_name_by_type, ($self, basename, type, newname))
 #endif
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     set_data_and_size, (char *data, unsigned long int size),
     gp_file_set_data_and_size, ($self, data, size))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     get_data_and_size, (const char **data, unsigned long int *size),
     gp_file_get_data_and_size, ($self, data, size))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     open, (const char *filename),
     gp_file_open, ($self, filename))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     save, (const char *filename),
     gp_file_save, ($self, filename))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     clean, (),
     gp_file_clean, ($self))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     copy, (CameraFile *source),
     gp_file_copy, ($self, source))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     append, (const char *data, unsigned long int size),
     gp_file_append, ($self, data, size))
-MEMBER_FUNCTION(_CameraFile,
+MEMBER_FUNCTION(_CameraFile, CameraFile,
     slurp, (char *data, size_t size, size_t *readlen),
     gp_file_slurp, ($self, data, size, readlen))
 

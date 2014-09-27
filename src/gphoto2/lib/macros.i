@@ -123,7 +123,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %enddef
 
 // Macros to add member functions to structs
-%define MEMBER_FUNCTION(type, member, member_args, function, function_args)
+%define MEMBER_FUNCTION(type, py_type, member, member_args, function, function_args)
 %exception type::member {
   $action
   if (PyErr_Occurred() != NULL) SWIG_fail;
@@ -135,10 +135,10 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
     if (error < GP_OK) GPHOTO2_ERROR(error)
   }
 };
-%feature("docstring") function "See also: gphoto2." #type "." #member
+%feature("docstring") function "See also: gphoto2." #py_type "." #member
 %enddef
 
-%define INT_MEMBER_FUNCTION(type, member, member_args, function, function_args)
+%define INT_MEMBER_FUNCTION(type, py_type, member, member_args, function, function_args)
 %{
 int (*type ## _ ## member)() = function;
 %}
@@ -153,7 +153,7 @@ int (*type ## _ ## member)() = function;
 %feature("docstring") "See also: gphoto2." #function
   int member member_args;
 };
-%feature("docstring") function "See also: gphoto2." #type "." #member
+%feature("docstring") function "See also: gphoto2." #py_type "." #member
 %enddef
 
 %define PYOBJECT_MEMBER_FUNCTION(type, member, member_args)
@@ -162,9 +162,9 @@ int (*type ## _ ## member)() = function;
 };
 %enddef
 
-%define LEN_MEMBER_FUNCTION(type, function)
+%define LEN_MEMBER_FUNCTION(type, py_type, function)
 #if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "sq_length", functype="lenfunc") type::__len__;
 #endif
-INT_MEMBER_FUNCTION(type, __len__, (), function, ())
+INT_MEMBER_FUNCTION(type, py_type, __len__, (), function, ())
 %enddef

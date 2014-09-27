@@ -35,15 +35,6 @@ class GPhoto2Error(Exception):
 from .lib import *
 from .lib import __version__
 
-# provide gphoto2 internal names for pydoc's benefit ("See also" strings)
-_Camera              = Camera
-_CameraAbilitiesList = CameraAbilitiesList
-_CameraFile          = CameraFile
-_CameraList          = CameraList
-_CameraWidget        = CameraWidget
-_GPContext           = Context
-_GPPortInfoList      = PortInfoList
-
 _return_logger = logging.getLogger('gphoto2.returnvalue')
 
 error_severity = {

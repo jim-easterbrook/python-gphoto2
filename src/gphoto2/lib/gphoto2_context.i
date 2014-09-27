@@ -54,7 +54,7 @@ struct _GPContext {};
 
 #ifndef GPHOTO2_24
 // Add member methods to _GPContext
-MEMBER_FUNCTION(_GPContext,
+MEMBER_FUNCTION(_GPContext, Context,
     camera_autodetect, (CameraList *list),
     gp_camera_autodetect, (list, $self))
 #endif

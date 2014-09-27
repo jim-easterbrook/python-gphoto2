@@ -63,7 +63,7 @@ DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
 %ignore _GPPortInfoList;
 
 // Make GPPortInfoList more like a Python list
-LEN_MEMBER_FUNCTION(_GPPortInfoList, gp_port_info_list_count)
+LEN_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList, gp_port_info_list_count)
 #if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "sq_item",   functype="ssizeargfunc") _GPPortInfoList::__getitem__;
 #endif
@@ -88,22 +88,22 @@ LEN_MEMBER_FUNCTION(_GPPortInfoList, gp_port_info_list_count)
 };
 
 // Add member methods to _GPPortInfoList
-MEMBER_FUNCTION(_GPPortInfoList,
+MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
     append, (GPPortInfo info),
     gp_port_info_list_append, ($self, info))
-MEMBER_FUNCTION(_GPPortInfoList,
+MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
     load, (),
     gp_port_info_list_load, ($self))
-INT_MEMBER_FUNCTION(_GPPortInfoList,
+INT_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
     count, (),
     gp_port_info_list_count, ($self))
-INT_MEMBER_FUNCTION(_GPPortInfoList,
+INT_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
     lookup_path, (const char *path),
     gp_port_info_list_lookup_path, ($self, path))
-INT_MEMBER_FUNCTION(_GPPortInfoList,
+INT_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
     lookup_name, (const char *name),
     gp_port_info_list_lookup_name, ($self, name))
-MEMBER_FUNCTION(_GPPortInfoList,
+MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
     get_info, (const int n, GPPortInfo *info),
     gp_port_info_list_get_info, ($self, n, info))
 

@@ -52,7 +52,7 @@ DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
 %ignore _CameraAbilitiesList;
 
 // Make CameraAbilitiesList more like a Python list
-LEN_MEMBER_FUNCTION(_CameraAbilitiesList, gp_abilities_list_count)
+LEN_MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList, gp_abilities_list_count)
 #if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "sq_item",   functype="ssizeargfunc")
     _CameraAbilitiesList::__getitem__;
@@ -76,30 +76,30 @@ LEN_MEMBER_FUNCTION(_CameraAbilitiesList, gp_abilities_list_count)
 };
 
 // Add member methods to _CameraAbilitiesList
-MEMBER_FUNCTION(_CameraAbilitiesList,
+MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList,
     load, (GPContext *context),
     gp_abilities_list_load, ($self, context))
 #ifndef GPHOTO2_24
-MEMBER_FUNCTION(_CameraAbilitiesList,
+MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList,
     load_dir, (const char *dir, GPContext *context),
     gp_abilities_list_load_dir, ($self, dir, context))
 #endif
-MEMBER_FUNCTION(_CameraAbilitiesList,
+MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList,
     reset, (),
     gp_abilities_list_reset, ($self))
-MEMBER_FUNCTION(_CameraAbilitiesList,
+MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList,
     detect, (GPPortInfoList *info_list, CameraList *l, GPContext *context),
     gp_abilities_list_detect, ($self, info_list, l, context))
-MEMBER_FUNCTION(_CameraAbilitiesList,
+MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList,
     append, (CameraAbilities abilities),
     gp_abilities_list_append, ($self, abilities))
-INT_MEMBER_FUNCTION(_CameraAbilitiesList,
+INT_MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList,
     count, (),
     gp_abilities_list_count, ($self))
-INT_MEMBER_FUNCTION(_CameraAbilitiesList,
+INT_MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList,
     lookup_model, (const char *model),
     gp_abilities_list_lookup_model, ($self, model))
-MEMBER_FUNCTION(_CameraAbilitiesList,
+MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList,
     get_abilities, (int index, CameraAbilities *abilities),
     gp_abilities_list_get_abilities, ($self, index, abilities))
 

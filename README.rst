@@ -99,8 +99,12 @@ The ``pydoc`` command can be used to show basic information about a function::
        Parameters:
            camera: Camera *
            folder: char const *
-           context: GPContext *
-   jim@firefly ~/python-gphoto2 $
+           context: Context *
+
+
+       See also: gphoto2.Camera.folder_list_files
+
+   jim@firefly ~/python-gphoto2 $ 
 
 In general it is easier to use the C `API documentation <http://www.gphoto.org/doc/api/>`_, but make sure you find the documentation for the version of libgphoto2 installed on your computer.
 
@@ -170,7 +174,8 @@ The example program can be re-written as follows:
     camera.exit(context)
 
 The member functions are more "hand crafted" than the rest of the Python bindings, which are mostly automatically generated from the library header files.
-This means that there may be some functions in the "C" interface that do not have corresponding member methods.
+This means that there are some functions in the "C" interface that do not have corresponding member methods.
+Those that do include a "see also" reference in their docstring, as shown in the ``pydoc`` example above.
 
 Error checking
 ^^^^^^^^^^^^^^

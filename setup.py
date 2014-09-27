@@ -32,9 +32,13 @@ version = '0.9.1'
 gphoto2_version = str(subprocess.check_output(
     ['pkg-config', '--modversion', 'libgphoto2'])).strip()
 gphoto2_include = str(subprocess.check_output(
-    ['pkg-config', '--cflags-only-I', 'libgphoto2'])).strip()
+    ['pkg-config', '--cflags-only-I', 'libgphoto2'])).strip().split()
 gphoto2_libs = str(subprocess.check_output(
-    ['pkg-config', '--libs-only-l', 'libgphoto2'])).strip()
+    ['pkg-config', '--libs-only-l', 'libgphoto2'])).strip().split()
+for n in range(len(gphoto2_include)):
+    if gphoto2_include[n].endswith('/gphoto2'):
+        gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
+print gphoto2_include
 
 # get SWIG version
 swig_version = str(subprocess.check_output(['swig', '-version']))
@@ -67,8 +71,8 @@ if gphoto2_version.startswith('2.4.'):
 elif gphoto2_version.startswith('2.5.'):
     swig_opts.append('-DGPHOTO2_25')
     extra_compile_args.append('-DGPHOTO2_25')
-swig_opts.append(gphoto2_include)
-libraries = map(lambda x: x[2:], gphoto2_libs.split())
+swig_opts = swig_opts + gphoto2_include
+libraries = map(lambda x: x[2:], gphoto2_libs)
 for mod_name in mod_names:
     depends = []
     dep_file = 'src/gphoto2/lib/%s_wrap.d' % mod_name

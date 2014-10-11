@@ -71,10 +71,10 @@ CALLOC_ARGOUT(CameraText *about)
 // gp_camera_folder_list_files() etc. return a pointer in an output parameter
 NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
-// gp_camera_capture_preview() returns a pointer in an output parameter
-NEW_ARGOUT(CameraFile *file_out, gp_file_new, gp_file_unref)
-// Redefine signature so other functions that take CameraFile *file aren't affected
-int gp_camera_capture_preview(Camera *camera, CameraFile *file_out, GPContext *context);
+// gp_camera_capture_preview() & gp_camera_file_get() return a pointer
+NEW_ARGOUT(CameraFile *camera_file, gp_file_new, gp_file_unref)
+// Redefine signature as gp_camera_folder_put_file() also uses *file
+int gp_camera_capture_preview(Camera *camera, CameraFile *camera_file, GPContext *context);
 %ignore gp_camera_capture_preview;
 
 // gp_camera_capture() returns a pointer in an output parameter

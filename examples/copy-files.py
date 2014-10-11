@@ -95,9 +95,8 @@ def main():
         print('%s -> %s' % (path, dest_dir))
         if not os.path.isdir(dest_dir):
             os.makedirs(dest_dir)
-        camera_file = gp.check_result(gp.gp_file_new())
-        gp.check_result(gp.gp_camera_file_get(
-            camera, folder, name, gp.GP_FILE_TYPE_NORMAL, camera_file, context))
+        camera_file = gp.check_result(gp.gp_camera_file_get(
+            camera, folder, name, gp.GP_FILE_TYPE_NORMAL, context))
         gp.check_result(gp.gp_file_save(camera_file, dest))
     gp.check_result(gp.gp_camera_exit(camera, context))
     return 0

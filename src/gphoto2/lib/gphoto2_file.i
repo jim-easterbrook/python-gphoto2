@@ -35,6 +35,27 @@ IMPORT_GPHOTO2_ERROR()
 // gp_file_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFile **)
 
+// gp_file_get_data_and_size() returns a pointer to some data
+%typemap(in, numinputs=0) const char ** data (char *temp) {
+  $1 = &temp;
+}
+%typemap(in, numinputs=0) unsigned long int * size (unsigned long temp) {
+  $1 = &temp;
+}
+%typemap(argout) (const char ** data, unsigned long * size) {
+  // Make a copy of the data - persists after CameraFile object is destroyed
+//  PyObject* array = PyByteArray_FromStringAndSize(*$1, *$2);
+  // Make a reference to the data - not safe if the CameraFile object is deleted
+  PyObject* array = PyBuffer_FromMemory(*$1, *$2);
+  if (array) {
+    $result = SWIG_Python_AppendOutput($result, array);
+  }
+  else {
+    Py_INCREF(Py_None);
+    $result = SWIG_Python_AppendOutput($result, Py_None);
+  }
+}
+
 // Add default constructor and destructor to _CameraFile
 struct _CameraFile {};
 DEFAULT_CTOR(_CameraFile, gp_file_new)

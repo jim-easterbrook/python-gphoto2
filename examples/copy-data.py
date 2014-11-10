@@ -21,7 +21,11 @@ from __future__ import print_function
 
 import logging
 import os
-import StringIO
+import six
+if six.PY2:
+    import StringIO
+else:
+    import io
 import sys
 
 from PIL import Image
@@ -63,13 +67,20 @@ def main():
         camera, folder, name, gp.GP_FILE_TYPE_NORMAL, context))
     data = gp.check_result(gp.gp_file_get_data_and_size(camera_file))
     print(type(data), len(data))
-    print(map(ord, data[0:10]))
-    image = Image.open(StringIO.StringIO(data))
+    if six.PY2:
+        print(map(ord, data[0:10]))
+        image = Image.open(StringIO.StringIO(data))
+    else:
+        print(data[0:10])
+        image = Image.open(io.BytesIO(data))
     image.show()
     print('After deleting camera_file')
     del camera_file
     print(type(data), len(data))
-    print(map(ord, data[0:10]))
+    if six.PY2:
+        print(map(ord, data[0:10]))
+    else:
+        print(data[0:10])
     gp.check_result(gp.gp_camera_exit(camera, context))
     return 0
 

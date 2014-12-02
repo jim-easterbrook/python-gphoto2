@@ -15,6 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 0.10.1:
+  1/ Bug fix: would not build with some versions of SWIG.
+
 Changes in 0.10.0:
   1/ gp_file_get_data_and_size() now returns a Python bytes object.
   2/ gp_camera_wait_for_event() now returns data for some events.

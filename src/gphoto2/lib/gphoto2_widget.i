@@ -131,6 +131,7 @@ gp_error:
 fail:
   return NULL;
 }
+PyObject* (*struct__CameraWidget_set_value)() = _CameraWidget_set_value;
 
 PyObject *_CameraWidget_get_value(CameraWidget *widget) {
   CameraWidgetType type;
@@ -177,6 +178,7 @@ fail:
   PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
   return NULL;
 }
+PyObject* (*struct__CameraWidget_get_value)() = _CameraWidget_get_value;
 %}
 
 // Add member methods to _CameraWidget

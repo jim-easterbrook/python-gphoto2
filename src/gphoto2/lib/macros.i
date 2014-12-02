@@ -141,6 +141,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %define INT_MEMBER_FUNCTION(type, py_type, member, member_args, function, function_args)
 %{
 int (*type ## _ ## member)() = function;
+int (*struct ## _ ## type ## _ ## member)() = function;
 %}
 %exception type::member {
   $action

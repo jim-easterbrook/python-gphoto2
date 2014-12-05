@@ -43,6 +43,8 @@ IMPORT_GPHOTO2_ERROR()
 %thread _Camera::wait_for_event;
 %thread gp_camera_capture;
 %thread _Camera::capture;
+%thread gp_camera_trigger_capture;
+%thread _Camera::trigger_capture;
 %thread gp_camera_capture_preview;
 %thread _Camera::capture_preview;
 %thread gp_camera_get_config;

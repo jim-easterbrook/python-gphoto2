@@ -5,9 +5,10 @@ python-gphoto2 is a comprehensive Python interface (or binding) to `libgphoto2 <
 It is built using `SWIG <http://swig.org/>`_ to automatically generate the interface code.
 This gives direct access to nearly all the libgphoto2 functions, but sometimes in a rather un-Pythonic manner.
 
-Other Python bindings to libgphoto2 are available.
+Other Python bindings to libgphoto2 are available:
 `piggyphoto <https://github.com/alexdu/piggyphoto>`_ uses ctypes (included in standard Python installations) to interface to the library.
 The gphoto2 source tree includes some `Python bindings <http://sourceforge.net/p/gphoto/code/HEAD/tree/trunk/bindings/libgphoto2-python/>`_ which also use ctypes.
+`gphoto2-cffi <https://github.com/jbaiter/gphoto2-cffi>`_ uses `cffi <http://cffi.readthedocs.org/>`_.
 
 .. contents::
    :backlinks: top

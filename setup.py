@@ -43,7 +43,8 @@ for n in range(len(gphoto2_include)):
         gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
 
 # get SWIG version
-swig_version = str(subprocess.check_output(['swig', '-version']))
+swig_version = str(subprocess.check_output(
+    ['swig', '-version'], universal_newlines=True))
 for line in swig_version.split('\n'):
     if 'Version' in line:
         swig_version = line.split()[-1]

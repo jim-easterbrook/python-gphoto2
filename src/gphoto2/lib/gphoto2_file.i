@@ -44,11 +44,11 @@ PLAIN_ARGOUT(CameraFile **)
 }
 %typemap(argout) (const char ** data, unsigned long * size) {
   // Make a copy of the data - persists after CameraFile object is destroyed
-#if PY_VERSION_HEX >= 0x03000000
+%#if PY_VERSION_HEX >= 0x03000000
   PyObject* array = PyBytes_FromStringAndSize(*$1, *$2);
-#else
+%#else
   PyObject* array = PyString_FromStringAndSize(*$1, *$2);
-#endif
+%#endif
   if (array) {
     $result = SWIG_Python_AppendOutput($result, array);
   }

@@ -15,6 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 0.10.2:
+  1/ Fixed failure to build with Python 3.
+  2/ Made gp_camera_trigger_capture thread aware.
+
 Changes in 0.10.1:
   1/ Bug fix: would not build with some versions of SWIG.
 

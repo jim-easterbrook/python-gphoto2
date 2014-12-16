@@ -107,10 +107,11 @@ The ``pydoc`` command can be used to show basic information about a function::
 
    jim@firefly ~/python-gphoto2 $ 
 
-In general it is easier to use the C `API documentation <http://www.gphoto.org/doc/api/>`_, but make sure you find the documentation for the version of libgphoto2 installed on your computer.
-
-Note that there is one major difference between the Python and C APIs.
-C functions that use a pointer parameter to return a value (and often do some memory allocation) such as `gp_camera_new() <http://www.gphoto.org/doc/api/gphoto2-camera_8h.html>`_ have Python equivalents that create the required pointer and return it in a list with the gphoto2 error code.
+The C `API documentation <http://www.gphoto.org/doc/api/>`_ of ``gp_camera_folder_list_files`` shows an additional parameter "``list``" of type "``CameraList *``".
+In Python the function returns this output parameter in a list with the integer error code.
+Most of the libgphoto2 functions that use pointer parameters to return values (in the C API) have been adapted like this in the Python API.
+(Unfortunately I've not found a way to persuade SWIG to include this extra return value in the documentation.
+You should use ``pydoc`` to check the parameters expected by the Python function.)
 
 For example, the C code:
 
@@ -131,12 +132,8 @@ has this Python equivalent:
     error, camera = gp.gp_camera_new()
     ...
 
-Note that the gp_camera_unref() call is not needed (since version 0.5.0).
+Note that the gp_camera_unref() call is not needed (since python-gphoto2 version 0.5.0).
 It is called automatically when the python camera object is deleted.
-
-This conversion of "output" parameters is why the ``CameraList *list`` parameter is not listed in the ``pydoc`` example above but is shown in the C documentation.
-In Python a new ``CameraList`` object is created and appended to the return value list.
-Unfortunately I've not found a way to persuade SWIG to include this extra return value in the documentation.
 
 Here is a complete example program (without any error checking):
 

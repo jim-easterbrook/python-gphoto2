@@ -53,10 +53,9 @@ else:
     swig_version = 'unknown'
 
 # get list of modules
-mod_names = filter(lambda x: x[1] == '.i',
+mod_names = filter(lambda x: x[0].startswith('gphoto2') and x[1] == '.i',
                    map(os.path.splitext, os.listdir('src/gphoto2/lib')))
-mod_names = map(lambda x: x[0], mod_names)
-mod_names = list(filter(lambda x: x.startswith('gphoto2'), mod_names))
+mod_names = list(map(lambda x: x[0], mod_names))
 mod_names.sort()
 
 # create extension modules list
@@ -78,15 +77,16 @@ swig_opts = swig_opts + gphoto2_include
 libraries = list(map(lambda x: x[2:], gphoto2_libs))
 for mod_name in mod_names:
     depends = []
-    dep_file = 'src/gphoto2/lib/%s_wrap.d' % mod_name
+    dep_file = 'src/gphoto2/lib/{}_wrap.d'.format(mod_name)
     if os.path.exists(dep_file):
-        for token in shlex.split(open(dep_file).read()):
-            token = token.strip()
-            if token and not token.endswith(':'):
-                depends.append(token)
+        with open(dep_file) as df:
+            for token in shlex.split(df.read()):
+                token = token.strip()
+                if token and not token.endswith(':'):
+                    depends.append(token)
     ext_modules.append(Extension(
-        '_%s' % mod_name,
-        sources = ['src/gphoto2/lib/%s.i' % mod_name],
+        '_' + mod_name,
+        sources = ['src/gphoto2/lib/{}.i'.format(mod_name)],
         swig_opts = swig_opts,
         libraries = libraries,
         extra_compile_args = extra_compile_args,
@@ -94,9 +94,9 @@ for mod_name in mod_names:
         ))
 
 # rewrite init module, if needed
-init_module = '__version__ = "%s"\n\n' % version
+init_module = '__version__ = "{}"\n\n'.format(version)
 for mod_name in mod_names:
-    init_module += 'from .%s import *\n' % mod_name
+    init_module += 'from .{} import *\n'.format(mod_name)
 with open('src/gphoto2/lib/__init__.py') as im:
     old_init_module = im.read()
 if init_module != old_init_module:
@@ -131,7 +131,7 @@ try:
                         break
                     message += line + '\n'
             repo = git.Repo()
-            tag = repo.create_tag('gphoto2-%s' % version, message=message)
+            tag = repo.create_tag('gphoto2-' + version, message=message)
             remote = repo.remotes.origin
             remote.push(tags=True)
             return upload.run(self)

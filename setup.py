@@ -31,7 +31,7 @@ version = '0.10.3'
 # get gphoto2 library config
 gphoto2_version = str(subprocess.check_output(
     ['pkg-config', '--modversion', 'libgphoto2'],
-    universal_newlines=True)).strip()
+    universal_newlines=True)).strip().split('.')
 gphoto2_include = subprocess.check_output(
     ['pkg-config', '--cflags-only-I', 'libgphoto2'],
     universal_newlines=True).strip().split()
@@ -60,19 +60,15 @@ mod_names.sort()
 
 # create extension modules list
 ext_modules = []
-swig_opts = ['-nodefaultctor', '-O', '-Wextra', '-Werror', '-MMD']
+version_macro = 'GPHOTO2_' + ''.join(gphoto2_version[:2])
+swig_opts = ['-nodefaultctor', '-O', '-Wextra', '-Werror', '-MMD',
+             '-D' + version_macro]
 if swig_version != '2.0.11':
     swig_opts.append('-builtin')
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes', '-Werror']
 if sys.version_info[0] >= 3:
     swig_opts.append('-py3')
-if gphoto2_version.startswith('2.4.'):
-    swig_opts.append('-DGPHOTO2_24')
-    extra_compile_args.append('-DGPHOTO2_24')
-elif gphoto2_version.startswith('2.5.'):
-    swig_opts.append('-DGPHOTO2_25')
-    extra_compile_args.append('-DGPHOTO2_25')
 swig_opts = swig_opts + gphoto2_include
 libraries = list(map(lambda x: x[2:], gphoto2_libs))
 for mod_name in mod_names:
@@ -90,6 +86,7 @@ for mod_name in mod_names:
         swig_opts = swig_opts,
         libraries = libraries,
         extra_compile_args = extra_compile_args,
+        define_macros = [(version_macro, None)],
         depends = depends,
         ))
 

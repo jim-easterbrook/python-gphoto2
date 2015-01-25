@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,6 +35,24 @@ def main():
     print('Summary')
     print('=======')
     print(text.text)
+    print('Abilities')
+    print('=========')
+    abilities = gp.check_result(gp.gp_camera_get_abilities(camera))
+    print('model:', abilities.model)
+    print('status:', abilities.status)
+    print('port:', abilities.port)
+    print('speed:', abilities.speed)
+    print('operations:', abilities.operations)
+    print('file_operations:', abilities.file_operations)
+    print('folder_operations:', abilities.folder_operations)
+    print('usb_vendor:', abilities.usb_vendor)
+    print('usb_product:', abilities.usb_product)
+    print('usb_class:', abilities.usb_class)
+    print('usb_subclass:', abilities.usb_subclass)
+    print('usb_protocol:', abilities.usb_protocol)
+    print('library:', abilities.library)
+    print('id:', abilities.id)
+    print('device_type:', abilities.device_type)
     gp.check_result(gp.gp_camera_exit(camera, context))
     return 0
 

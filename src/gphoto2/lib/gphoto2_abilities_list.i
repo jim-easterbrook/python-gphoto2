@@ -77,6 +77,18 @@ LEN_MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList, gp_abilities_list
   }
 };
 
+// Convert array of serial port speeds to Python list
+%typemap(out) int speed [64] {
+  int *value = $1;
+  $result = PyList_New(0);
+  while (*value) {
+    PyObject* temp = PyInt_FromLong(*value);
+    PyList_Append($result, temp);
+    Py_DECREF(temp);
+    value++;
+  }
+}
+
 // Add member methods to _CameraAbilitiesList
 MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList,
     load, (GPContext *context),

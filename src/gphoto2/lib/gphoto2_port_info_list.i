@@ -80,10 +80,12 @@ LEN_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList, gp_port_info_list_count)
       PyErr_SetString(PyExc_IndexError, "GPPortInfoList index out of range");
       return;
     }
-    int error = gp_port_info_list_get_info($self, idx, info);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error)
-      return;
+    {
+      int error = gp_port_info_list_get_info($self, idx, info);
+      if (error < GP_OK) {
+        GPHOTO2_ERROR(error)
+        return;
+      }
     }
   }
 };

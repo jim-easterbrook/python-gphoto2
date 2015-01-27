@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -67,10 +67,12 @@ LEN_MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList, gp_abilities_list
       PyErr_SetString(PyExc_IndexError, "CameraAbilitiesList index out of range");
       return;
     }
-    int error = gp_abilities_list_get_abilities($self, idx, abilities);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error)
-      return;
+    {
+      int error = gp_abilities_list_get_abilities($self, idx, abilities);
+      if (error < GP_OK) {
+        GPHOTO2_ERROR(error)
+        return;
+      }
     }
   }
 };

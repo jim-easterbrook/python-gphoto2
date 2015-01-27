@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -50,13 +50,14 @@ LEN_MEMBER_FUNCTION(_CameraList, CameraList, gp_list_count)
 #endif
 %extend _CameraList {
   PyObject *__getitem__(int idx) {
+    int error = 0;
+    const char *name = NULL;
+    const char *value = NULL;
+    PyObject* result = NULL;
     if (idx < 0 || idx >= gp_list_count($self)) {
       PyErr_SetString(PyExc_IndexError, "CameraList index out of range");
       return NULL;
     }
-    int error = 0;
-    const char *name = NULL;
-    const char *value = NULL;
     error = gp_list_get_name($self, idx, &name);
     if (error < GP_OK) {
       GPHOTO2_ERROR(error)
@@ -67,7 +68,7 @@ LEN_MEMBER_FUNCTION(_CameraList, CameraList, gp_list_count)
       GPHOTO2_ERROR(error)
       return NULL;
     }
-    PyObject* result = PyList_New(2);
+    result = PyList_New(2);
     if (name == NULL) {
       Py_INCREF(Py_None);
       PyList_SetItem(result, 0, Py_None);

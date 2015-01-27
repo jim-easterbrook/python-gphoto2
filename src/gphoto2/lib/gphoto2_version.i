@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,9 +27,9 @@
 %include "typemaps.i"
 
 %typemap(out) char ** {
-  $result = PyList_New(0);
-  char **line = $1;
   int i;
+  char **line = $1;
+  $result = PyList_New(0);
   while (*line) {
     PyObject* temp = PyString_FromString(*line);
     PyList_Append($result, temp);

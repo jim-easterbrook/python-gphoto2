@@ -1,3 +1,20 @@
+// python-gphoto2 - Python interface to libgphoto2
+// http://github.com/jim-easterbrook/python-gphoto2
+// Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 %define IMPORT_GPHOTO2_ERROR()
 %{
 PyObject *PyExc_GPhoto2Error = NULL;
@@ -70,10 +87,12 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %define NEW_ARGOUT(typepattern, alloc_func, free_func)
 %typemap(in, numinputs=0) typepattern () {
   $1 = NULL;
-  int error = alloc_func(&$1);
-  if (error < GP_OK) {
-    GPHOTO2_ERROR(error)
-    SWIG_fail;
+  {
+    int error = alloc_func(&$1);
+    if (error < GP_OK) {
+      GPHOTO2_ERROR(error)
+      SWIG_fail;
+    }
   }
 }
 %typemap(freearg) typepattern {

@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -68,11 +68,13 @@ IMPORT_GPHOTO2_ERROR()
 static int widget_dtor(CameraWidget *widget) {
   if (widget == NULL)
     return GP_OK;
-  CameraWidget *root;
-  int error = gp_widget_get_root(widget, &root);
-  if (error < GP_OK)
-    return error;
-  return gp_widget_unref(root);
+  {
+    CameraWidget *root;
+    int error = gp_widget_get_root(widget, &root);
+    if (error < GP_OK)
+      return error;
+    return gp_widget_unref(root);
+  }
 }
 %}
 struct _CameraWidget {};
@@ -83,14 +85,14 @@ DEFAULT_DTOR(_CameraWidget, widget_dtor)
 %{
 PyObject *_CameraWidget_set_value(CameraWidget *widget, PyObject *py_value) {
   CameraWidgetType type;
-  int error = gp_widget_get_type(widget, &type);
-  if (error < GP_OK)
-    goto gp_error;
   char *char_value = NULL;
   int char_count = 0;
   float float_value;
   int int_value;
   int ecode = 0;
+  int error = gp_widget_get_type(widget, &type);
+  if (error < GP_OK)
+    goto gp_error;
   switch (type) {
     case GP_WIDGET_TEXT:
     case GP_WIDGET_RADIO:
@@ -135,13 +137,13 @@ PyObject* (*struct__CameraWidget_set_value)() = _CameraWidget_set_value;
 
 PyObject *_CameraWidget_get_value(CameraWidget *widget) {
   CameraWidgetType type;
-  int error = gp_widget_get_type(widget, &type);
-  if (error < GP_OK)
-    goto fail;
   char *char_value = NULL;
   float float_value;
   int int_value;
   PyObject *py_value;
+  int error = gp_widget_get_type(widget, &type);
+  if (error < GP_OK)
+    goto fail;
   switch (type) {
     case GP_WIDGET_TEXT:
     case GP_WIDGET_RADIO:
@@ -294,14 +296,14 @@ static int gp_widget_set_value_float(CameraWidget *widget, const float value) {
 %inline %{
 PyObject *wrap_gp_widget_get_value(CameraWidget *widget) {
   CameraWidgetType type;
-  int error = gp_widget_get_type(widget, &type);
-  PyObject *result = PyList_New(2);
-  if (error != GP_OK)
-    goto fail;
   char *char_value = NULL;
   float float_value;
   int int_value;
   PyObject *py_value;
+  int error = gp_widget_get_type(widget, &type);
+  PyObject *result = PyList_New(2);
+  if (error != GP_OK)
+    goto fail;
   switch (type) {
     case GP_WIDGET_TEXT:
     case GP_WIDGET_RADIO:
@@ -343,14 +345,14 @@ fail:
 %inline %{
 PyObject *wrap_gp_widget_set_value(CameraWidget *widget, PyObject *py_value) {
   CameraWidgetType type;
-  int error = gp_widget_get_type(widget, &type);
-  if (error != GP_OK)
-    goto gp_error;
   char *char_value = NULL;
   int char_count = 0;
   float float_value;
   int int_value;
   int ecode = 0;
+  int error = gp_widget_get_type(widget, &type);
+  if (error != GP_OK)
+    goto gp_error;
   switch (type) {
     case GP_WIDGET_TEXT:
     case GP_WIDGET_RADIO:

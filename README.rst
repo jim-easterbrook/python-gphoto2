@@ -30,6 +30,9 @@ Installation and testing
 There are several ways to install python-gphoto2, with varying levels of control over the installation process.
 Note that they all need SWIG and the other dependencies - there are no "binary" packages at present.
 
+The commands below will install python-gphoto2 for your default Python version.
+To install for both Python 2 and Python 3, run the installation process twice with specific commands, i.e. ``pip2`` and ``pip3`` or ``python2`` and ``python3``.
+
 Install with ``pip``
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -107,9 +110,11 @@ The ``pydoc`` command can be used to show basic information about a function::
 
    jim@firefly ~/python-gphoto2 $ 
 
-The C `API documentation <http://www.gphoto.org/doc/api/>`_ of ``gp_camera_folder_list_files`` shows an additional parameter "``list``" of type "``CameraList *``".
-In Python the function returns this output parameter in a list with the integer error code.
-Most of the libgphoto2 functions that use pointer parameters to return values (in the C API) have been adapted like this in the Python API.
+If you compare this to the C `API documentation <http://www.gphoto.org/doc/api/>`_ of ``gp_camera_folder_list_files`` you will see that the function signature includes an additional parameter "``list``" of type "``CameraList *``".
+This is an "output" parameter, a concept that doesn't really exist in Python.
+The Python version of ``gp_camera_folder_list_files`` returns a sequence containing the integer error code and the ``list`` value.
+
+Most of the libgphoto2 functions that use pointer parameters to return values in the C API have been adapted like this in the Python API.
 (Unfortunately I've not found a way to persuade SWIG to include this extra return value in the documentation.
 You should use ``pydoc`` to check the parameters expected by the Python function.)
 
@@ -171,17 +176,17 @@ The example program can be re-written as follows:
     print(str(text))
     camera.exit(context)
 
-The member functions are more "hand crafted" than the rest of the Python bindings, which are mostly automatically generated from the library header files.
+The member functions are more "hand crafted" than the rest of the Python bindings, which are automatically generated from the library header files.
 This means that there are some functions in the "C" interface that do not have corresponding member methods.
 Those that do include a "see also" reference in their docstring, as shown in the ``pydoc`` example above.
 
 Error checking
 ^^^^^^^^^^^^^^
 
-Most of the libgphoto2 "C" functions return an integer to indicate success or failure.
+Most of the libgphoto2 functions return an integer to indicate success or failure.
 The Python interface includes a ``check_result()`` function to check these values and raise a ``GPhoto2Error`` exception if an error occurs.
 
-This function also unwraps lists such as that returned by ``gp_camera_new()`` in the example.
+This function also removes the error code from lists such as that returned by ``gp_camera_new()`` in the example.
 Using this function the earlier example becomes:
 
 .. code:: python
@@ -259,7 +264,7 @@ Licence
 
 python-gphoto2 - Python interface to libgphoto2
 http://github.com/jim-easterbrook/python-gphoto2
-Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

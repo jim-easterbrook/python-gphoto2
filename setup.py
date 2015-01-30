@@ -93,7 +93,7 @@ for mod_name in mod_names:
 # rewrite init module, if needed
 init_module = '__version__ = "{}"\n\n'.format(version)
 for mod_name in mod_names:
-    init_module += 'from .{} import *\n'.format(mod_name)
+    init_module += 'from gphoto2.lib.{} import *\n'.format(mod_name)
 with open('src/gphoto2/lib/__init__.py') as im:
     old_init_module = im.read()
 if init_module != old_init_module:

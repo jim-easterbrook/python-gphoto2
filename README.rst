@@ -17,7 +17,7 @@ Dependencies
 ------------
 
 *   Python: http://python.org/ version 2.6 or greater (including Python 3)
-*   SWIG: http://swig.org/ version 2.0 or higher
+*   SWIG: http://swig.org/ version 2.0 or greater (version 2.0.9 or greater is required to build python-gphoto2 with Python 3)
 *   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.4 or greater
 
 Note that you need the "development headers" versions of libgphoto2 and Python.
@@ -110,7 +110,7 @@ The ``pydoc`` command can be used to show basic information about a function::
 
    jim@firefly ~/python-gphoto2 $ 
 
-If you compare this to the C `API documentation <http://www.gphoto.org/doc/api/>`_ of ``gp_camera_folder_list_files`` you will see that the function signature includes an additional parameter "``list``" of type "``CameraList *``".
+If you compare this to the C `API documentation <http://www.gphoto.org/doc/api/>`_ of ``gp_camera_folder_list_files`` you will see that the C function signature includes an additional parameter "``list``" of type "``CameraList *``".
 This is an "output" parameter, a concept that doesn't really exist in Python.
 The Python version of ``gp_camera_folder_list_files`` returns a sequence containing the integer error code and the ``list`` value.
 

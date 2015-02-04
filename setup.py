@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -91,13 +91,17 @@ for mod_name in mod_names:
         ))
 
 # rewrite init module, if needed
+init_file = 'src/gphoto2/lib/__init__.py'
 init_module = '__version__ = "{}"\n\n'.format(version)
 for mod_name in mod_names:
     init_module += 'from gphoto2.lib.{} import *\n'.format(mod_name)
-with open('src/gphoto2/lib/__init__.py') as im:
-    old_init_module = im.read()
+if os.path.isfile(init_file):
+    with open(init_file) as im:
+        old_init_module = im.read()
+else:
+    old_init_module = None
 if init_module != old_init_module:
-    with open('src/gphoto2/lib/__init__.py', 'w') as im:
+    with open(init_file, 'w') as im:
         im.write(init_module)
 
 cmdclass = {}

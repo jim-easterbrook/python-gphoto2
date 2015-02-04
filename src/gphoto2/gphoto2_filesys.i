@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module(package="gphoto2.lib") gphoto2_filesys
+%module(package="gphoto2") gphoto2_filesys
 
 %{
 #include "gphoto2/gphoto2.h"

@@ -21,7 +21,7 @@ PyObject *PyExc_GPhoto2Error = NULL;
 %}
 %init %{
 {
-  PyObject *module = PyImport_ImportModule("gphoto2.lib.error");
+  PyObject *module = PyImport_ImportModule("gphoto2.error");
   if (module != NULL) {
     PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
     Py_DECREF(module);

@@ -1,7 +1,7 @@
 build
 dist
 MANIFEST
-src/gphoto2/lib/gphoto2*.py
-src/gphoto2/lib/gphoto2*_wrap.c
-src/gphoto2/lib/gphoto2*_wrap.d
-src/gphoto2/lib/__init__.py
+src/gphoto2/gphoto2*.py
+src/gphoto2/gphoto2*_wrap.c
+src/gphoto2/gphoto2*_wrap.d
+src/gphoto2/__init__.py

@@ -54,7 +54,7 @@ else:
 
 # get list of modules
 mod_names = filter(lambda x: x[0].startswith('gphoto2') and x[1] == '.i',
-                   map(os.path.splitext, os.listdir('src/gphoto2/lib')))
+                   map(os.path.splitext, os.listdir('src/gphoto2')))
 mod_names = list(map(lambda x: x[0], mod_names))
 mod_names.sort()
 
@@ -73,7 +73,7 @@ swig_opts = swig_opts + gphoto2_include
 libraries = list(map(lambda x: x[2:], gphoto2_libs))
 for mod_name in mod_names:
     depends = []
-    dep_file = 'src/gphoto2/lib/{}_wrap.d'.format(mod_name)
+    dep_file = 'src/gphoto2/{}_wrap.d'.format(mod_name)
     if os.path.exists(dep_file):
         with open(dep_file) as df:
             for token in shlex.split(df.read()):
@@ -82,7 +82,7 @@ for mod_name in mod_names:
                     depends.append(token)
     ext_modules.append(Extension(
         '_' + mod_name,
-        sources = ['src/gphoto2/lib/{}.i'.format(mod_name)],
+        sources = ['src/gphoto2/{}.i'.format(mod_name)],
         swig_opts = swig_opts,
         libraries = libraries,
         extra_compile_args = extra_compile_args,
@@ -91,10 +91,11 @@ for mod_name in mod_names:
         ))
 
 # rewrite init module, if needed
-init_file = 'src/gphoto2/lib/__init__.py'
+init_file = 'src/gphoto2/__init__.py'
 init_module = '__version__ = "{}"\n\n'.format(version)
 for mod_name in mod_names:
-    init_module += 'from gphoto2.lib.{} import *\n'.format(mod_name)
+    init_module += 'from gphoto2.{} import *\n'.format(mod_name)
+init_module += 'from gphoto2.error import *\n'
 if os.path.isfile(init_file):
     with open(init_file) as im:
         old_init_module = im.read()
@@ -184,9 +185,9 @@ setup(name = 'gphoto2',
       license = 'GNU GPL',
       cmdclass = cmdclass,
       command_options = command_options,
-      ext_package = 'gphoto2.lib',
+      ext_package = 'gphoto2',
       ext_modules = ext_modules,
-      packages = ['gphoto2', 'gphoto2.lib'],
+      packages = ['gphoto2'],
       package_dir = {'' : 'src'},
       data_files = [
           ('share/python-gphoto2/examples', examples),

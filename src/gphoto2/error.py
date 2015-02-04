@@ -17,9 +17,9 @@
 
 import logging
 
-from gphoto2.lib.gphoto2_port_log import (
+from gphoto2.gphoto2_port_log import (
     gp_log_add_func_py, GP_LOG_DATA, GP_LOG_ERROR, GP_LOG_VERBOSE)
-from gphoto2.lib.gphoto2_result import (
+from gphoto2.gphoto2_result import (
     gp_result_as_string, GP_OK, GP_ERROR_CANCEL, GP_ERROR_DIRECTORY_EXISTS)
 
 class GPhoto2Error(Exception):

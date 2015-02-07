@@ -1,6 +1,6 @@
 python-gphoto2 - Python interface to libgphoto2
 http://github.com/jim-easterbrook/python-gphoto2
-Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -14,6 +14,10 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Changes in 0.11.0:
+  1/ Installation no longer requires SWIG.
+  2/ Reorganised source file locations and build process.
 
 Changes in 0.10.2:
   1/ Fixed failure to build with Python 3.

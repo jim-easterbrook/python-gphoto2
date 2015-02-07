@@ -17,16 +17,18 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from distutils.core import setup, Extension
+from distutils.cmd import Command
 from distutils.command.build import build
 from distutils.command.upload import upload
+from distutils.core import setup, Extension
 import os
+import re
 import shlex
 import subprocess
 import sys
 
 # python-gphoto2 version
-version = '0.10.3'
+version = '0.11.0'
 
 # get gphoto2 library config
 gphoto2_version = str(subprocess.check_output(
@@ -42,79 +44,93 @@ for n in range(len(gphoto2_include)):
     if gphoto2_include[n].endswith('/gphoto2'):
         gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
 
-# get SWIG version
-swig_version = str(subprocess.check_output(
-    ['swig', '-version'], universal_newlines=True))
-for line in swig_version.split('\n'):
-    if 'Version' in line:
-        swig_version = line.split()[-1]
-        break
-else:
-    swig_version = 'unknown'
-
 # get list of modules
-mod_names = filter(lambda x: x[0].startswith('gphoto2') and x[1] == '.i',
-                   map(os.path.splitext, os.listdir('src/gphoto2')))
-mod_names = list(map(lambda x: x[0], mod_names))
+mod_names = filter(lambda x: x.startswith('gphoto2_'),
+                   os.listdir(os.path.join('src', 'gphoto2')))
+mod_names = list(map(lambda x: os.path.splitext(x)[0], mod_names))
 mod_names.sort()
 
 # create extension modules list
 ext_modules = []
+mod_src_dir = 'src/swig-gp' + '.'.join(gphoto2_version[:2])
 version_macro = 'GPHOTO2_' + ''.join(gphoto2_version[:2])
-swig_opts = ['-nodefaultctor', '-O', '-Wextra', '-Werror', '-MMD',
-             '-D' + version_macro]
-if swig_version != '2.0.11':
-    swig_opts.append('-builtin')
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes', '-Werror']
-if sys.version_info[0] >= 3:
-    swig_opts.append('-py3')
-swig_opts = swig_opts + gphoto2_include
 libraries = list(map(lambda x: x[2:], gphoto2_libs))
 for mod_name in mod_names:
-    depends = []
-    dep_file = 'src/gphoto2/{}_wrap.d'.format(mod_name)
-    if os.path.exists(dep_file):
-        with open(dep_file) as df:
-            for token in shlex.split(df.read()):
-                token = token.strip()
-                if token and not token.endswith(':'):
-                    depends.append(token)
     ext_modules.append(Extension(
         '_' + mod_name,
-        sources = ['src/gphoto2/{}.i'.format(mod_name)],
-        swig_opts = swig_opts,
+        sources = [os.path.join(mod_src_dir, mod_name + '_wrap.c')],
         libraries = libraries,
+        include_dirs = list(map(lambda x: x[2:], gphoto2_include)),
         extra_compile_args = extra_compile_args,
         define_macros = [(version_macro, None)],
-        depends = depends,
         ))
-
-# rewrite init module, if needed
-init_file = 'src/gphoto2/__init__.py'
-init_module = '__version__ = "{}"\n\n'.format(version)
-for mod_name in mod_names:
-    init_module += 'from gphoto2.{} import *\n'.format(mod_name)
-if os.path.isfile(init_file):
-    with open(init_file) as im:
-        old_init_module = im.read()
-else:
-    old_init_module = None
-if init_module != old_init_module:
-    with open(init_file, 'w') as im:
-        im.write(init_module)
 
 cmdclass = {}
 command_options = {}
 
-# redefine 'build' command so SWIG extensions get compiled first, as
-# they create .py files that then need to be installed
-class SWIG_build(build):
-    sub_commands = list(build.sub_commands)
-    _build_ext = list(filter(lambda x: x[0]=='build_ext', sub_commands))[0]
-    sub_commands.remove(_build_ext)
-    sub_commands.insert(0, _build_ext)
-cmdclass['build'] = SWIG_build
+# add command to run SWIG
+class build_swig(Command):
+    description = 'run SWIG to regenerate interface files'
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        # get gphoto2 versions to be swigged
+        gp_versions = ['.'.join(gphoto2_version[:2])]
+        if os.path.isdir('include'):
+            for name in os.listdir('include'):
+                match = re.match('gphoto2-(\d\.\d)', name)
+                if match:
+                    gp_version = match.group(1)
+                    if gp_version not in gp_versions:
+                        gp_versions.append(gp_version)
+        self.announce('swigging gphoto2 versions %s' % str(gp_versions), 2)
+        # make options list
+        swig_opts = ['-python', '-nodefaultctor', '-O', '-Wextra', '-Werror']
+        swig_version = str(subprocess.check_output(
+            ['swig', '-version'], universal_newlines=True))
+        for line in swig_version.split('\n'):
+            if 'Version' in line:
+                swig_version = line.split()[-1]
+                if swig_version != '2.0.11':
+                    swig_opts.append('-builtin')
+                break
+        if sys.version_info[0] >= 3:
+            swig_opts.append('-py3')
+        # do each gphoto2 version
+        for gp_version in gp_versions:
+            output_dir = os.path.join('src', 'swig-gp' + gp_version)
+            self.mkpath(output_dir)
+            version_opts = [
+                '-DGPHOTO2_' + gp_version.replace('.', ''),
+                '-outdir', output_dir,
+                ]
+            inc_dir = os.path.join('include', 'gphoto2-' + gp_version)
+            if os.path.isdir(inc_dir):
+                version_opts.append('-I' + inc_dir)
+            else:
+                version_opts += gphoto2_include
+            # do each swig module
+            for mod_name in mod_names:
+                in_file = os.path.join('src', 'gphoto2', mod_name + '.i')
+                out_file = os.path.join(output_dir, mod_name + '_wrap.c')
+                self.spawn(['swig'] + swig_opts + version_opts +
+                           ['-o', out_file, in_file])
+            # create init module
+            init_file = os.path.join(output_dir, '__init__.py')
+            with open(init_file, 'w') as im:
+                im.write('__version__ = "{}"\n\n'.format(version))
+                for mod_name in mod_names:
+                    im.write('from gphoto2.{} import *\n'.format(mod_name))
+
+cmdclass['build_swig'] = build_swig
 
 # modify upload class to add appropriate git tag
 # requires GitPython - 'sudo pip install gitpython --pre'
@@ -187,7 +203,7 @@ setup(name = 'gphoto2',
       ext_package = 'gphoto2',
       ext_modules = ext_modules,
       packages = ['gphoto2'],
-      package_dir = {'' : 'src'},
+      package_dir = {'gphoto2' : mod_src_dir},
       data_files = [
           ('share/python-gphoto2/examples', examples),
           ('share/python-gphoto2', [

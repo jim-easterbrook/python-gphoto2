@@ -17,8 +17,8 @@ Dependencies
 ------------
 
 *   Python: http://python.org/ version 2.6 or greater (including Python 3)
-*   SWIG: http://swig.org/ version 2.0 or greater (version 2.0.9 or greater is required to build python-gphoto2 with Python 3)
 *   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.4 or greater
+*   SWIG: http://swig.org/ (optional since python-gphoto2 v0.11)
 
 Note that you need the "development headers" versions of libgphoto2 and Python.
 Most Linux distributions' package managers have these, but the names vary.
@@ -28,7 +28,6 @@ Installation and testing
 ------------------------
 
 There are several ways to install python-gphoto2, with varying levels of control over the installation process.
-Note that they all need SWIG and the other dependencies - there are no "binary" packages at present.
 
 The commands below will install python-gphoto2 for your default Python version.
 To install for both Python 2 and Python 3, run the installation process twice with specific commands, i.e. ``pip2`` and ``pip3`` or ``python2`` and ``python3``.
@@ -40,30 +39,33 @@ The easiest installation method is to use the `pip <https://pip.pypa.io/>`_ comm
 
     sudo pip install gphoto2
 
-Install with ``git``
-^^^^^^^^^^^^^^^^^^^^
+Note that this may take longer than you expect as the SWIG generated files are compiled during installation.
 
-To install the very latest version, use `git <http://git-scm.com/>`_ to "clone" the GitHub repository, then change to the new directory::
+Install a downloaded archive
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-    git clone https://github.com/jim-easterbrook/python-gphoto2.git
-    cd python-gphoto2
+Visit `PyPI <https://pypi.python.org/pypi/gphoto2>`_ and download one of the zip or tar.gz files, then extract it and change to the new directory.
+For example::
+
+    tar xf python-gphoto2-gphoto2-0.9.0.tar.gz
+    cd python-gphoto2-gphoto2-0.9.0
 
 Python's `distutils <https://docs.python.org/2/library/distutils.html>`_ are used to build and install python-gphoto2::
 
     python setup.py build
     sudo python setup.py install
 
-Install a downloaded archive
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Install with ``git`` (SWIG required)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Visit the `project releases page <https://github.com/jim-easterbrook/python-gphoto2/releases>`_ or `PyPI <https://pypi.python.org/pypi/gphoto2>`_ and download one of the zip or tar.gz files, then extract it and change to the new directory.
-For example::
+To install the very latest version, use `git <http://git-scm.com/>`_ to "clone" the GitHub repository, then change to the new directory::
 
-    tar xf python-gphoto2-gphoto2-0.9.0.tar.gz
-    cd python-gphoto2-gphoto2-0.9.0
+    git clone https://github.com/jim-easterbrook/python-gphoto2.git
+    cd python-gphoto2
 
-As before, Python's ``distutils`` are used to build and install python-gphoto2::
+As before, Python's ``distutils`` are used to build and install python-gphoto2, but now you have to run SWIG first to generate the files to be compiled::
 
+    python setup.py build_swig
     python setup.py build
     sudo python setup.py install
 
@@ -258,6 +260,23 @@ When just calling a single function like this, it's probably easier to test the 
         time.sleep(2)
     # continue with rest of program
     ...
+
+Running SWIG
+------------
+
+SWIG is used to generate the Python interface to libgphoto2 from the ``.i`` interface definition files in ``src/gphoto2``.
+The files downloaded from `PyPI <https://pypi.python.org/pypi/gphoto2>`_ include the SWIG generated files, but you may wish to regenerate them by running SWIG again (e.g. to test a new version of SWIG or of libgphoto2).
+You will also need to run SWIG if you have downloaded the python-gphoto2 sources from GitHub instead of using PyPI.
+
+The file ``setup.py`` defines an extra command to run SWIG.
+It has no user options::
+
+    python setup.py build_swig
+
+By default this builds the interface for the version of libgphoto2 installed on your computer.
+The interface files are created in the directory ``src/swig-gp2.x``, where ``x`` is the libgphoto2 version (4 or 5 at present).
+
+To build interfaces for additional versions (e.g. v2.4 as well as v2.5) you need to put a copy of that version's include (``.h``) files in directory ``include/gphoto2-2.x`` and run ``setup.py`` again.
 
 Licence
 -------

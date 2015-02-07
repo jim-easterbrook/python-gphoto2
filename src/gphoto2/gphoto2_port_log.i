@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -108,6 +108,35 @@ static int gp_log_remove_func_py(int id) {
   }
   return gp_log_remove_func(id);
 };
+%}
+
+%pythoncode %{
+import logging
+
+from gphoto2.gphoto2_result import GP_OK
+
+_gphoto2_logger = None
+
+def use_python_logging():
+    """Install a callback to receive gphoto2 errors and forward them
+    to Python's logging system.
+
+    """
+    def python_logging_callback(level, domain, msg):
+      if level == GP_LOG_ERROR:
+        lvl = logging.ERROR
+      elif level == GP_LOG_VERBOSE:
+        lvl = logging.INFO
+      else:
+        lvl = logging.DEBUG
+      _gphoto2_logger(lvl, '(%s) %s', domain, msg)
+
+    global _gphoto2_logger
+    if _gphoto2_logger:
+        return GP_OK
+    _gphoto2_logger = logging.getLogger('gphoto2').log
+    return gp_log_add_func_py(GP_LOG_DATA, python_logging_callback)
+
 %}
 
 %include "gphoto2/gphoto2-port-log.h"

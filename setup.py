@@ -95,7 +95,6 @@ init_file = 'src/gphoto2/__init__.py'
 init_module = '__version__ = "{}"\n\n'.format(version)
 for mod_name in mod_names:
     init_module += 'from gphoto2.{} import *\n'.format(mod_name)
-init_module += 'from gphoto2.error import *\n'
 if os.path.isfile(init_file):
     with open(init_file) as im:
         old_init_module = im.read()

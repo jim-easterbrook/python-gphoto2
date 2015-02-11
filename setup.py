@@ -28,7 +28,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '0.11.0'
+version = '0.11.1'
 
 # get gphoto2 library config
 gphoto2_version = str(subprocess.check_output(
@@ -52,19 +52,18 @@ mod_names.sort()
 
 # create extension modules list
 ext_modules = []
-mod_src_dir = 'src/swig-gp' + '.'.join(gphoto2_version[:2])
-version_macro = 'GPHOTO2_' + ''.join(gphoto2_version[:2])
+mod_src_dir = os.path.join('src', 'swig-gp' + '.'.join(gphoto2_version[:2]))
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes', '-Werror']
-libraries = list(map(lambda x: x[2:], gphoto2_libs))
+libraries = list(map(lambda x: x.replace('-l', ''), gphoto2_libs))
+include_dirs = list(map(lambda x: x.replace('-I', ''), gphoto2_include))
 for mod_name in mod_names:
     ext_modules.append(Extension(
         '_' + mod_name,
         sources = [os.path.join(mod_src_dir, mod_name + '_wrap.c')],
         libraries = libraries,
-        include_dirs = list(map(lambda x: x[2:], gphoto2_include)),
+        include_dirs = include_dirs,
         extra_compile_args = extra_compile_args,
-        define_macros = [(version_macro, None)],
         ))
 
 cmdclass = {}

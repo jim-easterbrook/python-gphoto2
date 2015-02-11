@@ -31,7 +31,8 @@
 
 // List of python callbacks is private
 %ignore func_list;
-%ignore callback_wrapper;
+%ignore callback_wrapper_24;
+%ignore callback_wrapper_25;
 %ignore LogFuncItem;
 
 // Check user supplies a callable Python function
@@ -45,15 +46,8 @@
 
 %inline %{
 // General Python function callback
-#ifdef GPHOTO2_24
-static void callback_wrapper(GPLogLevel level, const char *domain,
-                             const char *format, va_list args, void *data) {
-  char str[1024];
-  vsnprintf(str, sizeof(str), format, args);
-#else
-static void callback_wrapper(GPLogLevel level, const char *domain,
-                             const char *str, void *data) {
-#endif
+static void callback_wrapper_25(GPLogLevel level, const char *domain,
+                                const char *str, void *data) {
   PyGILState_STATE gstate = PyGILState_Ensure();
   PyObject *result = NULL;
   PyObject *arglist = Py_BuildValue("(iss)", level, domain, str);
@@ -65,7 +59,26 @@ static void callback_wrapper(GPLogLevel level, const char *domain,
     Py_DECREF(result);
   PyGILState_Release(gstate);
 };
+%}
 
+#ifdef GPHOTO2_24
+%inline %{
+static void callback_wrapper_24(GPLogLevel level, const char *domain,
+                                const char *format, va_list args, void *data) {
+  char str[1024];
+  vsnprintf(str, sizeof(str), format, args);
+  callback_wrapper_25(level, domain, str, data);
+};
+
+#define CALLBACK_WRAPPER callback_wrapper_24
+%}
+#else
+%inline %{
+#define CALLBACK_WRAPPER callback_wrapper_25
+%}
+#endif
+
+%inline %{
 // Keep list of Python callback function associated with each id
 struct LogFuncItem {
   int id;
@@ -77,7 +90,7 @@ static struct LogFuncItem *func_list = NULL;
 
 // Add Python callback to front of list
 static int gp_log_add_func_py(GPLogLevel level, PyObject *func) {
-  int id = gp_log_add_func(level, callback_wrapper, func);
+  int id = gp_log_add_func(level, CALLBACK_WRAPPER, func);
   if (id >= 0) {
     struct LogFuncItem *list_item = malloc(sizeof(struct LogFuncItem));
     list_item->id = id;

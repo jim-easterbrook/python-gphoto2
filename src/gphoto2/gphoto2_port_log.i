@@ -26,6 +26,9 @@
 // SWIG can't wrap functions with var args
 %ignore gp_logv;
 
+// gp_log_data interface changes between versions 2.5.5.1 and 2.5.6
+%ignore gp_log_data;
+
 // Should not directly call Python from C
 %ignore gp_log_add_func;
 

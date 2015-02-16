@@ -139,7 +139,7 @@ def use_python_logging():
 
     """
     def python_logging_callback(level, domain, msg):
-      if level == GP_LOG_ERROR:
+      if level == GP_LOG_WARNING:
         lvl = logging.ERROR
       elif level == GP_LOG_VERBOSE:
         lvl = logging.INFO

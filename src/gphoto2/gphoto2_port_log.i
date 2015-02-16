@@ -133,19 +133,22 @@ from gphoto2.gphoto2_result import GP_OK
 
 _gphoto2_logger = None
 
-def use_python_logging():
+def use_python_logging(
+    mapping = {
+        GP_LOG_ERROR   : logging.WARNING,
+        GP_LOG_VERBOSE : logging.INFO,
+        GP_LOG_DEBUG   : logging.DEBUG,
+        GP_LOG_DATA    : logging.DEBUG - 5,
+        }):
     """Install a callback to receive gphoto2 errors and forward them
     to Python's logging system.
 
+    The mapping parameter is a dictionary mapping each of the four
+    gphoto2 logging severity levels to a Python logging level.
+
     """
     def python_logging_callback(level, domain, msg):
-      if level == GP_LOG_WARNING:
-        lvl = logging.ERROR
-      elif level == GP_LOG_VERBOSE:
-        lvl = logging.INFO
-      else:
-        lvl = logging.DEBUG
-      _gphoto2_logger(lvl, '(%s) %s', domain, msg)
+      _gphoto2_logger(mapping[level], '(%s) %s', domain, msg)
 
     global _gphoto2_logger
     if _gphoto2_logger:

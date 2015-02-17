@@ -129,9 +129,27 @@ static int gp_log_remove_func_py(int id) {
 %pythoncode %{
 import logging
 
-from gphoto2.gphoto2_result import GP_OK
+from gphoto2.gphoto2_result import check_result, GP_OK
 
-_gphoto2_logger = None
+class _GPhoto2Logger(object):
+    def __init__(self):
+        self.log = None
+        self.log_id = -1
+        self.mapping = {}
+
+    def callback(self, level, domain, msg):
+        self.log(self.mapping[level], '(%s) %s', domain, msg)
+
+    def install(self, mapping):
+        self.mapping.update(mapping)
+        if not self.log:
+            self.log = logging.getLogger('gphoto2').log
+        if self.log_id >= GP_OK:
+            check_result(gp_log_remove_func(self.log_id))
+        self.log_id = gp_log_add_func_py(GP_LOG_DATA, self.callback)
+        return self.log_id
+
+_gphoto2_logger = _GPhoto2Logger()
 
 def use_python_logging(
     mapping = {
@@ -147,15 +165,7 @@ def use_python_logging(
     gphoto2 logging severity levels to a Python logging level.
 
     """
-    def python_logging_callback(level, domain, msg):
-      _gphoto2_logger(mapping[level], '(%s) %s', domain, msg)
-
-    global _gphoto2_logger
-    if _gphoto2_logger:
-        return GP_OK
-    _gphoto2_logger = logging.getLogger('gphoto2').log
-    return gp_log_add_func_py(GP_LOG_DATA, python_logging_callback)
-
+    return _gphoto2_logger.install(mapping)
 %}
 
 %include "gphoto2/gphoto2-port-log.h"

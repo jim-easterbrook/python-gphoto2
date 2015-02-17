@@ -172,7 +172,6 @@ examples = map(
 
 with open('README.rst') as ldf:
     long_description = ldf.read()
-url = 'https://github.com/jim-easterbrook/python-gphoto2'
 
 setup(name = 'gphoto2',
       version = version,
@@ -180,8 +179,7 @@ setup(name = 'gphoto2',
       long_description = long_description,
       author = 'Jim Easterbrook',
       author_email = 'jim@jim-easterbrook.me.uk',
-      url = url,
-      download_url = url + '/archive/gphoto2-' + version + '.tar.gz',
+      url = 'https://github.com/jim-easterbrook/python-gphoto2',
       classifiers = [
           'Development Status :: 4 - Beta',
           'Intended Audience :: Developers',

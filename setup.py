@@ -28,7 +28,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '0.11.1'
+version = '0.11.2'
 
 # get gphoto2 library config
 gphoto2_version = str(subprocess.check_output(
@@ -152,7 +152,7 @@ try:
                         break
                     message += line + '\n'
             repo = git.Repo()
-            tag = repo.create_tag('gphoto2-' + version, message=message)
+            tag = repo.create_tag('v' + version, message=message)
             remote = repo.remotes.origin
             remote.push(tags=True)
             return upload.run(self)

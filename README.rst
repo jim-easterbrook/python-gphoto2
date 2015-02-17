@@ -69,7 +69,7 @@ As before, Python's ``distutils`` are used to build and install python-gphoto2, 
     python setup.py build
     sudo python setup.py install
 
-See `running SWIG <swigging_>`_ for more detail.
+See "running SWIG" below for more detail.
 
 Testing
 ^^^^^^^
@@ -287,8 +287,6 @@ You can override this mapping by passing your own to ``use_python_logging()``:
         gp.GP_LOG_DATA    : logging.DEBUG - 6})
     ...
 
-
-.. _swigging:
 
 Running SWIG
 ------------

@@ -40,6 +40,9 @@ gphoto2_include = subprocess.check_output(
 gphoto2_libs = str(subprocess.check_output(
     ['pkg-config', '--libs-only-l', 'libgphoto2'],
     universal_newlines=True)).strip().split()
+gphoto2_lib_dirs = str(subprocess.check_output(
+    ['pkg-config', '--libs-only-L', 'libgphoto2'],
+    universal_newlines=True)).strip().split()
 for n in range(len(gphoto2_include)):
     if gphoto2_include[n].endswith('/gphoto2'):
         gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
@@ -56,12 +59,14 @@ mod_src_dir = os.path.join('src', 'swig-gp' + '.'.join(gphoto2_version[:2]))
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes', '-Werror']
 libraries = list(map(lambda x: x.replace('-l', ''), gphoto2_libs))
+library_dirs = list(map(lambda x: x.replace('-L', ''), gphoto2_lib_dirs))
 include_dirs = list(map(lambda x: x.replace('-I', ''), gphoto2_include))
 for mod_name in mod_names:
     ext_modules.append(Extension(
         '_' + mod_name,
         sources = [os.path.join(mod_src_dir, mod_name + '_wrap.c')],
         libraries = libraries,
+        library_dirs = library_dirs,
         include_dirs = include_dirs,
         extra_compile_args = extra_compile_args,
         ))

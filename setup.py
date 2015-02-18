@@ -17,6 +17,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from collections import defaultdict
 from distutils.cmd import Command
 from distutils.command.build import build
 from distutils.command.upload import upload
@@ -31,18 +32,17 @@ import sys
 version = '0.11.2'
 
 # get gphoto2 library config
-gphoto2_version = str(subprocess.check_output(
+gphoto2_version = '.'.join(subprocess.check_output(
     ['pkg-config', '--modversion', 'libgphoto2'],
-    universal_newlines=True)).strip().split('.')
-gphoto2_include = subprocess.check_output(
-    ['pkg-config', '--cflags-only-I', 'libgphoto2'],
-    universal_newlines=True).strip().split()
-gphoto2_libs = str(subprocess.check_output(
-    ['pkg-config', '--libs-only-l', 'libgphoto2'],
-    universal_newlines=True)).strip().split()
-gphoto2_lib_dirs = str(subprocess.check_output(
-    ['pkg-config', '--libs-only-L', 'libgphoto2'],
-    universal_newlines=True)).strip().split()
+    universal_newlines=True).split('.')[:2])
+gphoto2_flags = defaultdict(list)
+for flag in subprocess.check_output(
+        ['pkg-config', '--cflags', '--libs', 'libgphoto2'],
+        universal_newlines=True).split():
+    gphoto2_flags[flag[:2]].append(flag)
+gphoto2_include  = gphoto2_flags['-I']
+gphoto2_libs     = gphoto2_flags['-l']
+gphoto2_lib_dirs = gphoto2_flags['-L']
 for n in range(len(gphoto2_include)):
     if gphoto2_include[n].endswith('/gphoto2'):
         gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
@@ -55,7 +55,7 @@ mod_names.sort()
 
 # create extension modules list
 ext_modules = []
-mod_src_dir = os.path.join('src', 'swig-gp' + '.'.join(gphoto2_version[:2]))
+mod_src_dir = os.path.join('src', 'swig-gp' + gphoto2_version)
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes', '-Werror']
 libraries = list(map(lambda x: x.replace('-l', ''), gphoto2_libs))
@@ -87,7 +87,7 @@ class build_swig(Command):
 
     def run(self):
         # get gphoto2 versions to be swigged
-        gp_versions = ['.'.join(gphoto2_version[:2])]
+        gp_versions = [gphoto2_version]
         if os.path.isdir('include'):
             for name in os.listdir('include'):
                 match = re.match('gphoto2-(\d\.\d)', name)

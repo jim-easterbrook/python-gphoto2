@@ -26,8 +26,10 @@
 // SWIG can't wrap functions with var args
 %ignore gp_logv;
 
-// gp_log_data interface changes between versions 2.5.5.1 and 2.5.6
+// gp_log_xxx functions are not consistent between versions of libgphoto2
+// they aren't needed by "front end" programs anyway, so just ignore them
 %ignore gp_log_data;
+%ignore gp_log_with_source_location;
 
 // Should not directly call Python from C
 %ignore gp_log_add_func;

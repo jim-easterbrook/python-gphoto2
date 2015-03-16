@@ -29,7 +29,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '0.11.2'
+version = '1.0.0'
 
 # get gphoto2 library config
 gphoto2_version = '.'.join(subprocess.check_output(
@@ -181,7 +181,7 @@ setup(name = 'gphoto2',
       author_email = 'jim@jim-easterbrook.me.uk',
       url = 'https://github.com/jim-easterbrook/python-gphoto2',
       classifiers = [
-          'Development Status :: 4 - Beta',
+          'Development Status :: 5 - Production/Stable',
           'Intended Audience :: Developers',
           'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
           'Operating System :: MacOS',

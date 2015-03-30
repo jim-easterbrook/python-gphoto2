@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -81,6 +81,31 @@ int gp_camera_capture_preview(Camera *camera, CameraFile *camera_file, GPContext
 
 // gp_camera_capture() returns a pointer in an output parameter
 CALLOC_ARGOUT(CameraFilePath *path)
+
+// gp_camera_file_read() fills a user-supplied buffer
+%apply unsigned long long { uint64_t };
+%typemap(in, numinputs=1) (char * buf, uint64_t * size) (uint64_t temp) {
+  Py_buffer view;
+  if (PyObject_CheckBuffer($input) != 1) {
+    PyErr_SetString(
+      PyExc_TypeError,
+      "in method '$symname', argument $argnum does not support the buffer interface");
+    SWIG_fail;
+  }
+  if (PyObject_GetBuffer($input, &view, PyBUF_SIMPLE | PyBUF_WRITABLE) != 0) {
+    PyErr_SetString(
+      PyExc_TypeError,
+      "in method '$symname', argument $argnum does not export a writable buffer");
+    SWIG_fail;
+  }
+  $1 = view.buf;
+  temp = view.len;
+  $2 = &temp;
+  PyBuffer_Release(&view);
+}
+%typemap(argout) (char * buf, uint64_t * size) {
+  $result = SWIG_Python_AppendOutput($result, PyLong_FromUnsignedLongLong(*$2));
+}
 
 // Add default constructor and destructor to _Camera
 DEFAULT_CTOR(_Camera, gp_camera_new)

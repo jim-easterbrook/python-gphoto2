@@ -40,28 +40,10 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 CALLOC_ARGOUT(CameraFileInfo *info)
 
 // image dimensions use uint32_t
-%typemap(in) uint32_t {
-  $1 = PyLong_AsUnsignedLong($input);
-}
-%typemap(out) uint32_t {
-  $result = PyLong_FromUnsignedLong($1);
-}
+%apply unsigned long { uint32_t };
 
-// storage info uses uint64_t
-%typemap(in) uint64_t {
-  $1 = PyLong_AsUnsignedLongLong($input);
-}
-%typemap(out) uint64_t {
-  $result = PyLong_FromUnsignedLongLong($1);
-}
-
-// image mtime uses time_t
-%typemap(in) time_t {
-  $1 = PyLong_AsLongLong($input);
-}
-%typemap(out) time_t {
-  $result = PyLong_FromLongLong($1);
-}
+// storage info uses uint64_t and image mtime uses time_t
+%apply unsigned long long { uint64_t, time_t };
 
 // Some things are defined in .h files but are not in the library
 %ignore gp_filesystem_get_storageinfo;

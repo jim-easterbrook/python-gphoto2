@@ -15,6 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 1.1.0:
+  1/ Can now use gp_camera_file_read to fetch data from camera in chunks.
+
 Changes in 1.0.0:
   1/ Bump major version number
   2/ Upgrade status from "beta" to "production/stable"

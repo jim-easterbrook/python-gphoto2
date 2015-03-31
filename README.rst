@@ -287,6 +287,29 @@ You can override this mapping by passing your own to ``use_python_logging()``:
         gp.GP_LOG_DATA    : logging.DEBUG - 6})
     ...
 
+Notes on some gphoto2 functions
+-------------------------------
+
+gp_file_get_data_and_size / CameraFile.get_data_and_size
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These functions return a ``str`` (Python 2) or ``bytes`` (Python 3) object containing a copy of the data in the ``CameraFile`` object.
+Making a copy of the data ensures the returned value is still valid if the ``CameraFile`` object is deleted.
+See the ``copy-data.py`` example for typical usage.
+
+gp_camera_file_read / Camera.file_read
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Although the documentation says the ``buf`` parameter is of type ``char *`` you can pass any Python object that exposes a writeable buffer interface.
+This allows you to read a file directly into a Python variable without additional copying.
+See the ``copy-chunks.py`` example which uses ``memoryview`` to expose a ``bytearray``.
+
+gp_camera_wait_for_event / Camera.wait_for_event
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These functions return both the event type and the event data.
+The data you get depends on the type.
+``GP_EVENT_FILE_ADDED`` and ``GP_EVENT_FOLDER_ADDED`` events return a ``CameraFilePath``, others return ``None``.
 
 Running SWIG
 ------------

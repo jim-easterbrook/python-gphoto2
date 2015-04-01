@@ -21,11 +21,7 @@ from __future__ import print_function
 
 import logging
 import os
-import six
-if six.PY2:
-    import StringIO
-else:
-    import io
+import io
 import sys
 
 from PIL import Image
@@ -65,19 +61,18 @@ def main():
     folder, name = os.path.split(path)
     file_info = gp.check_result(gp.gp_camera_file_get_info(
         camera, folder, name, context))
-    view = memoryview(bytearray(file_info.file.size))
+    data = bytearray(file_info.file.size)
+    view = memoryview(data)
     chunk_size = 100 * 1024
-    for offset in range(0, file_info.file.size, chunk_size):
-        stop = min(offset + chunk_size, file_info.file.size)
+    offset = 0
+    while offset < len(data):
         bytes_read = gp.check_result(gp.gp_camera_file_read(
             camera, folder, name, gp.GP_FILE_TYPE_NORMAL,
-            offset, view[offset:stop], context))
+            offset, view[offset:offset + chunk_size], context))
+        offset += bytes_read
         print(bytes_read)
-    print(view[0:10].tolist())
-    if six.PY2:
-        image = Image.open(StringIO.StringIO(view.tobytes()))
-    else:
-        image = Image.open(io.BytesIO(view.tobytes()))
+    print(' '.join(map(str, data[0:10])))
+    image = Image.open(io.BytesIO(data))
     image.show()
     gp.check_result(gp.gp_camera_exit(camera, context))
     return 0

@@ -19,13 +19,10 @@
 
 from __future__ import print_function
 
+import io
 import logging
 import os
 import six
-if six.PY2:
-    import StringIO
-else:
-    import io
 import sys
 
 from PIL import Image
@@ -69,10 +66,9 @@ def main():
     print(type(data), len(data))
     if six.PY2:
         print(map(ord, data[0:10]))
-        image = Image.open(StringIO.StringIO(data))
     else:
         print(data[0:10])
-        image = Image.open(io.BytesIO(data))
+    image = Image.open(io.BytesIO(data))
     image.show()
     print('After deleting camera_file')
     del camera_file

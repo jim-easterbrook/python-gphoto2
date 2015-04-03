@@ -62,21 +62,16 @@ def main():
     folder, name = os.path.split(path)
     camera_file = gp.check_result(gp.gp_camera_file_get(
         camera, folder, name, gp.GP_FILE_TYPE_NORMAL, context))
-    data = gp.check_result(gp.gp_file_get_data_and_size(camera_file))
+    file_data = gp.check_result(gp.gp_file_get_data_and_size(camera_file))
+    data = memoryview(file_data)
     print(type(data), len(data))
-    if six.PY2:
-        print(map(ord, data[0:10]))
-    else:
-        print(data[0:10])
-    image = Image.open(io.BytesIO(data))
+    print(data[:10].tolist())
+    image = Image.open(io.BytesIO(file_data))
     image.show()
-    print('After deleting camera_file')
-    del camera_file
+    print('After deleting camera_file and file_data')
+    del camera_file, file_data
     print(type(data), len(data))
-    if six.PY2:
-        print(map(ord, data[0:10]))
-    else:
-        print(data[0:10])
+    print(data[:10].tolist())
     gp.check_result(gp.gp_camera_exit(camera, context))
     return 0
 

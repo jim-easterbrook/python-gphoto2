@@ -293,15 +293,18 @@ Notes on some gphoto2 functions
 gp_file_get_data_and_size / CameraFile.get_data_and_size
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-These functions return a ``str`` (Python 2) or ``bytes`` (Python 3) object containing a copy of the data in the ``CameraFile`` object.
-Making a copy of the data ensures the returned value is still valid if the ``CameraFile`` object is deleted.
+Since python-gphoto2 version 1.2.0 these functions return a ``FileData`` object that supports the `buffer protocol <https://docs.python.org/2/c-api/buffer.html>`_.
+The data can be made accessible to Python (2.7 and 3.x) by using a `memoryview <https://docs.python.org/2/library/stdtypes.html#memoryview>`_ object.
+This allows the data to be used without copying.
 See the ``copy-data.py`` example for typical usage.
+
+In earlier versions of python-gphoto2 these functions returned a ``str`` (Python 2) or ``bytes`` (Python 3) object containing a copy of the data in the ``CameraFile`` object.
 
 gp_camera_file_read / Camera.file_read
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Although the documentation says the ``buf`` parameter is of type ``char *`` you can pass any Python object that exposes a writeable buffer interface.
-This allows you to read a file directly into a Python variable without additional copying.
+This allows you to read a file directly into a Python object without additional copying.
 See the ``copy-chunks.py`` example which uses ``memoryview`` to expose a ``bytearray``.
 
 gp_camera_wait_for_event / Camera.wait_for_event

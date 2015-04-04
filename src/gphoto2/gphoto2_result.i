@@ -23,6 +23,9 @@
 
 %feature("autodoc", "2");
 
+%include "gphoto2/gphoto2-port-result.h"
+%include "gphoto2/gphoto2-result.h"
+
 %pythoncode %{
 import logging
 
@@ -80,6 +83,3 @@ def check_result(result):
     return result
 
 %}
-
-%include "gphoto2/gphoto2-port-result.h"
-%include "gphoto2/gphoto2-result.h"

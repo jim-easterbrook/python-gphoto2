@@ -128,6 +128,8 @@ static int gp_log_remove_func_py(int id) {
 };
 %}
 
+%include "gphoto2/gphoto2-port-log.h"
+
 %pythoncode %{
 import logging
 
@@ -169,5 +171,3 @@ def use_python_logging(
     """
     return _gphoto2_logger.install(mapping)
 %}
-
-%include "gphoto2/gphoto2-port-log.h"

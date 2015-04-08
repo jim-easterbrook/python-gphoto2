@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -100,7 +100,7 @@ class SectionWidget(QtGui.QWidget):
         tabs = None
         for n in range(child_count):
             child = camera_config.get_child(n)
-            label = child.get_label()
+            label = '{} ({})'.format(child.get_label(), child.get_name())
             child_type = child.get_type()
             if child_type == gp.GP_WIDGET_SECTION:
                 if not tabs:

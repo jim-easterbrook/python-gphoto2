@@ -15,6 +15,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 1.2.0:
+  1/ API change! The get_data_and_size functions now return a new "FileData"
+     object which has the Python buffer interface.
+  2/ Added get/set capture target examples.
+
 Changes in 1.1.0:
   1/ Can now use gp_camera_file_read to fetch data from camera in chunks.
 

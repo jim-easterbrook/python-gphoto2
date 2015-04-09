@@ -62,6 +62,91 @@ IMPORT_GPHOTO2_ERROR()
     $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
 }
 
+// Use typemaps to check/convert input to gp_widget_set_value
+%typemap(in) (const void *value)
+             (void *argp=0, int res=0, float tempf, int tempi, char *buf=NULL, int alloc=0) {
+  // Slightly dodgy use of first argument to get expected type
+  CameraWidgetType type;
+  int error = gp_widget_get_type(arg1, &type);
+  if (error < GP_OK) {
+    GPHOTO2_ERROR(error);
+    SWIG_fail;
+  }
+  switch (type) {
+    case GP_WIDGET_MENU:
+    case GP_WIDGET_TEXT:
+    case GP_WIDGET_RADIO:
+      res = SWIG_AsCharPtrAndSize($input, &buf, NULL, &alloc);
+      if (!SWIG_IsOK(res)) {
+        SWIG_exception_fail(SWIG_ArgError(res),
+          "in method '$symname', argument $argnum of type 'char *'");
+      }
+      $1 = buf;
+      break;
+    case GP_WIDGET_RANGE:
+      res = SWIG_AsVal_float($input, &tempf);
+      if (!SWIG_IsOK(res)) {
+        SWIG_exception_fail(SWIG_ArgError(res),
+          "in method '$symname', argument $argnum of type 'float'");
+      }
+      $1 = &tempf;
+      break;
+    case GP_WIDGET_DATE:
+    case GP_WIDGET_TOGGLE:
+      res = SWIG_AsVal_int($input, &tempi);
+      if (!SWIG_IsOK(res)) {
+        SWIG_exception_fail(SWIG_ArgError(res),
+          "in method '$symname', argument $argnum of type 'int'");
+      }
+      $1 = &tempi;
+      break;
+    default:
+      SWIG_exception_fail(SWIG_ERROR,
+        "in method '$symname', cannot set value of widget");
+      break;
+  }
+}
+%typemap(freearg, noblock=1) (const void *value) {
+  if (alloc$argnum == SWIG_NEWOBJ)
+    free(buf$argnum);
+}
+%typemap(argout, noblock=1) (CameraWidget *widget, const void *value),
+                            (struct _CameraWidget *self, const void *value) {
+}
+
+// Use typemaps to convert result of gp_widget_get_value
+%typemap(in, noblock=1, numinputs=0) (void *value) {
+  void *temp;
+  $1 = &temp;
+}
+%typemap(argout) (CameraWidget *widget, void *value),
+                 (struct _CameraWidget *self, void *value) {
+  char *fmt;
+  CameraWidgetType type;
+  int error = gp_widget_get_type($1, &type);
+  if (error < GP_OK) {
+    GPHOTO2_ERROR(error);
+    SWIG_fail;
+  }
+  switch (type) {
+    case GP_WIDGET_MENU:
+    case GP_WIDGET_TEXT:
+    case GP_WIDGET_RADIO:
+      fmt = "s";
+      break;
+    case GP_WIDGET_RANGE:
+      fmt = "f";
+      break;
+    case GP_WIDGET_DATE:
+    case GP_WIDGET_TOGGLE:
+      fmt = "i";
+      break;
+    default:
+      fmt = "";
+  }
+  $result = SWIG_Python_AppendOutput($result, Py_BuildValue(fmt, temp));
+}
+
 // Add default destructor to _CameraWidget
 // Destructor decrefs root widget
 %inline %{
@@ -80,108 +165,6 @@ static int widget_dtor(CameraWidget *widget) {
 struct _CameraWidget {};
 DEFAULT_DTOR(_CameraWidget, widget_dtor)
 %ignore _CameraWidget;
-
-// Define set_value and get_value _CameraWidget member methods
-%{
-PyObject *_CameraWidget_set_value(CameraWidget *widget, PyObject *py_value) {
-  CameraWidgetType type;
-  char *char_value = NULL;
-  int char_count = 0;
-  float float_value;
-  int int_value;
-  int ecode = 0;
-  int error = gp_widget_get_type(widget, &type);
-  if (error < GP_OK)
-    goto gp_error;
-  switch (type) {
-    case GP_WIDGET_TEXT:
-    case GP_WIDGET_RADIO:
-    case GP_WIDGET_MENU:
-      ecode = SWIG_AsCharPtrAndSize(py_value, &char_value, NULL, &char_count);
-      if (!SWIG_IsOK(ecode)) {
-        SWIG_exception_fail(SWIG_ArgError(ecode),
-          "in method '" "gp_widget_set_value" "', argument " "2"" of type '" "char *""'");
-      }
-      error = gp_widget_set_value(widget, char_value);
-      break;
-    case GP_WIDGET_RANGE:
-      ecode = SWIG_AsVal_float(py_value, &float_value);
-      if (!SWIG_IsOK(ecode)) {
-        SWIG_exception_fail(SWIG_ArgError(ecode),
-          "in method '" "gp_widget_set_value" "', argument " "2"" of type '" "float""'");
-      }
-      error = gp_widget_set_value(widget, &float_value);
-      break;
-    case GP_WIDGET_TOGGLE:
-    case GP_WIDGET_DATE:
-      ecode = SWIG_AsVal_int(py_value, &int_value);
-      if (!SWIG_IsOK(ecode)) {
-        SWIG_exception_fail(SWIG_ArgError(ecode),
-          "in method '" "gp_widget_set_value" "', argument " "2"" of type '" "int""'");
-      }
-      error = gp_widget_set_value(widget, &int_value);
-      break;
-    default:
-      break;
-  }
-  if (error < GP_OK)
-    goto gp_error;
-  Py_INCREF(Py_None);
-  return Py_None;
-gp_error:
-  PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-fail:
-  return NULL;
-}
-PyObject* (*struct__CameraWidget_set_value)() = _CameraWidget_set_value;
-
-PyObject *_CameraWidget_get_value(CameraWidget *widget) {
-  CameraWidgetType type;
-  char *char_value = NULL;
-  float float_value;
-  int int_value;
-  PyObject *py_value;
-  int error = gp_widget_get_type(widget, &type);
-  if (error < GP_OK)
-    goto fail;
-  switch (type) {
-    case GP_WIDGET_TEXT:
-    case GP_WIDGET_RADIO:
-    case GP_WIDGET_MENU:
-      error = gp_widget_get_value(widget, &char_value);
-      if (error < GP_OK)
-        goto fail;
-      if (char_value != NULL)
-        py_value = PyString_FromString(char_value);
-      else {
-        py_value = Py_None;
-        Py_INCREF(Py_None);
-        }
-      break;
-    case GP_WIDGET_RANGE:
-      error = gp_widget_get_value(widget, &float_value);
-      if (error < GP_OK)
-        goto fail;
-      py_value = PyFloat_FromDouble(float_value);
-      break;
-    case GP_WIDGET_TOGGLE:
-    case GP_WIDGET_DATE:
-      error = gp_widget_get_value(widget, &int_value);
-      if (error < GP_OK)
-        goto fail;
-      py_value = PyInt_FromLong(int_value);
-      break;
-    default:
-      py_value = Py_None;
-      Py_INCREF(Py_None);
-  }
-  return py_value;
-fail:
-  PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-  return NULL;
-}
-PyObject* (*struct__CameraWidget_get_value)() = _CameraWidget_get_value;
-%}
 
 // Add member methods to _CameraWidget
 INT_MEMBER_FUNCTION(_CameraWidget, CameraWidget,
@@ -205,10 +188,12 @@ MEMBER_FUNCTION(_CameraWidget, CameraWidget,
 MEMBER_FUNCTION(_CameraWidget, CameraWidget,
     get_parent, (CameraWidget **parent),
     gp_widget_get_parent, ($self, parent))
-PYOBJECT_MEMBER_FUNCTION(_CameraWidget,
-    set_value, (PyObject *py_value))
-PYOBJECT_MEMBER_FUNCTION(_CameraWidget,
-    get_value, ())
+MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+    set_value, (const void *value),
+    gp_widget_set_value, ($self, value))
+MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+    get_value, (void *value),
+    gp_widget_get_value, ($self, value))
 MEMBER_FUNCTION(_CameraWidget, CameraWidget,
     set_name, (const char *name),
     gp_widget_set_name, ($self, name))
@@ -276,7 +261,7 @@ static int gp_widget_get_value_float(CameraWidget *widget, float *value) {
   };
 
 // Add type specific gp_widget_set_value methods
-static int gp_widget_set_value_text(CameraWidget *widget, char *value) {
+static int gp_widget_set_value_text(CameraWidget *widget, const char *value) {
   return gp_widget_set_value(widget, value);
   };
 
@@ -290,103 +275,3 @@ static int gp_widget_set_value_float(CameraWidget *widget, const float value) {
 %}
 
 %include "gphoto2/gphoto2-widget.h"
-
-// Replacement gp_widget_get_value() that returns correct type
-%rename(gp_widget_get_value) wrap_gp_widget_get_value;
-%inline %{
-PyObject *wrap_gp_widget_get_value(CameraWidget *widget) {
-  CameraWidgetType type;
-  char *char_value = NULL;
-  float float_value;
-  int int_value;
-  PyObject *py_value;
-  int error = gp_widget_get_type(widget, &type);
-  PyObject *result = PyList_New(2);
-  if (error != GP_OK)
-    goto fail;
-  switch (type) {
-    case GP_WIDGET_TEXT:
-    case GP_WIDGET_RADIO:
-    case GP_WIDGET_MENU:
-      error = gp_widget_get_value(widget, &char_value);
-      if (error != GP_OK || char_value == NULL)
-        goto fail;
-      py_value = PyString_FromString(char_value);
-      break;
-    case GP_WIDGET_RANGE:
-      error = gp_widget_get_value(widget, &float_value);
-      if (error != GP_OK)
-        goto fail;
-      py_value = PyFloat_FromDouble(float_value);
-      break;
-    case GP_WIDGET_TOGGLE:
-    case GP_WIDGET_DATE:
-      error = gp_widget_get_value(widget, &int_value);
-      if (error != GP_OK)
-        goto fail;
-      py_value = PyInt_FromLong(int_value);
-      break;
-    default:
-      goto fail;
-  }
-  PyList_SetItem(result, 0, PyInt_FromLong(error));
-  PyList_SetItem(result, 1, py_value);
-  return result;
-fail:
-  PyList_SetItem(result, 0, PyInt_FromLong(error));
-  Py_INCREF(Py_None);
-  PyList_SetItem(result, 1, Py_None);
-  return result;
-}
-%}
-
-// Replacement gp_widget_set_value() that accepts correct type
-%rename(gp_widget_set_value) wrap_gp_widget_set_value;
-%inline %{
-PyObject *wrap_gp_widget_set_value(CameraWidget *widget, PyObject *py_value) {
-  CameraWidgetType type;
-  char *char_value = NULL;
-  int char_count = 0;
-  float float_value;
-  int int_value;
-  int ecode = 0;
-  int error = gp_widget_get_type(widget, &type);
-  if (error != GP_OK)
-    goto gp_error;
-  switch (type) {
-    case GP_WIDGET_TEXT:
-    case GP_WIDGET_RADIO:
-    case GP_WIDGET_MENU:
-      ecode = SWIG_AsCharPtrAndSize(py_value, &char_value, NULL, &char_count);
-      if (!SWIG_IsOK(ecode)) {
-        SWIG_exception_fail(SWIG_ArgError(ecode),
-          "in method '" "gp_widget_set_value" "', argument " "2"" of type '" "char *""'");
-      }
-      error = gp_widget_set_value(widget, char_value);
-      break;
-    case GP_WIDGET_RANGE:
-      ecode = SWIG_AsVal_float(py_value, &float_value);
-      if (!SWIG_IsOK(ecode)) {
-        SWIG_exception_fail(SWIG_ArgError(ecode),
-          "in method '" "gp_widget_set_value" "', argument " "2"" of type '" "float""'");
-      }
-      error = gp_widget_set_value(widget, &float_value);
-      break;
-    case GP_WIDGET_TOGGLE:
-    case GP_WIDGET_DATE:
-      ecode = SWIG_AsVal_int(py_value, &int_value);
-      if (!SWIG_IsOK(ecode)) {
-        SWIG_exception_fail(SWIG_ArgError(ecode),
-          "in method '" "gp_widget_set_value" "', argument " "2"" of type '" "int""'");
-      }
-      error = gp_widget_set_value(widget, &int_value);
-      break;
-    default:
-      break;
-  }
-gp_error:
-  return SWIG_From_int(error);
-fail:
-  return NULL;
-}
-%}

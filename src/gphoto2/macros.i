@@ -177,12 +177,6 @@ int (*struct ## _ ## type ## _ ## member)() = function;
 %feature("docstring") function "See also: gphoto2." #py_type "." #member
 %enddef
 
-%define PYOBJECT_MEMBER_FUNCTION(type, member, member_args)
-%extend type {
-  PyObject *member member_args;
-};
-%enddef
-
 %define LEN_MEMBER_FUNCTION(type, py_type, function)
 #if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "sq_length", functype="lenfunc") type::__len__;

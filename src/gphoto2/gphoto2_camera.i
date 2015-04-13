@@ -213,10 +213,15 @@ MEMBER_FUNCTION(_Camera, Camera,
 
 // gp_camera_get_storageinfo() returns an allocated array in an output parameter
 %typemap(in, numinputs=0)
-    CameraStorageInformation ** (CameraStorageInformation* temp) {
-  $1 = &temp;
+    (CameraStorageInformation **, int *)
+        (CameraStorageInformation* temp_ptr, int temp_cnt),
+    (CameraStorageInformation **sifs, int *nrofsifs)
+        (CameraStorageInformation* temp_ptr, int temp_cnt){
+  $1 = &temp_ptr;
+  $2 = &temp_cnt;
 }
-%typemap(argout) (CameraStorageInformation **, int *) {
+%typemap(argout) (CameraStorageInformation **, int *),
+                 (CameraStorageInformation **sifs, int *nrofsifs) {
   PyObject* out_list = PyList_New(*$2);
   int n;
   int own = SWIG_POINTER_OWN;
@@ -229,11 +234,10 @@ MEMBER_FUNCTION(_Camera, Camera,
 }
 
 // gp_camera_wait_for_event() returns two pointers in output parameters
-%typemap(in, numinputs=0) CameraEventType * (CameraEventType temp) {
-  $1 = &temp;
-}
-%typemap(in, numinputs=0) void ** eventdata (void* temp) {
-  $1 = &temp;
+%typemap(in, numinputs=0) (CameraEventType * eventtype, void ** eventdata)
+                          (CameraEventType temp_type, void *temp_data) {
+  $1 = &temp_type;
+  $2 = &temp_data;
 }
 %typemap(argout) (CameraEventType * eventtype, void ** eventdata) {
   $result = SWIG_Python_AppendOutput($result, PyInt_FromLong(*$1));

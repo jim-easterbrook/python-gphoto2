@@ -160,8 +160,8 @@ MEMBER_FUNCTION(_Camera, Camera,
     gp_camera_trigger_capture, ($self, context))
 #endif
 MEMBER_FUNCTION(_Camera, Camera,
-    capture_preview, (CameraFile *file, GPContext *context),
-    gp_camera_capture_preview, ($self, file, context))
+    capture_preview, (CameraFile *camera_file, GPContext *context),
+    gp_camera_capture_preview, ($self, camera_file, context))
 MEMBER_FUNCTION(_Camera, Camera,
     wait_for_event,
     (int timeout, CameraEventType *eventtype, void **eventdata, GPContext *context),

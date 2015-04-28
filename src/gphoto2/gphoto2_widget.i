@@ -62,9 +62,18 @@ IMPORT_GPHOTO2_ERROR()
     $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
 }
 
+// Union to hold widget value as a void pointer
+%{
+typedef union {
+  float f_val;
+  int   i_val;
+  char  *s_val;
+} widget_value;
+%}
+
 // Use typemaps to check/convert input to gp_widget_set_value
 %typemap(in) (const void *value)
-             (void *argp=0, int res=0, float tempf, int tempi, char *buf=NULL, int alloc=0) {
+             (void *argp=0, int res=0, widget_value temp, int alloc=0) {
   // Slightly dodgy use of first argument to get expected type
   CameraWidgetType type;
   int error = gp_widget_get_type(arg1, &type);
@@ -76,29 +85,30 @@ IMPORT_GPHOTO2_ERROR()
     case GP_WIDGET_MENU:
     case GP_WIDGET_TEXT:
     case GP_WIDGET_RADIO:
-      res = SWIG_AsCharPtrAndSize($input, &buf, NULL, &alloc);
+      temp.s_val = NULL;
+      res = SWIG_AsCharPtrAndSize($input, &temp.s_val, NULL, &alloc);
       if (!SWIG_IsOK(res)) {
         SWIG_exception_fail(SWIG_ArgError(res),
           "in method '$symname', argument $argnum of type 'char *'");
       }
-      $1 = buf;
+      $1 = temp.s_val;
       break;
     case GP_WIDGET_RANGE:
-      res = SWIG_AsVal_float($input, &tempf);
+      res = SWIG_AsVal_float($input, &temp.f_val);
       if (!SWIG_IsOK(res)) {
         SWIG_exception_fail(SWIG_ArgError(res),
           "in method '$symname', argument $argnum of type 'float'");
       }
-      $1 = &tempf;
+      $1 = &temp;
       break;
     case GP_WIDGET_DATE:
     case GP_WIDGET_TOGGLE:
-      res = SWIG_AsVal_int($input, &tempi);
+      res = SWIG_AsVal_int($input, &temp.i_val);
       if (!SWIG_IsOK(res)) {
         SWIG_exception_fail(SWIG_ArgError(res),
           "in method '$symname', argument $argnum of type 'int'");
       }
-      $1 = &tempi;
+      $1 = &temp;
       break;
     default:
       SWIG_exception_fail(SWIG_ERROR,
@@ -108,7 +118,7 @@ IMPORT_GPHOTO2_ERROR()
 }
 %typemap(freearg, noblock=1) (const void *value) {
   if (alloc$argnum == SWIG_NEWOBJ)
-    free(buf$argnum);
+    free(temp$argnum.s_val);
 }
 %typemap(argout, noblock=1) (CameraWidget *widget, const void *value),
                             (struct _CameraWidget *self, const void *value) {
@@ -116,12 +126,12 @@ IMPORT_GPHOTO2_ERROR()
 
 // Use typemaps to convert result of gp_widget_get_value
 %typemap(in, noblock=1, numinputs=0) (void *value) {
-  void *temp;
+  widget_value temp;
   $1 = &temp;
 }
 %typemap(argout) (CameraWidget *widget, void *value),
                  (struct _CameraWidget *self, void *value) {
-  char *fmt;
+  PyObject *py_value;
   CameraWidgetType type;
   int error = gp_widget_get_type($1, &type);
   if (error < GP_OK) {
@@ -132,19 +142,25 @@ IMPORT_GPHOTO2_ERROR()
     case GP_WIDGET_MENU:
     case GP_WIDGET_TEXT:
     case GP_WIDGET_RADIO:
-      fmt = "s";
+      if (temp.s_val)
+        py_value = PyString_FromString(temp.s_val);
+      else {
+        Py_INCREF(Py_None);
+        py_value = Py_None;
+      }
       break;
     case GP_WIDGET_RANGE:
-      fmt = "f";
+      py_value = PyFloat_FromDouble(temp.f_val);
       break;
     case GP_WIDGET_DATE:
     case GP_WIDGET_TOGGLE:
-      fmt = "i";
+      py_value = PyInt_FromLong(temp.i_val);
       break;
     default:
-      fmt = "";
+      Py_INCREF(Py_None);
+      py_value = Py_None;
   }
-  $result = SWIG_Python_AppendOutput($result, Py_BuildValue(fmt, temp));
+  $result = SWIG_Python_AppendOutput($result, py_value);
 }
 
 // Add default destructor to _CameraWidget

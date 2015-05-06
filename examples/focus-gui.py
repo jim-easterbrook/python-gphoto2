@@ -49,10 +49,7 @@ from PyQt4.QtCore import Qt
 import gphoto2 as gp
 
 class CameraHandler(QtCore.QObject):
-    new_image = QtCore.pyqtSignal(QtGui.QImage)
-    new_histogram = QtCore.pyqtSignal(QtGui.QImage)
-    new_focus = QtCore.pyqtSignal(list)
-    new_clipping = QtCore.pyqtSignal(list)
+    new_image = QtCore.pyqtSignal(Image.Image)
 
     def __init__(self):
         self.do_next = QtCore.QEvent.registerEventType()
@@ -121,41 +118,9 @@ class CameraHandler(QtCore.QObject):
             return
         file_data = camera_file.get_data_and_size()
         image = Image.open(io.BytesIO(file_data))
-        self.image_data = image.tobytes('raw', 'RGB')
+        image.load()
         w, h = image.size
-        q_image = QtGui.QImage(self.image_data, w, h, QtGui.QImage.Format_RGB888)
-        self.new_image.emit(q_image)
-        # generate histogram and count clipped pixels
-        histogram = image.histogram()
-        q_image = QtGui.QImage(100, 256, QtGui.QImage.Format_RGB888)
-        q_image.fill(Qt.white)
-        clipping = []
-        start = 0
-        for colour in (0xff0000, 0x00ff00, 0x0000ff):
-            stop = start + 256
-            band_hist = histogram[start:stop]
-            max_value = float(1 + max(band_hist))
-            for x in range(len(band_hist)):
-                y = float(1 + band_hist[x]) / max_value
-                y = 98.0 * max(0.0, 1.0 + (math.log10(y) / 5.0))
-                q_image.setPixel(y,     x, colour)
-                q_image.setPixel(y + 1, x, colour)
-            clipping.append(band_hist[-1])
-            start = stop
-        self.new_histogram.emit(q_image)
-        self.new_clipping.emit(clipping)
-        # measure focus by summing inter-pixel differences
-        shifted = ImageChops.offset(image, 1, 0)
-        diff = ImageChops.difference(image, shifted).crop((1, 0, w, h))
-        stats = ImageStat.Stat(diff)
-        h_rms = stats.rms
-        shifted = ImageChops.offset(image, 0, 1)
-        diff = ImageChops.difference(image, shifted).crop((0, 1, w, h))
-        stats = ImageStat.Stat(diff)
-        rms = stats.rms
-        for n in range(len(rms)):
-            rms[n] += h_rms[n]
-        self.new_focus.emit(rms)
+        self.new_image.emit(image)
 
     def _check_config(self):
         # find the image format config item
@@ -221,29 +186,48 @@ class MainWindow(QtGui.QMainWindow):
         single_button.clicked.connect(self.camera_handler.one_shot)
         continuous_button.clicked.connect(self.camera_handler.continuous)
         self.camera_handler.new_image.connect(self.new_image)
-        self.camera_handler.new_histogram.connect(self.new_histogram)
-        self.camera_handler.new_focus.connect(self.new_focus)
-        self.camera_handler.new_clipping.connect(self.new_clipping)
 
-    @QtCore.pyqtSlot(QtGui.QImage)
+    @QtCore.pyqtSlot(Image.Image)
     def new_image(self, image):
-        pixmap = QtGui.QPixmap.fromImage(image)
+        w, h = image.size
+        image_data = image.tobytes('raw', 'RGB')
+        q_image = QtGui.QImage(image_data, w, h, QtGui.QImage.Format_RGB888)
+        pixmap = QtGui.QPixmap.fromImage(q_image)
         self.image_display.setPixmap(pixmap)
-
-    @QtCore.pyqtSlot(QtGui.QImage)
-    def new_histogram(self, image):
-        pixmap = QtGui.QPixmap.fromImage(image)
+        # generate histogram and count clipped pixels
+        histogram = image.histogram()
+        q_image = QtGui.QImage(100, 256, QtGui.QImage.Format_RGB888)
+        q_image.fill(Qt.white)
+        clipping = []
+        start = 0
+        for colour in (0xff0000, 0x00ff00, 0x0000ff):
+            stop = start + 256
+            band_hist = histogram[start:stop]
+            max_value = float(1 + max(band_hist))
+            for x in range(len(band_hist)):
+                y = float(1 + band_hist[x]) / max_value
+                y = 98.0 * max(0.0, 1.0 + (math.log10(y) / 5.0))
+                q_image.setPixel(y,     x, colour)
+                q_image.setPixel(y + 1, x, colour)
+            clipping.append(band_hist[-1])
+            start = stop
+        pixmap = QtGui.QPixmap.fromImage(q_image)
         self.histogram_display.setPixmap(pixmap)
-
-    @QtCore.pyqtSlot(list)
-    def new_focus(self, focus):
-        self.focus_display.setText(
-            ', '.join(map(lambda x: '{:.2f}'.format(x), focus)))
-
-    @QtCore.pyqtSlot(list)
-    def new_clipping(self, clipping):
         self.clipping_display.setText(
             ', '.join(map(lambda x: '{:d}'.format(x), clipping)))
+        # measure focus by summing inter-pixel differences
+        shifted = ImageChops.offset(image, 1, 0)
+        diff = ImageChops.difference(image, shifted).crop((1, 0, w, h))
+        stats = ImageStat.Stat(diff)
+        h_rms = stats.rms
+        shifted = ImageChops.offset(image, 0, 1)
+        diff = ImageChops.difference(image, shifted).crop((0, 1, w, h))
+        stats = ImageStat.Stat(diff)
+        rms = stats.rms
+        for n in range(len(rms)):
+            rms[n] += h_rms[n]
+        self.focus_display.setText(
+            ', '.join(map(lambda x: '{:.2f}'.format(x), rms)))
 
     def closeEvent(self, event):
         self.camera_handler.shut_down()

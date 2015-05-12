@@ -49,7 +49,7 @@ from PyQt4.QtCore import Qt
 import gphoto2 as gp
 
 class CameraHandler(QtCore.QObject):
-    new_image = QtCore.pyqtSignal(Image.Image)
+    new_image = QtCore.pyqtSignal(object)
 
     def __init__(self):
         self.do_next = QtCore.QEvent.registerEventType()
@@ -136,21 +136,32 @@ class CameraHandler(QtCore.QObject):
         return True
 
 
+class ImageWidget(QtGui.QLabel):
+    clicked = QtCore.pyqtSignal(QtCore.QPoint)
+
+    def mousePressEvent(self, event):
+        self.clicked.emit(event.pos())
+
+
 class MainWindow(QtGui.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setWindowTitle("Focus assistant")
+        self.focus_scale = 1.0
+        self.zoomed = False
+        self.q_image = None
         # main widget
         widget = QtGui.QWidget()
         widget.setLayout(QtGui.QGridLayout())
         widget.layout().setRowStretch(7, 1)
         self.setCentralWidget(widget)
         # image display area
-        self.image_display = QtGui.QLabel()
-        scroll_area = QtGui.QScrollArea()
-        scroll_area.setWidget(self.image_display)
-        scroll_area.setWidgetResizable(True)
-        widget.layout().addWidget(scroll_area, 0, 1, 9, 1)
+        self.image_display = QtGui.QScrollArea()
+        self.image_display.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.image_display.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.image_display.setWidget(ImageWidget())
+        self.image_display.setWidgetResizable(True)
+        widget.layout().addWidget(self.image_display, 0, 1, 9, 1)
         # histogram
         self.histogram_display = QtGui.QLabel()
         self.histogram_display.setPixmap(QtGui.QPixmap(100, 256))
@@ -175,7 +186,6 @@ class MainWindow(QtGui.QMainWindow):
         # 'quit' button
         quit_button = QtGui.QPushButton('quit')
         quit_button.setShortcut('Ctrl+Q')
-        quit_button.clicked.connect(QtGui.qApp.closeAllWindows)
         widget.layout().addWidget(quit_button, 8, 0)
         # create camera handler and run it in a separate thread
         self.ch_thread = QtCore.QThread()
@@ -183,17 +193,18 @@ class MainWindow(QtGui.QMainWindow):
         self.camera_handler.moveToThread(self.ch_thread)
         self.ch_thread.start()
         # connect things up
+        quit_button.clicked.connect(QtGui.qApp.closeAllWindows)
         single_button.clicked.connect(self.camera_handler.one_shot)
         continuous_button.clicked.connect(self.camera_handler.continuous)
+        self.image_display.widget().clicked.connect(self.toggle_zoom)
         self.camera_handler.new_image.connect(self.new_image)
 
-    @QtCore.pyqtSlot(Image.Image)
+    @QtCore.pyqtSlot(object)
     def new_image(self, image):
         w, h = image.size
         image_data = image.tobytes('raw', 'RGB')
-        q_image = QtGui.QImage(image_data, w, h, QtGui.QImage.Format_RGB888)
-        pixmap = QtGui.QPixmap.fromImage(q_image)
-        self.image_display.setPixmap(pixmap)
+        self.q_image = QtGui.QImage(image_data, w, h, QtGui.QImage.Format_RGB888)
+        self._draw_image()
         # generate histogram and count clipped pixels
         histogram = image.histogram()
         q_image = QtGui.QImage(100, 256, QtGui.QImage.Format_RGB888)
@@ -226,8 +237,49 @@ class MainWindow(QtGui.QMainWindow):
         rms = stats.rms
         for n in range(len(rms)):
             rms[n] += h_rms[n]
+        # "auto-ranging" of focus measurement
+        while self.focus_scale < 1.0e12 and (max(rms) * self.focus_scale) < 1.0:
+            self.focus_scale *= 10.0
+            print('+', self.focus_scale)
+        while self.focus_scale > 1.0e-12 and (max(rms) * self.focus_scale) > 100.0:
+            self.focus_scale /= 10.0
+            print('-', self.focus_scale)
         self.focus_display.setText(
-            ', '.join(map(lambda x: '{:.2f}'.format(x), rms)))
+            ', '.join(map(lambda x: '{:.2f}'.format(x * self.focus_scale), rms)))
+
+    @QtCore.pyqtSlot(QtCore.QPoint)
+    def toggle_zoom(self, pos):
+        self.zoomed = not self.zoomed
+        self._draw_image()
+        if self.zoomed:
+            QtGui.QApplication.processEvents()
+            size = self.image_display.viewport().size()
+            for bar, value in ((self.image_display.horizontalScrollBar(),
+                                float(pos.x()) / float(size.width())),
+                               (self.image_display.verticalScrollBar(),
+                                float(pos.y()) / float(size.height()))):
+                min_val = bar.minimum()
+                max_val = bar.maximum()
+                step = bar.pageStep()
+                visible = float(step) / float(step + max_val - min_val)
+                if visible >= 0.99:
+                    continue
+                value = (value - (visible/ 2.0)) / (1.0 - visible)
+                bar.setValue(min_val + ((max_val - min_val) * value))
+
+    def _draw_image(self):
+        if not self.q_image:
+            return
+        pixmap = QtGui.QPixmap.fromImage(self.q_image)
+        if not self.zoomed:
+            pixmap = pixmap.scaled(
+                self.image_display.viewport().size(),
+                Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.image_display.widget().setPixmap(pixmap)
+
+    def sizeHint(self):
+        # start off as big as window manager will allow
+        return QtCore.QSize(4000, 3000)
 
     def closeEvent(self, event):
         self.camera_handler.shut_down()

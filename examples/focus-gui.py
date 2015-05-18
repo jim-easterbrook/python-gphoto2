@@ -78,7 +78,7 @@ class CameraHandler(QtCore.QObject):
             return
         if not self._check_config():
             return
-        self._do_capture()
+        self._do_preview()
 
     @QtCore.pyqtSlot()
     def continuous(self):
@@ -89,6 +89,12 @@ class CameraHandler(QtCore.QObject):
             return
         self.running = True
         self._do_continuous()
+
+    @QtCore.pyqtSlot()
+    def take_photo(self):
+        if self.running:
+            return
+        self._do_capture()
 
     def shut_down(self):
         self.running = False
@@ -104,22 +110,36 @@ class CameraHandler(QtCore.QObject):
     def _do_continuous(self):
         if not self.running:
             return
-        self._do_capture()
+        self._do_preview()
         # post event to trigger next capture
         QtGui.QApplication.postEvent(
             self, QtCore.QEvent(self.do_next), Qt.LowEventPriority - 1)
 
-    def _do_capture(self):
+    def _do_preview(self):
         # capture preview image (not saved to camera memory card)
         OK, camera_file = gp.gp_camera_capture_preview(self.camera, self.context)
         if OK < gp.GP_OK:
-            print('Failed to capture')
+            print('Failed to capture preview')
             self.running = False
             return
+        self._send_file(camera_file)
+
+    def _do_capture(self):
+        # capture actual image (saved to camera memory card and also downloaded)
+        OK, camera_file_path = gp.gp_camera_capture(
+            self.camera, gp.GP_CAPTURE_IMAGE, self.context)
+        if OK < gp.GP_OK:
+            print('Failed to capture')
+            return
+        camera_file = self.camera.file_get(
+            camera_file_path.folder, camera_file_path.name,
+            gp.GP_FILE_TYPE_NORMAL, self.context)
+        self._send_file(camera_file)
+
+    def _send_file(self, camera_file):
         file_data = camera_file.get_data_and_size()
         image = Image.open(io.BytesIO(file_data))
         image.load()
-        w, h = image.size
         self.new_image.emit(image)
 
     def _check_config(self):
@@ -153,7 +173,7 @@ class MainWindow(QtGui.QMainWindow):
         # main widget
         widget = QtGui.QWidget()
         widget.setLayout(QtGui.QGridLayout())
-        widget.layout().setRowStretch(7, 1)
+        widget.layout().setRowStretch(8, 1)
         self.setCentralWidget(widget)
         # image display area
         self.image_display = QtGui.QScrollArea()
@@ -161,7 +181,7 @@ class MainWindow(QtGui.QMainWindow):
         self.image_display.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.image_display.setWidget(ImageWidget())
         self.image_display.setWidgetResizable(True)
-        widget.layout().addWidget(self.image_display, 0, 1, 9, 1)
+        widget.layout().addWidget(self.image_display, 0, 1, 10, 1)
         # histogram
         self.histogram_display = QtGui.QLabel()
         self.histogram_display.setPixmap(QtGui.QPixmap(100, 256))
@@ -176,17 +196,20 @@ class MainWindow(QtGui.QMainWindow):
         self.clipping_display = QtGui.QLabel('-, -, -')
         widget.layout().addWidget(self.clipping_display, 4, 0)
         # 'single' button
-        single_button = QtGui.QPushButton('one-shot')
+        single_button = QtGui.QPushButton('preview')
         single_button.setShortcut('Ctrl+G')
         widget.layout().addWidget(single_button, 5, 0)
         # 'continuous' button
-        continuous_button = QtGui.QPushButton('continuous')
+        continuous_button = QtGui.QPushButton('repeat preview')
         continuous_button.setShortcut('Ctrl+R')
         widget.layout().addWidget(continuous_button, 6, 0)
+        # 'take photo' button
+        take_button = QtGui.QPushButton('take photo')
+        widget.layout().addWidget(take_button, 7, 0)
         # 'quit' button
         quit_button = QtGui.QPushButton('quit')
         quit_button.setShortcut('Ctrl+Q')
-        widget.layout().addWidget(quit_button, 8, 0)
+        widget.layout().addWidget(quit_button, 9, 0)
         # create camera handler and run it in a separate thread
         self.ch_thread = QtCore.QThread()
         self.camera_handler = CameraHandler()
@@ -196,6 +219,7 @@ class MainWindow(QtGui.QMainWindow):
         quit_button.clicked.connect(QtGui.qApp.closeAllWindows)
         single_button.clicked.connect(self.camera_handler.one_shot)
         continuous_button.clicked.connect(self.camera_handler.continuous)
+        take_button.clicked.connect(self.camera_handler.take_photo)
         self.image_display.widget().clicked.connect(self.toggle_zoom)
         self.camera_handler.new_image.connect(self.new_image)
 

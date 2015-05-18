@@ -15,6 +15,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 1.2.1:
+  1/ Camera.get_storageinfo and Camera.capture_preview now allocate their
+     return value (API change).
+  2/ Examples include a "focus assist" program for EOS 350d. Will need changes
+     to work with other cameras.
+
 Changes in 1.2.0:
   1/ API change! The get_data_and_size functions now return a new "FileData"
      object which has the Python buffer interface.

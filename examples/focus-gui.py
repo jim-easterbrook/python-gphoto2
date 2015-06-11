@@ -61,31 +61,51 @@ class CameraHandler(QtCore.QObject):
         self.camera.init(self.context)
         # get camera config tree
         self.config = self.camera.get_config(self.context)
-        # find the capture size class config item
-        # need to set this on my Canon 350d to get preview to work at all
-        OK, capture_size_class = gp.gp_widget_get_child_by_name(
-            self.config, 'capturesizeclass')
+        self.old_capturetarget = None
+        # get the camera model
+        OK, camera_model = gp.gp_widget_get_child_by_name(
+            self.config, 'cameramodel')
+        if OK < gp.GP_OK:
+            OK, camera_model = gp.gp_widget_get_child_by_name(
+                self.config, 'model')
         if OK >= gp.GP_OK:
-            # set value
-            value = capture_size_class.get_choice(2)
-            capture_size_class.set_value(value)
-            # set config
-            self.camera.set_config(self.config, self.context)
+            self.camera_model = camera_model.get_value()
+            print('Camera model:', self.camera_model)
+        else:
+            print('No camera model info')
+            self.camera_model = ''
+        if self.camera_model == 'unknown':
+            # find the capture size class config item
+            # need to set this on my Canon 350d to get preview to work at all
+            OK, capture_size_class = gp.gp_widget_get_child_by_name(
+                self.config, 'capturesizeclass')
+            if OK >= gp.GP_OK:
+                # set value
+                value = capture_size_class.get_choice(2)
+                capture_size_class.set_value(value)
+                # set config
+                self.camera.set_config(self.config, self.context)
+        else:
+            # put camera into preview mode to raise mirror
+            gp.gp_camera_capture_preview(self.camera, self.context)
 
     @QtCore.pyqtSlot()
     def one_shot(self):
         if self.running:
             return
-        if not self._check_config():
+        if not self._set_config():
             return
-        self._do_preview()
+        if self.camera_model == 'unknown':
+            self._do_preview()
+        else:
+            self._do_capture()
 
     @QtCore.pyqtSlot()
     def continuous(self):
         if self.running:
             self.running = False
             return
-        if not self._check_config():
+        if not self._set_config():
             return
         self.running = True
         self._do_continuous()
@@ -94,10 +114,12 @@ class CameraHandler(QtCore.QObject):
     def take_photo(self):
         if self.running:
             return
+        self._reset_config()
         self._do_capture()
 
     def shut_down(self):
         self.running = False
+        self._reset_config()
         self.camera.exit(self.context)
 
     def event(self, event):
@@ -109,14 +131,18 @@ class CameraHandler(QtCore.QObject):
 
     def _do_continuous(self):
         if not self.running:
+            self._reset_config()
             return
-        self._do_preview()
+        if self.camera_model == 'unknown':
+            self._do_preview()
+        else:
+            self._do_capture()
         # post event to trigger next capture
         QtGui.QApplication.postEvent(
             self, QtCore.QEvent(self.do_next), Qt.LowEventPriority - 1)
 
     def _do_preview(self):
-        # capture preview image (not saved to camera memory card)
+        # capture preview image
         OK, camera_file = gp.gp_camera_capture_preview(self.camera, self.context)
         if OK < gp.GP_OK:
             print('Failed to capture preview')
@@ -125,11 +151,12 @@ class CameraHandler(QtCore.QObject):
         self._send_file(camera_file)
 
     def _do_capture(self):
-        # capture actual image (saved to camera memory card and also downloaded)
+        # capture actual image
         OK, camera_file_path = gp.gp_camera_capture(
             self.camera, gp.GP_CAPTURE_IMAGE, self.context)
         if OK < gp.GP_OK:
             print('Failed to capture')
+            self.running = False
             return
         camera_file = self.camera.file_get(
             camera_file_path.folder, camera_file_path.name,
@@ -142,7 +169,21 @@ class CameraHandler(QtCore.QObject):
         image.load()
         self.new_image.emit(image)
 
-    def _check_config(self):
+    def _set_config(self):
+        # find the capture target item
+        OK, capture_target = gp.gp_widget_get_child_by_name(
+            self.config, 'capturetarget')
+        if OK >= gp.GP_OK:
+            if self.old_capturetarget is None:
+                self.old_capturetarget = capture_target.get_value()
+            choice_count = capture_target.count_choices()
+            for n in range(choice_count):
+                choice = capture_target.get_choice(n)
+                if 'internal' in choice.lower():
+                    # set config
+                    capture_target.set_value(choice)
+                    self.camera.set_config(self.config, self.context)
+                    break
         # find the image format config item
         OK, image_format = gp.gp_widget_get_child_by_name(
             self.config, 'imageformat')
@@ -154,6 +195,17 @@ class CameraHandler(QtCore.QObject):
                 print('Cannot preview raw images')
                 return False
         return True
+
+    def _reset_config(self):
+        if self.old_capturetarget is not None:
+            # find the capture target item
+            OK, capture_target = gp.gp_widget_get_child_by_name(
+                self.config, 'capturetarget')
+            if OK >= gp.GP_OK:
+                # set config
+                capture_target.set_value(self.old_capturetarget)
+                self.camera.set_config(self.config, self.context)
+                self.old_capturetarget = None
 
 
 class ImageWidget(QtGui.QLabel):

@@ -117,7 +117,13 @@ class SectionWidget(QtGui.QWidget):
             elif child_type == gp.GP_WIDGET_TOGGLE:
                 self.layout().addRow(label, ToggleWidget(config_changed, child))
             elif child_type == gp.GP_WIDGET_RADIO:
-                self.layout().addRow(label, RadioWidget(config_changed, child))
+                choice_count = gp.check_result(gp.gp_widget_count_choices(
+                    child))
+                if choice_count > 3:
+                    widget = MenuWidget(config_changed, child)
+                else:
+                    widget = RadioWidget(config_changed, child)
+                self.layout().addRow(label, widget)
             elif child_type == gp.GP_WIDGET_MENU:
                 self.layout().addRow(label, MenuWidget(config_changed, child))
             elif child_type == gp.GP_WIDGET_DATE:

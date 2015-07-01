@@ -58,11 +58,6 @@ def main():
     # initialise chosen camera
     name, addr = camera_list[choice]
     camera = gp.Camera()
-    # search abilities for camera model
-    abilities_list = gp.CameraAbilitiesList()
-    abilities_list.load(context)
-    idx = abilities_list.lookup_model(name)
-    camera.set_abilities(abilities_list[idx])
     # search ports for camera port name
     port_info_list = gp.PortInfoList()
     port_info_list.load()

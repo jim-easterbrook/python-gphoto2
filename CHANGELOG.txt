@@ -15,6 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 1.2.2:
+  1/ Temporarily fix build problems with Python 3.5
+  2/ Added a "choose camera" example showing how to handle multiple cameras.
+
 Changes in 1.2.1:
   1/ Camera.get_storageinfo and Camera.capture_preview now allocate their
      return value (API change).

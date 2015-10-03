@@ -103,7 +103,7 @@ class build_swig(Command):
         for line in swig_version.split('\n'):
             if 'Version' in line:
                 swig_version = line.split()[-1]
-                if swig_version != '2.0.11':
+                if swig_version != '2.0.11' and sys.version_info < (3, 5):
                     swig_opts.append('-builtin')
                 break
         if sys.version_info[0] >= 3:

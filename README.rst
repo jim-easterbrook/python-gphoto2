@@ -69,7 +69,7 @@ As before, Python's ``distutils`` are used to build and install python-gphoto2, 
     python setup.py build
     sudo python setup.py install
 
-See "running SWIG" below for more detail.
+See "`running SWIG`_" below for more detail.
 
 Testing
 ^^^^^^^
@@ -328,9 +328,11 @@ It has no user options::
     python setup.py build_swig
 
 By default this builds the interface for the version of libgphoto2 installed on your computer.
-The interface files are created in the directory ``src/swig-gp2.x``, where ``x`` is the libgphoto2 sub-version (4 or 5 at present).
+The interface files are created in directories with names like ``src/swig-bi-gp2.5-py3``.
+This naming scheme allows for different versions of Python and libgphoto2, and use (or not) of the SWIG ``-builtin`` flag.
+The appropriate version is chosen when the interface is built.
 
-To build interfaces for additional versions (e.g. v2.4 as well as v2.5) you need to put a copy of that version's include (``.h``) files in a sub-directory of your working directory called ``include/gphoto2-2.x`` and then run ``setup.py`` again.
+To build interfaces for additional versions of libgphoto2 (e.g. v2.4 as well as v2.5) you need to put a copy of that version's include (``.h``) files in a sub-directory of your working directory called ``include/gphoto2-2.x`` and then run ``setup.py build_swig`` again.
 
 Licence
 -------

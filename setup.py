@@ -29,7 +29,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '1.2.2'
+version = '1.2.3-alpha'
 
 # get gphoto2 library config
 gphoto2_version = '.'.join(subprocess.check_output(

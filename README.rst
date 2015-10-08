@@ -287,6 +287,39 @@ You can override this mapping by passing your own to ``use_python_logging()``:
         gp.GP_LOG_DATA    : logging.DEBUG - 6})
     ...
 
+If you prefer to use your own logging system you can define a logging callback function in Python.
+The function must take 3 parameters: ``level``, ``domain`` and ``string``.
+Since python-gphoto2 version 1.3 the callback function is installed with ``gp_log_add_func``:
+
+.. code:: python
+
+    import gphoto2 as gp
+    ...
+    def callback(level, domain, string):
+        print('Callback: level =', level, ', domain =', domain, ', string =', string)
+    ...
+    callback_id = gp.check_result(
+        gp.gp_log_add_func(gp.GP_LOG_VERBOSE, gp.gp_log_call_python, callback))
+    ...
+
+The SWIG interface provides a function ``gp_log_call_python`` that calls your Python callback.
+``gp_log_add_func`` returns an ``AugmentedInt`` value that stores a reference to your callback function along with the function's return value.
+It can be passed to ``gp_log_remove_func`` to uninstall your callback.
+
+Earlier versions of python-gphoto2 use ``gp_log_add_func_py`` to install the callback:
+
+.. code:: python
+
+    import gphoto2 as gp
+    ...
+    def callback(level, domain, string):
+        print('Callback: level =', level, ', domain =', domain, ', string =', string)
+    ...
+    callback_id = gp.check_result(gp.gp_log_add_func_py(gp.GP_LOG_VERBOSE, callback))
+    ...
+
+In this case a reference to your callback function is stored by the SWIG interface.
+
 Notes on some gphoto2 functions
 -------------------------------
 

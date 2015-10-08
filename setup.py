@@ -47,11 +47,6 @@ for n in range(len(gphoto2_include)):
     if gphoto2_include[n].endswith('/gphoto2'):
         gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
 
-# get list of modules
-mod_names = os.listdir(os.path.join('src', 'gphoto2'))
-mod_names = list(map(lambda x: os.path.splitext(x)[0], mod_names))
-mod_names.sort()
-
 # create extension modules list
 ext_modules = []
 mod_src_dir = os.path.join('src', 'swig-bi-gp' + gphoto2_version +
@@ -61,18 +56,22 @@ if sys.version_info >= (3, 5) or not os.path.isdir(mod_src_dir):
                                '-py' + str(sys.version_info[0]))
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes', '-Werror']
-libraries = list(map(lambda x: x.replace('-l', ''), gphoto2_libs))
-library_dirs = list(map(lambda x: x.replace('-L', ''), gphoto2_lib_dirs))
-include_dirs = list(map(lambda x: x.replace('-I', ''), gphoto2_include))
-for mod_name in mod_names:
-    ext_modules.append(Extension(
-        '_' + mod_name,
-        sources = [os.path.join(mod_src_dir, mod_name + '_wrap.c')],
-        libraries = libraries,
-        library_dirs = library_dirs,
-        include_dirs = include_dirs,
-        extra_compile_args = extra_compile_args,
-        ))
+libraries = [x.replace('-l', '') for x in gphoto2_libs]
+library_dirs = [x.replace('-L', '') for x in gphoto2_lib_dirs]
+include_dirs = [x.replace('-I', '') for x in gphoto2_include]
+if os.path.isdir(mod_src_dir):
+    for file_name in os.listdir(mod_src_dir):
+        if file_name[-7:] != '_wrap.c':
+            continue
+        ext_name = file_name[:-7]
+        ext_modules.append(Extension(
+            '_' + ext_name,
+            sources = [os.path.join(mod_src_dir, file_name)],
+            libraries = libraries,
+            library_dirs = library_dirs,
+            include_dirs = include_dirs,
+            extra_compile_args = extra_compile_args,
+            ))
 
 cmdclass = {}
 command_options = {}
@@ -89,6 +88,12 @@ class build_swig(Command):
         pass
 
     def run(self):
+        # get list of modules (Python) and extensions (SWIG)
+        file_names = os.listdir(os.path.join('src', 'gphoto2'))
+        file_names.sort()
+        file_names = [os.path.splitext(x) for x in file_names]
+        ext_names = [x[0] for x in file_names if x[1] == '.i']
+        mod_names = [x[0] for x in file_names if x[1] == '.py']
         # get gphoto2 versions to be swigged
         gp_versions = [gphoto2_version]
         if os.path.isdir('include'):
@@ -135,17 +140,22 @@ class build_swig(Command):
                 else:
                     version_opts += gphoto2_include
                 # do each swig module
-                for mod_name in mod_names:
-                    in_file = os.path.join('src', 'gphoto2', mod_name + '.i')
-                    out_file = os.path.join(output_dir, mod_name + '_wrap.c')
+                for ext_name in ext_names:
+                    in_file = os.path.join('src', 'gphoto2', ext_name + '.i')
+                    out_file = os.path.join(output_dir, ext_name + '_wrap.c')
                     self.spawn(['swig'] + swig_opts + version_opts +
                                ['-o', out_file, in_file])
+                # do each Python module
+                for mod_name in mod_names:
+                    in_file = os.path.join('src', 'gphoto2', mod_name + '.py')
+                    out_file = os.path.join(output_dir, mod_name + '.py')
+                    self.copy_file(in_file, out_file)
                 # create init module
                 init_file = os.path.join(output_dir, '__init__.py')
                 with open(init_file, 'w') as im:
                     im.write('__version__ = "{}"\n\n'.format(version))
-                    for mod_name in mod_names:
-                        im.write('from gphoto2.{} import *\n'.format(mod_name))
+                    for name in mod_names + ext_names:
+                        im.write('from gphoto2.{} import *\n'.format(name))
 
 cmdclass['build_swig'] = build_swig
 
@@ -179,9 +189,8 @@ command_options['sdist'] = {
     }
 
 # list example scripts
-examples = map(
-    lambda x: os.path.join('examples', x),
-    filter(lambda x: os.path.splitext(x)[1] == '.py', os.listdir('examples')))
+examples = [os.path.join('examples', x)
+            for x in os.listdir('examples') if os.path.splitext(x)[1] == '.py']
 
 with open('README.rst') as ldf:
     long_description = ldf.read()

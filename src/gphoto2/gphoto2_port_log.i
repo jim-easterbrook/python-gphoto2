@@ -31,15 +31,6 @@
 %ignore gp_log_data;
 %ignore gp_log_with_source_location;
 
-// Should not directly call Python from C
-%ignore gp_log_add_func;
-
-// List of python callbacks is private
-%ignore func_list;
-%ignore callback_wrapper_24;
-%ignore callback_wrapper_25;
-%ignore LogFuncItem;
-
 // Check user supplies a callable Python function
 %typemap(in) PyObject *func {
   if (!PyCallable_Check($input)) {
@@ -49,10 +40,17 @@
   $1 = $input;
 }
 
-%inline %{
-// General Python function callback
-static void callback_wrapper_25(GPLogLevel level, const char *domain,
-                                const char *str, void *data) {
+%{
+// Call Python function from C callback
+#ifdef GPHOTO2_24
+static void gp_log_call_python(
+    GPLogLevel level, const char *domain, const char *format, va_list args, void *data) {
+  char str[1024];
+  vsnprintf(str, sizeof(str), format, args);
+#else
+static void gp_log_call_python(
+    GPLogLevel level, const char *domain, const char *str, void *data) {
+#endif
   PyGILState_STATE gstate = PyGILState_Ensure();
   PyObject *result = NULL;
   PyObject *arglist = Py_BuildValue("(iss)", level, domain, str);
@@ -64,26 +62,7 @@ static void callback_wrapper_25(GPLogLevel level, const char *domain,
     Py_DECREF(result);
   PyGILState_Release(gstate);
 };
-%}
 
-#ifdef GPHOTO2_24
-%inline %{
-static void callback_wrapper_24(GPLogLevel level, const char *domain,
-                                const char *format, va_list args, void *data) {
-  char str[1024];
-  vsnprintf(str, sizeof(str), format, args);
-  callback_wrapper_25(level, domain, str, data);
-};
-
-#define CALLBACK_WRAPPER callback_wrapper_24
-%}
-#else
-%inline %{
-#define CALLBACK_WRAPPER callback_wrapper_25
-%}
-#endif
-
-%inline %{
 // Keep list of Python callback function associated with each id
 struct LogFuncItem {
   int id;
@@ -94,21 +73,16 @@ struct LogFuncItem {
 static struct LogFuncItem *func_list = NULL;
 
 // Add Python callback to front of list
-static int gp_log_add_func_py(GPLogLevel level, PyObject *func) {
-  int id = gp_log_add_func(level, CALLBACK_WRAPPER, func);
-  if (id >= 0) {
-    struct LogFuncItem *list_item = malloc(sizeof(struct LogFuncItem));
-    list_item->id = id;
-    list_item->func = func;
-    list_item->next = func_list;
-    func_list = list_item;
-    Py_INCREF(func);
-    }
-  return id;
+static void register_callback(PyObject *func, int id) {
+  struct LogFuncItem *list_item = malloc(sizeof(struct LogFuncItem));
+  list_item->id = id;
+  list_item->func = func;
+  list_item->next = func_list;
+  func_list = list_item;
+  Py_INCREF(func);
 };
 
-// Remove Python callback from list
-static int gp_log_remove_func_py(int id) {
+static void deregister_callback(int id) {
   struct LogFuncItem *last_item = NULL;
   struct LogFuncItem *this_item = func_list;
   while (this_item) {
@@ -124,9 +98,103 @@ static int gp_log_remove_func_py(int id) {
     last_item = this_item;
     this_item = this_item->next;
   }
+};
+%}
+
+%inline %{
+static int gp_log_add_func_py(GPLogLevel level, PyObject *func) {
+  int id = gp_log_add_func(level, gp_log_call_python, func);
+  if (id >= 0) {
+    register_callback(func, id);
+    }
+  return id;
+};
+
+// Remove Python callback from list
+static int gp_log_remove_func_py(int id) {
+  deregister_callback(id);
   return gp_log_remove_func(id);
 };
 %}
+
+// Make gp_log_call_python visible from Python so it can be passed to gp_log_add_func
+#ifdef GPHOTO2_24
+%constant void gp_log_call_python(GPLogLevel, const char *, const char *, va_list, void *);
+#else
+%constant void gp_log_call_python(GPLogLevel, const char *, const char *, void *);
+#endif
+
+// Import extended int type
+%{
+static PyObject *AugmentedInt_class = NULL;
+%}
+%init %{
+{
+  PyObject *module = PyImport_ImportModule("gphoto2.gphoto2_result");
+  if (module != NULL) {
+    AugmentedInt_class = PyObject_GetAttrString(module, "AugmentedInt");
+    Py_DECREF(module);
+  }
+  if (AugmentedInt_class == NULL)
+#if PY_VERSION_HEX >= 0x03000000
+    return NULL;
+#else
+    return;
+#endif
+}
+%}
+
+// Add callable check to gp_log_add_func
+%typemap(in) (PyObject *callable) {
+  if (!PyCallable_Check($input)) {
+    SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
+  }
+  $1 = $input;
+  // Store input for output typemap to use
+  $result = $input;
+}
+
+// Store a reference to the callable in gp_log_add_func result
+%inline %{
+typedef int augmented_int;
+%}
+%typemap(out) augmented_int {
+  // Retrieve value stored by input typemap
+  PyObject *callable = $result;
+  if ($1 >= GP_OK) {
+    PyObject *args = Py_BuildValue("(iO)", $1, callable);
+    $result = PyObject_CallObject(AugmentedInt_class, args);
+    Py_DECREF(args);
+    Py_INCREF(callable); // Add a reference in case user deletes gp_log_add_func result
+  }
+  else {
+    $result = SWIG_From_int((int)($1));
+  }
+}
+
+// Remove reference to the callable from gp_log_remove_func input
+%typemap(in) (augmented_int id) (int val, int ecode = 0) {
+  // Check and convert input
+  ecode = SWIG_AsVal_int($input, &val);
+  if (!SWIG_IsOK(ecode)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode), "in method '" "$symname" "', argument " "$argnum"" of type '" "augmented_int""'");
+  }
+  $1 = (augmented_int)(val);
+  // Unref callback if input is an AugmentedInt
+  if (PyObject_IsInstance($input, AugmentedInt_class) > 0) {
+    PyObject *callable = PyObject_GetAttrString($input, "data");
+    Py_DECREF(callable); // Reference added by PyObject_GetAttrString
+    Py_DECREF(callable); // Reference added by gp_log_add_func
+  }
+}
+
+// Redefine signature of gp_log_add_func
+augmented_int gp_log_add_func(GPLogLevel level, GPLogFunc func, PyObject *callable);
+%ignore gp_log_add_func;
+
+// Redefine signature of gp_log_remove_func
+int gp_log_remove_func(augmented_int id);
+%ignore gp_log_remove_func;
 
 %include "gphoto2/gphoto2-port-log.h"
 

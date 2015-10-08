@@ -112,8 +112,8 @@ class build_swig(Command):
                 break
         for bi in swig_bis:
             # make options list
-            swig_opts = [
-                '-python', '-nodefaultctor', '-O', '-Wextra', '-Werror']
+            swig_opts = ['-python', '-nodefaultctor', '-O', '-Isrc',
+                         '-Wextra', '-Werror']
             if bi:
                 swig_opts.append('-builtin')
             if sys.version_info[0] >= 3:

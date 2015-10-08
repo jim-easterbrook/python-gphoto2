@@ -107,11 +107,15 @@ static int gp_log_add_func_py(GPLogLevel level, PyObject *func) {
   if (id >= 0) {
     register_callback(func, id);
     }
+  gp_log(GP_LOG_ERROR, "gphoto2_port_log",
+      "gp_log_add_func_py is deprecated. Please use gp_log_add_func instead.");
   return id;
 };
 
 // Remove Python callback from list
 static int gp_log_remove_func_py(int id) {
+  gp_log(GP_LOG_ERROR, "gphoto2_port_log",
+      "gp_log_remove_func_py is deprecated. Please use gp_log_remove_func instead.");
   deregister_callback(id);
   return gp_log_remove_func(id);
 };
@@ -218,7 +222,7 @@ class _GPhoto2Logger(object):
             self.log = logging.getLogger('gphoto2').log
         if self.log_id >= GP_OK:
             check_result(gp_log_remove_func(self.log_id))
-        self.log_id = gp_log_add_func_py(GP_LOG_DATA, self.callback)
+        self.log_id = gp_log_add_func(GP_LOG_DATA, gp_log_call_python, self.callback)
         return self.log_id
 
 _gphoto2_logger = _GPhoto2Logger()

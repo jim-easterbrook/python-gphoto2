@@ -15,49 +15,43 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module(package="gphoto2") gphoto2_context
+%module(package="gphoto2") port
 
 %{
 #include "gphoto2/gphoto2.h"
 %}
 
-%import "gphoto2_list.i"
+%import "port_info_list.i"
 
 %feature("autodoc", "2");
+
+%include "typemaps.i"
 
 %include "macros.i"
 
 IMPORT_GPHOTO2_ERROR()
 
-%rename(Context) _GPContext;
-%typemap(doc) GPContext * "$1_name: Context *";
+// gp_port_new() returns a pointer in an output parameter
+PLAIN_ARGOUT(GPPort **)
 
-// gp_camera_autodetect() returns a pointer in an output parameter
-NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
+// Add default constructor and destructor to _GPPort
+DEFAULT_CTOR(_GPPort, gp_port_new)
+DEFAULT_DTOR(_GPPort, gp_port_free)
 
-// Mark gp_context_new as constructor
-%newobject gp_context_new;
+// These structures are private
+%ignore _GPPortSettings;
+%ignore _GPPortSettingsSerial;
+%ignore _GPPortSettingsUSB;
+%ignore _GPPortSettingsUsbDiskDirect;
+%ignore _GPPortSettingsUsbScsi;
 
-// Mark gp_context_unref as destructor
-%delobject gp_context_unref;
+// Use library functions to access these
+%ignore _GPPort::type;
+%ignore _GPPort::settings;
+%ignore _GPPort::settings_pending;
+%ignore _GPPort::timeout;
+%ignore _GPPort::pl;
+%ignore _GPPort::pc;
 
-// Add default constructor and destructor
-struct _GPContext {};
-%extend _GPContext {
-  _GPContext() {
-    return gp_context_new();
-  }
-  ~_GPContext() {
-    gp_context_unref($self);
-  }
-};
-%ignore _GPContext;
-
-#ifndef GPHOTO2_24
-// Add member methods to _GPContext
-MEMBER_FUNCTION(_GPContext, Context,
-    camera_autodetect, (CameraList *list),
-    gp_camera_autodetect, (list, $self))
-#endif
-
-%include "gphoto2/gphoto2-context.h"
+%include "gphoto2/gphoto2-port.h"
+%include "gphoto2/gphoto2-port-portability.h"

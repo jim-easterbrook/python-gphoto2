@@ -15,13 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module(package="gphoto2") gphoto2_port
+%module(package="gphoto2") filesys
 
 %{
 #include "gphoto2/gphoto2.h"
 %}
 
-%import "gphoto2_port_info_list.i"
+%import "context.i"
+%import "file.i"
+%import "list.i"
 
 %feature("autodoc", "2");
 
@@ -31,27 +33,22 @@
 
 IMPORT_GPHOTO2_ERROR()
 
-// gp_port_new() returns a pointer in an output parameter
-PLAIN_ARGOUT(GPPort **)
+// gp_filesystem_list_files() etc. return a pointer in an output parameter
+NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
-// Add default constructor and destructor to _GPPort
-DEFAULT_CTOR(_GPPort, gp_port_new)
-DEFAULT_DTOR(_GPPort, gp_port_free)
+// gp_camera_file_get_info() etc. return a pointer in an output parameter
+CALLOC_ARGOUT(CameraFileInfo *info)
 
-// These structures are private
-%ignore _GPPortSettings;
-%ignore _GPPortSettingsSerial;
-%ignore _GPPortSettingsUSB;
-%ignore _GPPortSettingsUsbDiskDirect;
-%ignore _GPPortSettingsUsbScsi;
+// image dimensions use uint32_t
+%apply unsigned long { uint32_t };
 
-// Use library functions to access these
-%ignore _GPPort::type;
-%ignore _GPPort::settings;
-%ignore _GPPort::settings_pending;
-%ignore _GPPort::timeout;
-%ignore _GPPort::pl;
-%ignore _GPPort::pc;
+// storage info uses uint64_t and image mtime uses time_t
+%apply unsigned long long { uint64_t, time_t };
 
-%include "gphoto2/gphoto2-port.h"
-%include "gphoto2/gphoto2-port-portability.h"
+// Some things are defined in .h files but are not in the library
+%ignore gp_filesystem_get_storageinfo;
+
+// Structures are read only
+%immutable;
+
+%include "gphoto2/gphoto2-filesys.h"

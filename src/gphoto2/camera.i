@@ -15,18 +15,18 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module(package="gphoto2", threads="1") gphoto2_camera
+%module(package="gphoto2", threads="1") camera
 %nothread;
 
 %{
 #include "gphoto2/gphoto2.h"
 %}
 
-%import "gphoto2_abilities_list.i"
-%import "gphoto2_filesys.i"
-%import "gphoto2_port.i"
-%import "gphoto2_result.i"
-%import "gphoto2_widget.i"
+%import "abilities_list.i"
+%import "filesys.i"
+%import "port.i"
+%import "result.i"
+%import "widget.i"
 
 %feature("autodoc", "2");
 

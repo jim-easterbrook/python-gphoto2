@@ -15,14 +15,14 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module(package="gphoto2") gphoto2_widget
+%module(package="gphoto2") widget
 
 %{
 #include "gphoto2/gphoto2.h"
 %}
 
-%import "gphoto2_camera.i"
-%import "gphoto2_context.i"
+%import "camera.i"
+%import "context.i"
 
 %feature("autodoc", "2");
 

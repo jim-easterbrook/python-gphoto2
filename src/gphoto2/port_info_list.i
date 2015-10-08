@@ -15,13 +15,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module(package="gphoto2") gphoto2_port_info_list
+%module(package="gphoto2") port_info_list
 
 %{
 #include "gphoto2/gphoto2.h"
 %}
 
-%import "gphoto2_port.i"
+%import "port.i"
 
 %feature("autodoc", "2");
 

@@ -48,8 +48,7 @@ for n in range(len(gphoto2_include)):
         gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
 
 # get list of modules
-mod_names = filter(lambda x: x.startswith('gphoto2_'),
-                   os.listdir(os.path.join('src', 'gphoto2')))
+mod_names = os.listdir(os.path.join('src', 'gphoto2'))
 mod_names = list(map(lambda x: os.path.splitext(x)[0], mod_names))
 mod_names.sort()
 

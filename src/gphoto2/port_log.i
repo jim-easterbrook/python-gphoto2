@@ -15,7 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module(package="gphoto2") gphoto2_port_log
+%module(package="gphoto2") port_log
 
 %{
 #include "gphoto2/gphoto2.h"
@@ -107,14 +107,14 @@ static int gp_log_add_func_py(GPLogLevel level, PyObject *func) {
   if (id >= 0) {
     register_callback(func, id);
     }
-  gp_log(GP_LOG_ERROR, "gphoto2_port_log",
+  gp_log(GP_LOG_ERROR, "gphoto2.port_log",
       "gp_log_add_func_py is deprecated. Please use gp_log_add_func instead.");
   return id;
 };
 
 // Remove Python callback from list
 static int gp_log_remove_func_py(int id) {
-  gp_log(GP_LOG_ERROR, "gphoto2_port_log",
+  gp_log(GP_LOG_ERROR, "gphoto2.port_log",
       "gp_log_remove_func_py is deprecated. Please use gp_log_remove_func instead.");
   deregister_callback(id);
   return gp_log_remove_func(id);
@@ -134,7 +134,7 @@ static PyObject *AugmentedInt_class = NULL;
 %}
 %init %{
 {
-  PyObject *module = PyImport_ImportModule("gphoto2.gphoto2_result");
+  PyObject *module = PyImport_ImportModule("gphoto2.result");
   if (module != NULL) {
     AugmentedInt_class = PyObject_GetAttrString(module, "AugmentedInt");
     Py_DECREF(module);
@@ -205,7 +205,7 @@ int gp_log_remove_func(augmented_int id);
 %pythoncode %{
 import logging
 
-from gphoto2.gphoto2_result import check_result, GP_OK
+from gphoto2.result import check_result, GP_OK
 
 class _GPhoto2Logger(object):
     def __init__(self):

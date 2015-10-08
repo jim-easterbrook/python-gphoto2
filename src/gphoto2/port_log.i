@@ -31,15 +31,6 @@
 %ignore gp_log_data;
 %ignore gp_log_with_source_location;
 
-// Check user supplies a callable Python function
-%typemap(in) PyObject *func {
-  if (!PyCallable_Check($input)) {
-      PyErr_SetString(PyExc_TypeError, "Object not callable");
-      return NULL;
-  }
-  $1 = $input;
-}
-
 %{
 // Call Python function from C callback
 #ifdef GPHOTO2_24
@@ -61,63 +52,6 @@ static void gp_log_call_python(
   else
     Py_DECREF(result);
   PyGILState_Release(gstate);
-};
-
-// Keep list of Python callback function associated with each id
-struct LogFuncItem {
-  int id;
-  PyObject *func;
-  struct LogFuncItem *next;
-};
-
-static struct LogFuncItem *func_list = NULL;
-
-// Add Python callback to front of list
-static void register_callback(PyObject *func, int id) {
-  struct LogFuncItem *list_item = malloc(sizeof(struct LogFuncItem));
-  list_item->id = id;
-  list_item->func = func;
-  list_item->next = func_list;
-  func_list = list_item;
-  Py_INCREF(func);
-};
-
-static void deregister_callback(int id) {
-  struct LogFuncItem *last_item = NULL;
-  struct LogFuncItem *this_item = func_list;
-  while (this_item) {
-    if (this_item->id == id) {
-      Py_DECREF(this_item->func);
-      if (last_item)
-        last_item->next = this_item->next;
-      else
-        func_list = this_item->next;
-      free(this_item);
-      break;
-    }
-    last_item = this_item;
-    this_item = this_item->next;
-  }
-};
-%}
-
-%inline %{
-static int gp_log_add_func_py(GPLogLevel level, PyObject *func) {
-  int id = gp_log_add_func(level, gp_log_call_python, func);
-  if (id >= 0) {
-    register_callback(func, id);
-    }
-  gp_log(GP_LOG_ERROR, "gphoto2.port_log",
-      "gp_log_add_func_py is deprecated. Please use gp_log_add_func instead.");
-  return id;
-};
-
-// Remove Python callback from list
-static int gp_log_remove_func_py(int id) {
-  gp_log(GP_LOG_ERROR, "gphoto2.port_log",
-      "gp_log_remove_func_py is deprecated. Please use gp_log_remove_func instead.");
-  deregister_callback(id);
-  return gp_log_remove_func(id);
 };
 %}
 
@@ -199,6 +133,60 @@ augmented_int gp_log_add_func(GPLogLevel level, GPLogFunc func, PyObject *callab
 // Redefine signature of gp_log_remove_func
 int gp_log_remove_func(augmented_int id);
 %ignore gp_log_remove_func;
+
+%{
+// Keep list of Python callback function associated with each id
+struct LogFuncItem {
+  int id;
+  PyObject *func;
+  struct LogFuncItem *next;
+};
+
+static struct LogFuncItem *func_list = NULL;
+%}
+
+%inline %{
+static int gp_log_add_func_py(GPLogLevel level, PyObject *callable) {
+  int id = gp_log_add_func(level, gp_log_call_python, callable);
+  if (id >= 0) {
+    // Add Python callback to front of func_list
+    struct LogFuncItem *list_item = malloc(sizeof(struct LogFuncItem));
+    list_item->id = id;
+    list_item->func = callable;
+    list_item->next = func_list;
+    func_list = list_item;
+    Py_INCREF(callable);
+    }
+  gp_log(GP_LOG_ERROR, "gphoto2.port_log",
+      "gp_log_add_func_py is deprecated. Please use gp_log_add_func instead.");
+  return id;
+};
+
+// Remove Python callback from list
+static int gp_log_remove_func_py(int id) {
+  gp_log(GP_LOG_ERROR, "gphoto2.port_log",
+      "gp_log_remove_func_py is deprecated. Please use gp_log_remove_func instead.");
+  {
+    // Remove Python callback from func_list
+    struct LogFuncItem *last_item = NULL;
+    struct LogFuncItem *this_item = func_list;
+    while (this_item) {
+      if (this_item->id == id) {
+        Py_DECREF(this_item->func);
+        if (last_item)
+          last_item->next = this_item->next;
+        else
+          func_list = this_item->next;
+        free(this_item);
+        break;
+      }
+      last_item = this_item;
+      this_item = this_item->next;
+    }
+  }
+  return gp_log_remove_func(id);
+};
+%}
 
 %include "gphoto2/gphoto2-port-log.h"
 

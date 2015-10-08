@@ -55,7 +55,8 @@ if sys.version_info >= (3, 5) or not os.path.isdir(mod_src_dir):
     mod_src_dir = os.path.join('src', 'swig-gp' + gphoto2_version +
                                '-py' + str(sys.version_info[0]))
 extra_compile_args = [
-    '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes', '-Werror']
+    '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes', '-Werror',
+    '-DGPHOTO2_' + gphoto2_version.replace('.', '')]
 libraries = [x.replace('-l', '') for x in gphoto2_libs]
 library_dirs = [x.replace('-L', '') for x in gphoto2_lib_dirs]
 include_dirs = [x.replace('-I', '') for x in gphoto2_include]

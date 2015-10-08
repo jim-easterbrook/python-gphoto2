@@ -134,7 +134,7 @@ static PyObject *AugmentedInt_class = NULL;
 %}
 %init %{
 {
-  PyObject *module = PyImport_ImportModule("gphoto2.result");
+  PyObject *module = PyImport_ImportModule("gphoto2.types");
   if (module != NULL) {
     AugmentedInt_class = PyObject_GetAttrString(module, "AugmentedInt");
     Py_DECREF(module);

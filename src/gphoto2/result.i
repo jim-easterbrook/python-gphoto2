@@ -81,14 +81,4 @@ def check_result(result):
         raise GPhoto2Error(error)
     _return_logger.log(severity, '[%d] %s', error, gp_result_as_string(error))
     return result
-
-# Subclass Python int to store additional data
-class AugmentedInt(int):
-    def __new__(cls, value, data):
-        return super(AugmentedInt, cls).__new__(cls, value)
-
-    def __init__(self, value, data):
-        super(AugmentedInt, self).__init__()
-        self.data = data
-
 %}

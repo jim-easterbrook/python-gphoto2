@@ -48,7 +48,7 @@ static void gp_log_call_python(
   result = PyObject_CallObject(data, arglist);
   Py_DECREF(arglist);
   if (result == NULL)
-    PyErr_Clear();
+    PyErr_Print();
   else
     Py_DECREF(result);
   PyGILState_Release(gstate);

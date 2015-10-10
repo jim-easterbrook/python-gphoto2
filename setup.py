@@ -19,8 +19,7 @@
 
 from collections import defaultdict
 from distutils.cmd import Command
-from distutils.command.build import build
-from distutils.command.upload import upload
+from distutils.command.upload import upload as _upload
 from distutils.core import setup, Extension
 import os
 import re
@@ -58,6 +57,10 @@ else:
     swig_version = (0, 0, 0)
 use_builtin = (swig_version != (2, 0, 11) and
                (swig_version >= (3, 0, 8) or sys.version_info < (3, 5)))
+if 'PYTHON_GPHOTO2_BUILTIN' in os.environ:
+    use_builtin = True
+if 'PYTHON_GPHOTO2_NO_BUILTIN' in os.environ:
+    use_builtin = False
 mod_src_dir = os.path.join('src', 'swig')
 if use_builtin:
     mod_src_dir += '-bi'
@@ -177,7 +180,7 @@ cmdclass['build_swig'] = build_swig
 # requires GitPython - 'sudo pip install gitpython --pre'
 try:
     import git
-    class upload_and_tag(upload):
+    class upload(_upload):
         def run(self):
             message = ''
             with open('CHANGELOG.txt') as cl:
@@ -192,8 +195,8 @@ try:
             tag = repo.create_tag('v' + version, message=message)
             remote = repo.remotes.origin
             remote.push(tags=True)
-            return upload.run(self)
-    cmdclass['upload'] = upload_and_tag
+            return _upload.run(self)
+    cmdclass['upload'] = upload
 except ImportError:
     pass
 

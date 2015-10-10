@@ -1,2 +1,2 @@
-recursive-include src *.i *.py *.c
+recursive-include src *.i *.py *.c *.txt
 prune include

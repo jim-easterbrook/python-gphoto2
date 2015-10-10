@@ -49,11 +49,20 @@ for n in range(len(gphoto2_include)):
 
 # create extension modules list
 ext_modules = []
-mod_src_dir = os.path.join('src', 'swig-bi-gp' + gphoto2_version +
-                           '-py' + str(sys.version_info[0]))
-if sys.version_info >= (3, 5) or not os.path.isdir(mod_src_dir):
-    mod_src_dir = os.path.join('src', 'swig-gp' + gphoto2_version +
-                               '-py' + str(sys.version_info[0]))
+info_file = os.path.join('src', 'info.txt')
+if os.path.exists(info_file):
+    with open(info_file) as src:
+        code = compile(src.read(), info_file, 'exec')
+        exec(code, globals(), locals())
+else:
+    swig_version = (0, 0, 0)
+use_builtin = (swig_version != (2, 0, 11) and
+               (swig_version >= (3, 0, 8) or sys.version_info < (3, 5)))
+mod_src_dir = os.path.join('src', 'swig')
+if use_builtin:
+    mod_src_dir += '-bi'
+mod_src_dir += '-gp' + gphoto2_version
+mod_src_dir +='-py' + str(sys.version_info[0])
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes', '-Werror',
     '-DGPHOTO2_' + gphoto2_version.replace('.', '')]
@@ -111,22 +120,22 @@ class build_swig(Command):
             ['swig', '-version'], universal_newlines=True))
         for line in swig_version.split('\n'):
             if 'Version' in line:
-                swig_version = line.split()[-1]
-                if swig_version != '2.0.11':
+                swig_version = tuple(map(int, line.split()[-1].split('.')))
+                if swig_version != (2, 0, 11):
                     swig_bis.append(True)
                 break
-        for bi in swig_bis:
+        for use_builtin in swig_bis:
             # make options list
             swig_opts = ['-python', '-nodefaultctor', '-O', '-Isrc',
                          '-Wextra', '-Werror']
-            if bi:
+            if use_builtin:
                 swig_opts.append('-builtin')
             if sys.version_info[0] >= 3:
                 swig_opts.append('-py3')
             # do each gphoto2 version
             for gp_version in gp_versions:
                 output_dir = os.path.join('src', 'swig')
-                if bi:
+                if use_builtin:
                     output_dir += '-bi'
                 output_dir += '-gp' + gp_version
                 output_dir += '-py' + str(sys.version_info[0])
@@ -157,6 +166,10 @@ class build_swig(Command):
                     im.write('__version__ = "{}"\n\n'.format(version))
                     for name in mod_names + ext_names:
                         im.write('from gphoto2.{} import *\n'.format(name))
+        # store SWIG version
+        info_file = os.path.join('src', 'info.txt')
+        with open(info_file, 'w') as info:
+            info.write('swig_version = {}\n'.format(repr(swig_version)))
 
 cmdclass['build_swig'] = build_swig
 

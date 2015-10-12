@@ -51,20 +51,20 @@ For example::
     tar xzf gphoto2-0.11.0.tar.gz
     cd gphoto2-0.11.0
 
-Python's `distutils <https://docs.python.org/2/library/distutils.html>`_ are used to build and install python-gphoto2::
+Python's distutils_ are used to build and install python-gphoto2::
 
     python setup.py build
     sudo python setup.py install
 
-Install from GitHub (SWIG_ required)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Install from GitHub_ (SWIG_ required)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To install the very latest version, use `git <http://git-scm.com/>`_ to "clone" the GitHub repository, then change to the new directory::
+To install the very latest version, use git_ to "clone" the GitHub_ repository, then change to the new directory::
 
     git clone https://github.com/jim-easterbrook/python-gphoto2.git
     cd python-gphoto2
 
-As before, Python's ``distutils`` are used to build and install python-gphoto2, but now you have to run SWIG_ first to generate the files to be compiled::
+As before, Python's distutils_ are used to build and install python-gphoto2, but now you have to run SWIG_ first to generate the files to be compiled::
 
     python setup.py build_swig
     python setup.py build
@@ -116,7 +116,7 @@ The ``pydoc`` command can be used to show basic information about a function::
 
    jim@firefly ~/python-gphoto2 $ 
 
-If you compare this to the C `API documentation <http://www.gphoto.org/doc/api/>`_ of ``gp_camera_folder_list_files`` you will see that the C function signature includes an additional parameter "``list``" of type "``CameraList *``".
+If you compare this to the C `API documentation`_ of ``gp_camera_folder_list_files`` you will see that the C function signature includes an additional parameter "``list``" of type "``CameraList *``".
 This is an "output" parameter, a concept that doesn't really exist in Python.
 The Python version of ``gp_camera_folder_list_files`` returns a sequence containing the integer error code and the ``list`` value.
 
@@ -327,8 +327,8 @@ Notes on some gphoto2 functions
 gp_file_get_data_and_size / CameraFile.get_data_and_size
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Since python-gphoto2 version 1.2.0 these functions return a ``FileData`` object that supports the `buffer protocol <https://docs.python.org/2/c-api/buffer.html>`_.
-The data can be made accessible to Python (2.7 and 3.x) by using a `memoryview <https://docs.python.org/2/library/stdtypes.html#memoryview>`_ object.
+Since python-gphoto2 version 1.2.0 these functions return a ``FileData`` object that supports the `buffer protocol`_.
+The data can be made accessible to Python (2.7 and 3.x) by using a memoryview_ object.
 This allows the data to be used without copying.
 See the ``copy-data.py`` example for typical usage.
 
@@ -339,7 +339,7 @@ gp_camera_file_read / Camera.file_read
 
 Although the documentation says the ``buf`` parameter is of type ``char *`` you can pass any Python object that exposes a writeable buffer interface.
 This allows you to read a file directly into a Python object without additional copying.
-See the ``copy-chunks.py`` example which uses ``memoryview`` to expose a ``bytearray``.
+See the ``copy-chunks.py`` example which uses memoryview_ to expose a bytearray_.
 
 gp_camera_wait_for_event / Camera.wait_for_event
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -354,7 +354,7 @@ Running SWIG_
 SWIG_ is used to convert the ``.i`` interface definition files in ``src/gphoto2`` to ``.py`` and ``.c`` files.
 These are then compiled to build the Python interface to libgphoto2_.
 The files downloaded from PyPI_ include the SWIG_ generated files, but you may wish to regenerate them by running SWIG_ again (e.g. to test a new version of SWIG_ or of libgphoto2_).
-You will also need to run SWIG_ if you have downloaded the python-gphoto2 sources from GitHub instead of using PyPI_.
+You will also need to run SWIG_ if you have downloaded the python-gphoto2 sources from GitHub_ instead of using PyPI_.
 
 The file ``setup.py`` defines an extra command to run SWIG_.
 It has no user options::
@@ -363,7 +363,7 @@ It has no user options::
 
 By default this builds the interface for the version of libgphoto2_ installed on your computer.
 The interface files are created in directories with names like ``src/swig-bi-gp2.5-py3``.
-This naming scheme allows for different versions of Python and libgphoto2_, and use (or not) of the SWIG_ ``-builtin`` flag.
+This naming scheme allows for different versions of Python and libgphoto2_, and use (or not) of the `SWIG -builtin`_ flag.
 The appropriate version is chosen when the interface is built.
 
 To build interfaces for additional versions of libgphoto2_ (e.g. v2.4 as well as v2.5) you need to put a copy of that version's include (``.h``) files in a sub-directory of your working directory called ``include/gphoto2-2.x`` and then run ``setup.py build_swig`` again.
@@ -388,13 +388,21 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/.
 
-.. _cffi:         http://cffi.readthedocs.org/
-.. _ctypes:       https://docs.python.org/2/library/ctypes.html
-.. _gphoto2-cffi: https://github.com/jbaiter/gphoto2-cffi
-.. _libgphoto2:   http://www.gphoto.org/proj/libgphoto2/
+.. _API documentation: http://www.gphoto.org/doc/api/
+.. _buffer protocol:   https://docs.python.org/2/c-api/buffer.html
+.. _bytearray:         https://docs.python.org/2/library/functions.html#bytearray
+.. _cffi:              http://cffi.readthedocs.org/
+.. _ctypes:            https://docs.python.org/2/library/ctypes.html
+.. _distutils:         https://docs.python.org/2/library/distutils.html
+.. _git:               http://git-scm.com/
+.. _GitHub:            https://github.com/jim-easterbrook/python-gphoto2
+.. _gphoto2-cffi:      https://github.com/jbaiter/gphoto2-cffi
+.. _libgphoto2:        http://www.gphoto.org/proj/libgphoto2/
+.. _memoryview:        https://docs.python.org/2/library/stdtypes.html#memoryview
 .. _Python bindings:
    http://sourceforge.net/p/gphoto/code/HEAD/tree/trunk/bindings/libgphoto2-python/
-.. _piggyphoto:   https://github.com/alexdu/piggyphoto
-.. _pip:          https://pip.pypa.io/
-.. _PyPI:         https://pypi.python.org/pypi/gphoto2/
-.. _SWIG:         http://swig.org/
+.. _piggyphoto:        https://github.com/alexdu/piggyphoto
+.. _pip:               https://pip.pypa.io/
+.. _PyPI:              https://pypi.python.org/pypi/gphoto2/
+.. _SWIG:              http://swig.org/
+.. _SWIG -builtin:     http://www.swig.org/Doc3.0/Python.html#Python_builtin_types

@@ -7,8 +7,8 @@ This gives direct access to nearly all the libgphoto2_ functions, but sometimes 
 
 Other Python bindings to libgphoto2_ are available:
 piggyphoto_ uses ctypes_ (included in standard Python installations) to interface to the library.
-The gphoto2 source tree includes some `Python bindings <libgphoto2-python_>`_ which also use ctypes_.
-gphoto2-cffi_ uses cffi_.
+The gphoto2 source tree includes some `Python bindings`_ which also use ctypes_.
+`gphoto2-cffi`_ uses cffi_.
 
 .. contents::
    :backlinks: top
@@ -392,7 +392,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 .. _ctypes:       https://docs.python.org/2/library/ctypes.html
 .. _gphoto2-cffi: https://github.com/jbaiter/gphoto2-cffi
 .. _libgphoto2:   http://www.gphoto.org/proj/libgphoto2/
-.. _libgphoto2-python:
+.. _Python bindings:
    http://sourceforge.net/p/gphoto/code/HEAD/tree/trunk/bindings/libgphoto2-python/
 .. _piggyphoto:   https://github.com/alexdu/piggyphoto
 .. _pip:          https://pip.pypa.io/

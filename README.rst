@@ -1,14 +1,14 @@
 python-gphoto2
 ==============
 
-python-gphoto2 is a comprehensive Python interface (or binding) to `libgphoto2 <http://www.gphoto.org/proj/libgphoto2/>`_.
-It is built using `SWIG <http://swig.org/>`_ to automatically generate the interface code.
-This gives direct access to nearly all the libgphoto2 functions, but sometimes in a rather un-Pythonic manner.
+python-gphoto2 is a comprehensive Python interface (or binding) to libgphoto2_.
+It is built using SWIG_ to automatically generate the interface code.
+This gives direct access to nearly all the libgphoto2_ functions, but sometimes in a rather un-Pythonic manner.
 
-Other Python bindings to libgphoto2 are available:
-`piggyphoto <https://github.com/alexdu/piggyphoto>`_ uses ctypes (included in standard Python installations) to interface to the library.
-The gphoto2 source tree includes some `Python bindings <http://sourceforge.net/p/gphoto/code/HEAD/tree/trunk/bindings/libgphoto2-python/>`_ which also use ctypes.
-`gphoto2-cffi <https://github.com/jbaiter/gphoto2-cffi>`_ uses `cffi <http://cffi.readthedocs.org/>`_.
+Other Python bindings to libgphoto2_ are available:
+piggyphoto_ uses ctypes_ (included in standard Python installations) to interface to the library.
+The gphoto2 source tree includes some `Python bindings <libgphoto2-python_>`_ which also use ctypes_.
+gphoto2-cffi_ uses cffi_.
 
 .. contents::
    :backlinks: top
@@ -20,7 +20,7 @@ Dependencies
 *   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.4 or greater
 *   SWIG: http://swig.org/ (optional since python-gphoto2 v0.11)
 
-Note that you need the "development headers" versions of libgphoto2 and Python.
+Note that you need the "development headers" versions of libgphoto2_ and Python.
 Most Linux distributions' package managers have these, but the names vary.
 Look for ``libgphoto2-2-dev`` or ``libgphoto2-devel`` or something similar.
 
@@ -32,19 +32,20 @@ There are several ways to install python-gphoto2, with varying levels of control
 The commands below will install python-gphoto2 for your default Python version.
 To install for both Python 2 and Python 3, run the installation process twice with specific commands, i.e. ``pip2`` and ``pip3`` or ``python2`` and ``python3``.
 
-Install with ``pip``
-^^^^^^^^^^^^^^^^^^^^
+Install with pip_
+^^^^^^^^^^^^^^^^^
 
-The easiest installation method is to use the `pip <https://pip.pypa.io/>`_ command::
+The easiest installation method is to use the pip_ command::
 
-    sudo pip install gphoto2
+    sudo pip install -v gphoto2
 
-Note that this may take longer than you expect as the SWIG generated files are compiled during installation.
+Note that this may take longer than you expect as the SWIG_ generated files are compiled during installation.
+The ``-v`` option increases pip_'s verbosity so you can see that it's doing something.
 
 Install a downloaded archive
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Visit `PyPI <https://pypi.python.org/pypi/gphoto2>`_ and download one of the zip or tar.gz files, then extract it and change to the new directory.
+Visit PyPI_ and download one of the zip or tar.gz files, then extract it and change to the new directory.
 For example::
 
     tar xzf gphoto2-0.11.0.tar.gz
@@ -55,15 +56,15 @@ Python's `distutils <https://docs.python.org/2/library/distutils.html>`_ are use
     python setup.py build
     sudo python setup.py install
 
-Install from GitHub (SWIG required)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Install from GitHub (SWIG_ required)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 To install the very latest version, use `git <http://git-scm.com/>`_ to "clone" the GitHub repository, then change to the new directory::
 
     git clone https://github.com/jim-easterbrook/python-gphoto2.git
     cd python-gphoto2
 
-As before, Python's ``distutils`` are used to build and install python-gphoto2, but now you have to run SWIG first to generate the files to be compiled::
+As before, Python's ``distutils`` are used to build and install python-gphoto2, but now you have to run SWIG_ first to generate the files to be compiled::
 
     python setup.py build_swig
     python setup.py build
@@ -74,7 +75,7 @@ See "`running SWIG`_" below for more detail.
 Testing
 ^^^^^^^
 
-.. note:: If you installed with pip the example files should be in ``/usr/share/python-gphoto2/examples`` or ``/usr/local/share/python-gphoto2/examples`` or somewhere similar.
+.. note:: If you installed with pip_ the example files should be in ``/usr/share/python-gphoto2/examples`` or ``/usr/local/share/python-gphoto2/examples`` or somewhere similar.
    Otherwise they are in the ``examples`` sub-directory of your working directory.
 
 Connect a digital camera to your computer, switch it on, and try one of the example programs::
@@ -86,7 +87,7 @@ If this works then you're ready to start using python-gphoto2.
 Using python-gphoto2
 --------------------
 
-The Python interface to libgphoto2 should allow you to do anything you could do in a C program.
+The Python interface to libgphoto2_ should allow you to do anything you could do in a C program.
 However, the project is quite young and there are still bits missing and functions that cannot be called from Python.
 Let me know if you run into any problems.
 
@@ -96,7 +97,7 @@ See the example programs for typical usage of the Python gphoto2 API.
 "C" interface
 ^^^^^^^^^^^^^
 
-Using SWIG to generate the Python interfaces automatically means that every function in libgphoto2 *should* be available to Python.
+Using SWIG_ to generate the Python interfaces automatically means that every function in libgphoto2_ *should* be available to Python.
 The ``pydoc`` command can be used to show basic information about a function::
 
    jim@firefly ~/python-gphoto2 $ pydoc gphoto2.gp_camera_folder_list_files
@@ -119,8 +120,8 @@ If you compare this to the C `API documentation <http://www.gphoto.org/doc/api/>
 This is an "output" parameter, a concept that doesn't really exist in Python.
 The Python version of ``gp_camera_folder_list_files`` returns a sequence containing the integer error code and the ``list`` value.
 
-Most of the libgphoto2 functions that use pointer parameters to return values in the C API have been adapted like this in the Python API.
-(Unfortunately I've not found a way to persuade SWIG to include this extra return value in the documentation.
+Most of the libgphoto2_ functions that use pointer parameters to return values in the C API have been adapted like this in the Python API.
+(Unfortunately I've not found a way to persuade SWIG_ to include this extra return value in the documentation.
 You should use ``pydoc`` to check the parameters expected by the Python function.)
 
 For example, the C code:
@@ -162,7 +163,7 @@ Here is a complete example program (without any error checking):
 "Object oriented" interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-SWIG has the ability to attach member functions to C structs such as the GPhoto2 ``Camera`` object.
+SWIG_ has the ability to attach member functions to C structs such as the GPhoto2 ``Camera`` object.
 The Python interface includes many such member functions, allowing GPhoto2 to be used in a more "Pythonic" style.
 These member functions also include error checking.
 If an error occurs they raise a Python ``GPhoto2Error`` exception.
@@ -188,7 +189,7 @@ Those that do include a "see also" reference in their docstring, as shown in the
 Error checking
 ^^^^^^^^^^^^^^
 
-Most of the libgphoto2 functions return an integer to indicate success or failure.
+Most of the libgphoto2_ functions return an integer to indicate success or failure.
 The Python interface includes a ``check_result()`` function to check these values and raise a ``GPhoto2Error`` exception if an error occurs.
 
 This function also removes the error code from lists such as that returned by ``gp_camera_new()`` in the example.
@@ -267,12 +268,12 @@ When just calling a single function like this, it's probably easier to test the 
 Logging
 ^^^^^^^
 
-The libgphoto2 library includes functions (such as ``gp_log()``) to output messages from its various functions.
-These messages are mostly used for debugging purposes, and it can be helpful to see them when using libgphoto2 from Python.
-The Python interface includes a ``use_python_logging()`` function to connect libgphoto2 logging to the standard Python logging system.
+The libgphoto2_ library includes functions (such as ``gp_log()``) to output messages from its various functions.
+These messages are mostly used for debugging purposes, and it can be helpful to see them when using libgphoto2_ from Python.
+The Python interface includes a ``use_python_logging()`` function to connect libgphoto2_ logging to the standard Python logging system.
 You should call ``use_python_logging()`` near the start of your program, as shown in the examples.
 
-The libgphoto2 logging messages have four possible severity levels, each of which is mapped to a suitable Python logging severity.
+The libgphoto2_ logging messages have four possible severity levels, each of which is mapped to a suitable Python logging severity.
 You can override this mapping by passing your own to ``use_python_logging()``:
 
 .. code:: python
@@ -302,7 +303,7 @@ Since python-gphoto2 version 1.3 the callback function is installed with ``gp_lo
         gp.gp_log_add_func(gp.GP_LOG_VERBOSE, gp.gp_log_call_python, callback))
     ...
 
-The SWIG interface provides a function ``gp_log_call_python`` that calls your Python callback.
+The SWIG_ interface provides a function ``gp_log_call_python`` that calls your Python callback.
 ``gp_log_add_func`` returns an ``AugmentedInt`` value that stores a reference to your callback function along with the function's return value.
 It can be passed to ``gp_log_remove_func`` to uninstall your callback.
 
@@ -318,7 +319,7 @@ Earlier versions of python-gphoto2 use ``gp_log_add_func_py`` to install the cal
     callback_id = gp.check_result(gp.gp_log_add_func_py(gp.GP_LOG_VERBOSE, callback))
     ...
 
-In this case a reference to your callback function is stored by the SWIG interface.
+In this case a reference to your callback function is stored by the SWIG_ interface.
 
 Notes on some gphoto2 functions
 -------------------------------
@@ -347,25 +348,25 @@ These functions return both the event type and the event data.
 The data you get depends on the type.
 ``GP_EVENT_FILE_ADDED`` and ``GP_EVENT_FOLDER_ADDED`` events return a ``CameraFilePath``, others return ``None``.
 
-Running SWIG
-------------
+Running SWIG_
+-------------
 
-SWIG is used to convert the ``.i`` interface definition files in ``src/gphoto2`` to ``.py`` and ``.c`` files.
-These are then compiled to build the Python interface to libgphoto2.
-The files downloaded from `PyPI <https://pypi.python.org/pypi/gphoto2>`_ include the SWIG generated files, but you may wish to regenerate them by running SWIG again (e.g. to test a new version of SWIG or of libgphoto2).
-You will also need to run SWIG if you have downloaded the python-gphoto2 sources from GitHub instead of using PyPI.
+SWIG_ is used to convert the ``.i`` interface definition files in ``src/gphoto2`` to ``.py`` and ``.c`` files.
+These are then compiled to build the Python interface to libgphoto2_.
+The files downloaded from PyPI_ include the SWIG_ generated files, but you may wish to regenerate them by running SWIG_ again (e.g. to test a new version of SWIG_ or of libgphoto2_).
+You will also need to run SWIG_ if you have downloaded the python-gphoto2 sources from GitHub instead of using PyPI_.
 
-The file ``setup.py`` defines an extra command to run SWIG.
+The file ``setup.py`` defines an extra command to run SWIG_.
 It has no user options::
 
     python setup.py build_swig
 
-By default this builds the interface for the version of libgphoto2 installed on your computer.
+By default this builds the interface for the version of libgphoto2_ installed on your computer.
 The interface files are created in directories with names like ``src/swig-bi-gp2.5-py3``.
-This naming scheme allows for different versions of Python and libgphoto2, and use (or not) of the SWIG ``-builtin`` flag.
+This naming scheme allows for different versions of Python and libgphoto2_, and use (or not) of the SWIG_ ``-builtin`` flag.
 The appropriate version is chosen when the interface is built.
 
-To build interfaces for additional versions of libgphoto2 (e.g. v2.4 as well as v2.5) you need to put a copy of that version's include (``.h``) files in a sub-directory of your working directory called ``include/gphoto2-2.x`` and then run ``setup.py build_swig`` again.
+To build interfaces for additional versions of libgphoto2_ (e.g. v2.4 as well as v2.5) you need to put a copy of that version's include (``.h``) files in a sub-directory of your working directory called ``include/gphoto2-2.x`` and then run ``setup.py build_swig`` again.
 
 Licence
 -------
@@ -386,3 +387,14 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/.
+
+.. _cffi:         http://cffi.readthedocs.org/
+.. _ctypes:       https://docs.python.org/2/library/ctypes.html
+.. _gphoto2-cffi: https://github.com/jbaiter/gphoto2-cffi
+.. _libgphoto2:   http://www.gphoto.org/proj/libgphoto2/
+.. _libgphoto2-python:
+   http://sourceforge.net/p/gphoto/code/HEAD/tree/trunk/bindings/libgphoto2-python/
+.. _piggyphoto:   https://github.com/alexdu/piggyphoto
+.. _pip:          https://pip.pypa.io/
+.. _PyPI:         https://pypi.python.org/pypi/gphoto2/
+.. _SWIG:         http://swig.org/

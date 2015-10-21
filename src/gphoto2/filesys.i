@@ -33,11 +33,21 @@
 
 IMPORT_GPHOTO2_ERROR()
 
+// gp_filesystem_new() returns a pointer in an output parameter
+PLAIN_ARGOUT(CameraFilesystem **)
+
 // gp_filesystem_list_files() etc. return a pointer in an output parameter
 NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
 // gp_camera_file_get_info() etc. return a pointer in an output parameter
 CALLOC_ARGOUT(CameraFileInfo *info)
+
+// Add default constructor and destructor to _CameraFilesystem
+struct _CameraFilesystem {};
+DEFAULT_CTOR(_CameraFilesystem, gp_filesystem_new)
+DEFAULT_DTOR(_CameraFilesystem, gp_filesystem_free)
+%ignore _CameraFilesystem;
+%ignore gp_filesystem_free;
 
 // image dimensions use uint32_t
 %apply unsigned long { uint32_t };

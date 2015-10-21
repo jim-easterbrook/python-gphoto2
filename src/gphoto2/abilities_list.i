@@ -50,6 +50,7 @@ struct _CameraAbilitiesList {};
 DEFAULT_CTOR(_CameraAbilitiesList, gp_abilities_list_new)
 DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
 %ignore _CameraAbilitiesList;
+%ignore gp_abilities_list_free;
 
 // Make CameraAbilitiesList more like a Python list
 LEN_MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList, gp_abilities_list_count)

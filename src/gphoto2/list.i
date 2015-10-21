@@ -42,6 +42,7 @@ struct _CameraList {};
 DEFAULT_CTOR(_CameraList, gp_list_new)
 DEFAULT_DTOR(_CameraList, gp_list_unref)
 %ignore _CameraList;
+%ignore gp_list_unref;
 
 // Make CameraList more like a Python list
 LEN_MEMBER_FUNCTION(_CameraList, CameraList, gp_list_count)

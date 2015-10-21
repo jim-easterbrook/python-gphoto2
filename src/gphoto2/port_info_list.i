@@ -62,6 +62,7 @@ struct _GPPortInfoList {};
 DEFAULT_CTOR(_GPPortInfoList, gp_port_info_list_new)
 DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
 %ignore _GPPortInfoList;
+%ignore gp_port_info_list_free;
 
 // Make GPPortInfoList more like a Python list
 LEN_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList, gp_port_info_list_count)

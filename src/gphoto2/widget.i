@@ -165,7 +165,7 @@ typedef union {
 
 // Add default destructor to _CameraWidget
 // Destructor decrefs root widget
-%inline %{
+%{
 static int widget_dtor(CameraWidget *widget) {
   if (widget == NULL)
     return GP_OK;
@@ -181,6 +181,7 @@ static int widget_dtor(CameraWidget *widget) {
 struct _CameraWidget {};
 DEFAULT_DTOR(_CameraWidget, widget_dtor)
 %ignore _CameraWidget;
+%ignore gp_widget_unref;
 
 // Add member methods to _CameraWidget
 INT_MEMBER_FUNCTION(_CameraWidget, CameraWidget,

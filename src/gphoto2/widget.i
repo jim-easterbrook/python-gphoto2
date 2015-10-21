@@ -181,6 +181,8 @@ static int widget_dtor(CameraWidget *widget) {
 struct _CameraWidget {};
 DEFAULT_DTOR(_CameraWidget, widget_dtor)
 %ignore _CameraWidget;
+%ignore gp_widget_free;
+%ignore gp_widget_ref;
 %ignore gp_widget_unref;
 
 // Add member methods to _CameraWidget

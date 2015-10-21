@@ -52,6 +52,8 @@ struct _GPContext {};
   }
 };
 %ignore _GPContext;
+%ignore gp_context_ref;
+%ignore gp_context_unref;
 
 #ifndef GPHOTO2_24
 // Add member methods to _GPContext

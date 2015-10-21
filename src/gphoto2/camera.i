@@ -110,6 +110,7 @@ CALLOC_ARGOUT(CameraFilePath *path)
 // Add default constructor and destructor to _Camera
 DEFAULT_CTOR(_Camera, gp_camera_new)
 DEFAULT_DTOR(_Camera, gp_camera_unref)
+%ignore gp_camera_ref;
 %ignore gp_camera_unref;
 
 // Add member methods to _Camera

@@ -35,6 +35,29 @@ IMPORT_GPHOTO2_ERROR()
 // gp_file_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFile **)
 
+// gp_file_slurp() returns the number of bytes read
+%apply unsigned int *OUTPUT { size_t *readlen };
+
+// gp_file_slurp() fills a user-supplied buffer
+%typemap(in, numinputs=1) (char *data, size_t size) {
+  Py_buffer view;
+  if (PyObject_CheckBuffer($input) != 1) {
+    PyErr_SetString(
+      PyExc_TypeError,
+      "in method '$symname', argument $argnum does not support the buffer interface");
+    SWIG_fail;
+  }
+  if (PyObject_GetBuffer($input, &view, PyBUF_SIMPLE | PyBUF_WRITABLE) != 0) {
+    PyErr_SetString(
+      PyExc_TypeError,
+      "in method '$symname', argument $argnum does not export a writable buffer");
+    SWIG_fail;
+  }
+  $1 = view.buf;
+  $2 = view.len;
+  PyBuffer_Release(&view);
+}
+
 // Define a simple Python type that has the buffer interface
 // This definition is not SWIGGED, just compiled
 %{

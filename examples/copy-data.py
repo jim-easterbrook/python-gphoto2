@@ -62,7 +62,14 @@ def main():
     folder, name = os.path.split(path)
     camera_file = gp.check_result(gp.gp_camera_file_get(
         camera, folder, name, gp.GP_FILE_TYPE_NORMAL, context))
-    file_data = gp.check_result(gp.gp_file_get_data_and_size(camera_file))
+    # read file data using 'slurp' and a buffer allocated in Python
+    info = gp.check_result(
+        gp.gp_camera_file_get_info(camera, folder, name, context))
+    file_data = bytearray(info.file.size)
+    count = gp.check_result(gp.gp_file_slurp(camera_file, file_data))
+    print(count, 'bytes read')
+    # or read data using 'get_data_and_size' which allocates its own buffer
+##    file_data = gp.check_result(gp.gp_file_get_data_and_size(camera_file))
     data = memoryview(file_data)
     print(type(data), len(data))
     print(data[:10].tolist())

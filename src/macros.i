@@ -87,21 +87,16 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 
 %define NEW_ARGOUT(typepattern, alloc_func, free_func)
 %typemap(in, numinputs=0) typepattern () {
-  $1 = NULL;
-  {
-    int error = alloc_func(&$1);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error)
-      SWIG_fail;
-    }
+  int error = alloc_func(&$1);
+  if (error < GP_OK) {
+    $1 = NULL;
+    GPHOTO2_ERROR(error)
+    SWIG_fail;
   }
 }
 %typemap(freearg) typepattern {
   if ($1 != NULL) {
-    int error = free_func($1);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error)
-    }
+    free_func($1);
   }
 }
 %typemap(argout) typepattern {
@@ -135,9 +130,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 }
 %extend name {
   ~name() {
-    int error = free_func($self);
-    if (error < GP_OK)
-      GPHOTO2_ERROR(error)
+    free_func($self);
   }
 };
 %enddef

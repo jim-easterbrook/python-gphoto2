@@ -17,17 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-# "object oriented" version of list-files.py
+# read just enough of an image to decode the Exif data
 
 from __future__ import print_function
 
-from datetime import datetime
-import io
 import logging
 import os
 import sys
 
-import exifread
+from gi.repository import GObject, GExiv2
 import gphoto2 as gp
 
 def list_files(camera, context, path='/'):
@@ -44,47 +42,25 @@ def list_files(camera, context, path='/'):
         result.extend(list_files(camera, context, os.path.join(path, name)))
     return result
 
-class PseudoFile(object):
-    def __init__(self, camera, context, path):
-        self._camera = camera
-        self._context = context
-        self._folder, self._file_name = os.path.split(path)
-        info = self._camera.file_get_info(
-            self._folder, self._file_name, self._context)
-        self._size = info.file.size
-        self._ptr = 0
-        self._buf = bytearray(16 * 1024)
-        self._buf_ptr = 0
-        self._buf_len = 0
+def get_file_exif_normal(camera, context, path):
+    # a 32k buffer is large enough for my Canon EOS 100D and A1100 IS
+    # use a bigger buffer if you get "GExiv2: unsupported format" errors
+    buf = bytearray(32 * 1024)
+    folder, file_name = os.path.split(path)
+    camera.file_read(folder, file_name, gp.GP_FILE_TYPE_NORMAL, 0, buf, context)
+    md = GExiv2.Metadata()
+    md.open_buf(buf)
+    return md
 
-    def read(self, size=None):
-        if size is None or size < 0:
-            size = self._size - self._ptr
-        if (self._ptr < self._buf_ptr or
-                self._ptr >= self._buf_ptr + self._buf_len):
-            self._buf_ptr = self._ptr - (self._ptr % len(self._buf))
-            self._buf_len = self._camera.file_read(
-                self._folder, self._file_name, gp.GP_FILE_TYPE_NORMAL,
-                self._buf_ptr, self._buf, self._context)
-        offset = self._ptr - self._buf_ptr
-        size = min(size, self._buf_len - offset)
-        self._ptr += size
-        return self._buf[offset:offset + size]
-
-    def seek(self, offset, whence=0):
-        if whence == 0:
-            self._ptr = offset
-        elif whence == 1:
-            self._ptr += offset
-        else:
-            self._ptr = self._size - ptr
-
-    def tell(self):
-        return self._ptr
-
-def get_file_exif(camera, context, path):
-    pf = PseudoFile(camera, context, path)
-    return exifread.process_file(pf)
+def get_file_exif_metadata(camera, context, path):
+    # this doesn't work on either of my Canon cameras
+    # gphoto2 error -6: "Functionality not supported."
+    folder, file_name = os.path.split(path)
+    cam_file = camera.file_get(
+        folder, file_name, gp.GP_FILE_TYPE_METADATA, context)
+    md = GExiv2.Metadata()
+    md.from_app1_segment(cam_file.get_data_and_size())
+    return md
 
 def main():
     logging.basicConfig(
@@ -104,13 +80,21 @@ def main():
     print('...')
     for path in files[-10:]:
         print(path)
-    print
-    print('Exif data')
-    print('=========')
-    exif = get_file_exif(camera, context, files[-1])
-    for key in ('EXIF DateTimeOriginal', 'EXIF LensModel', 'Image Copyright'):
-        if key in exif:
-            print(key, ':', exif[key])
+    print()
+    print('Exif data via GP_FILE_TYPE_NORMAL')
+    print('=================================')
+    md = get_file_exif_normal(camera, context, files[-1])
+    for key in ('Exif.Photo.DateTimeOriginal', 'Exif.Image.Model', 'Exif.Image.Copyright'):
+        if key in md.get_exif_tags():
+            print(key, ':', md.get_tag_string(key))
+    print()
+    print('Exif data via GP_FILE_TYPE_METADATA')
+    print('===================================')
+    md = get_file_exif_metadata(camera, context, files[-1])
+    for key in ('Exif.Photo.DateTimeOriginal', 'Exif.Image.Model', 'Exif.Image.Copyright'):
+        if key in md.get_exif_tags():
+            print(key, ':', md.get_tag_string(key))
+    print()
     camera.exit(context)
     return 0
 

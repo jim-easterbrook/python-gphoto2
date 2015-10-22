@@ -334,8 +334,8 @@ See the ``copy-data.py`` example for typical usage.
 
 In earlier versions of python-gphoto2 these functions returned a ``str`` (Python 2) or ``bytes`` (Python 3) object containing a copy of the data in the ``CameraFile`` object.
 
-gp_camera_file_read / Camera.file_read
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gp_camera_file_read / Camera.file_read / gp_file_slurp / CameraFile.slurp
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Although the documentation says the ``buf`` parameter is of type ``char *`` you can pass any Python object that exposes a writeable buffer interface.
 This allows you to read a file directly into a Python object without additional copying.

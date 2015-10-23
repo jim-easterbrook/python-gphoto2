@@ -40,27 +40,17 @@ IMPORT_GPHOTO2_ERROR()
 
 // Allow other Python threads to continue during some function calls
 %thread gp_camera_wait_for_event;
-%thread _Camera::wait_for_event;
 %thread gp_camera_capture;
-%thread _Camera::capture;
 %thread gp_camera_trigger_capture;
-%thread _Camera::trigger_capture;
 %thread gp_camera_capture_preview;
-%thread _Camera::capture_preview;
 %thread gp_camera_get_config;
-%thread _Camera::get_config;
 %thread gp_camera_folder_list_files;
-%thread _Camera::folder_list_files;
 %thread gp_camera_folder_list_folders;
-%thread _Camera::folder_list_folders;
 %thread gp_camera_folder_delete_all;
-%thread _Camera::folder_delete_all;
 %thread gp_camera_folder_put_file;
-%thread _Camera::folder_put_file;
 %thread gp_camera_file_get;
-%thread _Camera::file_get;
+%thread gp_camera_file_get_info;
 %thread gp_camera_file_read;
-%thread _Camera::file_read;
 
 // gp_camera_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(Camera **)
@@ -138,7 +128,7 @@ MEMBER_FUNCTION(_Camera, Camera,
 MEMBER_FUNCTION(_Camera, Camera,
     exit, (GPContext *context),
     gp_camera_exit, ($self, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     get_config, (CameraWidget **window, GPContext *context),
     gp_camera_get_config, ($self, window, context))
 MEMBER_FUNCTION(_Camera, Camera,
@@ -153,39 +143,39 @@ MEMBER_FUNCTION(_Camera, Camera,
 MEMBER_FUNCTION(_Camera, Camera,
     get_about, (CameraText *about, GPContext *context),
     gp_camera_get_about, ($self, about, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     capture, (CameraCaptureType type, CameraFilePath *path, GPContext *context),
     gp_camera_capture, ($self, type, path, context))
 #ifndef GPHOTO2_24
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     trigger_capture, (GPContext *context),
     gp_camera_trigger_capture, ($self, context))
 #endif
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     capture_preview, (CameraFile *camera_file, GPContext *context),
     gp_camera_capture_preview, ($self, camera_file, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     wait_for_event,
     (int timeout, CameraEventType *eventtype, void **eventdata, GPContext *context),
     gp_camera_wait_for_event, ($self, timeout, eventtype, eventdata, context))
 MEMBER_FUNCTION(_Camera, Camera,
     get_storageinfo, (CameraStorageInformation **sifs, int *nrofsifs, GPContext *context),
     gp_camera_get_storageinfo, ($self, sifs, nrofsifs, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     folder_list_files, (const char *folder, CameraList *list, GPContext *context),
     gp_camera_folder_list_files, ($self, folder, list, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     folder_list_folders, (const char *folder, CameraList *list, GPContext *context),
     gp_camera_folder_list_folders, ($self, folder, list, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     folder_delete_all, (const char *folder, GPContext *context),
     gp_camera_folder_delete_all, ($self, folder, context))
 #ifdef GPHOTO2_24
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     folder_put_file, (const char *folder, CameraFile *file, GPContext *context),
     gp_camera_folder_put_file, ($self, folder, file, context))
 #else
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     folder_put_file, (const char *folder, const char *filename, CameraFileType type, CameraFile *file, GPContext *context),
     gp_camera_folder_put_file, ($self, folder, filename, type, file, context))
 #endif
@@ -195,17 +185,17 @@ MEMBER_FUNCTION(_Camera, Camera,
 MEMBER_FUNCTION(_Camera, Camera,
     folder_remove_dir, (const char *folder, const char *name, GPContext *context),
     gp_camera_folder_remove_dir, ($self, folder, name, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     file_get_info, (const char *folder, const char *file, CameraFileInfo *info, GPContext *context),
     gp_camera_file_get_info, ($self, folder, file, info, context))
 MEMBER_FUNCTION(_Camera, Camera,
     file_set_info, (const char *folder, const char *file, CameraFileInfo info, GPContext *context),
     gp_camera_file_set_info, ($self, folder, file, info, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     file_get, (const char *folder, const char *file, CameraFileType type, CameraFile *camera_file, GPContext *context),
     gp_camera_file_get, ($self, folder, file, type, camera_file, context))
 #ifndef GPHOTO2_24
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     file_read, (const char *folder, const char *file, CameraFileType type, uint64_t offset, char *buf, uint64_t *size, GPContext *context),
     gp_camera_file_read, ($self, folder, file, type, offset, buf, size, context))
 #endif

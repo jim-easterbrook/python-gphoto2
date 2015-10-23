@@ -15,6 +15,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 1.3.0:
+  1/ Reworked Python interface to logging callback functions.
+  2/ Renamed submodules and revised build process.
+  3/ Hid xxx_ref, xxx_unref & xxx_free functions from Python.
+  4/ Fixed some bugs in error handling.
+
 Changes in 1.2.2:
   1/ Temporarily fix build problems with Python 3.5
   2/ Added a "choose camera" example showing how to handle multiple cameras.

@@ -23,12 +23,11 @@ from distutils.command.upload import upload as _upload
 from distutils.core import setup, Extension
 import os
 import re
-import shlex
 import subprocess
 import sys
 
 # python-gphoto2 version
-version = '1.3.0-alpha'
+version = '1.3.0'
 
 # get gphoto2 library config
 gphoto2_version = '.'.join(subprocess.check_output(

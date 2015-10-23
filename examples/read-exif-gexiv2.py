@@ -53,13 +53,15 @@ def get_file_exif_normal(camera, context, path):
     return md
 
 def get_file_exif_metadata(camera, context, path):
-    # this doesn't work on either of my Canon cameras
-    # gphoto2 error -6: "Functionality not supported."
+    # this doesn't work for me as from_app1_segment wants a pointer to a
+    # single byte but then tries to read beyond it, causing a segfault
     folder, file_name = os.path.split(path)
     cam_file = camera.file_get(
-        folder, file_name, gp.GP_FILE_TYPE_METADATA, context)
+        folder, file_name, gp.GP_FILE_TYPE_EXIF, context)
     md = GExiv2.Metadata()
-    md.from_app1_segment(cam_file.get_data_and_size())
+    file_data = cam_file.get_data_and_size()
+    data = bytes(file_data)
+    md.from_app1_segment(data, len(data))
     return md
 
 def main():
@@ -92,8 +94,8 @@ def main():
                 print(key, ':', md.get_tag_string(key))
         break
     print()
-    print('Exif data via GP_FILE_TYPE_METADATA')
-    print('===================================')
+    print('Exif data via GP_FILE_TYPE_EXIF')
+    print('===============================')
     for path in files:
         if os.path.splitext(path)[1].lower() != '.jpg':
             continue

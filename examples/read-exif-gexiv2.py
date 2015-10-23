@@ -83,17 +83,25 @@ def main():
     print()
     print('Exif data via GP_FILE_TYPE_NORMAL')
     print('=================================')
-    md = get_file_exif_normal(camera, context, files[-1])
-    for key in ('Exif.Photo.DateTimeOriginal', 'Exif.Image.Model', 'Exif.Image.Copyright'):
-        if key in md.get_exif_tags():
-            print(key, ':', md.get_tag_string(key))
+    for path in files:
+        if os.path.splitext(path)[1].lower() != '.jpg':
+            continue
+        md = get_file_exif_normal(camera, context, path)
+        for key in ('Exif.Photo.DateTimeOriginal', 'Exif.Image.Model', 'Exif.Image.Copyright'):
+            if key in md.get_exif_tags():
+                print(key, ':', md.get_tag_string(key))
+        break
     print()
     print('Exif data via GP_FILE_TYPE_METADATA')
     print('===================================')
-    md = get_file_exif_metadata(camera, context, files[-1])
-    for key in ('Exif.Photo.DateTimeOriginal', 'Exif.Image.Model', 'Exif.Image.Copyright'):
-        if key in md.get_exif_tags():
-            print(key, ':', md.get_tag_string(key))
+    for path in files:
+        if os.path.splitext(path)[1].lower() != '.jpg':
+            continue
+        md = get_file_exif_metadata(camera, context, path)
+        for key in ('Exif.Photo.DateTimeOriginal', 'Exif.Image.Model', 'Exif.Image.Copyright'):
+            if key in md.get_exif_tags():
+                print(key, ':', md.get_tag_string(key))
+        break
     print()
     camera.exit(context)
     return 0

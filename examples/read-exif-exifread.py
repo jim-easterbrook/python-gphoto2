@@ -104,13 +104,18 @@ def main():
     print('...')
     for path in files[-10:]:
         print(path)
-    print
+    print()
     print('Exif data')
     print('=========')
-    exif = get_file_exif(camera, context, files[-1])
-    for key in ('EXIF DateTimeOriginal', 'EXIF LensModel', 'Image Copyright'):
-        if key in exif:
-            print(key, ':', exif[key])
+    for path in files:
+        if os.path.splitext(path)[1].lower() != '.jpg':
+            continue
+        exif = get_file_exif(camera, context, path)
+        for key in ('EXIF DateTimeOriginal', 'EXIF LensModel', 'Image Copyright'):
+            if key in exif:
+                print(key, ':', exif[key])
+        break
+    print()
     camera.exit(context)
     return 0
 

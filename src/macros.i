@@ -153,15 +153,15 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 
 %define MEMBER_FUNCTION_THREAD(type, py_type, member, member_args, function, function_args)
 %exception type::member {
-  SWIG_PYTHON_THREAD_BEGIN_ALLOW;
   $action
-  SWIG_PYTHON_THREAD_END_ALLOW;
   if (PyErr_Occurred() != NULL) SWIG_fail;
 }
 %extend type {
 %feature("docstring") "See also: gphoto2." #function
   void member member_args {
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
     int error = function function_args;
+    SWIG_PYTHON_THREAD_END_ALLOW;
     if (error < GP_OK) GPHOTO2_ERROR(error)
   }
 };

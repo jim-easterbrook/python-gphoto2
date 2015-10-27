@@ -36,7 +36,7 @@ def main():
     print('Using Python callback')
     print('=====================')
     callback_id = gp.check_result(
-        gp.gp_log_add_func(gp.GP_LOG_VERBOSE, gp.gp_log_call_python, callback))
+        gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback))
     print('callback_id', callback_id)
     # create an error
     gp.gp_camera_init(camera, context)

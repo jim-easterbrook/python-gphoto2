@@ -55,13 +55,6 @@ static void gp_log_call_python(
 };
 %}
 
-// Make gp_log_call_python visible from Python so it can be passed to gp_log_add_func
-#ifdef GPHOTO2_24
-%constant void gp_log_call_python(GPLogLevel, const char *, const char *, va_list, void *);
-#else
-%constant void gp_log_call_python(GPLogLevel, const char *, const char *, void *);
-#endif
-
 // Import extended int type
 %{
 static PyObject *AugmentedInt_class = NULL;
@@ -82,33 +75,37 @@ static PyObject *AugmentedInt_class = NULL;
 }
 %}
 
-// Add callable check to gp_log_add_func
+// Add callable check to gp_log_add_func_py
 %typemap(in) (PyObject *callable) {
   if (!PyCallable_Check($input)) {
     SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
   }
   $1 = $input;
-  // Store input for output typemap to use
-  $result = $input;
+}
+
+// Add gp_log_call_python to gp_log_add_func's parameters
+%typemap(in, numinputs=1) (GPLogFunc func, PyObject *callable) () {
+  if (!PyCallable_Check($input)) {
+    SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
+  }
+  $1 = gp_log_call_python;
+  $2 = $input;
 }
 
 // Store a reference to the callable in gp_log_add_func result
+%typemap(argout) (GPLogFunc func, PyObject *callable) () {
+  if (result >= GP_OK) {
+    Py_DECREF($result);
+    PyObject *args = Py_BuildValue("(iO)", result, $2);
+    $result = PyObject_CallObject(AugmentedInt_class, args);
+    Py_DECREF(args);
+    Py_INCREF($2); // Add a reference in case user deletes gp_log_add_func result
+  }
+}
+
 %inline %{
 typedef int augmented_int;
 %}
-%typemap(out) augmented_int {
-  // Retrieve value stored by input typemap
-  PyObject *callable = $result;
-  if ($1 >= GP_OK) {
-    PyObject *args = Py_BuildValue("(iO)", $1, callable);
-    $result = PyObject_CallObject(AugmentedInt_class, args);
-    Py_DECREF(args);
-    Py_INCREF(callable); // Add a reference in case user deletes gp_log_add_func result
-  }
-  else {
-    $result = SWIG_From_int((int)($1));
-  }
-}
 
 // Remove reference to the callable from gp_log_remove_func input
 %typemap(in) (augmented_int id) (int val, int ecode = 0) {
@@ -210,24 +207,28 @@ class _GPhoto2Logger(object):
             self.log = logging.getLogger('gphoto2').log
         if self.log_id >= GP_OK:
             check_result(gp_log_remove_func(self.log_id))
-        self.log_id = gp_log_add_func(GP_LOG_DATA, gp_log_call_python, self.callback)
+        self.log_id = gp_log_add_func(GP_LOG_DATA, self.callback)
         return self.log_id
 
-_gphoto2_logger = _GPhoto2Logger()
+_gphoto2_logger = None
 
-def use_python_logging(
-    mapping = {
+def use_python_logging(mapping={}):
+    """Install a callback to receive gphoto2 errors and forward them
+    to Python's logging system.
+
+    The mapping parameter is a dictionary mapping any of the four
+    gphoto2 logging severity levels to a Python logging level.
+
+    """
+    global _gphoto2_logger
+    if not _gphoto2_logger:
+        _gphoto2_logger = _GPhoto2Logger()
+    full_mapping = {
         GP_LOG_ERROR   : logging.WARNING,
         GP_LOG_VERBOSE : logging.INFO,
         GP_LOG_DEBUG   : logging.DEBUG,
         GP_LOG_DATA    : logging.DEBUG - 5,
-        }):
-    """Install a callback to receive gphoto2 errors and forward them
-    to Python's logging system.
-
-    The mapping parameter is a dictionary mapping each of the four
-    gphoto2 logging severity levels to a Python logging level.
-
-    """
-    return _gphoto2_logger.install(mapping)
+        }
+    full_mapping.update(mapping)
+    return _gphoto2_logger.install(full_mapping)
 %}

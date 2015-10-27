@@ -15,6 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 1.3.2:
+  1/ Further changes to Python interface to logging callback functions.
+
 Changes in 1.3.1:
   1/ Reworked Python interface to logging callback functions.
   2/ Renamed submodules and revised build process.

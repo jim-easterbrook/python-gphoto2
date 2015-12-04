@@ -173,7 +173,7 @@ static PyTypeObject FileDataType = {
 
 // Add default constructor and destructor to _CameraFile
 struct _CameraFile {};
-DEFAULT_CTOR(_CameraFile, gp_file_new)
+DEFAULT_CTOR(_CameraFile, CameraFile, gp_file_new)
 DEFAULT_DTOR(_CameraFile, gp_file_unref)
 %ignore _CameraFile;
 %ignore gp_file_free;

@@ -44,7 +44,7 @@ CALLOC_ARGOUT(CameraFileInfo *info)
 
 // Add default constructor and destructor to _CameraFilesystem
 struct _CameraFilesystem {};
-DEFAULT_CTOR(_CameraFilesystem, gp_filesystem_new)
+DEFAULT_CTOR(_CameraFilesystem, CameraFilesystem, gp_filesystem_new)
 DEFAULT_DTOR(_CameraFilesystem, gp_filesystem_free)
 %ignore _CameraFilesystem;
 %ignore gp_filesystem_free;

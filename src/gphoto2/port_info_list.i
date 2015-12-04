@@ -59,7 +59,7 @@ STRING_ARGOUT()
 
 // Add default constructor and destructor to _GPPortInfoList
 struct _GPPortInfoList {};
-DEFAULT_CTOR(_GPPortInfoList, gp_port_info_list_new)
+DEFAULT_CTOR(_GPPortInfoList, PortInfoList, gp_port_info_list_new)
 DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
 %ignore _GPPortInfoList;
 %ignore gp_port_info_list_free;

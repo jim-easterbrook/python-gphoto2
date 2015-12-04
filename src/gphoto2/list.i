@@ -39,7 +39,7 @@ STRING_ARGOUT()
 
 // Add constructor and destructor to _CameraList
 struct _CameraList {};
-DEFAULT_CTOR(_CameraList, gp_list_new)
+DEFAULT_CTOR(_CameraList, CameraList, gp_list_new)
 DEFAULT_DTOR(_CameraList, gp_list_unref)
 %ignore _CameraList;
 %ignore gp_list_free;

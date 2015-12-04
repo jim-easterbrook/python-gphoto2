@@ -47,7 +47,7 @@ PLAIN_ARGOUT(CameraAbilitiesList **)
 
 // Add default constructor and destructor to _CameraAbilitiesList
 struct _CameraAbilitiesList {};
-DEFAULT_CTOR(_CameraAbilitiesList, gp_abilities_list_new)
+DEFAULT_CTOR(_CameraAbilitiesList, CameraAbilitiesList, gp_abilities_list_new)
 DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
 %ignore _CameraAbilitiesList;
 %ignore gp_abilities_list_free;

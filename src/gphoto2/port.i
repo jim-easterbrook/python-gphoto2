@@ -35,7 +35,7 @@ IMPORT_GPHOTO2_ERROR()
 PLAIN_ARGOUT(GPPort **)
 
 // Add default constructor and destructor to _GPPort
-DEFAULT_CTOR(_GPPort, gp_port_new)
+DEFAULT_CTOR(_GPPort, GPPort, gp_port_new)
 DEFAULT_DTOR(_GPPort, gp_port_free)
 %ignore gp_port_free;
 

@@ -106,20 +106,21 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 }
 %enddef
 
-%define DEFAULT_CTOR(name, alloc_func)
-%exception name {
+%define DEFAULT_CTOR(type, py_type, function)
+%exception type {
   $action
   if (PyErr_Occurred() != NULL) SWIG_fail;
 }
-%extend name {
-  name() {
-    struct name *result;
-    int error = alloc_func(&result);
+%extend type {
+  type() {
+    struct type *result;
+    int error = function(&result);
     if (error < GP_OK)
       GPHOTO2_ERROR(error)
     return result;
   }
 };
+%feature("docstring") function "See also: gphoto2." #py_type
 %enddef
 
 %define DEFAULT_DTOR(name, free_func)

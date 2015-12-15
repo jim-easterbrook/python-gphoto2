@@ -219,7 +219,7 @@ MEMBER_FUNCTION(_Camera, Camera,
   int own = SWIG_POINTER_OWN;
   for (n = 0; n < *$2; n++) {
     PyList_SetItem(out_list, n,
-        SWIG_NewPointerObj($1[n], SWIGTYPE_p__CameraStorageInformation, own));
+        SWIG_NewPointerObj(&(*$1)[n], SWIGTYPE_p__CameraStorageInformation, own));
     own = 0;
   }
   $result = SWIG_Python_AppendOutput($result, out_list);

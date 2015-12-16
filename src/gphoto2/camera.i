@@ -214,15 +214,25 @@ MEMBER_FUNCTION(_Camera, Camera,
 }
 %typemap(argout) (CameraStorageInformation **, int *),
                  (CameraStorageInformation **sifs, int *nrofsifs) {
+  // copy single array of CameraStorageInformation to individual Python objects
   PyObject* out_list = PyList_New(*$2);
   int n;
-  int own = SWIG_POINTER_OWN;
   for (n = 0; n < *$2; n++) {
+    CameraStorageInformation* new_sif = malloc(sizeof(CameraStorageInformation));
+    if (new_sif == NULL) {
+      PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "$*1_type");
+      SWIG_fail;
+    }
+    memcpy(new_sif, &(*$1)[n], sizeof(CameraStorageInformation));
     PyList_SetItem(out_list, n,
-        SWIG_NewPointerObj(&(*$1)[n], SWIGTYPE_p__CameraStorageInformation, own));
-    own = 0;
+        SWIG_NewPointerObj(new_sif, SWIGTYPE_p__CameraStorageInformation, SWIG_POINTER_OWN));
   }
   $result = SWIG_Python_AppendOutput($result, out_list);
+}
+%typemap(freearg) (CameraStorageInformation **, int *),
+                  (CameraStorageInformation **sifs, int *nrofsifs) {
+  // deallocate CameraStorageInformation array allocated by gp_camera_get_storageinfo
+  free(*$1);
 }
 
 // gp_camera_wait_for_event() returns two pointers in output parameters

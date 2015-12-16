@@ -27,7 +27,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '1.3.3'
+version = '1.3.4'
 
 # get gphoto2 library config
 gphoto2_version = '.'.join(subprocess.check_output(
@@ -181,7 +181,7 @@ try:
     import git
     class upload(_upload):
         def run(self):
-            message = ''
+            message = 'v' + version + '\n\n'
             with open('CHANGELOG.txt') as cl:
                 while not cl.readline().startswith('Changes'):
                     pass

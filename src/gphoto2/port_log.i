@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -42,16 +42,18 @@ static void gp_log_call_python(
 static void gp_log_call_python(
     GPLogLevel level, const char *domain, const char *str, void *data) {
 #endif
-  PyGILState_STATE gstate = PyGILState_Ensure();
-  PyObject *result = NULL;
-  PyObject *arglist = Py_BuildValue("(iss)", level, domain, str);
-  result = PyObject_CallObject(data, arglist);
-  Py_DECREF(arglist);
-  if (result == NULL)
-    PyErr_Print();
-  else
-    Py_DECREF(result);
-  PyGILState_Release(gstate);
+  if (Py_IsInitialized()) {
+    PyGILState_STATE gstate = PyGILState_Ensure();
+    PyObject *result = NULL;
+    PyObject *arglist = Py_BuildValue("(iss)", level, domain, str);
+    result = PyObject_CallObject(data, arglist);
+    Py_DECREF(arglist);
+    if (result == NULL)
+      PyErr_Print();
+    else
+      Py_DECREF(result);
+    PyGILState_Release(gstate);
+  }
 };
 %}
 

@@ -95,8 +95,8 @@ static PyObject *AugmentedInt_class = NULL;
 // Store a reference to the callable in gp_log_add_func result
 %typemap(argout) (GPLogFunc func, PyObject *callable) () {
   if (result >= GP_OK) {
-    Py_DECREF($result);
     PyObject *args = Py_BuildValue("(iO)", result, $2);
+    Py_DECREF($result);
     $result = PyObject_CallObject(AugmentedInt_class, args);
     Py_DECREF(args);
     Py_INCREF($2); // Add a reference in case user deletes gp_log_add_func result

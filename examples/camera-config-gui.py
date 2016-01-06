@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -141,11 +141,16 @@ class TextWidget(QtGui.QLineEdit):
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
         value = gp.check_result(gp.gp_widget_get_value(config))
         if value:
+            if sys.version_info[0] < 3:
+                value = value.decode('utf-8')
             self.setText(value)
         self.editingFinished.connect(self.new_value)
 
     def new_value(self):
-        value = str(self.text())
+        if sys.version_info[0] < 3:
+            value = unicode(self.text()).encode('utf-8')
+        else:
+            value = str(self.text())
         gp.check_result(gp.gp_widget_set_value(self.config, value))
         self.config_changed()
 

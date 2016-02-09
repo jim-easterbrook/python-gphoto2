@@ -88,7 +88,7 @@ Using python-gphoto2
 --------------------
 
 The Python interface to libgphoto2_ should allow you to do anything you could do in a C program.
-However, the project is quite young and there are still bits missing and functions that cannot be called from Python.
+However, there are still bits missing and functions that cannot be called from Python.
 Let me know if you run into any problems.
 
 The following paragraphs show how the Python interfaces differ from C.
@@ -116,7 +116,7 @@ The ``pydoc`` command can be used to show basic information about a function::
 
    jim@firefly ~/python-gphoto2 $ 
 
-If you compare this to the C `API documentation`_ of ``gp_camera_folder_list_files`` you will see that the C function signature includes an additional parameter "``list``" of type "``CameraList *``".
+If you compare this to the C `API documentation`_ of ``gp_camera_folder_list_files`` you will see that the C function signature includes an additional parameter ``list`` of type ``CameraList *``.
 This is an "output" parameter, a concept that doesn't really exist in Python.
 The Python version of ``gp_camera_folder_list_files`` returns a sequence containing the integer error code and the ``list`` value.
 
@@ -370,9 +370,9 @@ To build interfaces for additional versions of libgphoto2_ (e.g. v2.4 as well as
 Licence
 -------
 
-python-gphoto2 - Python interface to libgphoto2
-http://github.com/jim-easterbrook/python-gphoto2
-Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
+| python-gphoto2 - Python interface to libgphoto2
+| http://github.com/jim-easterbrook/python-gphoto2
+| Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

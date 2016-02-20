@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -57,6 +57,9 @@ CALLOC_ARGOUT(GPPortInfo *)
 // several getter functions return string pointers in output params
 STRING_ARGOUT()
 
+// gp_port_info_get_type returns a pointer to an enum
+%apply int *OUTPUT { GPPortType * };
+
 // Add default constructor and destructor to _GPPortInfoList
 struct _GPPortInfoList {};
 DEFAULT_CTOR(_GPPortInfoList, PortInfoList, gp_port_info_list_new)
@@ -90,6 +93,18 @@ LEN_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList, gp_port_info_list_count)
     }
   }
 };
+
+// Add member methods to _GPPortInfo
+struct _GPPortInfo {};
+MEMBER_FUNCTION(_GPPortInfo, GPPortInfo,
+    get_name, (char **name),
+    gp_port_info_get_name, ($self, name))
+MEMBER_FUNCTION(_GPPortInfo, GPPortInfo,
+    get_path, (char **path),
+    gp_port_info_get_path, ($self, path))
+MEMBER_FUNCTION(_GPPortInfo, GPPortInfo,
+    get_type, (GPPortType *type),
+    gp_port_info_get_type, ($self, type))
 
 // Add member methods to _GPPortInfoList
 MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,

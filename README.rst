@@ -303,10 +303,6 @@ Since python-gphoto2 version 1.3 the callback function is installed with ``gp_lo
     callback_id = gp.check_result(gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback))
     ...
 
-Note that since python-gphoto2 version 1.3.2 ``gp_log_add_func`` takes two parameters: the logging level and your callback function.
-``gp_log_add_func`` returns an ``AugmentedInt`` value that stores a reference to your callback function along with the function's return value.
-It can be passed to ``gp_log_remove_func`` to uninstall your callback.
-
 Earlier versions of python-gphoto2 used ``gp_log_add_func_py`` to install the callback:
 
 .. code:: python
@@ -318,8 +314,6 @@ Earlier versions of python-gphoto2 used ``gp_log_add_func_py`` to install the ca
     ...
     callback_id = gp.check_result(gp.gp_log_add_func_py(gp.GP_LOG_VERBOSE, callback))
     ...
-
-In this case a reference to your callback function is stored by the SWIG_ interface.
 
 Notes on some gphoto2 functions
 -------------------------------

@@ -18,7 +18,7 @@ Dependencies
 
 *   Python: http://python.org/ version 2.6 or greater (including Python 3)
 *   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.4 or greater
-*   SWIG: http://swig.org/ (optional since python-gphoto2 v0.11)
+*   SWIG: http://swig.org/ (only needed if building from source)
 
 Note that you need the "development headers" versions of libgphoto2_ and Python.
 Most Linux distributions' package managers have these, but the names vary.
@@ -28,6 +28,7 @@ Installation and testing
 ------------------------
 
 There are several ways to install python-gphoto2, with varying levels of control over the installation process.
+You can install it with pip_, or by downloading an archive, or by getting the source from GitHub_.
 
 The commands below will install python-gphoto2 for your default Python version.
 To install for both Python 2 and Python 3, run the installation process twice with specific commands, i.e. ``pip2`` and ``pip3`` or ``python2`` and ``python3``.
@@ -39,7 +40,7 @@ The easiest installation method is to use the pip_ command::
 
     sudo pip install -v gphoto2
 
-Note that this may take longer than you expect as the SWIG_ generated files are compiled during installation.
+Note that this may take longer than you expect as the package's modules are compiled during installation.
 The ``-v`` option increases pip_'s verbosity so you can see that it's doing something.
 
 Install a downloaded archive
@@ -48,8 +49,8 @@ Install a downloaded archive
 Visit PyPI_ and download one of the zip or tar.gz files, then extract it and change to the new directory.
 For example::
 
-    tar xzf gphoto2-0.11.0.tar.gz
-    cd gphoto2-0.11.0
+    tar xzf gphoto2-1.3.4.tar.gz
+    cd gphoto2-1.3.4
 
 Python's distutils_ are used to build and install python-gphoto2::
 
@@ -59,7 +60,7 @@ Python's distutils_ are used to build and install python-gphoto2::
 Install from GitHub_ (SWIG_ required)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-To install the very latest version, use git_ to "clone" the GitHub_ repository, then change to the new directory::
+To install the current development version, use git_ to "clone" the GitHub_ repository, then change to the new directory::
 
     git clone https://github.com/jim-easterbrook/python-gphoto2.git
     cd python-gphoto2
@@ -76,7 +77,7 @@ Testing
 ^^^^^^^
 
 .. note:: If you installed with pip_ the example files should be in ``/usr/share/python-gphoto2/examples`` or ``/usr/local/share/python-gphoto2/examples`` or somewhere similar.
-   Otherwise they are in the ``examples`` sub-directory of your working directory.
+   Otherwise they are in the ``examples`` sub-directory of your source directory.
 
 Connect a digital camera to your computer, switch it on, and try one of the example programs::
 
@@ -143,8 +144,8 @@ has this Python equivalent:
     error, camera = gp.gp_camera_new()
     ...
 
-Note that the gp_camera_unref() call is not needed (since python-gphoto2 version 0.5.0).
-It is called automatically when the python camera object is deleted.
+Note that the gp_camera_unref() call is not needed.
+It is called automatically when the Python camera object is deleted.
 
 Here is a complete example program (without any error checking):
 
@@ -163,9 +164,9 @@ Here is a complete example program (without any error checking):
 "Object oriented" interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-SWIG_ has the ability to attach member functions to C structs such as the GPhoto2 ``Camera`` object.
-The Python interface includes many such member functions, allowing GPhoto2 to be used in a more "Pythonic" style.
-These member functions also include error checking.
+Many of the libgphoto2_ functions have been added as methods of the appropriate GPhoto2 object.
+This allows GPhoto2 to be used in a more "Pythonic" style.
+These methods also include error checking.
 If an error occurs they raise a Python ``GPhoto2Error`` exception.
 
 The example program can be re-written as follows:
@@ -182,8 +183,8 @@ The example program can be re-written as follows:
     print(str(text))
     camera.exit(context)
 
-The member functions are more "hand crafted" than the rest of the Python bindings, which are automatically generated from the library header files.
-This means that there are some functions in the "C" interface that do not have corresponding member methods.
+The object methods are more "hand crafted" than the rest of the Python bindings, which are automatically generated from the library header files.
+This means that there are some functions in the "C" interface that do not have corresponding methods.
 Those that do include a "see also" reference in their docstring, as shown in the ``pydoc`` example above.
 
 Error checking

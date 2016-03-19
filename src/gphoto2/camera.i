@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -74,6 +74,7 @@ CALLOC_ARGOUT(CameraFilePath *path)
 
 // gp_camera_file_read() fills a user-supplied buffer
 %apply unsigned long long { uint64_t };
+%typemap(doc) (char * buf, uint64_t * size) "$1_name: writable buffer"
 %typemap(in, numinputs=1) (char * buf, uint64_t * size) (uint64_t temp) {
   Py_buffer view;
   if (PyObject_CheckBuffer($input) != 1) {

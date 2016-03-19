@@ -15,6 +15,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 1.4.0:
+  1/ Allow user data to be passed to gp_log_add_func (and then to user callback
+     function).
+  2/ Add some member methods to GPPortInfo.
+
 Changes in 1.3.4:
   1/ Fix a few minor bugs.
 

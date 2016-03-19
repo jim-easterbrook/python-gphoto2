@@ -36,6 +36,7 @@
 typedef struct LogFuncItem {
   int                id;
   PyObject           *func;
+  PyObject           *data;
   struct LogFuncItem *next;
 } LogFuncItem;
 
@@ -55,7 +56,11 @@ static void gp_log_call_python(
     PyGILState_STATE gstate = PyGILState_Ensure();
     LogFuncItem *this = data;
     PyObject *result = NULL;
-    PyObject *arglist = Py_BuildValue("(iss)", level, domain, str);
+    PyObject *arglist = NULL;
+    if (this->data)
+      arglist = Py_BuildValue("(issO)", level, domain, str, this->data);
+    else
+      arglist = Py_BuildValue("(iss)", level, domain, str);
     result = PyObject_CallObject(this->func, arglist);
     Py_DECREF(arglist);
     if (result == NULL)
@@ -68,18 +73,25 @@ static void gp_log_call_python(
 %}
 
 // Add callable check to gp_log_add_func
-%typemap(in, noblock=1) (PyObject *callable) {
+%typemap(doc)           PyObject *func "$1_name: callable"
+%typemap(in, noblock=1) PyObject *func {
   if (!PyCallable_Check($input)) {
     SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
   }
   $1 = $input;
 }
 
+// Make data an optional parameter to gp_log_add_func
+%typemap(doc)     PyObject *data "$1_name: object (optional)"
+%typemap(default) PyObject *data {
+  $1 = NULL;
+}
+
 // Redefine gp_log_add_func
 %ignore gp_log_add_func;
 %rename(gp_log_add_func) gp_log_add_func_wrapper;
 %inline %{
-static int gp_log_add_func_wrapper(GPLogLevel level, PyObject *callable)
+static int gp_log_add_func_wrapper(GPLogLevel level, PyObject *func, PyObject *data)
 {
   LogFuncItem *this = malloc(sizeof(LogFuncItem));
   if (this) {
@@ -87,10 +99,13 @@ static int gp_log_add_func_wrapper(GPLogLevel level, PyObject *callable)
     if (id >= 0) {
       // Add Python callback to front of func_list
       this->id = id;
-      this->func = callable;
+      this->func = func;
+      this->data = data;
       this->next = func_list;
       func_list = this;
       Py_INCREF(this->func);
+      if (this->data)
+        Py_INCREF(this->data);
     } else {
       free(this);
     }
@@ -113,6 +128,8 @@ static int gp_log_remove_func_wrapper(int id)
   while (this) {
     if (this->id == id) {
       Py_DECREF(this->func);
+      if (this->data)
+        Py_DECREF(this->data);
       if (last)
         last->next = this->next;
       else
@@ -129,8 +146,8 @@ static int gp_log_remove_func_wrapper(int id)
 
 // Deprecated older versions
 %inline %{
-static int gp_log_add_func_py(GPLogLevel level, PyObject *callable) {
-  int id = gp_log_add_func_wrapper(level, callable);
+static int gp_log_add_func_py(GPLogLevel level, PyObject *func) {
+  int id = gp_log_add_func_wrapper(level, func, NULL);
   gp_log(GP_LOG_ERROR, "gphoto2.port_log",
       "gp_log_add_func_py is deprecated. Please use gp_log_add_func instead.");
   return id;

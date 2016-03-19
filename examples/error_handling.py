@@ -28,8 +28,10 @@ import sys
 import gphoto2 as gp
 
 def main():
-    def callback(level, domain, string):
+    def callback(level, domain, string, data=None):
         print('Callback: level =', level, ', domain =', domain, ', string =', string)
+        if data:
+            print('Callback data:', data)
     context = gp.Context()
     camera = gp.Camera()
     # add our own callback
@@ -37,6 +39,16 @@ def main():
     print('=====================')
     callback_id = gp.check_result(
         gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback))
+    print('callback_id', callback_id)
+    # create an error
+    gp.gp_camera_init(camera, context)
+    # uninstall callback
+    gp.check_result(gp.gp_log_remove_func(callback_id))
+    # add our own callback, with data
+    print('Using Python callback, with data')
+    print('================================')
+    callback_id = gp.check_result(
+        gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback, 'some data'))
     print('callback_id', callback_id)
     # create an error
     gp.gp_camera_init(camera, context)

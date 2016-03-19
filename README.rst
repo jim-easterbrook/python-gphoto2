@@ -291,7 +291,7 @@ You can override this mapping by passing your own to ``use_python_logging()``:
 
 If you prefer to use your own logging system you can define a logging callback function in Python.
 The function must take 3 parameters: ``level``, ``domain`` and ``string``.
-Since python-gphoto2 version 1.3 the callback function is installed with ``gp_log_add_func``:
+Since python-gphoto2 version 1.3 the callback function is installed with ``gp_log_add_func`` (previously called ``gp_log_add_func_py``):
 
 .. code:: python
 
@@ -303,16 +303,17 @@ Since python-gphoto2 version 1.3 the callback function is installed with ``gp_lo
     callback_id = gp.check_result(gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback))
     ...
 
-Earlier versions of python-gphoto2 used ``gp_log_add_func_py`` to install the callback:
+Since python-gphoto2 version 1.4 you can pass some user data to your callback function (e.g. to log which thread an error occurred in):
 
 .. code:: python
 
     import gphoto2 as gp
     ...
-    def callback(level, domain, string):
-        print('Callback: level =', level, ', domain =', domain, ', string =', string)
+    def callback(level, domain, string, data=None):
+        print('Callback: level =', level, ', domain =', domain, ', string =', string, 'data =', data)
     ...
-    callback_id = gp.check_result(gp.gp_log_add_func_py(gp.GP_LOG_VERBOSE, callback))
+    callback_id1 = gp.check_result(gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback))
+    callback_id2 = gp.check_result(gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback, 123))
     ...
 
 Notes on some gphoto2 functions

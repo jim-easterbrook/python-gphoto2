@@ -38,8 +38,15 @@ IMPORT_GPHOTO2_ERROR()
 %typemap(doc) char const * "$1_name: str"
 %typemap(doc) void * "$1_name: object"
 
+// gp_file_get_mtime() returns a pointer in output params
+%apply int *OUTPUT { time_t * };
+
 // gp_file_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFile **)
+
+// gp_file_get_name(), gp_file_get_mime_type() & gp_file_get_name_by_type
+// return pointers in output params
+STRING_ARGOUT()
 
 // gp_file_slurp() returns the number of bytes read
 %apply unsigned int *OUTPUT { size_t *readlen };

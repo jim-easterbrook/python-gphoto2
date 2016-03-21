@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,6 +30,10 @@
 IMPORT_GPHOTO2_ERROR()
 
 %rename(CameraList) _CameraList;
+
+// Make docstring parameter types more Pythonic
+%typemap(doc) CameraList * "$1_name: $*1_type"
+%typemap(doc) char const * "$1_name: str"
 
 // gp_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraList **)

@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '1.4.0'
+version = '1.4.1'
 
 # get gphoto2 library config
 gphoto2_version = '.'.join(subprocess.check_output(

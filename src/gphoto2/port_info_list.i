@@ -35,7 +35,10 @@
 IMPORT_GPHOTO2_ERROR()
 
 %rename(PortInfoList) _GPPortInfoList;
-%typemap(doc) GPPortInfoList * "$1_name: PortInfoList *";
+
+// Make docstring parameter types more Pythonic
+%typemap(doc) GPPortInfoList * "$1_name: PortInfoList";
+%typemap(doc) char const * "$1_name: str"
 
 // gp_port_info_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(GPPortInfoList **)

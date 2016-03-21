@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -30,7 +30,10 @@
 IMPORT_GPHOTO2_ERROR()
 
 %rename(Context) _GPContext;
-%typemap(doc) GPContext * "$1_name: Context *";
+
+// Make docstring parameter types more Pythonic
+%typemap(doc) GPContext * "$1_name: Context";
+%typemap(doc) void * "$1_name: object";
 
 // gp_camera_autodetect() returns a pointer in an output parameter
 NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)

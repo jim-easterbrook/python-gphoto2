@@ -32,6 +32,12 @@ IMPORT_GPHOTO2_ERROR()
 
 %rename(CameraFile) _CameraFile;
 
+// Make docstring parameter types more Pythonic
+%typemap(doc) CameraFile * "$1_name: $*1_type"
+%typemap(doc) CameraFileHandler * "$1_name: $*1_type"
+%typemap(doc) char const * "$1_name: str"
+%typemap(doc) void * "$1_name: object"
+
 // gp_file_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFile **)
 

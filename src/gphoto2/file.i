@@ -48,30 +48,6 @@ PLAIN_ARGOUT(CameraFile **)
 // return pointers in output params
 STRING_ARGOUT()
 
-// gp_file_slurp() returns the number of bytes read
-%apply unsigned int *OUTPUT { size_t *readlen };
-
-// gp_file_slurp() fills a user-supplied buffer
-%typemap(doc) (char *data, size_t size) "$1_name: writable buffer"
-%typemap(in, numinputs=1) (char *data, size_t size) {
-  Py_buffer view;
-  if (PyObject_CheckBuffer($input) != 1) {
-    PyErr_SetString(
-      PyExc_TypeError,
-      "in method '$symname', argument $argnum does not support the buffer interface");
-    SWIG_fail;
-  }
-  if (PyObject_GetBuffer($input, &view, PyBUF_SIMPLE | PyBUF_WRITABLE) != 0) {
-    PyErr_SetString(
-      PyExc_TypeError,
-      "in method '$symname', argument $argnum does not export a writable buffer");
-    SWIG_fail;
-  }
-  $1 = view.buf;
-  $2 = view.len;
-  PyBuffer_Release(&view);
-}
-
 // Define a simple Python type that has the buffer interface
 // This definition is not SWIGGED, just compiled
 %{
@@ -245,11 +221,11 @@ MEMBER_FUNCTION(_CameraFile, CameraFile,
 MEMBER_FUNCTION(_CameraFile, CameraFile,
     append, (const char *data, unsigned long int size),
     gp_file_append, ($self, data, size))
-MEMBER_FUNCTION(_CameraFile, CameraFile,
-    slurp, (char *data, size_t size, size_t *readlen),
-    gp_file_slurp, ($self, data, size, readlen))
 
 // These structures are private
 %ignore _CameraFileHandler;
+
+// These functions are internal
+%ignore gp_file_slurp;
 
 %include "gphoto2/gphoto2-file.h"

@@ -46,7 +46,7 @@ PLAIN_ARGOUT(GPPortInfoList **)
 // In libgphoto2 version 2.4 GPPortInfo is a structure, in version 2.5 it's a
 // pointer to a structure.
 #ifdef GPHOTO2_24
-CALLOC_ARGOUT(GPPortInfo *)
+CALLOC_ARGOUT(GPPortInfo *info)
 #else
 %typemap(in, numinputs=0) GPPortInfo * (GPPortInfo temp) {
   $1 = &temp;

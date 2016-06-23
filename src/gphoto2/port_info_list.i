@@ -98,6 +98,7 @@ LEN_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList, gp_port_info_list_count)
 };
 
 // Add member methods to _GPPortInfo
+#ifndef GPHOTO2_24
 struct _GPPortInfo {};
 MEMBER_FUNCTION(_GPPortInfo, GPPortInfo,
     get_name, (char **name),
@@ -108,6 +109,7 @@ MEMBER_FUNCTION(_GPPortInfo, GPPortInfo,
 MEMBER_FUNCTION(_GPPortInfo, GPPortInfo,
     get_type, (GPPortType *type),
     gp_port_info_get_type, ($self, type))
+#endif
 
 // Add member methods to _GPPortInfoList
 MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,

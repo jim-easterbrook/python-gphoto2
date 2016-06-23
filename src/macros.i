@@ -112,7 +112,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
   if (PyErr_Occurred() != NULL) SWIG_fail;
 }
 %extend type {
-  type() {
+  struct type *type() {
     struct type *result;
     int error = function(&result);
     if (error < GP_OK)

@@ -3,6 +3,10 @@ python:
   - "2.7"
   - "3.3"
 
+compiler:
+  - gcc
+  - clang
+
 before_install:
   - sudo apt-get update -qq
   - sudo apt-get install -qq swig libgphoto2-2-dev

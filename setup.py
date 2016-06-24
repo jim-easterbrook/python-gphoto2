@@ -67,7 +67,7 @@ mod_src_dir += '-gp' + gphoto2_version
 mod_src_dir +='-py' + str(sys.version_info[0])
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-unused-but-set-variable',
-    '-Wno-strict-prototypes', '-Werror',
+    '-Wno-strict-prototypes',  '-Wno-self-assign', '-Werror',
     '-DGPHOTO2_' + gphoto2_version.replace('.', '')]
 libraries = [x.replace('-l', '') for x in gphoto2_libs]
 library_dirs = [x.replace('-L', '') for x in gphoto2_lib_dirs]

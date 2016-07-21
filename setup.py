@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+from __future__ import print_function
+
 from collections import defaultdict
 from distutils.cmd import Command
 from distutils.command.upload import upload as _upload
@@ -30,9 +32,13 @@ import sys
 version = '1.4.1'
 
 # get gphoto2 library config
-gphoto2_version = '.'.join(subprocess.check_output(
-    ['pkg-config', '--modversion', 'libgphoto2'],
-    universal_newlines=True).split('.')[:2])
+cmd = ['pkg-config', '--modversion', 'libgphoto2']
+try:
+    gphoto2_version = '.'.join(subprocess.check_output(
+        cmd, universal_newlines=True).split('.')[:2])
+except OSError:
+    print('ERROR: can not execute:', ' '.join(cmd))
+    raise
 gphoto2_flags = defaultdict(list)
 for flag in subprocess.check_output(
         ['pkg-config', '--cflags', '--libs', 'libgphoto2'],

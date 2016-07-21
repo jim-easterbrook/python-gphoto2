@@ -85,6 +85,22 @@ Connect a digital camera to your computer, switch it on, and try one of the exam
 
 If this works then you're ready to start using python-gphoto2.
 
+Reinstalling
+^^^^^^^^^^^^
+
+If you update or move your installation of libgphoto2_ the Python gphoto2 package may fail to import one of the libgphoto2 shared object files.
+If this happens you need to rebuild and reinstall the Python gphoto2 package::
+
+    sudo pip install -v -U --force-reinstall gphoto2
+
+if you installed with pip_, or ::
+
+    rm -rf build
+    python setup.py build
+    sudo python setup.py install
+
+if you installed from source.
+
 Using python-gphoto2
 --------------------
 

@@ -18,7 +18,7 @@ Dependencies
 
 *   Python: http://python.org/ version 2.6 or greater (including Python 3)
 *   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.4 or greater
-*   SWIG: http://swig.org/ (only needed if building from source)
+*   build tools: pkg-config, C compiler & linker
 
 Note that you need the "development headers" versions of libgphoto2_ and Python.
 Most Linux distributions' package managers have these, but the names vary.
@@ -59,6 +59,9 @@ Python's distutils_ are used to build and install python-gphoto2::
 
 Install from GitHub_ (SWIG_ required)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+SWIG (http://swig.org/) should be installable via your operating system's package manager.
+Note that this may be an older version of SWIG than the one used to generate the files on PyPI_.
 
 To install the current development version, use git_ to "clone" the GitHub_ repository, then change to the new directory::
 

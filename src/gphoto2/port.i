@@ -38,6 +38,9 @@ IMPORT_GPHOTO2_ERROR()
 PLAIN_ARGOUT(GPPort **)
 
 // Add default constructor and destructor to _GPPort
+#if SWIG_VERSION < 0x020005
+#define _GPPort GPPort
+#endif
 DEFAULT_CTOR(_GPPort, GPPort, gp_port_new)
 DEFAULT_DTOR(_GPPort, gp_port_free)
 %ignore gp_port_free;

@@ -335,6 +335,15 @@ Since python-gphoto2 version 1.4 you can pass some user data to your callback fu
     callback_id2 = gp.check_result(gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback, 123))
     ...
 
+What to do if you have a problem
+--------------------------------
+
+If you find a problem in the Python gphoto2 interface (e.g. a segfault, a missing function, or a function without a usable return value) then please report it on the GitHub "issues" page (https://github.com/jim-easterbrook/python-gphoto2/issues) or email jim@jim-easterbrook.me.uk.
+
+If your problem is more general, e.g. difficulty with capturing multiple images, then try doing what you want to do with the `gphoto2 command line program`_.
+If the problem persists then it might be worth asking on the `gphoto-user mailing list`_.
+Another reader of the mailing list may have the same camera model and already know what to do.
+
 Notes on some gphoto2 functions
 -------------------------------
 
@@ -411,6 +420,10 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 .. _git:               http://git-scm.com/
 .. _GitHub:            https://github.com/jim-easterbrook/python-gphoto2
 .. _gphoto2-cffi:      https://github.com/jbaiter/gphoto2-cffi
+.. _gphoto2 command line program:
+                       http://gphoto.org/doc/manual/using-gphoto2.html
+.. _gphoto-user mailing list:
+                       http://gphoto.org/mailinglists/
 .. _libgphoto2:        http://www.gphoto.org/proj/libgphoto2/
 .. _memoryview:        https://docs.python.org/2/library/stdtypes.html#memoryview
 .. _Python bindings:

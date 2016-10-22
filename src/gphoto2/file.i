@@ -39,7 +39,8 @@ IMPORT_GPHOTO2_ERROR()
 %typemap(doc) void * "$1_name: object"
 
 // gp_file_get_mtime() returns a pointer in output params
-%apply int *OUTPUT { time_t * };
+typedef long int time_t;
+%apply time_t *OUTPUT { time_t * };
 
 // gp_file_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFile **)

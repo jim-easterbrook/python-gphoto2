@@ -32,6 +32,8 @@
 
 %include "typemaps.i"
 
+%include "stdint.i"
+
 %include "macros.i"
 
 IMPORT_GPHOTO2_ERROR()
@@ -76,7 +78,6 @@ int gp_camera_capture_preview(Camera *camera, CameraFile *camera_file, GPContext
 CALLOC_ARGOUT(CameraFilePath *path)
 
 // gp_camera_file_read() fills a user-supplied buffer
-%apply unsigned long long { uint64_t };
 %typemap(doc) (char * buf, uint64_t * size) "$1_name: writable buffer"
 %typemap(in, numinputs=1) (char * buf, uint64_t * size) (uint64_t temp) {
   Py_buffer view;

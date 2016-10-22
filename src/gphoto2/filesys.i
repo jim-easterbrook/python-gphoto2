@@ -29,6 +29,9 @@
 
 %include "typemaps.i"
 
+// image dimensions use uint32_t and storage info uses uint64_t
+%include "stdint.i"
+
 %include "macros.i"
 
 IMPORT_GPHOTO2_ERROR()
@@ -52,12 +55,6 @@ DEFAULT_CTOR(_CameraFilesystem, CameraFilesystem, gp_filesystem_new)
 DEFAULT_DTOR(_CameraFilesystem, gp_filesystem_free)
 %ignore _CameraFilesystem;
 %ignore gp_filesystem_free;
-
-// image dimensions use uint32_t
-%apply unsigned long { uint32_t };
-
-// storage info uses uint64_t and image mtime uses time_t
-%apply unsigned long long { uint64_t, time_t };
 
 // Some things are defined in .h files but are not in the library
 %ignore gp_filesystem_get_storageinfo;

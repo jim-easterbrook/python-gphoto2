@@ -15,6 +15,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 1.5.0:
+  1/ API change! The gp_file_open function now allocates and returns a new
+     CameraFile object.
+  2/ Compile without -Werror by default. Use PYTHON_GPHOTO2_STRICT to
+     over-ride.
+  3/ Improved compatibility with old SWIG versions.
+
 Changes in 1.4.1:
   1/ Fix issue #16 (MacOS install problem).
 

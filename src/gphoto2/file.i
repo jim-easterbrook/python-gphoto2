@@ -45,6 +45,12 @@ typedef long int time_t;
 // gp_file_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFile **)
 
+// make gp_file_open() create a new CameraFile
+NEW_ARGOUT(CameraFile *camera_file, gp_file_new, gp_file_unref)
+// Redefine signature as many other functions also use *file
+int gp_file_open(CameraFile *camera_file, const char *filename);
+%ignore gp_file_open;
+
 // gp_file_get_name(), gp_file_get_mime_type() & gp_file_get_name_by_type
 // return pointers in output params
 STRING_ARGOUT()
@@ -207,9 +213,6 @@ MEMBER_FUNCTION(_CameraFile, CameraFile,
 MEMBER_FUNCTION(_CameraFile, CameraFile,
     get_data_and_size, (const char **data, unsigned long int *size),
     gp_file_get_data_and_size, ($self, data, size))
-MEMBER_FUNCTION(_CameraFile, CameraFile,
-    open, (const char *filename),
-    gp_file_open, ($self, filename))
 MEMBER_FUNCTION(_CameraFile, CameraFile,
     save, (const char *filename),
     gp_file_save, ($self, filename))

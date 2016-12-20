@@ -46,6 +46,7 @@ IMPORT_GPHOTO2_ERROR()
 %thread gp_camera_trigger_capture;
 %thread gp_camera_capture_preview;
 %thread gp_camera_get_config;
+%thread gp_camera_get_single_config;
 %thread gp_camera_folder_list_files;
 %thread gp_camera_folder_list_folders;
 %thread gp_camera_folder_delete_all;
@@ -137,8 +138,17 @@ MEMBER_FUNCTION_THREAD(_Camera, Camera,
     get_config, (CameraWidget **window, GPContext *context),
     gp_camera_get_config, ($self, window, context))
 MEMBER_FUNCTION(_Camera, Camera,
+    list_config, (CameraList *list, GPContext *context),
+    gp_camera_list_config, ($self, list, context))
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
+    get_single_config, (const char *name, CameraWidget **widget, GPContext *context),
+    gp_camera_get_single_config, ($self, name, widget, context))
+MEMBER_FUNCTION(_Camera, Camera,
     set_config, (CameraWidget *window, GPContext *context),
     gp_camera_set_config, ($self, window, context))
+MEMBER_FUNCTION(_Camera, Camera,
+    set_single_config, (const char *name, CameraWidget *widget, GPContext *context),
+    gp_camera_set_single_config, ($self, name, widget, context))
 MEMBER_FUNCTION(_Camera, Camera,
     get_summary, (CameraText *summary, GPContext *context),
     gp_camera_get_summary, ($self, summary, context))
@@ -267,6 +277,26 @@ MEMBER_FUNCTION(_Camera, Camera,
     return $self->text;
   }
 };
+
+// Some functions only exist in newer versions of libgphoto2
+%{
+#if GPHOTO2_VERSION < 0x02050a
+static int gp_camera_get_single_config(
+    Camera *camera, const char *name, CameraWidget **widget, GPContext *context)
+{
+  return GP_ERROR_NOT_SUPPORTED;
+}
+static int gp_camera_set_single_config(
+    Camera *camera, const char *name, CameraWidget *widget, GPContext *context)
+{
+  return GP_ERROR_NOT_SUPPORTED;
+}
+static int gp_camera_list_config(Camera *camera, CameraList *list, GPContext *context)
+{
+  return GP_ERROR_NOT_SUPPORTED;
+}
+#endif
+%}
 
 // Don't wrap deprecated functions
 %ignore gp_camera_free;

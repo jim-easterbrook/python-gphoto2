@@ -97,7 +97,7 @@ LEN_MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList, gp_abilities_list
 MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList,
     load, (GPContext *context),
     gp_abilities_list_load, ($self, context))
-#ifndef GPHOTO2_24
+#if GPHOTO2_VERSION >= 0x020500
 MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList,
     load_dir, (const char *dir, GPContext *context),
     gp_abilities_list_load_dir, ($self, dir, context))

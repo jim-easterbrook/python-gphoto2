@@ -58,7 +58,7 @@ struct _GPContext {};
 %ignore gp_context_ref;
 %ignore gp_context_unref;
 
-#ifndef GPHOTO2_24
+#if GPHOTO2_VERSION >= 0x020500
 // Add member methods to _GPContext
 MEMBER_FUNCTION(_GPContext, Context,
     camera_autodetect, (CameraList *list),

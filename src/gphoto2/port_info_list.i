@@ -45,7 +45,7 @@ PLAIN_ARGOUT(GPPortInfoList **)
 
 // In libgphoto2 version 2.4 GPPortInfo is a structure, in version 2.5 it's a
 // pointer to a structure.
-#ifdef GPHOTO2_24
+#if GPHOTO2_VERSION < 0x020500
 CALLOC_ARGOUT(GPPortInfo *info)
 #else
 %typemap(in, numinputs=0) GPPortInfo * (GPPortInfo temp) {
@@ -98,7 +98,7 @@ LEN_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList, gp_port_info_list_count)
 };
 
 // Add member methods to _GPPortInfo
-#ifndef GPHOTO2_24
+#if GPHOTO2_VERSION >= 0x020500
 struct _GPPortInfo {};
 MEMBER_FUNCTION(_GPPortInfo, GPPortInfo,
     get_name, (char **name),

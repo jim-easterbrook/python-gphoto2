@@ -202,7 +202,7 @@ MEMBER_FUNCTION(_CameraFile, CameraFile,
 MEMBER_FUNCTION(_CameraFile, CameraFile,
     adjust_name_for_mime_type, (),
     gp_file_adjust_name_for_mime_type, ($self))
-#ifndef GPHOTO2_24
+#if GPHOTO2_VERSION >= 0x020500
 MEMBER_FUNCTION(_CameraFile, CameraFile,
     get_name_by_type, (const char *basename, CameraFileType type, char **newname),
     gp_file_get_name_by_type, ($self, basename, type, newname))

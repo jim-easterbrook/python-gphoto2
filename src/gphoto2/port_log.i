@@ -46,7 +46,7 @@ typedef struct LogFuncItem {
 static LogFuncItem *func_list = NULL;
 
 // Call Python function from C callback
-#ifdef GPHOTO2_24
+#if GPHOTO2_VERSION < 0x020500
 static void gp_log_call_python(
     GPLogLevel level, const char *domain, const char *format, va_list args, void *data) {
   char str[1024];

@@ -161,7 +161,7 @@ MEMBER_FUNCTION(_Camera, Camera,
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     capture, (CameraCaptureType type, CameraFilePath *path, GPContext *context),
     gp_camera_capture, ($self, type, path, context))
-#ifndef GPHOTO2_24
+#if GPHOTO2_VERSION >= 0x020500
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     trigger_capture, (GPContext *context),
     gp_camera_trigger_capture, ($self, context))
@@ -185,7 +185,7 @@ MEMBER_FUNCTION_THREAD(_Camera, Camera,
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     folder_delete_all, (const char *folder, GPContext *context),
     gp_camera_folder_delete_all, ($self, folder, context))
-#ifdef GPHOTO2_24
+#if GPHOTO2_VERSION < 0x020500
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     folder_put_file, (const char *folder, CameraFile *file, GPContext *context),
     gp_camera_folder_put_file, ($self, folder, file, context))
@@ -209,7 +209,7 @@ MEMBER_FUNCTION(_Camera, Camera,
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     file_get, (const char *folder, const char *file, CameraFileType type, CameraFile *camera_file, GPContext *context),
     gp_camera_file_get, ($self, folder, file, type, camera_file, context))
-#ifndef GPHOTO2_24
+#if GPHOTO2_VERSION >= 0x020500
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     file_read, (const char *folder, const char *file, CameraFileType type, uint64_t offset, char *buf, uint64_t *size, GPContext *context),
     gp_camera_file_read, ($self, folder, file, type, offset, buf, size, context))

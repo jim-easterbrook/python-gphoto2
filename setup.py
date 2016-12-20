@@ -75,7 +75,6 @@ mod_src_dir += '-gp' + gphoto2_version
 mod_src_dir +='-py' + str(sys.version_info[0])
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes',
-    '-DGPHOTO2_' + gphoto2_version.replace('.', ''),
     '-DGPHOTO2_VERSION=' + gphoto2_version_hex]
 if 'PYTHON_GPHOTO2_STRICT' in os.environ:
     extra_compile_args.append('-Werror')
@@ -153,8 +152,10 @@ class build_swig(Command):
                 output_dir += '-gp' + gp_version
                 output_dir += '-py' + str(sys.version_info[0])
                 self.mkpath(output_dir)
+                gp_version_hex = '0x{:02x}{:02x}00'.format(
+                    *map(int, gp_version.split('.')))
                 version_opts = [
-                    '-DGPHOTO2_' + gp_version.replace('.', ''),
+                    '-DGPHOTO2_VERSION=' + gp_version_hex,
                     '-outdir', output_dir,
                     ]
                 inc_dir = os.path.join('include', 'gphoto2-' + gp_version)

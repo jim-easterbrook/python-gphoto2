@@ -29,13 +29,15 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '1.5.0'
+version = '1.5.1'
 
 # get gphoto2 library config
 cmd = ['pkg-config', '--modversion', 'libgphoto2']
 try:
-    gphoto2_version = '.'.join(subprocess.check_output(
-        cmd, universal_newlines=True).split('.')[:2])
+    gphoto2_version = subprocess.check_output(
+        cmd, universal_newlines=True).split('.')
+    gphoto2_version_hex = '0x{:02x}{:02x}{:02x}'.format(*map(int, gphoto2_version))
+    gphoto2_version = '.'.join(gphoto2_version[:2])
 except OSError:
     print('ERROR: can not execute:', ' '.join(cmd))
     raise
@@ -73,7 +75,8 @@ mod_src_dir += '-gp' + gphoto2_version
 mod_src_dir +='-py' + str(sys.version_info[0])
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes',
-    '-DGPHOTO2_' + gphoto2_version.replace('.', '')]
+    '-DGPHOTO2_' + gphoto2_version.replace('.', ''),
+    '-DGPHOTO2_VERSION=' + gphoto2_version_hex]
 if 'PYTHON_GPHOTO2_STRICT' in os.environ:
     extra_compile_args.append('-Werror')
 libraries = [x.replace('-l', '') for x in gphoto2_libs]

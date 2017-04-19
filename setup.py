@@ -17,12 +17,11 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import print_function
-
 from collections import defaultdict
 from distutils.cmd import Command
 from distutils.command.upload import upload as _upload
 from distutils.core import setup, Extension
+from distutils.log import error
 import os
 import re
 import subprocess
@@ -39,7 +38,7 @@ try:
     gphoto2_version_hex = '0x{:02x}{:02x}{:02x}'.format(*map(int, gphoto2_version))
     gphoto2_version = '.'.join(gphoto2_version[:2])
 except OSError:
-    print('ERROR: can not execute:', ' '.join(cmd))
+    error('ERROR: can not execute: "%s"', ' '.join(cmd))
     raise
 gphoto2_flags = defaultdict(list)
 for flag in subprocess.check_output(

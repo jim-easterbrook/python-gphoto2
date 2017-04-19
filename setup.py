@@ -29,7 +29,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '1.5.1'
+version = '1.5.2'
 
 # get gphoto2 library config
 cmd = ['pkg-config', '--modversion', 'libgphoto2']
@@ -74,7 +74,8 @@ if use_builtin:
 mod_src_dir += '-gp' + gphoto2_version
 mod_src_dir +='-py' + str(sys.version_info[0])
 extra_compile_args = [
-    '-O3', '-Wno-unused-variable', '-Wno-strict-prototypes',
+    '-O3', '-Wno-unused-variable', '-Wno-unused-but-set-variable',
+    '-Wno-strict-prototypes',
     '-DGPHOTO2_VERSION=' + gphoto2_version_hex]
 if 'PYTHON_GPHOTO2_STRICT' in os.environ:
     extra_compile_args.append('-Werror')

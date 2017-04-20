@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -137,18 +137,22 @@ MEMBER_FUNCTION(_Camera, Camera,
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     get_config, (CameraWidget **window, GPContext *context),
     gp_camera_get_config, ($self, window, context))
+#if GPHOTO2_VERSION >= 0x02050a
 MEMBER_FUNCTION(_Camera, Camera,
     list_config, (CameraList *list, GPContext *context),
     gp_camera_list_config, ($self, list, context))
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     get_single_config, (const char *name, CameraWidget **widget, GPContext *context),
     gp_camera_get_single_config, ($self, name, widget, context))
+#endif
 MEMBER_FUNCTION(_Camera, Camera,
     set_config, (CameraWidget *window, GPContext *context),
     gp_camera_set_config, ($self, window, context))
+#if GPHOTO2_VERSION >= 0x02050a
 MEMBER_FUNCTION(_Camera, Camera,
     set_single_config, (const char *name, CameraWidget *widget, GPContext *context),
     gp_camera_set_single_config, ($self, name, widget, context))
+#endif
 MEMBER_FUNCTION(_Camera, Camera,
     get_summary, (CameraText *summary, GPContext *context),
     gp_camera_get_summary, ($self, summary, context))
@@ -277,26 +281,6 @@ MEMBER_FUNCTION(_Camera, Camera,
     return $self->text;
   }
 };
-
-// Some functions only exist in newer versions of libgphoto2
-%{
-#if GPHOTO2_VERSION < 0x02050a
-static int gp_camera_get_single_config(
-    Camera *camera, const char *name, CameraWidget **widget, GPContext *context)
-{
-  return GP_ERROR_NOT_SUPPORTED;
-}
-static int gp_camera_set_single_config(
-    Camera *camera, const char *name, CameraWidget *widget, GPContext *context)
-{
-  return GP_ERROR_NOT_SUPPORTED;
-}
-static int gp_camera_list_config(Camera *camera, CameraList *list, GPContext *context)
-{
-  return GP_ERROR_NOT_SUPPORTED;
-}
-#endif
-%}
 
 // Don't wrap deprecated functions
 %ignore gp_camera_free;

@@ -126,7 +126,7 @@ class build_swig(Command):
         ext_names = [x[0] for x in file_names if x[1] == '.i']
         # get gphoto2 versions to be swigged
         gp_versions = []
-        for name in os.listdir():
+        for name in os.listdir('.'):
             match = re.match('libgphoto2-(\d+\.\d+\.\d+)', name)
             if match:
                 gp_versions.append(match.group(1))

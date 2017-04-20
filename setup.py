@@ -36,7 +36,6 @@ try:
     gphoto2_version = subprocess.check_output(
         cmd, universal_newlines=True).split('.')
     gphoto2_version = tuple(map(int, gphoto2_version))[:3]
-    print(gphoto2_version, type(gphoto2_version))
     gphoto2_version_str = '.'.join(map(str, gphoto2_version))
 except OSError:
     error('ERROR: can not execute: "%s"', ' '.join(cmd))
@@ -220,7 +219,7 @@ except ImportError:
 
 # set options for building distributions
 command_options['sdist'] = {
-    'formats' : ('setup.py', 'gztar zip'),
+    'formats' : ('setup.py', 'gztar'),
     }
 
 # list example scripts

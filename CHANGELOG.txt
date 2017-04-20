@@ -1,6 +1,6 @@
 python-gphoto2 - Python interface to libgphoto2
 http://github.com/jim-easterbrook/python-gphoto2
-Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
+Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -14,6 +14,9 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+Changes in 1.6.0:
+  1/ Include interfaces for more versions of libgphoto2.
 
 Changes in 1.5.1:
   1/ Added gp_camera_get_single_config(), gp_camera_set_single_config() and

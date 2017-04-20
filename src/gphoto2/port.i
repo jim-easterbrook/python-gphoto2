@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,8 +20,6 @@
 %{
 #include "gphoto2/gphoto2.h"
 %}
-
-%import "port_info_list.i"
 
 %feature("autodoc", "2");
 
@@ -60,5 +58,36 @@ DEFAULT_DTOR(_GPPort, gp_port_free)
 %ignore _GPPort::pl;
 %ignore _GPPort::pc;
 
+// These functions are internal
+%ignore gp_port_check_int;
+%ignore gp_port_check_int_fast;
+%ignore gp_port_close;
+%ignore gp_port_flush;
+%ignore gp_port_get_error;
+%ignore gp_port_get_info;
+%ignore gp_port_get_pin;
+%ignore gp_port_get_settings;
+%ignore gp_port_get_timeout;
+%ignore gp_port_open;
+%ignore gp_port_read;
+%ignore gp_port_reset;
+%ignore gp_port_seek;
+%ignore gp_port_send_break;
+%ignore gp_port_send_scsi_cmd;
+%ignore gp_port_set_error;
+%ignore gp_port_set_info;
+%ignore gp_port_set_pin;
+%ignore gp_port_set_settings;
+%ignore gp_port_set_timeout;
+%ignore gp_port_usb_clear_halt;
+%ignore gp_port_usb_find_device;
+%ignore gp_port_usb_find_device_by_class;
+%ignore gp_port_usb_msg_class_read;
+%ignore gp_port_usb_msg_class_write;
+%ignore gp_port_usb_msg_interface_read;
+%ignore gp_port_usb_msg_interface_write;
+%ignore gp_port_usb_msg_read;
+%ignore gp_port_usb_msg_write;
+%ignore gp_port_write;
+
 %include "gphoto2/gphoto2-port.h"
-%include "gphoto2/gphoto2-port-portability.h"

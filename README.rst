@@ -389,7 +389,7 @@ The interface files are created in directories with names like ``src/swig-bi-py3
 This naming scheme allows for different versions of Python and libgphoto2_, and use (or not) of the `SWIG -builtin`_ flag.
 The appropriate version is chosen when the interface is built.
 
-To build interfaces for additional versions of libgphoto2_ (e.g. v2.5.10 as well as v2.5.0) you need to put a copy of that version's include (``.h``) files in a sub-directory of your working directory called ``include/gphoto2-2.x.y`` and then run ``setup.py build_swig`` again.
+To build interfaces for multiple versions of libgphoto2_ (e.g. v2.5.10 as well as v2.5.0) you need to put those versions' source files in your working directory and then run ``setup.py build_swig`` again.
 More information about this is in the file ``developer/README.txt``.
 
 Licence

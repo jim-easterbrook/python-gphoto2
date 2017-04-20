@@ -1,9 +1,9 @@
 Notes for developers
 ====================
 
-The python interfaces can be built with any version of libgphoto2, but functions only present in later versions will not be accessible from python unless the interface is built with that later version. However, using this later version interface with an earleir version of libgphoto2 will result in undefined reference errors.
+The python interfaces can be built with any version of libgphoto2, but functions only present in later versions will not be accessible from python unless the interface is built with that later version. However, using this later version interface with an earlier version of libgphoto2 will result in undefined reference errors.
 
-The solution is to distribute a set of interfaces built with the versions of libgphoto2 that introduce new functions. Go to https://sourceforge.net/projects/gphoto/files/libgphoto/ and download the required sources, extract them and put the header files in an include directory in your python-gphoto2 working directory, e.g. copy libgphoto2-2.5.0/gphoto2/*.h and libgphoto2-2.5.0/libgphoto2_port/gphoto2/*.h to include/gphoto2-2.5.0/gphoto2/
+The solution is to distribute a set of interfaces built with the versions of libgphoto2 that introduce new functions. Go to https://sourceforge.net/projects/gphoto/files/libgphoto/ and download the required sources, then extract them in to your python-gphoto2 working directory, e.g. the libgphoto2-2.5.0 directory should be in the same directory as the setup.py file.
 
 When you run setup.py build_swig you should get a set of swig generated files for each of these sources. The Python3 script developers/compare_versions.py can be used to test if the swig generated files for two libgphoto2 versions differ.
 
@@ -42,10 +42,9 @@ Differences found so far:
 2.5.12 No change
 2.5.13 No change
 
-Where there is no change, or the change only adds a constant, the SWIG generated bindings from the later version can be used with an earlier version. E.g. version 2.5.9 can be used to generate bindings for any version from 2.5.0 onwards. When copying files to the 'include' directory the following mappings should be used:
+Where there is no change, or the change only adds a constant, the SWIG generated bindings from the later version can be used with an earlier version. E.g. version 2.5.9 can be used to generate bindings for any version from 2.5.0 onwards. You can rename the required source directories using the following mapping:
 
 2.4.7  -> 2.4.0
 2.4.14 -> 2.4.8
 2.5.9  -> 2.5.0
 2.5.13 -> 2.5.10
-

@@ -126,12 +126,11 @@ class build_swig(Command):
         ext_names = [x[0] for x in file_names if x[1] == '.i']
         # get gphoto2 versions to be swigged
         gp_versions = []
-        if os.path.isdir('include'):
-            for name in os.listdir('include'):
-                match = re.match('gphoto2-(\d+\.\d+\.\d+)', name)
-                if match:
-                    gp_versions.append(match.group(1))
-            gp_versions.sort()
+        for name in os.listdir():
+            match = re.match('libgphoto2-(\d+\.\d+\.\d+)', name)
+            if match:
+                gp_versions.append(match.group(1))
+        gp_versions.sort()
         if not gp_versions:
             gp_versions = [gphoto2_version_str]
         self.announce('swigging gphoto2 versions %s' % str(gp_versions), 2)
@@ -167,9 +166,11 @@ class build_swig(Command):
                         '-DGPHOTO2_VERSION=' + gp_version_hex,
                         '-outdir', output_dir,
                         ]
-                    inc_dir = os.path.join('include', 'gphoto2-' + gp_version)
+                    inc_dir = 'libgphoto2-' + gp_version
                     if os.path.isdir(inc_dir):
                         version_opts.append('-I' + inc_dir)
+                        version_opts.append(
+                            '-I' + os.path.join(inc_dir, 'libgphoto2_port'))
                     else:
                         version_opts += gphoto2_include
                     if py_version >= 3:

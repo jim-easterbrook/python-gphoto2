@@ -1,6 +1,6 @@
 build
 dist
+libgphoto2-*
 MANIFEST
-include
 src/info.txt
 src/swig-*

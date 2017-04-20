@@ -385,18 +385,19 @@ It has no user options::
     python setup.py build_swig
 
 By default this builds the interface for the version of libgphoto2_ installed on your computer.
-The interface files are created in directories with names like ``src/swig-bi-gp2.5-py3``.
+The interface files are created in directories with names like ``src/swig-bi-py3-gp2.5.0``.
 This naming scheme allows for different versions of Python and libgphoto2_, and use (or not) of the `SWIG -builtin`_ flag.
 The appropriate version is chosen when the interface is built.
 
-To build interfaces for additional versions of libgphoto2_ (e.g. v2.4 as well as v2.5) you need to put a copy of that version's include (``.h``) files in a sub-directory of your working directory called ``include/gphoto2-2.x`` and then run ``setup.py build_swig`` again.
+To build interfaces for additional versions of libgphoto2_ (e.g. v2.5.10 as well as v2.5.0) you need to put a copy of that version's include (``.h``) files in a sub-directory of your working directory called ``include/gphoto2-2.x.y`` and then run ``setup.py build_swig`` again.
+More information about this is in the file ``developer/README.txt``.
 
 Licence
 -------
 
 | python-gphoto2 - Python interface to libgphoto2
 | http://github.com/jim-easterbrook/python-gphoto2
-| Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
+| Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

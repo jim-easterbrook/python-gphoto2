@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,15 +28,16 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '1.5.2'
+version = '1.6.0'
 
 # get gphoto2 library config
 cmd = ['pkg-config', '--modversion', 'libgphoto2']
 try:
     gphoto2_version = subprocess.check_output(
         cmd, universal_newlines=True).split('.')
-    gphoto2_version_hex = '0x{:02x}{:02x}{:02x}'.format(*map(int, gphoto2_version))
-    gphoto2_version = '.'.join(gphoto2_version[:2])
+    gphoto2_version = tuple(map(int, gphoto2_version))[:3]
+    print(gphoto2_version, type(gphoto2_version))
+    gphoto2_version_str = '.'.join(map(str, gphoto2_version))
 except OSError:
     error('ERROR: can not execute: "%s"', ' '.join(cmd))
     raise
@@ -67,15 +68,24 @@ if 'PYTHON_GPHOTO2_BUILTIN' in os.environ:
     use_builtin = True
 if 'PYTHON_GPHOTO2_NO_BUILTIN' in os.environ:
     use_builtin = False
-mod_src_dir = os.path.join('src', 'swig')
+mod_src_dir = 'swig'
 if use_builtin:
     mod_src_dir += '-bi'
-mod_src_dir += '-gp' + gphoto2_version
 mod_src_dir +='-py' + str(sys.version_info[0])
+best_match = (0, 0, 0)
+for name in os.listdir('src'):
+    match = re.match(mod_src_dir + '-gp(\d+\.\d+\.\d+)', name)
+    if match:
+        vsn = tuple(map(int, match.group(1).split('.')))
+        if vsn >= best_match and vsn <= gphoto2_version:
+            best_match = vsn
+mod_src_dir = os.path.join(
+    'src', mod_src_dir + '-gp' + '.'.join(map(str, best_match)))
+
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-unused-but-set-variable',
     '-Wno-strict-prototypes',
-    '-DGPHOTO2_VERSION=' + gphoto2_version_hex]
+    '-DGPHOTO2_VERSION=' + '0x{:02x}{:02x}{:02x}'.format(*gphoto2_version)]
 if 'PYTHON_GPHOTO2_STRICT' in os.environ:
     extra_compile_args.append('-Werror')
 libraries = [x.replace('-l', '') for x in gphoto2_libs]
@@ -115,16 +125,16 @@ class build_swig(Command):
         file_names.sort()
         file_names = [os.path.splitext(x) for x in file_names]
         ext_names = [x[0] for x in file_names if x[1] == '.i']
-        mod_names = [x[0] for x in file_names if x[1] == '.py']
         # get gphoto2 versions to be swigged
-        gp_versions = [gphoto2_version]
+        gp_versions = []
         if os.path.isdir('include'):
             for name in os.listdir('include'):
-                match = re.match('gphoto2-(\d\.\d)', name)
+                match = re.match('gphoto2-(\d+\.\d+\.\d+)', name)
                 if match:
-                    gp_version = match.group(1)
-                    if gp_version not in gp_versions:
-                        gp_versions.append(gp_version)
+                    gp_versions.append(match.group(1))
+            gp_versions.sort()
+        if not gp_versions:
+            gp_versions = [gphoto2_version_str]
         self.announce('swigging gphoto2 versions %s' % str(gp_versions), 2)
         # do -builtin and not -builtin
         swig_bis = [False]
@@ -142,44 +152,41 @@ class build_swig(Command):
                          '-Wextra', '-Werror']
             if use_builtin:
                 swig_opts.append('-builtin')
-            if sys.version_info[0] >= 3:
-                swig_opts.append('-py3')
             # do each gphoto2 version
             for gp_version in gp_versions:
-                output_dir = os.path.join('src', 'swig')
-                if use_builtin:
-                    output_dir += '-bi'
-                output_dir += '-gp' + gp_version
-                output_dir += '-py' + str(sys.version_info[0])
-                self.mkpath(output_dir)
-                gp_version_hex = '0x{:02x}{:02x}00'.format(
-                    *map(int, gp_version.split('.')))
-                version_opts = [
-                    '-DGPHOTO2_VERSION=' + gp_version_hex,
-                    '-outdir', output_dir,
-                    ]
-                inc_dir = os.path.join('include', 'gphoto2-' + gp_version)
-                if os.path.isdir(inc_dir):
-                    version_opts.append('-I' + inc_dir)
-                else:
-                    version_opts += gphoto2_include
-                # do each swig module
-                for ext_name in ext_names:
-                    in_file = os.path.join('src', 'gphoto2', ext_name + '.i')
-                    out_file = os.path.join(output_dir, ext_name + '_wrap.c')
-                    self.spawn(['swig'] + swig_opts + version_opts +
-                               ['-o', out_file, in_file])
-                # do each Python module
-                for mod_name in mod_names:
-                    in_file = os.path.join('src', 'gphoto2', mod_name + '.py')
-                    out_file = os.path.join(output_dir, mod_name + '.py')
-                    self.copy_file(in_file, out_file)
-                # create init module
-                init_file = os.path.join(output_dir, '__init__.py')
-                with open(init_file, 'w') as im:
-                    im.write('__version__ = "{}"\n\n'.format(version))
-                    for name in mod_names + ext_names:
-                        im.write('from gphoto2.{} import *\n'.format(name))
+                # do Python 2 and 3
+                for py_version in 2, 3:
+                    output_dir = os.path.join('src', 'swig')
+                    if use_builtin:
+                        output_dir += '-bi'
+                    output_dir += '-py' + str(py_version)
+                    output_dir += '-gp' + gp_version
+                    self.mkpath(output_dir)
+                    gp_version_hex = '0x{:02x}{:02x}{:02x}'.format(
+                        *map(int, gp_version.split('.')))
+                    version_opts = [
+                        '-DGPHOTO2_VERSION=' + gp_version_hex,
+                        '-outdir', output_dir,
+                        ]
+                    inc_dir = os.path.join('include', 'gphoto2-' + gp_version)
+                    if os.path.isdir(inc_dir):
+                        version_opts.append('-I' + inc_dir)
+                    else:
+                        version_opts += gphoto2_include
+                    if py_version >= 3:
+                        version_opts.append('-py3')
+                    # do each swig module
+                    for ext_name in ext_names:
+                        in_file = os.path.join('src', 'gphoto2', ext_name + '.i')
+                        out_file = os.path.join(output_dir, ext_name + '_wrap.c')
+                        self.spawn(['swig'] + swig_opts + version_opts +
+                                   ['-o', out_file, in_file])
+                    # create init module
+                    init_file = os.path.join(output_dir, '__init__.py')
+                    with open(init_file, 'w') as im:
+                        im.write('__version__ = "{}"\n\n'.format(version))
+                        for name in ext_names:
+                            im.write('from gphoto2.{} import *\n'.format(name))
         # store SWIG version
         info_file = os.path.join('src', 'info.txt')
         with open(info_file, 'w') as info:

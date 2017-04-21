@@ -24,7 +24,6 @@
 
 %import "abilities_list.i"
 %import "filesys.i"
-%import "port.i"
 %import "result.i"
 %import "widget.i"
 

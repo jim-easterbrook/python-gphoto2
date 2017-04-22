@@ -118,31 +118,41 @@ See the example programs for typical usage of the Python gphoto2 API.
 ^^^^^^^^^^^^^
 
 Using SWIG_ to generate the Python interfaces automatically means that every function in libgphoto2_ *should* be available to Python.
-The ``pydoc`` command can be used to show basic information about a function::
+The ``pydoc`` command can be used to show the documentation of a function::
 
    jim@firefly ~/python-gphoto2 $ pydoc gphoto2.gp_camera_folder_list_files
    Help on built-in function gp_camera_folder_list_files in gphoto2:
 
    gphoto2.gp_camera_folder_list_files = gp_camera_folder_list_files(...)
-       gp_camera_folder_list_files(camera, folder, context) -> int
+       gp_camera_folder_list_files(Camera camera, char const * folder, Context context) -> int
 
-       Parameters:
-           camera: Camera *
-           folder: char const *
-           context: Context *
+       Lists the files in supplied `folder`.
 
+       Parameters
+       ----------
+       * `camera` :
+           a Camera
+       * `folder` :
+           a folder
+       * `list` :
+           a CameraList
+       * `context` :
+           a GPContext
 
-       See also: gphoto2.Camera.folder_list_files
-
+       Returns
+       -------
+       a gphoto2 error code
    jim@firefly ~/python-gphoto2 $ 
 
-If you compare this to the C `API documentation`_ of ``gp_camera_folder_list_files`` you will see that the C function signature includes an additional parameter ``list`` of type ``CameraList *``.
-This is an "output" parameter, a concept that doesn't really exist in Python.
+Most of this text is copied from the "doxygen" format documentation in the C source code.
+(The online `API documentation`_ shows how it is intended to look.)
+Note that the function signature does not include the ``list`` parameter mentioned in the main text.
+In C this is an "output" parameter, a concept that doesn't really exist in Python.
 The Python version of ``gp_camera_folder_list_files`` returns a sequence containing the integer error code and the ``list`` value.
 
 Most of the libgphoto2_ functions that use pointer parameters to return values in the C API have been adapted like this in the Python API.
 (Unfortunately I've not found a way to persuade SWIG_ to include this extra return value in the documentation.
-You should use ``pydoc`` to check the parameters expected by the Python function.)
+You should use ``pydoc`` to check the actual parameters expected by the Python function.)
 
 For example, the C code:
 
@@ -185,7 +195,8 @@ Here is a complete example program (without any error checking):
 
 Many of the libgphoto2_ functions have been added as methods of the appropriate GPhoto2 object.
 This allows GPhoto2 to be used in a more "Pythonic" style.
-These methods also include error checking.
+For example, ``gp.gp_camera_init(camera, context)`` can be replaced by ``camera.init(context)``.
+These object methods also include error checking.
 If an error occurs they raise a Python ``GPhoto2Error`` exception.
 
 The example program can be re-written as follows:
@@ -203,8 +214,7 @@ The example program can be re-written as follows:
     camera.exit(context)
 
 The object methods are more "hand crafted" than the rest of the Python bindings, which are automatically generated from the library header files.
-This means that there are some functions in the "C" interface that do not have corresponding methods.
-Those that do include a "see also" reference in their docstring, as shown in the ``pydoc`` example above.
+This means that there may be some functions in the "C" interface that do not have corresponding object methods.
 
 Error checking
 ^^^^^^^^^^^^^^

@@ -22,6 +22,10 @@
 #else
 %feature("autodoc", "2");
 #endif
+
+// Make docstring parameter types more Pythonic
+%typemap(doc) char const * "$1_name: str"
+%typemap(doc) void * "$1_name: object"
 %enddef
 
 %define IMPORT_GPHOTO2_ERROR()

@@ -37,7 +37,6 @@ AUTODOC
 IMPORT_GPHOTO2_ERROR()
 
 // Make docstring parameter types more Pythonic
-%typemap(doc) CameraFile * "$1_name: $*1_type"
 %typemap(doc) CameraFilesystem * "$1_name: $*1_type"
 
 // gp_filesystem_new() returns a pointer in an output parameter

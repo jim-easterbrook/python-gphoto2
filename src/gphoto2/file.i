@@ -35,8 +35,6 @@ IMPORT_GPHOTO2_ERROR()
 // Make docstring parameter types more Pythonic
 %typemap(doc) CameraFile * "$1_name: $*1_type"
 %typemap(doc) CameraFileHandler * "$1_name: $*1_type"
-%typemap(doc) char const * "$1_name: str"
-%typemap(doc) void * "$1_name: object"
 
 // gp_file_get_mtime() returns a pointer in output params
 typedef long int time_t;

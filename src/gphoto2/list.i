@@ -33,7 +33,6 @@ IMPORT_GPHOTO2_ERROR()
 
 // Make docstring parameter types more Pythonic
 %typemap(doc) CameraList * "$1_name: $*1_type"
-%typemap(doc) char const * "$1_name: str"
 
 // gp_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraList **)

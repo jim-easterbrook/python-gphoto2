@@ -25,9 +25,6 @@
 
 AUTODOC
 
-// Make docstring parameter types more Pythonic
-%typemap(doc) char const * "$1_name: str"
-
 // SWIG can't wrap functions with var args
 %ignore gp_logv;
 

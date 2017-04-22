@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,14 +21,14 @@
 #include "gphoto2/gphoto2.h"
 %}
 
+%include "macros.i"
+
+AUTODOC
+
 %import "camera.i"
 %import "context.i"
 
-%feature("autodoc", "2");
-
 %include "typemaps.i"
-
-%include "macros.i"
 
 IMPORT_GPHOTO2_ERROR()
 

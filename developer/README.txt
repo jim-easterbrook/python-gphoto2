@@ -48,3 +48,8 @@ Where there is no change, or the change only adds a constant, the SWIG generated
 2.4.14 -> 2.4.8
 2.5.9  -> 2.5.0
 2.5.13 -> 2.5.10
+
+Documentation
+-------------
+
+The libgphoto2 source includes documentation in "doxygen" format. If you install doxygen and doxy2swig (https://github.com/m7thon/doxy2swig) this documentation can be included in the python interfaces. Clone the doxy2swig GitHub repos to your working directory, then run 'python setup.py build_doc' before running 'python setup.py build_swig'.

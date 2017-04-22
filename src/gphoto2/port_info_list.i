@@ -21,14 +21,14 @@
 #include "gphoto2/gphoto2.h"
 %}
 
-%feature("autodoc", "2");
+%include "macros.i"
+
+AUTODOC
 
 %ignore gp_port_info_get_library_filename;
 %ignore gp_port_info_set_library_filename;
 
 %include "typemaps.i"
-
-%include "macros.i"
 
 IMPORT_GPHOTO2_ERROR()
 

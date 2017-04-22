@@ -28,7 +28,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '1.6.0'
+version = '1.6.1'
 
 # get gphoto2 library config
 cmd = ['pkg-config', '--modversion', 'libgphoto2']
@@ -107,6 +107,54 @@ if os.path.isdir(mod_src_dir):
 cmdclass = {}
 command_options = {}
 
+def get_gp_versions():
+    # get gphoto2 versions to be swigged
+    gp_versions = []
+    for name in os.listdir('.'):
+        match = re.match('libgphoto2-(\d+\.\d+\.\d+)', name)
+        if match:
+            gp_versions.append(match.group(1))
+    gp_versions.sort()
+    if not gp_versions:
+        gp_versions = [gphoto2_version_str]
+    return gp_versions
+
+# add command to run doxygen and doxy2swig
+class build_doc(Command):
+    description = 'run doxygen to generate documentation'
+    user_options = []
+
+    def initialize_options(self):
+        pass
+
+    def finalize_options(self):
+        pass
+
+    def run(self):
+        gp_versions = get_gp_versions()
+        self.announce('making docs for gphoto2 versions %s' % str(gp_versions), 2)
+        sys.path.append('doxy2swig')
+        from doxy2swig import Doxy2SWIG
+        for gp_version in gp_versions:
+            src_dir = 'libgphoto2-' + gp_version
+            os.chdir(src_dir)
+            self.spawn(['doxygen', '../developer/Doxyfile'])
+            os.chdir('..')
+            index_file = os.path.join(src_dir, 'doc', 'xml', 'index.xml')
+            self.announce('Doxy2SWIG ' + index_file, 2)
+            p = Doxy2SWIG(index_file,
+                          with_function_signature = False,
+                          with_type_info = False,
+                          with_constructor_list = False,
+                          with_attribute_list = False,
+                          with_overloaded_functions = False,
+                          textwidth = 76,
+                          quiet = True)
+            p.generate()
+            p.write(os.path.join('src', 'doc-' + gp_version + '.i'))
+
+cmdclass['build_doc'] = build_doc
+
 # add command to run SWIG
 class build_swig(Command):
     description = 'run SWIG to regenerate interface files'
@@ -125,14 +173,7 @@ class build_swig(Command):
         file_names = [os.path.splitext(x) for x in file_names]
         ext_names = [x[0] for x in file_names if x[1] == '.i']
         # get gphoto2 versions to be swigged
-        gp_versions = []
-        for name in os.listdir('.'):
-            match = re.match('libgphoto2-(\d+\.\d+\.\d+)', name)
-            if match:
-                gp_versions.append(match.group(1))
-        gp_versions.sort()
-        if not gp_versions:
-            gp_versions = [gphoto2_version_str]
+        gp_versions = get_gp_versions()
         self.announce('swigging gphoto2 versions %s' % str(gp_versions), 2)
         # do -builtin and not -builtin
         swig_bis = [False]
@@ -152,6 +193,7 @@ class build_swig(Command):
                 swig_opts.append('-builtin')
             # do each gphoto2 version
             for gp_version in gp_versions:
+                doc_file = os.path.join('src', 'doc-' + gp_version + '.i')
                 # do Python 2 and 3
                 for py_version in 2, 3:
                     output_dir = os.path.join('src', 'swig')
@@ -166,6 +208,9 @@ class build_swig(Command):
                         '-DGPHOTO2_VERSION=' + gp_version_hex,
                         '-outdir', output_dir,
                         ]
+                    if os.path.isfile(doc_file):
+                        version_opts.append(
+                            '-DDOC_FILE=' + os.path.basename(doc_file))
                     inc_dir = 'libgphoto2-' + gp_version
                     if os.path.isdir(inc_dir):
                         version_opts.append('-I' + inc_dir)

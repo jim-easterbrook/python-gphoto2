@@ -22,18 +22,18 @@
 #include "gphoto2/gphoto2.h"
 %}
 
+%include "macros.i"
+
+AUTODOC
+
 %import "abilities_list.i"
 %import "filesys.i"
 %import "result.i"
 %import "widget.i"
 
-%feature("autodoc", "2");
-
 %include "typemaps.i"
 
 %include "stdint.i"
-
-%include "macros.i"
 
 IMPORT_GPHOTO2_ERROR()
 

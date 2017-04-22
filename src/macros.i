@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-15  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,6 +14,15 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+%define AUTODOC()
+#if defined(DOC_FILE)
+%include DOC_FILE
+%feature("autodoc", "1");
+#else
+%feature("autodoc", "2");
+#endif
+%enddef
 
 %define IMPORT_GPHOTO2_ERROR()
 %{
@@ -120,7 +129,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
     return result;
   }
 };
-%feature("docstring") function "See also: gphoto2." #py_type
+//%feature("docstring") function "See also: gphoto2." #py_type
 %enddef
 
 %define DEFAULT_DTOR(name, free_func)
@@ -149,7 +158,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
     if (error < GP_OK) GPHOTO2_ERROR(error)
   }
 };
-%feature("docstring") function "See also: gphoto2." #py_type "." #member
+//%feature("docstring") function "See also: gphoto2." #py_type "." #member
 %enddef
 
 %define MEMBER_FUNCTION_THREAD(type, py_type, member, member_args, function, function_args)
@@ -166,7 +175,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
     if (error < GP_OK) GPHOTO2_ERROR(error)
   }
 };
-%feature("docstring") function "See also: gphoto2." #py_type "." #member
+//%feature("docstring") function "See also: gphoto2." #py_type "." #member
 %enddef
 
 %define INT_MEMBER_FUNCTION(type, py_type, member, member_args, function, function_args)
@@ -182,10 +191,10 @@ int (*struct ## _ ## type ## _ ## member)() = function;
   }
 }
 %extend type {
-%feature("docstring") "See also: gphoto2." #function
+//%feature("docstring") "See also: gphoto2." #function
   int member member_args;
 };
-%feature("docstring") function "See also: gphoto2." #py_type "." #member
+//%feature("docstring") function "See also: gphoto2." #py_type "." #member
 %enddef
 
 %define LEN_MEMBER_FUNCTION(type, py_type, function)

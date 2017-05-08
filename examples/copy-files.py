@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -50,15 +50,14 @@ def list_camera_files(camera, context, path='/'):
     # get files
     gp_list = gp.check_result(
         gp.gp_camera_folder_list_files(camera, path, context))
-    for n in range(len(gp_list)):
-        result.append(os.path.join(
-            path, gp.check_result(gp.gp_list_get_name(gp_list, n))))
+    for name, value in gp_list:
+        result.append(os.path.join(path, name))
     # read folders
     folders = []
     gp_list = gp.check_result(
         gp.gp_camera_folder_list_folders(camera, path, context))
-    for n in range(len(gp_list)):
-        folders.append(gp.check_result(gp.gp_list_get_name(gp_list, n)))
+    for name, value in gp_list:
+        folders.append(name)
     # recurse over subfolders
     for name in folders:
         result.extend(list_camera_files(

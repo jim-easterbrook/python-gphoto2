@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -98,8 +98,7 @@ class SectionWidget(QtGui.QWidget):
         if child_count < 1:
             return
         tabs = None
-        for n in range(child_count):
-            child = camera_config.get_child(n)
+        for child in camera_config.get_children():
             label = '{} ({})'.format(child.get_label(), child.get_name())
             child_type = child.get_type()
             if child_type == gp.GP_WIDGET_SECTION:
@@ -195,10 +194,8 @@ class RadioWidget(QtGui.QWidget):
         assert self.config.count_children() == 0
         self.setLayout(QtGui.QHBoxLayout())
         value = self.config.get_value()
-        choice_count = self.config.count_choices()
         self.buttons = []
-        for n in range(choice_count):
-            choice = self.config.get_choice(n)
+        for choice in self.config.get_choices():
             if choice:
                 button = QtGui.QRadioButton(choice)
                 self.layout().addWidget(button)

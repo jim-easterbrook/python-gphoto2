@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-16  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -99,8 +99,7 @@ class SectionWidget(QtGui.QWidget):
         if child_count < 1:
             return
         tabs = None
-        for n in range(child_count):
-            child = gp.check_result(gp.gp_widget_get_child(camera_config, n))
+        for child in gp.check_result(gp.gp_widget_get_children(camera_config)):
             label = gp.check_result(gp.gp_widget_get_label(child))
             name = gp.check_result(gp.gp_widget_get_name(child))
             label = '{} ({})'.format(label, name)
@@ -200,10 +199,8 @@ class RadioWidget(QtGui.QWidget):
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
         self.setLayout(QtGui.QHBoxLayout())
         value = gp.check_result(gp.gp_widget_get_value(config))
-        choice_count = gp.check_result(gp.gp_widget_count_choices(config))
         self.buttons = []
-        for n in range(choice_count):
-            choice = gp.check_result(gp.gp_widget_get_choice(config, n))
+        for choice in gp.check_result(gp.gp_widget_get_choices(config)):
             if choice:
                 button = QtGui.QRadioButton(choice)
                 self.layout().addWidget(button)

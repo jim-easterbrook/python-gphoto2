@@ -166,6 +166,98 @@ typedef union {
   $result = SWIG_Python_AppendOutput($result, py_value);
 }
 
+// function to allow python iter() to be called with python object
+#if defined(SWIGPYTHON_BUILTIN)
+%inline %{
+static PyObject* make_iterator(PyObject* self)
+{
+  Py_INCREF(self);
+  return self;
+}
+%}
+#endif
+
+// macro to implement iterator objects
+%define ITERATOR(iter_type, function, result_type)
+
+#if defined(SWIGPYTHON_BUILTIN)
+  %feature("python:tp_iter") iter_type "make_iterator";
+  %feature("python:slot", "tp_iternext", functype="iternextfunc") iter_type::__next__;
+#else
+  %extend iter_type {
+    %pythoncode {
+      def __iter__(self):
+          return self
+      def next(self):
+          return self.__next__()
+    }
+  }
+#endif
+
+%ignore iter_type::parent;
+%ignore iter_type::idx;
+%ignore iter_type::len;
+%inline %{
+typedef struct iter_type {
+  CameraWidget* parent;
+  int           idx;
+  int           len;
+} iter_type;
+%}
+
+CALLOC_ARGOUT(iter_type*)
+
+%exception iter_type::__next__ {
+  $action
+  if (PyErr_Occurred() != NULL) SWIG_fail;
+}
+%extend iter_type {
+  result_type* __next__() {
+    result_type* result;
+    int error;
+    if ($self->idx >= $self->len)
+    {
+      PyErr_SetString(PyExc_StopIteration, "End of iteration");
+      return NULL;
+    }
+    error = function($self->parent, $self->idx, &result);
+    $self->idx++;
+    if (error < GP_OK)
+    {
+      GPHOTO2_ERROR(error)
+      return NULL;
+    }
+    return result;
+  }
+}
+%enddef
+
+// Add gp_widget_get_children() method that returns an iterator
+ITERATOR(CameraWidgetChildIter, gp_widget_get_child, CameraWidget)
+%inline %{
+int gp_widget_get_children(CameraWidget* widget, CameraWidgetChildIter* iter) {
+  iter->parent = widget;
+  iter->idx = 0;
+  iter->len = gp_widget_count_children(widget);
+  if (iter->len < GP_OK)
+    return iter->len;
+  return GP_OK;
+};
+%}
+
+// Add gp_widget_get_choices() method that returns an iterator
+ITERATOR(CameraWidgetChoiceIter, gp_widget_get_choice, const char)
+%inline %{
+int gp_widget_get_choices(CameraWidget* widget, CameraWidgetChoiceIter* iter) {
+  iter->parent = widget;
+  iter->idx = 0;
+  iter->len = gp_widget_count_choices(widget);
+  if (iter->len < GP_OK)
+    return iter->len;
+  return GP_OK;
+};
+%}
+
 // Add default destructor to _CameraWidget
 // Destructor decrefs root widget
 %{
@@ -195,6 +287,9 @@ INT_MEMBER_FUNCTION(_CameraWidget, CameraWidget,
 MEMBER_FUNCTION(_CameraWidget, CameraWidget,
     get_child, (int child_number, CameraWidget **child),
     gp_widget_get_child, ($self, child_number, child))
+MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+    get_children, (CameraWidgetChildIter* iter),
+    gp_widget_get_children, ($self, iter))
 MEMBER_FUNCTION(_CameraWidget, CameraWidget,
     get_child_by_label, (const char *label, CameraWidget **child),
     gp_widget_get_child_by_label, ($self, label, child))
@@ -249,6 +344,9 @@ MEMBER_FUNCTION(_CameraWidget, CameraWidget,
 INT_MEMBER_FUNCTION(_CameraWidget, CameraWidget,
     count_choices, (),
     gp_widget_count_choices, ($self))
+MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+    get_choices, (CameraWidgetChoiceIter* iter),
+    gp_widget_get_choices, ($self, iter))
 MEMBER_FUNCTION(_CameraWidget, CameraWidget,
     get_choice, (int choice_number, const char **choice),
     gp_widget_get_choice, ($self, choice_number, choice))

@@ -234,6 +234,22 @@ CALLOC_ARGOUT(iter_type*)
 
 // Add gp_widget_get_children() method that returns an iterator
 ITERATOR(CameraWidgetChildIter, gp_widget_get_child, CameraWidget)
+
+%feature("docstring") gp_widget_get_children "
+Gets all the child widgets of a CameraWidget. The return value is a list
+containing a gphoto2 error code and a Python iterator. The iterator can
+be used to get each child in sequence.
+
+Parameters
+----------
+* `widget` :
+    a CameraWidget
+
+Returns
+-------
+a gphoto2 error code and a Python iterator.
+";
+
 %inline %{
 int gp_widget_get_children(CameraWidget* widget, CameraWidgetChildIter* iter) {
   iter->parent = widget;
@@ -247,6 +263,22 @@ int gp_widget_get_children(CameraWidget* widget, CameraWidgetChildIter* iter) {
 
 // Add gp_widget_get_choices() method that returns an iterator
 ITERATOR(CameraWidgetChoiceIter, gp_widget_get_choice, const char)
+
+%feature("docstring") gp_widget_get_choices "
+Gets all the choice values of a CameraWidget. The return value is a list
+containing a gphoto2 error code and a Python iterator. The iterator can
+be used to get each choice in sequence.
+
+Parameters
+----------
+* `widget` :
+    a CameraWidget
+
+Returns
+-------
+a gphoto2 error code and a Python iterator.
+";
+
 %inline %{
 int gp_widget_get_choices(CameraWidget* widget, CameraWidgetChoiceIter* iter) {
   iter->parent = widget;

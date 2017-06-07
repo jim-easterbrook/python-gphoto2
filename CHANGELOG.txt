@@ -15,6 +15,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 1.7.0:
+  1/ Include function documentation in Python interface.
+  2/ Add gp_widget_get_children and gp_widget_get_choices functions that return
+     Python iterators.
+
 Changes in 1.6.0:
   1/ Include interfaces for more versions of libgphoto2.
 

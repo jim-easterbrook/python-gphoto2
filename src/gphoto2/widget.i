@@ -168,6 +168,7 @@ typedef union {
 
 // function to allow python iter() to be called with python object
 #if defined(SWIGPYTHON_BUILTIN)
+%ignore make_iterator;
 %inline %{
 static PyObject* make_iterator(PyObject* self)
 {

@@ -265,6 +265,9 @@ MEMBER_FUNCTION(_Camera, Camera,
     $result = SWIG_Python_AppendOutput(
       $result, SWIG_NewPointerObj(*$2, SWIGTYPE_p_CameraFilePath, SWIG_POINTER_OWN));
   }
+  else if (*$1 == GP_EVENT_UNKNOWN && *$2 != NULL) {
+    $result = SWIG_Python_AppendOutput($result, PyString_FromString(*$2));
+  }
   else {
     Py_INCREF(Py_None);
     $result = SWIG_Python_AppendOutput($result, Py_None);

@@ -21,7 +21,8 @@ Dependencies
 *   build tools: pkg-config, C compiler & linker
 
 Note that you need the "development headers" versions of libgphoto2_ and Python.
-Most Linux distributions' package managers have these, but the names vary.
+In most cases you should use your Linux distribution's package manager to install these.
+The package names depend on your Linux variant.
 Look for ``libgphoto2-2-dev`` or ``libgphoto2-devel`` or something similar.
 
 Installation and testing
@@ -29,6 +30,8 @@ Installation and testing
 
 There are several ways to install python-gphoto2, with varying levels of control over the installation process.
 You can install it with pip_, or by downloading an archive, or by getting the source from GitHub_.
+
+Note that you need to install the dependencies_ first, no matter how you install python-gphoto2.
 
 The commands below will install python-gphoto2 for your default Python version.
 To install for both Python 2 and Python 3, run the installation process twice with specific commands, i.e. ``pip2`` and ``pip3`` or ``python2`` and ``python3``.

@@ -32,13 +32,14 @@ version = '1.7.1'
 
 # get gphoto2 library config
 cmd = ['pkg-config', '--modversion', 'libgphoto2']
+FNULL = open(os.devnull, 'w')
 try:
     gphoto2_version = subprocess.check_output(
-        cmd, universal_newlines=True).split('.')
+        cmd, stderr=FNULL, universal_newlines=True).split('.')
     gphoto2_version = tuple(map(int, gphoto2_version))[:3]
     gphoto2_version_str = '.'.join(map(str, gphoto2_version))
-except OSError:
-    error('ERROR: can not execute: "%s"', ' '.join(cmd))
+except Exception:
+    error('ERROR: command "%s" failed', ' '.join(cmd))
     raise
 gphoto2_flags = defaultdict(list)
 for flag in subprocess.check_output(

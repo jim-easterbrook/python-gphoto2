@@ -23,7 +23,13 @@ import time
 
 import gphoto2 as gp
 
-def set_datetime(config):
+def set_datetime(config, model):
+    if model == 'Canon EOS 100D':
+        OK, date_config = gp.gp_widget_get_child_by_name(config, 'datetimeutc')
+        if OK >= gp.GP_OK:
+            now = int(time.time())
+            gp.check_result(gp.gp_widget_set_value(date_config, now))
+            return True
     OK, sync_config = gp.gp_widget_get_child_by_name(config, 'syncdatetime')
     if OK >= gp.GP_OK:
         gp.check_result(gp.gp_widget_set_value(sync_config, 1))
@@ -49,10 +55,12 @@ def main():
     camera = gp.check_result(gp.gp_camera_new())
     context = gp.gp_context_new()
     gp.check_result(gp.gp_camera_init(camera, context))
+    # get camera details
+    abilities = gp.check_result(gp.gp_camera_get_abilities(camera))
     # get configuration tree
     config = gp.check_result(gp.gp_camera_get_config(camera, context))
     # find the date/time setting config item and set it
-    if set_datetime(config):
+    if set_datetime(config, abilities.model):
         # apply the changed config
         gp.check_result(gp.gp_camera_set_config(camera, config, context))
     else:

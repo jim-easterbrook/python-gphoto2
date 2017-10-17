@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -29,30 +29,30 @@ import gphoto2 as gp
 # my Canon dSLR raises an error on every deletion, but still does it OK
 gp.error_severity[gp.GP_ERROR] = logging.WARNING
 
-def list_files(camera, context, path='/'):
+def list_files(camera, path='/'):
     result = []
     # get files
     for name, value in gp.check_result(
-            gp.gp_camera_folder_list_files(camera, path, context)):
+            gp.gp_camera_folder_list_files(camera, path)):
         result.append(os.path.join(path, name))
     # read folders
     folders = []
     for name, value in gp.check_result(
-            gp.gp_camera_folder_list_folders(camera, path, context)):
+            gp.gp_camera_folder_list_folders(camera, path)):
         folders.append(name)
     # recurse over subfolders
     for name in folders:
-        result.extend(list_files(camera, context, os.path.join(path, name)))
+        result.extend(list_files(camera, os.path.join(path, name)))
     return result
 
-def get_file_info(camera, context, path):
+def get_file_info(camera, path):
     folder, name = os.path.split(path)
     return gp.check_result(
-        gp.gp_camera_file_get_info(camera, folder, name, context))
+        gp.gp_camera_file_get_info(camera, folder, name))
 
-def delete_file(camera, context, path):
+def delete_file(camera, path):
     folder, name = os.path.split(path)
-    gp.check_result(gp.gp_camera_file_delete(camera, folder, name, context))
+    gp.check_result(gp.gp_camera_file_delete(camera, folder, name))
 
 def main(argv=None):
     if argv is None:
@@ -61,9 +61,8 @@ def main(argv=None):
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
     camera = gp.check_result(gp.gp_camera_new())
-    context = gp.gp_context_new()
-    gp.check_result(gp.gp_camera_init(camera, context))
-    storage_info = gp.check_result(gp.gp_camera_get_storageinfo(camera, context))
+    gp.check_result(gp.gp_camera_init(camera))
+    storage_info = gp.check_result(gp.gp_camera_get_storageinfo(camera))
     if len(storage_info) > 1:
         print('Unable to handle camera with multiple storage media')
         return 1
@@ -89,11 +88,11 @@ def main(argv=None):
         print('Sufficient free space')
         return 0
     print('Getting file list...')
-    files = list_files(camera, context)
+    files = list_files(camera)
     mtime = {}
     size = {}
     for path in files:
-        info = get_file_info(camera, context, path)
+        info = get_file_info(camera, path)
         mtime[path] = info.file.mtime
         size[path] = info.file.size
     files.sort(key=lambda x: mtime[x], reverse=True)
@@ -101,17 +100,17 @@ def main(argv=None):
         while files and free_space < target:
             path = files.pop()
             print('Delete', path)
-            delete_file(camera, context, path)
+            delete_file(camera, path)
             free_space += size[path] // 1000
         storage_info = gp.check_result(
-            gp.gp_camera_get_storageinfo(camera, context))
+            gp.gp_camera_get_storageinfo(camera))
         si = storage_info[0]
         print('Camera has %.1f%% free space' % (
             100.0 * float(si.freekbytes) / float(si.capacitykbytes)))
         free_space = si.freekbytes
         if free_space >= target:
             break
-    gp.check_result(gp.gp_camera_exit(camera, context))
+    gp.check_result(gp.gp_camera_exit(camera))
     return 0
 
 if __name__ == "__main__":

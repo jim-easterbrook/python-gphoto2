@@ -45,29 +45,28 @@ def list_computer_files():
             result.append(os.path.join(root, name))
     return result
 
-def list_camera_files(camera, context, path='/'):
+def list_camera_files(camera, path='/'):
     result = []
     # get files
     gp_list = gp.check_result(
-        gp.gp_camera_folder_list_files(camera, path, context))
+        gp.gp_camera_folder_list_files(camera, path))
     for name, value in gp_list:
         result.append(os.path.join(path, name))
     # read folders
     folders = []
     gp_list = gp.check_result(
-        gp.gp_camera_folder_list_folders(camera, path, context))
+        gp.gp_camera_folder_list_folders(camera, path))
     for name, value in gp_list:
         folders.append(name)
     # recurse over subfolders
     for name in folders:
-        result.extend(list_camera_files(
-            camera, context, os.path.join(path, name)))
+        result.extend(list_camera_files(camera, os.path.join(path, name)))
     return result
 
-def get_camera_file_info(camera, context, path):
+def get_camera_file_info(camera, path):
     folder, name = os.path.split(path)
     return gp.check_result(
-        gp.gp_camera_file_get_info(camera, folder, name, context))
+        gp.gp_camera_file_get_info(camera, folder, name))
 
 def main():
     logging.basicConfig(
@@ -75,16 +74,15 @@ def main():
     gp.check_result(gp.use_python_logging())
     computer_files = list_computer_files()
     camera = gp.check_result(gp.gp_camera_new())
-    context = gp.gp_context_new()
-    gp.check_result(gp.gp_camera_init(camera, context))
+    gp.check_result(gp.gp_camera_init(camera))
     print('Getting list of files from camera...')
-    camera_files = list_camera_files(camera, context)
+    camera_files = list_camera_files(camera)
     if not camera_files:
         print('No files found')
         return 1
     print('Copying files...')
     for path in camera_files:
-        info = get_camera_file_info(camera, context, path)
+        info = get_camera_file_info(camera, path)
         timestamp = datetime.fromtimestamp(info.file.mtime)
         folder, name = os.path.split(path)
         dest_dir = get_target_dir(timestamp)
@@ -95,9 +93,9 @@ def main():
         if not os.path.isdir(dest_dir):
             os.makedirs(dest_dir)
         camera_file = gp.check_result(gp.gp_camera_file_get(
-            camera, folder, name, gp.GP_FILE_TYPE_NORMAL, context))
+            camera, folder, name, gp.GP_FILE_TYPE_NORMAL))
         gp.check_result(gp.gp_file_save(camera_file, dest))
-    gp.check_result(gp.gp_camera_exit(camera, context))
+    gp.check_result(gp.gp_camera_exit(camera))
     return 0
 
 if __name__ == "__main__":

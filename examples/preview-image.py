@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2015  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2015-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -33,13 +33,12 @@ def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
-    context = gp.gp_context_new()
     camera = gp.check_result(gp.gp_camera_new())
-    gp.check_result(gp.gp_camera_init(camera, context))
+    gp.check_result(gp.gp_camera_init(camera))
     # required configuration will depend on camera type!
     print('Checking camera config')
     # get configuration tree
-    config = gp.check_result(gp.gp_camera_get_config(camera, context))
+    config = gp.check_result(gp.gp_camera_get_config(camera))
     # find the image format config item
     OK, image_format = gp.gp_widget_get_child_by_name(config, 'imageformat')
     if OK >= gp.GP_OK:
@@ -58,10 +57,10 @@ def main():
         value = gp.check_result(gp.gp_widget_get_choice(capture_size_class, 2))
         gp.check_result(gp.gp_widget_set_value(capture_size_class, value))
         # set config
-        gp.check_result(gp.gp_camera_set_config(camera, config, context))
+        gp.check_result(gp.gp_camera_set_config(camera, config))
     # capture preview image (not saved to camera memory card)
     print('Capturing preview image')
-    camera_file = gp.check_result(gp.gp_camera_capture_preview(camera, context))
+    camera_file = gp.check_result(gp.gp_camera_capture_preview(camera))
     file_data = gp.check_result(gp.gp_file_get_data_and_size(camera_file))
     # display image
     data = memoryview(file_data)
@@ -69,7 +68,7 @@ def main():
     print(data[:10].tolist())
     image = Image.open(io.BytesIO(file_data))
     image.show()
-    gp.check_result(gp.gp_camera_exit(camera, context))
+    gp.check_result(gp.gp_camera_exit(camera))
     return 0
 
 if __name__ == "__main__":

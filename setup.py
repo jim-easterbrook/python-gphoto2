@@ -28,7 +28,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '1.7.2'
+version = '1.8.0'
 
 # get gphoto2 library config
 cmd = ['pkg-config', '--modversion', 'libgphoto2']
@@ -191,7 +191,7 @@ class build_swig(Command):
             swig_opts = ['-python', '-nodefaultctor', '-O', '-Isrc',
                          '-Wextra', '-Werror']
             if use_builtin:
-                swig_opts.append('-builtin')
+                swig_opts += ['-builtin', '-nofastunpack']
             # do each gphoto2 version
             for gp_version in gp_versions:
                 doc_file = os.path.join('src', 'doc-' + gp_version + '.i')

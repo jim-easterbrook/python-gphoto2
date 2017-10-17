@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2015  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2015-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -31,10 +31,9 @@ def main():
     gp.check_result(gp.use_python_logging())
     # open camera connection
     camera = gp.check_result(gp.gp_camera_new())
-    context = gp.gp_context_new()
-    gp.check_result(gp.gp_camera_init(camera, context))
+    gp.check_result(gp.gp_camera_init(camera))
     # get configuration tree
-    config = gp.check_result(gp.gp_camera_get_config(camera, context))
+    config = gp.check_result(gp.gp_camera_get_config(camera))
     # find the capture target config item
     capture_target = gp.check_result(
         gp.gp_widget_get_child_by_name(config, 'capturetarget'))
@@ -46,7 +45,7 @@ def main():
         choice = gp.check_result(gp.gp_widget_get_choice(capture_target, n))
         print('Choice:', n, choice)
     # clean up
-    gp.check_result(gp.gp_camera_exit(camera, context))
+    gp.check_result(gp.gp_camera_exit(camera))
     return 0
 
 if __name__ == "__main__":

@@ -30,14 +30,13 @@ def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
-    context = gp.Context()
     camera = gp.Camera()
-    camera.init(context)
-    text = camera.get_summary(context)
+    camera.init()
+    text = camera.get_summary()
     print('Summary')
     print('=======')
     print(str(text))
-    camera.exit(context)
+    camera.exit()
     return 0
 
 if __name__ == "__main__":

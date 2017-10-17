@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,6 @@ def main():
         print('Callback: level =', level, ', domain =', domain, ', string =', string)
         if data:
             print('Callback data:', data)
-    context = gp.Context()
     camera = gp.Camera()
     # add our own callback
     print('Using Python callback')
@@ -41,7 +40,7 @@ def main():
         gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback))
     print('callback_id', callback_id)
     # create an error
-    gp.gp_camera_init(camera, context)
+    gp.gp_camera_init(camera)
     # uninstall callback
     gp.check_result(gp.gp_log_remove_func(callback_id))
     # add our own callback, with data
@@ -51,7 +50,7 @@ def main():
         gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback, 'some data'))
     print('callback_id', callback_id)
     # create an error
-    gp.gp_camera_init(camera, context)
+    gp.gp_camera_init(camera)
     # uninstall callback
     gp.check_result(gp.gp_log_remove_func(callback_id))
     # set gphoto2 to use Python's logging directly
@@ -61,7 +60,7 @@ def main():
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
     # create an error
-    gp.gp_camera_init(camera, context)
+    gp.gp_camera_init(camera)
     return 0
 
 if __name__ == "__main__":

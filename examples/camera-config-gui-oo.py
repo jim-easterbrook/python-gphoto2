@@ -56,7 +56,6 @@ class MainWindow(QtGui.QMainWindow):
         quit_button.clicked.connect(QtGui.qApp.closeAllWindows)
         widget.layout().addWidget(quit_button, 1, 2)
         # defer full initialisation (slow operation) until gui is visible
-        self.context = gp.Context()
         self.camera = gp.Camera()
         QtGui.QApplication.postEvent(
             self, QtCore.QEvent(self.do_init), Qt.LowEventPriority - 1)
@@ -74,8 +73,8 @@ class MainWindow(QtGui.QMainWindow):
 
     def initialise(self):
         # get camera config tree
-        self.camera.init(self.context)
-        self.camera_config = self.camera.get_config(self.context)
+        self.camera.init()
+        self.camera_config = self.camera.get_config()
         # create corresponding tree of tab widgets
         self.setWindowTitle(self.camera_config.get_label())
         self.centralWidget().layout().addWidget(SectionWidget(
@@ -85,7 +84,7 @@ class MainWindow(QtGui.QMainWindow):
         self.apply_button.setEnabled(True)
 
     def apply_changes(self):
-        self.camera.set_config(self.camera_config, self.context)
+        self.camera.set_config(self.camera_config)
         QtGui.qApp.closeAllWindows()
 
 class SectionWidget(QtGui.QWidget):

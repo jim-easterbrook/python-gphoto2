@@ -71,10 +71,9 @@ class MainWindow(QtGui.QMainWindow):
     def initialise(self):
         # get camera config tree
         self.camera = gp.check_result(gp.gp_camera_new())
-        self.context = gp.gp_context_new()
-        gp.check_result(gp.gp_camera_init(self.camera, self.context))
+        gp.check_result(gp.gp_camera_init(self.camera))
         self.camera_config = gp.check_result(
-            gp.gp_camera_get_config(self.camera, self.context))
+            gp.gp_camera_get_config(self.camera))
         # create corresponding tree of tab widgets
         self.setWindowTitle(
             gp.check_result(gp.gp_widget_get_label(self.camera_config)))
@@ -86,7 +85,7 @@ class MainWindow(QtGui.QMainWindow):
 
     def apply_changes(self):
         gp.check_result(gp.gp_camera_set_config(
-            self.camera, self.camera_config, self.context))
+            self.camera, self.camera_config))
         QtGui.qApp.closeAllWindows()
 
 class SectionWidget(QtGui.QWidget):

@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2015  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2015-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -56,11 +56,10 @@ class CameraHandler(QtCore.QObject):
         super(CameraHandler, self).__init__()
         self.running = False
         # initialise camera
-        self.context = gp.Context()
         self.camera = gp.Camera()
-        self.camera.init(self.context)
+        self.camera.init()
         # get camera config tree
-        self.config = self.camera.get_config(self.context)
+        self.config = self.camera.get_config()
         self.old_capturetarget = None
         # get the camera model
         OK, camera_model = gp.gp_widget_get_child_by_name(
@@ -84,10 +83,10 @@ class CameraHandler(QtCore.QObject):
                 value = capture_size_class.get_choice(2)
                 capture_size_class.set_value(value)
                 # set config
-                self.camera.set_config(self.config, self.context)
+                self.camera.set_config(self.config)
         else:
             # put camera into preview mode to raise mirror
-            gp.gp_camera_capture_preview(self.camera, self.context)
+            gp.gp_camera_capture_preview(self.camera)
 
     @QtCore.pyqtSlot()
     def one_shot(self):
@@ -120,7 +119,7 @@ class CameraHandler(QtCore.QObject):
     def shut_down(self):
         self.running = False
         self._reset_config()
-        self.camera.exit(self.context)
+        self.camera.exit()
 
     def event(self, event):
         if event.type() != self.do_next:
@@ -143,7 +142,7 @@ class CameraHandler(QtCore.QObject):
 
     def _do_preview(self):
         # capture preview image
-        OK, camera_file = gp.gp_camera_capture_preview(self.camera, self.context)
+        OK, camera_file = gp.gp_camera_capture_preview(self.camera)
         if OK < gp.GP_OK:
             print('Failed to capture preview')
             self.running = False
@@ -153,14 +152,14 @@ class CameraHandler(QtCore.QObject):
     def _do_capture(self):
         # capture actual image
         OK, camera_file_path = gp.gp_camera_capture(
-            self.camera, gp.GP_CAPTURE_IMAGE, self.context)
+            self.camera, gp.GP_CAPTURE_IMAGE)
         if OK < gp.GP_OK:
             print('Failed to capture')
             self.running = False
             return
         camera_file = self.camera.file_get(
             camera_file_path.folder, camera_file_path.name,
-            gp.GP_FILE_TYPE_NORMAL, self.context)
+            gp.GP_FILE_TYPE_NORMAL)
         self._send_file(camera_file)
 
     def _send_file(self, camera_file):
@@ -182,7 +181,7 @@ class CameraHandler(QtCore.QObject):
                 if 'internal' in choice.lower():
                     # set config
                     capture_target.set_value(choice)
-                    self.camera.set_config(self.config, self.context)
+                    self.camera.set_config(self.config)
                     break
         # find the image format config item
         OK, image_format = gp.gp_widget_get_child_by_name(
@@ -204,7 +203,7 @@ class CameraHandler(QtCore.QObject):
             if OK >= gp.GP_OK:
                 # set config
                 capture_target.set_value(self.old_capturetarget)
-                self.camera.set_config(self.config, self.context)
+                self.camera.set_config(self.config)
                 self.old_capturetarget = None
 
 

@@ -28,10 +28,9 @@ def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
-    context = gp.gp_context_new()
     camera = gp.check_result(gp.gp_camera_new())
-    gp.check_result(gp.gp_camera_init(camera, context))
-    text = gp.check_result(gp.gp_camera_get_summary(camera, context))
+    gp.check_result(gp.gp_camera_init(camera))
+    text = gp.check_result(gp.gp_camera_get_summary(camera))
     print('Summary')
     print('=======')
     print(text.text)
@@ -53,7 +52,7 @@ def main():
     print('library:', abilities.library)
     print('id:', abilities.id)
     print('device_type:', abilities.device_type)
-    gp.check_result(gp.gp_camera_exit(camera, context))
+    gp.check_result(gp.gp_camera_exit(camera))
     return 0
 
 if __name__ == "__main__":

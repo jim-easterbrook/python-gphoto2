@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,17 +28,16 @@ def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
-    context = gp.gp_context_new()
     if hasattr(gp, 'gp_camera_autodetect'):
         # gphoto2 version 2.5+
-        cameras = gp.check_result(gp.gp_camera_autodetect(context))
+        cameras = gp.check_result(gp.gp_camera_autodetect())
     else:
         port_info_list = gp.check_result(gp.gp_port_info_list_new())
         gp.check_result(gp.gp_port_info_list_load(port_info_list))
         abilities_list = gp.check_result(gp.gp_abilities_list_new())
-        gp.check_result(gp.gp_abilities_list_load(abilities_list, context))
+        gp.check_result(gp.gp_abilities_list_load(abilities_list))
         cameras = gp.check_result(gp.gp_abilities_list_detect(
-            abilities_list, port_info_list, context))
+            abilities_list, port_info_list))
     n = 0
     for name, value in cameras:
         print('camera number', n)

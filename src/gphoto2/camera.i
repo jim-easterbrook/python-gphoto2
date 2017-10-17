@@ -57,6 +57,11 @@ IMPORT_GPHOTO2_ERROR()
 // Make docstring parameter types more Pythonic
 %typemap(doc) (Camera *) "$1_name: $*1_type"
 
+// Many functions accept NULL context value
+%typemap(default) (GPContext *) {
+  $1 = NULL;
+}
+
 // gp_camera_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(Camera **)
 

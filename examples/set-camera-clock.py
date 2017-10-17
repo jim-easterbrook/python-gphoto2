@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -53,20 +53,19 @@ def main():
     gp.check_result(gp.use_python_logging())
     # open camera connection
     camera = gp.check_result(gp.gp_camera_new())
-    context = gp.gp_context_new()
-    gp.check_result(gp.gp_camera_init(camera, context))
+    gp.check_result(gp.gp_camera_init(camera))
     # get camera details
     abilities = gp.check_result(gp.gp_camera_get_abilities(camera))
     # get configuration tree
-    config = gp.check_result(gp.gp_camera_get_config(camera, context))
+    config = gp.check_result(gp.gp_camera_get_config(camera))
     # find the date/time setting config item and set it
     if set_datetime(config, abilities.model):
         # apply the changed config
-        gp.check_result(gp.gp_camera_set_config(camera, config, context))
+        gp.check_result(gp.gp_camera_set_config(camera, config))
     else:
         print('Could not set date & time')
     # clean up
-    gp.check_result(gp.gp_camera_exit(camera, context))
+    gp.check_result(gp.gp_camera_exit(camera))
     return 0
 
 if __name__ == "__main__":

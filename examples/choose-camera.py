@@ -31,10 +31,9 @@ def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
-    context = gp.Context()
     # make a list of all available cameras
     camera_list = []
-    for name, addr in context.camera_autodetect():
+    for name, addr in gp.check_result(gp.gp_camera_autodetect()):
         camera_list.append((name, addr))
     if not camera_list:
         print('No camera detected')
@@ -63,19 +62,19 @@ def main():
     port_info_list.load()
     idx = port_info_list.lookup_path(addr)
     camera.set_port_info(port_info_list[idx])
-    camera.init(context)
-    text = camera.get_summary(context)
+    camera.init()
+    text = camera.get_summary()
     print('Summary')
     print('=======')
     print(str(text))
     try:
-        text = camera.get_manual(context)
+        text = camera.get_manual()
         print('Manual')
         print('=======')
         print(str(text))
     except Exception as ex:
         print(str(ex))
-    camera.exit(context)
+    camera.exit()
     return 0
 
 if __name__ == "__main__":

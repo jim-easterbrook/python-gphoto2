@@ -52,8 +52,8 @@ Install a downloaded archive
 Visit PyPI_ and download one of the zip or tar.gz files, then extract it and change to the new directory.
 For example::
 
-    tar xzf gphoto2-1.3.4.tar.gz
-    cd gphoto2-1.3.4
+    tar xzf gphoto2-1.7.1.tar.gz
+    cd gphoto2-1.7.1
 
 Python's distutils_ are used to build and install python-gphoto2::
 
@@ -316,8 +316,8 @@ You can override this mapping by passing your own to ``use_python_logging()``:
     ...
     gp.use_python_logging(mapping={
         gp.GP_LOG_ERROR   : logging.INFO,
-        gp.GP_LOG_VERBOSE : logging.DEBUG,
-        gp.GP_LOG_DEBUG   : logging.DEBUG - 3,
+        gp.GP_LOG_DEBUG   : logging.DEBUG,
+        gp.GP_LOG_VERBOSE : logging.DEBUG - 3,
         gp.GP_LOG_DATA    : logging.DEBUG - 6})
     ...
 
@@ -370,8 +370,8 @@ See the ``copy-data.py`` example for typical usage.
 
 In earlier versions of python-gphoto2 these functions returned a ``str`` (Python 2) or ``bytes`` (Python 3) object containing a copy of the data in the ``CameraFile`` object.
 
-gp_camera_file_read / Camera.file_read / gp_file_slurp / CameraFile.slurp
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+gp_camera_file_read / Camera.file_read
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Although the documentation says the ``buf`` parameter is of type ``char *`` you can pass any Python object that exposes a writeable buffer interface.
 This allows you to read a file directly into a Python object without additional copying.
@@ -382,7 +382,7 @@ gp_camera_wait_for_event / Camera.wait_for_event
 
 These functions return both the event type and the event data.
 The data you get depends on the type.
-``GP_EVENT_FILE_ADDED`` and ``GP_EVENT_FOLDER_ADDED`` events return a ``CameraFilePath``, others return ``None``.
+``GP_EVENT_FILE_ADDED`` and ``GP_EVENT_FOLDER_ADDED`` events return a ``CameraFilePath``, others return ``None`` or a text string.
 
 Running SWIG_
 -------------

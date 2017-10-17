@@ -63,12 +63,16 @@ static void gp_log_call_python(
       arglist = Py_BuildValue("(issO)", level, domain, str, this->data);
     else
       arglist = Py_BuildValue("(iss)", level, domain, str);
-    result = PyObject_CallObject(this->func, arglist);
-    Py_DECREF(arglist);
-    if (result == NULL)
+    if (arglist == NULL)
       PyErr_Print();
-    else
-      Py_DECREF(result);
+    else {
+      result = PyObject_CallObject(this->func, arglist);
+      Py_DECREF(arglist);
+      if (result == NULL)
+        PyErr_Print();
+      else
+        Py_DECREF(result);
+    }
     PyGILState_Release(gstate);
   }
 };
@@ -96,25 +100,23 @@ static void gp_log_call_python(
 static int gp_log_add_func_wrapper(GPLogLevel level, PyObject *func, PyObject *data)
 {
   LogFuncItem *this = malloc(sizeof(LogFuncItem));
-  if (this) {
-    int id = gp_log_add_func(level, gp_log_call_python, this);
-    if (id >= 0) {
-      // Add Python callback to front of func_list
-      this->id = id;
-      this->func = func;
-      this->data = data;
-      this->next = func_list;
-      func_list = this;
-      Py_INCREF(this->func);
-      if (this->data)
-        Py_INCREF(this->data);
-    } else {
-      free(this);
-    }
-    return id;
-  } else {
+  if (!this)
     return GP_ERROR_NO_MEMORY;
+  this->func = func;
+  this->data = data;
+  int id = gp_log_add_func(level, gp_log_call_python, this);
+  if (id < GP_OK) {
+    free(this);
+    return id;
   }
+  // Add Python callback to front of func_list
+  this->id = id;
+  this->next = func_list;
+  func_list = this;
+  Py_INCREF(this->func);
+  if (this->data)
+    Py_INCREF(this->data);
+  return id;
 }
 %}
 
@@ -172,7 +174,7 @@ from gphoto2.result import check_result, GP_OK
 
 class _GPhoto2Logger(object):
     def __init__(self):
-        self.log = None
+        self.log = logging.getLogger('gphoto2').log
         self.log_id = -1
         self.mapping = {}
 
@@ -181,11 +183,12 @@ class _GPhoto2Logger(object):
 
     def install(self, mapping):
         self.mapping.update(mapping)
-        if not self.log:
-            self.log = logging.getLogger('gphoto2').log
         if self.log_id >= GP_OK:
             check_result(gp_log_remove_func(self.log_id))
-        self.log_id = gp_log_add_func(GP_LOG_DATA, self.callback)
+        for level in (GP_LOG_DATA, GP_LOG_VERBOSE, GP_LOG_DEBUG, GP_LOG_ERROR):
+            if self.mapping[level] >= logging.DEBUG:
+                break
+        self.log_id = gp_log_add_func(level, self.callback)
         return self.log_id
 
 _gphoto2_logger = None
@@ -203,8 +206,8 @@ def use_python_logging(mapping={}):
         _gphoto2_logger = _GPhoto2Logger()
     full_mapping = {
         GP_LOG_ERROR   : logging.WARNING,
-        GP_LOG_VERBOSE : logging.INFO,
-        GP_LOG_DEBUG   : logging.DEBUG,
+        GP_LOG_DEBUG   : logging.INFO,
+        GP_LOG_VERBOSE : logging.DEBUG,
         GP_LOG_DATA    : logging.DEBUG - 5,
         }
     full_mapping.update(mapping)

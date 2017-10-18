@@ -296,7 +296,7 @@ Returns
 -------
 a Python iterator.
 
-See also gphoto2.CameraWidget.get_choices"
+See also gphoto2.gp_widget_get_choices"
 
 %inline %{
 int gp_widget_get_choices(CameraWidget* widget, CameraWidgetChoiceIter* iter) {

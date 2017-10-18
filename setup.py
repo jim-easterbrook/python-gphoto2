@@ -149,10 +149,37 @@ class build_doc(Command):
                           with_constructor_list = False,
                           with_attribute_list = False,
                           with_overloaded_functions = False,
-                          textwidth = 76,
+                          textwidth = 72,
                           quiet = True)
             p.generate()
-            p.write(os.path.join('src', 'doc-' + gp_version + '.i'))
+            text = ''.join(p.pieces)
+            member_methods = (
+                ('gp_abilities_list_', '_CameraAbilitiesList', 'CameraAbilitiesList'),
+                ('gp_camerafile_',     '_CameraFile',          'CameraFile'),
+                ('gp_camera_',         '_Camera',              'Camera'),
+                ('gp_list_',           '_CameraList',          'CameraList'),
+                ('gp_port_info_list_', '_GPPortInfoList',      'PortInfoList'),
+                ('gp_port_info_',      '_GPPortInfo',          'PortInfo'),
+                ('gp_widget_',         '_CameraWidget',        'CameraWidget'),
+                )
+            with open(os.path.join('src', 'doc-' + gp_version + '.i'), 'w') as of:
+                for match in re.finditer('%feature\("docstring"\) (\w+) \"(.+?)\";',
+                                         text, re.DOTALL):
+                    symbol = match.group(1)
+                    value = match.group(2).strip()
+                    for key, c_type, py_type in member_methods:
+                        if symbol.startswith(key):
+                            method = symbol.replace(key, '')
+                            of.write(('%feature("docstring") {} "{}\n\n' +
+                                      'See also gphoto2.{}.{}"\n\n').format(
+                                          symbol, value, py_type, method))
+                            of.write(('%feature("docstring") {}::{} "{}\n\n' +
+                                      'See also gphoto2.{}"\n\n').format(
+                                          c_type, method, value, symbol))
+                            break
+                    else:
+                        of.write('%feature("docstring") {} "{}"\n\n'.format(
+                            symbol, value))
 
 cmdclass['build_doc'] = build_doc
 

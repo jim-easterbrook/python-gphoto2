@@ -155,8 +155,8 @@ class build_doc(Command):
             text = ''.join(p.pieces)
             member_methods = (
                 ('gp_abilities_list_', '_CameraAbilitiesList', 'CameraAbilitiesList'),
-                ('gp_camerafile_',     '_CameraFile',          'CameraFile'),
                 ('gp_camera_',         '_Camera',              'Camera'),
+                ('gp_file_',           '_CameraFile',          'CameraFile'),
                 ('gp_list_',           '_CameraList',          'CameraList'),
                 ('gp_port_info_list_', '_GPPortInfoList',      'PortInfoList'),
                 ('gp_port_info_',      '_GPPortInfo',          'PortInfo'),

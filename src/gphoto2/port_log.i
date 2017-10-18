@@ -78,77 +78,78 @@ static void gp_log_call_python(
 };
 %}
 
-// Add callable check to gp_log_add_func
-%typemap(doc)           PyObject *func "$1_name: callable"
-%typemap(in, noblock=1) PyObject *func {
-  if (!PyCallable_Check($input)) {
-    SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
-  }
-  $1 = $input;
-}
-
-// Make data an optional parameter to gp_log_add_func
-%typemap(doc)     PyObject *data "$1_name: object (optional)"
-%typemap(default) PyObject *data {
-  $1 = NULL;
-}
-
-// Redefine gp_log_add_func
-%ignore gp_log_add_func;
-%rename(gp_log_add_func) gp_log_add_func_wrapper;
-%inline %{
-static int gp_log_add_func_wrapper(GPLogLevel level, PyObject *func, PyObject *data)
-{
-  LogFuncItem *this = malloc(sizeof(LogFuncItem));
-  if (!this)
-    return GP_ERROR_NO_MEMORY;
-  this->func = func;
-  this->data = data;
-  int id = gp_log_add_func(level, gp_log_call_python, this);
-  if (id < GP_OK) {
-    free(this);
-    return id;
-  }
-  // Add Python callback to front of func_list
-  this->id = id;
-  this->next = func_list;
-  func_list = this;
-  Py_INCREF(this->func);
-  if (this->data)
-    Py_INCREF(this->data);
-  return id;
-}
-%}
-
-// Redefine gp_log_remove_func
-%ignore gp_log_remove_func;
-%rename(gp_log_remove_func) gp_log_remove_func_wrapper;
-%inline %{
-static int gp_log_remove_func_wrapper(int id)
-{
-  // Remove Python callback from func_list
-  LogFuncItem *last = NULL;
-  LogFuncItem *this = func_list;
-  while (this) {
-    if (this->id == id) {
-      Py_DECREF(this->func);
-      if (this->data)
-        Py_DECREF(this->data);
-      if (last)
-        last->next = this->next;
-      else
-        func_list = this->next;
-      free(this);
-      break;
+// Use typemaps to replace Python callback & data with gp_log_call_python
+// Allocate an empty LogFuncItem and make data optional
+%typemap(default) void *data (LogFuncItem *_global_new_func) {
+    _global_new_func = malloc(sizeof(LogFuncItem));
+    if (!_global_new_func) {
+        PyErr_SetNone(PyExc_MemoryError);
+        SWIG_fail;
     }
-    last = this;
-    this = this->next;
-  }
-  return gp_log_remove_func(id);
+    _global_new_func->id = 0;
+    _global_new_func->func = NULL;
+    _global_new_func->data = NULL;
+    _global_new_func->next = func_list;
+    $1 = _global_new_func;
 }
-%}
+// Store Python callback in LogFuncItem and use gp_log_call_python
+%typemap(in) GPLogFunc func {
+    if (!PyCallable_Check($input)) {
+        SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
+    }
+    _global_new_func->func = $input;
+    $1 = gp_log_call_python;
+}
+// Store user data (if present) in LogFuncItem
+%typemap(in) void *data {
+    _global_new_func->data = $input;
+}
+// Add LogFuncItem to func_list if gp_log_add_func succeeded
+%exception gp_log_add_func {
+    $action
+    if (result >= GP_OK) {
+        _global_new_func->id = result;
+        Py_INCREF(_global_new_func->func);
+        if (_global_new_func->data) {
+            Py_INCREF(_global_new_func->data);
+        }
+        func_list = _global_new_func;
+        _global_new_func = NULL;
+    }
+}
+// Deallocate LogFuncItem if gp_log_add_func failed
+%typemap(freearg) void *data {
+    free(_global_new_func);
+}
+
+// Use typemap to remove LogFuncItem from func_list before calling gp_log_remove_func
+%typemap(check) int id {
+    LogFuncItem *last = NULL;
+    LogFuncItem *this = func_list;
+    while (this) {
+        if (this->id == $1) {
+            Py_DECREF(this->func);
+            if (this->data) {
+                Py_DECREF(this->data);
+            }
+            if (last) {
+                last->next = this->next;
+            } else {
+                func_list = this->next;
+            }
+            free(this);
+            break;
+        }
+        last = this;
+        this = this->next;
+    }
+}
 
 %include "gphoto2/gphoto2-port-log.h"
+
+// Clear typemaps to avoid problems when this file is %included in another
+%clear int id;
+%clear void *data;
 
 %pythoncode %{
 import logging

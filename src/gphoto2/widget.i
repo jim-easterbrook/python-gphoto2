@@ -236,8 +236,7 @@ CALLOC_ARGOUT(iter_type*)
 // Add gp_widget_get_children() method that returns an iterator
 ITERATOR(CameraWidgetChildIter, gp_widget_get_child, CameraWidget)
 
-%feature("docstring") gp_widget_get_children "
-Gets all the child widgets of a CameraWidget. The return value is a list
+%feature("docstring") gp_widget_get_children "Gets all the child widgets of a CameraWidget. The return value is a list
 containing a gphoto2 error code and a Python iterator. The iterator can
 be used to get each child in sequence.
 
@@ -249,7 +248,17 @@ Parameters
 Returns
 -------
 a gphoto2 error code and a Python iterator.
-";
+
+See also gphoto2.CameraWidget.get_children"
+
+%feature("docstring") _CameraWidget::get_children "Gets all the child widgets of a CameraWidget. The return value is a
+Python iterator which can be used to get each child in sequence.
+
+Returns
+-------
+a Python iterator.
+
+See also gphoto2.gp_widget_get_children"
 
 %inline %{
 int gp_widget_get_children(CameraWidget* widget, CameraWidgetChildIter* iter) {
@@ -265,8 +274,7 @@ int gp_widget_get_children(CameraWidget* widget, CameraWidgetChildIter* iter) {
 // Add gp_widget_get_choices() method that returns an iterator
 ITERATOR(CameraWidgetChoiceIter, gp_widget_get_choice, const char)
 
-%feature("docstring") gp_widget_get_choices "
-Gets all the choice values of a CameraWidget. The return value is a list
+%feature("docstring") gp_widget_get_choices "Gets all the choice values of a CameraWidget. The return value is a list
 containing a gphoto2 error code and a Python iterator. The iterator can
 be used to get each choice in sequence.
 
@@ -278,7 +286,17 @@ Parameters
 Returns
 -------
 a gphoto2 error code and a Python iterator.
-";
+
+See also gphoto2.CameraWidget.get_choices"
+
+%feature("docstring") _CameraWidget::get_choices "Gets all the choice values of a CameraWidget. The return value is a a
+Python iterator which can be used to get each choice in sequence.
+
+Returns
+-------
+a Python iterator.
+
+See also gphoto2.CameraWidget.get_choices"
 
 %inline %{
 int gp_widget_get_choices(CameraWidget* widget, CameraWidgetChoiceIter* iter) {
@@ -399,8 +417,12 @@ MEMBER_FUNCTION(_CameraWidget, CameraWidget,
 // some methods return string pointers in output params
 STRING_ARGOUT()
 
-%inline %{
 // Add type specific gp_widget_get_value methods
+%feature("docstring") gp_widget_get_value_text "Deprecated"
+%feature("docstring") gp_widget_get_value_int "Deprecated"
+%feature("docstring") gp_widget_get_value_float "Deprecated"
+
+%inline %{
 static int gp_widget_get_value_text(CameraWidget *widget, char **value) {
   return gp_widget_get_value(widget, value);
   };
@@ -412,8 +434,14 @@ static int gp_widget_get_value_int(CameraWidget *widget, int *value) {
 static int gp_widget_get_value_float(CameraWidget *widget, float *value) {
   return gp_widget_get_value(widget, value);
   };
+%}
 
 // Add type specific gp_widget_set_value methods
+%feature("docstring") gp_widget_set_value_text "Deprecated"
+%feature("docstring") gp_widget_set_value_int "Deprecated"
+%feature("docstring") gp_widget_set_value_float "Deprecated"
+
+%inline %{
 static int gp_widget_set_value_text(CameraWidget *widget, const char *value) {
   return gp_widget_set_value(widget, value);
   };

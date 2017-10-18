@@ -151,12 +151,12 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 
 // Macros to add member functions to structs
 %define MEMBER_FUNCTION(type, py_type, member, member_args, function, function_args)
+%feature("docstring") type::member "See also: gphoto2." #function
 %exception type::member {
   $action
   if (PyErr_Occurred() != NULL) SWIG_fail;
 }
 %extend type {
-%feature("docstring") "See also: gphoto2." #function
   void member member_args {
     int error = function function_args;
     if (error < GP_OK) GPHOTO2_ERROR(error)
@@ -166,12 +166,12 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %enddef
 
 %define MEMBER_FUNCTION_THREAD(type, py_type, member, member_args, function, function_args)
+%feature("docstring") type::member "See also: gphoto2." #function
 %exception type::member {
   $action
   if (PyErr_Occurred() != NULL) SWIG_fail;
 }
 %extend type {
-%feature("docstring") "See also: gphoto2." #function
   void member member_args {
     SWIG_PYTHON_THREAD_BEGIN_ALLOW;
     int error = function function_args;

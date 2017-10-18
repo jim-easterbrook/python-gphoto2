@@ -148,23 +148,6 @@ static int gp_log_remove_func_wrapper(int id)
 }
 %}
 
-// Deprecated older versions
-%inline %{
-static int gp_log_add_func_py(GPLogLevel level, PyObject *func) {
-  int id = gp_log_add_func_wrapper(level, func, NULL);
-  gp_log(GP_LOG_ERROR, "gphoto2.port_log",
-      "gp_log_add_func_py is deprecated. Please use gp_log_add_func instead.");
-  return id;
-};
-
-// Remove Python callback from list
-static int gp_log_remove_func_py(int id) {
-  gp_log(GP_LOG_ERROR, "gphoto2.port_log",
-      "gp_log_remove_func_py is deprecated. Please use gp_log_remove_func instead.");
-  return gp_log_remove_func_wrapper(id);
-};
-%}
-
 %include "gphoto2/gphoto2-port-log.h"
 
 %pythoncode %{

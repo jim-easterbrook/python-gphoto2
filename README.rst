@@ -123,7 +123,7 @@ See the example programs for typical usage of the Python gphoto2 API.
 Using SWIG_ to generate the Python interfaces automatically means that every function in libgphoto2_ *should* be available to Python.
 The ``pydoc`` command can be used to show the documentation of a function::
 
-   jim@firefly ~/python-gphoto2 $ pydoc gphoto2.gp_camera_folder_list_files
+   jim@firefly ~$ pydoc gphoto2.gp_camera_folder_list_files
    Help on built-in function gp_camera_folder_list_files in gphoto2:
 
    gphoto2.gp_camera_folder_list_files = gp_camera_folder_list_files(...)
@@ -145,7 +145,9 @@ The ``pydoc`` command can be used to show the documentation of a function::
        Returns
        -------
        a gphoto2 error code
-   jim@firefly ~/python-gphoto2 $ 
+
+       See also gphoto2.Camera.folder_list_files
+   jim@firefly ~$
 
 Most of this text is copied from the "doxygen" format documentation in the C source code.
 (The online `API documentation`_ shows how it is intended to look.)
@@ -322,20 +324,9 @@ You can override this mapping by passing your own to ``use_python_logging()``:
     ...
 
 If you prefer to use your own logging system you can define a logging callback function in Python.
-The function must take 3 parameters: ``level``, ``domain`` and ``string``.
-Since python-gphoto2 version 1.3 the callback function is installed with ``gp_log_add_func`` (previously called ``gp_log_add_func_py``):
-
-.. code:: python
-
-    import gphoto2 as gp
-    ...
-    def callback(level, domain, string):
-        print('Callback: level =', level, ', domain =', domain, ', string =', string)
-    ...
-    callback_id = gp.check_result(gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback))
-    ...
-
-Since python-gphoto2 version 1.4 you can pass some user data to your callback function (e.g. to log which thread an error occurred in):
+The function must take 3 or 4 parameters: ``level``, ``domain``, ``string`` and an optional ``data``.
+The ``data`` parameter allows you to pass some user data to your callback function (e.g. to log which thread an error occurred in):
+The callback function is installed with ``gp_log_add_func``:
 
 .. code:: python
 

@@ -177,18 +177,19 @@ def use_python_logging(mapping={}):
     to Python's logging system.
 
     The mapping parameter is a dictionary mapping any of the four
-    gphoto2 logging severity levels to a Python logging level.
+    gphoto2 logging severity levels to a Python logging level. Note that
+    anything below Python DEBUG level will not be forwarded.
 
     """
     full_mapping = {
         GP_LOG_ERROR   : logging.WARNING,
-        GP_LOG_DEBUG   : logging.INFO,
-        GP_LOG_VERBOSE : logging.DEBUG,
+        GP_LOG_VERBOSE : logging.INFO,
+        GP_LOG_DEBUG   : logging.DEBUG,
         GP_LOG_DATA    : logging.DEBUG - 5,
         }
     full_mapping.update(mapping)
     log_func = logging.getLogger('gphoto2').log
-    for level in (GP_LOG_DATA, GP_LOG_VERBOSE, GP_LOG_DEBUG, GP_LOG_ERROR):
+    for level in (GP_LOG_DATA, GP_LOG_DEBUG, GP_LOG_VERBOSE, GP_LOG_ERROR):
         if full_mapping[level] >= logging.DEBUG:
             break
     return gp_log_add_func(level, _gphoto2_logger_cb, (log_func, full_mapping))

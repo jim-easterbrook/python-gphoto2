@@ -54,9 +54,6 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
 static void gp_log_call_python(GPLogLevel level, const char *domain,
                                const char *str, void *data) {
 #endif
-    if (level < 2) {
-        printf("callback: %d %s\n%s\n", level, domain, str);
-    }
     if (!Py_IsInitialized()) {
         return;
     }
@@ -171,6 +168,8 @@ def _gphoto2_logger_cb(level, domain, msg, data):
     log_func, mapping = data
     if level in mapping:
         log_func(mapping[level], '(%s) %s', domain, msg)
+    else:
+        log_func(logging.ERROR, '%d (%s) %s', level, domain, msg)
 
 def use_python_logging(mapping={}):
     """Install a callback to receive gphoto2 errors and forward them

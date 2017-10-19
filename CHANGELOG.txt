@@ -15,6 +15,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 1.8.0:
+  1/ The 'context' parameter is now optional for most functions.
+  2/ Some deprecated functions have been removed.
+  3/ Improved documentation of many functions.
+  4/ Substantial rework of logging callback processing.
+
 Changes in 1.7.1:
   1/ Return string values from gp_camera_wait_for_event.
 

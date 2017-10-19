@@ -46,35 +46,41 @@ static LogFuncItem *func_list = NULL;
 
 // Call Python function from C callback
 #if GPHOTO2_VERSION < 0x020500
-static void gp_log_call_python(
-    GPLogLevel level, const char *domain, const char *format, va_list args, void *data) {
-  char str[1024];
-  vsnprintf(str, sizeof(str), format, args);
+static void gp_log_call_python(GPLogLevel level, const char *domain,
+                               const char *format, va_list args, void *data) {
+    char str[1024];
+    vsnprintf(str, sizeof(str), format, args);
 #else
-static void gp_log_call_python(
-    GPLogLevel level, const char *domain, const char *str, void *data) {
+static void gp_log_call_python(GPLogLevel level, const char *domain,
+                               const char *str, void *data) {
 #endif
-  if (Py_IsInitialized()) {
+    if (level < 2) {
+        printf("callback: %d %s\n%s\n", level, domain, str);
+    }
+    if (!Py_IsInitialized()) {
+        return;
+    }
     PyGILState_STATE gstate = PyGILState_Ensure();
     LogFuncItem *this = data;
     PyObject *result = NULL;
     PyObject *arglist = NULL;
-    if (this->data)
-      arglist = Py_BuildValue("(issO)", level, domain, str, this->data);
-    else
-      arglist = Py_BuildValue("(iss)", level, domain, str);
-    if (arglist == NULL)
-      PyErr_Print();
-    else {
-      result = PyObject_CallObject(this->func, arglist);
-      Py_DECREF(arglist);
-      if (result == NULL)
+    if (this->data) {
+        arglist = Py_BuildValue("(issO)", level, domain, str, this->data);
+    } else {
+        arglist = Py_BuildValue("(iss)", level, domain, str);
+    }
+    if (arglist == NULL) {
         PyErr_Print();
-      else
-        Py_DECREF(result);
+    } else {
+        result = PyObject_CallObject(this->func, arglist);
+        Py_DECREF(arglist);
+        if (result == NULL) {
+            PyErr_Print();
+        } else {
+            Py_DECREF(result);
+        }
     }
     PyGILState_Release(gstate);
-  }
 };
 %}
 

@@ -128,26 +128,33 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
     free(_global_new_func);
 }
 
-// Use typemap to remove LogFuncItem from func_list before calling gp_log_remove_func
-%typemap(check) int id {
-    LogFuncItem *last = NULL;
-    LogFuncItem *this = func_list;
-    while (this) {
-        if (this->id == $1) {
-            Py_DECREF(this->func);
-            if (this->data) {
-                Py_DECREF(this->data);
+// Note id when gp_log_remove_func is called
+%typemap(check) int id (int _global_id) {
+    _global_id = $1;
+}
+// Remove LogFuncItem from func_list if gp_log_remove_func succeeded
+%exception gp_log_remove_func {
+    $action
+    if (result >= GP_OK) {
+        LogFuncItem *last = NULL;
+        LogFuncItem *this = func_list;
+        while (this) {
+            if (this->id == _global_id) {
+                Py_DECREF(this->func);
+                if (this->data) {
+                    Py_DECREF(this->data);
+                }
+                if (last) {
+                    last->next = this->next;
+                } else {
+                    func_list = this->next;
+                }
+                free(this);
+                break;
             }
-            if (last) {
-                last->next = this->next;
-            } else {
-                func_list = this->next;
-            }
-            free(this);
-            break;
+            last = this;
+            this = this->next;
         }
-        last = this;
-        this = this->next;
     }
 }
 

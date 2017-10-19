@@ -167,28 +167,10 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
 %pythoncode %{
 import logging
 
-from gphoto2.result import check_result, GP_OK
-
-class _GPhoto2Logger(object):
-    def __init__(self):
-        self.log = logging.getLogger('gphoto2').log
-        self.log_id = -1
-        self.mapping = {}
-
-    def callback(self, level, domain, msg):
-        self.log(self.mapping[level], '(%s) %s', domain, msg)
-
-    def install(self, mapping):
-        self.mapping.update(mapping)
-        if self.log_id >= GP_OK:
-            check_result(gp_log_remove_func(self.log_id))
-        for level in (GP_LOG_DATA, GP_LOG_VERBOSE, GP_LOG_DEBUG, GP_LOG_ERROR):
-            if self.mapping[level] >= logging.DEBUG:
-                break
-        self.log_id = gp_log_add_func(level, self.callback)
-        return self.log_id
-
-_gphoto2_logger = None
+def _gphoto2_logger_cb(level, domain, msg, data):
+    log_func, mapping = data
+    if level in mapping:
+        log_func(mapping[level], '(%s) %s', domain, msg)
 
 def use_python_logging(mapping={}):
     """Install a callback to receive gphoto2 errors and forward them
@@ -198,9 +180,6 @@ def use_python_logging(mapping={}):
     gphoto2 logging severity levels to a Python logging level.
 
     """
-    global _gphoto2_logger
-    if not _gphoto2_logger:
-        _gphoto2_logger = _GPhoto2Logger()
     full_mapping = {
         GP_LOG_ERROR   : logging.WARNING,
         GP_LOG_DEBUG   : logging.INFO,
@@ -208,5 +187,9 @@ def use_python_logging(mapping={}):
         GP_LOG_DATA    : logging.DEBUG - 5,
         }
     full_mapping.update(mapping)
-    return _gphoto2_logger.install(full_mapping)
+    log_func = logging.getLogger('gphoto2').log
+    for level in (GP_LOG_DATA, GP_LOG_VERBOSE, GP_LOG_DEBUG, GP_LOG_ERROR):
+        if full_mapping[level] >= logging.DEBUG:
+            break
+    return gp_log_add_func(level, _gphoto2_logger_cb, (log_func, full_mapping))
 %}

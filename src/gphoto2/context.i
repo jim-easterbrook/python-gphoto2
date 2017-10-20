@@ -25,9 +25,7 @@
 
 AUTODOC
 
-#ifndef SWIGIMPORTED
 %import "list.i"
-#endif //ifndef SWIGIMPORTED
 
 IMPORT_GPHOTO2_ERROR()
 

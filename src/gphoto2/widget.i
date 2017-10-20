@@ -25,6 +25,9 @@
 
 AUTODOC
 
+%import "camera.i"
+%import "context.i"
+
 %include "typemaps.i"
 
 IMPORT_GPHOTO2_ERROR()

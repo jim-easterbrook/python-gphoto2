@@ -81,6 +81,8 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
 };
 %}
 
+#ifndef SWIGIMPORTED
+
 // Use typemaps to replace Python callback & data with gp_log_call_python
 // Allocate an empty LogFuncItem and make data optional
 %typemap(default) void *data (LogFuncItem *_global_new_func) {
@@ -155,11 +157,9 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
     }
 }
 
-%include "gphoto2/gphoto2-port-log.h"
+#endif //ifndef SWIGIMPORTED
 
-// Clear typemaps to avoid problems when this file is %included in another
-%clear int id;
-%clear void *data;
+%include "gphoto2/gphoto2-port-log.h"
 
 %pythoncode %{
 import logging

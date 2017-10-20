@@ -25,9 +25,6 @@
 
 AUTODOC
 
-%import "camera.i"
-%import "context.i"
-
 %include "typemaps.i"
 
 IMPORT_GPHOTO2_ERROR()
@@ -40,6 +37,9 @@ IMPORT_GPHOTO2_ERROR()
 %apply int *OUTPUT { CameraWidgetType * };
 %apply int *OUTPUT { int * };
 %apply float *OUTPUT { float * };
+
+// gp_widget_get_name() etc. return strings in output params
+STRING_ARGOUT()
 
 %typemap(in, numinputs=0) CameraWidget ** (CameraWidget *temp) {
   temp = NULL;

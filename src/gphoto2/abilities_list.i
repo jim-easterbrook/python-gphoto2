@@ -25,10 +25,12 @@
 
 AUTODOC
 
+#ifndef SWIGIMPORTED
 %import "context.i"
 %import "list.i"
 %import "port_info_list.i"
 %import "port_log.i"
+#endif //ifndef SWIGIMPORTED
 
 %include "typemaps.i"
 

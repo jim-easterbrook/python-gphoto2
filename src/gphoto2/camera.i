@@ -26,10 +26,12 @@
 
 AUTODOC
 
+#ifndef SWIGIMPORTED
 %import "abilities_list.i"
 %import "filesys.i"
 %import "result.i"
 %import "widget.i"
+#endif //ifndef SWIGIMPORTED
 
 %include "typemaps.i"
 

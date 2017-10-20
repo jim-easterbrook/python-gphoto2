@@ -25,9 +25,11 @@
 
 AUTODOC
 
+#ifndef SWIGIMPORTED
 %import "context.i"
 %import "file.i"
 %import "list.i"
+#endif //ifndef SWIGIMPORTED
 
 %include "typemaps.i"
 

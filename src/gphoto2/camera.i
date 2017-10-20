@@ -62,6 +62,9 @@ IMPORT_GPHOTO2_ERROR()
   $1 = NULL;
 }
 
+// gp_camera_get_abilities() returns a pointer in an output parameter
+CALLOC_ARGOUT(CameraAbilities *abilities)
+
 // gp_camera_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(Camera **)
 

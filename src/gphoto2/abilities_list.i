@@ -34,6 +34,8 @@ AUTODOC
 
 IMPORT_GPHOTO2_ERROR()
 
+#ifndef SWIGIMPORTED
+
 %rename(CameraAbilitiesList) _CameraAbilitiesList;
 
 // Make docstring parameter types more Pythonic
@@ -128,5 +130,7 @@ MEMBER_FUNCTION(_CameraAbilitiesList, CameraAbilitiesList,
 
 // Structures are read only
 %immutable;
+
+#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-abilities-list.h"

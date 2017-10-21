@@ -258,6 +258,21 @@ class build_swig(Command):
                     init_file = os.path.join(output_dir, '__init__.py')
                     with open(init_file, 'w') as im:
                         im.write('__version__ = "{}"\n\n'.format(version))
+                        im.write('''
+class GPhoto2Error(Exception):
+    """Exception raised by gphoto2 library errors
+
+    Attributes:
+        code   (int): the gphoto2 error code
+        string (str): corresponding error message
+    """
+    def __init__(self, code):
+        string = gp_result_as_string(code)
+        Exception.__init__(self, '[%d] %s' % (code, string))
+        self.code = code
+        self.string = string
+
+''')
                         for name in ext_names:
                             im.write('from gphoto2.{} import *\n'.format(name))
         # store SWIG version

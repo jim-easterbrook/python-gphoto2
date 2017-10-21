@@ -31,22 +31,6 @@ AUTODOC
 %pythoncode %{
 import logging
 
-class GPhoto2Error(Exception):
-    """Exception raised by gphoto2 library errors
-
-    Attributes:
-        code   (int): the gphoto2 error code
-        string (str): corresponding error message
-    """
-    def __init__(self, code):
-        string = gp_result_as_string(code)
-        Exception.__init__(self, '[%d] %s' % (code, string))
-        self.code = code
-        self.string = string
-
-# 'hide' true location of this definition
-GPhoto2Error.__module__ = 'gphoto2'
-
 # user adjustable check_result lookup table
 error_severity = {
     GP_ERROR_CANCEL           : logging.INFO,
@@ -80,7 +64,7 @@ def check_result(result):
     if error in error_severity:
         severity = error_severity[error]
     if severity >= error_exception:
-        raise GPhoto2Error(error)
+        raise gphoto2.GPhoto2Error(error)
     _return_logger.log(severity, '[%d] %s', error, gp_result_as_string(error))
     return result
 %}

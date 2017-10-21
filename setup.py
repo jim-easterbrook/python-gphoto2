@@ -162,7 +162,8 @@ class build_doc(Command):
                 ('gp_port_info_',      '_GPPortInfo',          'PortInfo'),
                 ('gp_widget_',         '_CameraWidget',        'CameraWidget'),
                 )
-            with open(os.path.join('src', 'doc-' + gp_version + '.i'), 'w') as of:
+            with open(os.path.join('src', 'gphoto2', 'common',
+                                   'doc-' + gp_version + '.i'), 'w') as of:
                 for match in re.finditer('%feature\("docstring"\) (\w+) \"(.+?)\";',
                                          text, re.DOTALL):
                     symbol = match.group(1)
@@ -215,13 +216,13 @@ class build_swig(Command):
                 break
         for use_builtin in swig_bis:
             # make options list
-            swig_opts = ['-python', '-nodefaultctor', '-O', '-Isrc',
-                         '-Wextra', '-Werror']
+            swig_opts = ['-python', '-nodefaultctor', '-O', '-Wextra', '-Werror']
             if use_builtin:
                 swig_opts += ['-builtin', '-nofastunpack']
             # do each gphoto2 version
             for gp_version in gp_versions:
-                doc_file = os.path.join('src', 'doc-' + gp_version + '.i')
+                doc_file = os.path.join(
+                    'src', 'gphoto2', 'common', 'doc-' + gp_version + '.i')
                 # do Python 2 and 3
                 for py_version in 2, 3:
                     output_dir = os.path.join('src', 'swig')

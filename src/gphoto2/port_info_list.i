@@ -25,20 +25,9 @@
 
 AUTODOC
 
-%ignore gp_port_info_get_library_filename;
-%ignore gp_port_info_set_library_filename;
-
 %include "typemaps.i"
 
-IMPORT_GPHOTO2_ERROR()
-
 %rename(PortInfoList) _GPPortInfoList;
-
-// Make docstring parameter types more Pythonic
-%typemap(doc) GPPortInfoList * "$1_name: PortInfoList";
-
-// gp_port_info_list_new() returns a pointer in an output parameter
-PLAIN_ARGOUT(GPPortInfoList **)
 
 // In libgphoto2 version 2.4 GPPortInfo is a structure, in version 2.5 it's a
 // pointer to a structure.
@@ -54,18 +43,21 @@ CALLOC_ARGOUT(GPPortInfo *info)
 }
 #endif
 
+#ifndef SWIGIMPORTED
+
+IMPORT_GPHOTO2_ERROR()
+
+// Make docstring parameter types more Pythonic
+%typemap(doc) GPPortInfoList * "$1_name: PortInfoList";
+
+// gp_port_info_list_new() returns a pointer in an output parameter
+PLAIN_ARGOUT(GPPortInfoList **)
+
 // several getter functions return string pointers in output params
 STRING_ARGOUT()
 
 // gp_port_info_get_type returns a pointer to an enum
 %apply int *OUTPUT { GPPortType * };
-
-// Add default constructor and destructor to _GPPortInfoList
-struct _GPPortInfoList {};
-DEFAULT_CTOR(_GPPortInfoList, PortInfoList, gp_port_info_list_new)
-DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
-%ignore _GPPortInfoList;
-%ignore gp_port_info_list_free;
 
 // Make GPPortInfoList more like a Python list
 LEN_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList, gp_port_info_list_count)
@@ -133,5 +125,16 @@ MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
 %ignore gp_port_info_set_name;
 %ignore gp_port_info_set_path;
 %ignore gp_port_info_set_type;
+%ignore gp_port_info_get_library_filename;
+%ignore gp_port_info_set_library_filename;
+%ignore gp_port_info_list_free;
+
+#endif //ifndef SWIGIMPORTED
+
+// Add default constructor and destructor to _GPPortInfoList
+struct _GPPortInfoList {};
+DEFAULT_CTOR(_GPPortInfoList, PortInfoList, gp_port_info_list_new)
+DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
+%ignore _GPPortInfoList;
 
 %include "gphoto2/gphoto2-port-info-list.h"

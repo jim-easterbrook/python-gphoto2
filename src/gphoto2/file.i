@@ -32,15 +32,15 @@ IMPORT_GPHOTO2_ERROR()
 
 %rename(CameraFile) _CameraFile;
 
+// gp_file_get_mtime() returns a pointer in output params
+typedef long int time_t;
+%apply time_t *OUTPUT { time_t * };
+
 #ifndef SWIGIMPORTED
 
 // Make docstring parameter types more Pythonic
 %typemap(doc) CameraFile * "$1_name: $*1_type"
 %typemap(doc) CameraFileHandler * "$1_name: $*1_type"
-
-// gp_file_get_mtime() returns a pointer in output params
-typedef long int time_t;
-%apply time_t *OUTPUT { time_t * };
 
 // gp_file_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFile **)

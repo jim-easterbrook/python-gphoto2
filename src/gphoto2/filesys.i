@@ -31,6 +31,11 @@ AUTODOC
 
 %include "typemaps.i"
 
+// gp_camera_file_get_info() etc. return a pointer in an output parameter
+CALLOC_ARGOUT(CameraFileInfo *info)
+
+#ifndef SWIGIMPORTED
+
 // image dimensions use uint32_t and storage info uses uint64_t
 %include "stdint.i"
 
@@ -50,20 +55,19 @@ PLAIN_ARGOUT(CameraFilesystem **)
 // gp_filesystem_list_files() etc. return a pointer in an output parameter
 NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
-// gp_camera_file_get_info() etc. return a pointer in an output parameter
-CALLOC_ARGOUT(CameraFileInfo *info)
+// Ignore some functions
+%ignore gp_filesystem_get_storageinfo;
+%ignore gp_filesystem_free;
+
+// Structures are read only
+%immutable;
+
+#endif //ifndef SWIGIMPORTED
 
 // Add default constructor and destructor to _CameraFilesystem
 struct _CameraFilesystem {};
 DEFAULT_CTOR(_CameraFilesystem, CameraFilesystem, gp_filesystem_new)
 DEFAULT_DTOR(_CameraFilesystem, gp_filesystem_free)
 %ignore _CameraFilesystem;
-%ignore gp_filesystem_free;
-
-// Some things are defined in .h files but are not in the library
-%ignore gp_filesystem_get_storageinfo;
-
-// Structures are read only
-%immutable;
 
 %include "gphoto2/gphoto2-filesys.h"

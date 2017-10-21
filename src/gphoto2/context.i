@@ -17,21 +17,11 @@
 
 %module(package="gphoto2") context
 
-%{
-#include "gphoto2/gphoto2.h"
-%}
-
-%include "macros.i"
-
-AUTODOC
-
-%import "list.i"
+%include "common/preamble.i"
 
 %rename(Context) _GPContext;
 
 #ifndef SWIGIMPORTED
-
-IMPORT_GPHOTO2_ERROR()
 
 // Make docstring parameter types more Pythonic
 %typemap(doc) GPContext * "$1_name: Context";

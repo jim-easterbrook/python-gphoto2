@@ -17,19 +17,7 @@
 
 %module(package="gphoto2") filesys
 
-%{
-#include "gphoto2/gphoto2.h"
-%}
-
-%include "macros.i"
-
-AUTODOC
-
-%import "context.i"
-%import "file.i"
-%import "list.i"
-
-%include "typemaps.i"
+%include "common/preamble.i"
 
 // gp_filesystem_name() & others return pointers in output params
 STRING_ARGOUT()
@@ -41,8 +29,6 @@ CALLOC_ARGOUT(CameraFileInfo *info)
 
 // image dimensions use uint32_t and storage info uses uint64_t
 %include "stdint.i"
-
-IMPORT_GPHOTO2_ERROR()
 
 // Make docstring parameter types more Pythonic
 %typemap(doc) CameraFilesystem * "$1_name: $*1_type"

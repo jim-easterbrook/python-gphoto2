@@ -15,40 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%define AUTODOC()
-#if defined(DOC_FILE)
-%include DOC_FILE
-%feature("autodoc", "1");
-#else
-%feature("autodoc", "2");
-#endif
-
-// Make docstring parameter types more Pythonic
-%typemap(doc) char const * "$1_name: str"
-%typemap(doc) void * "$1_name: object"
-%enddef
-
-%define IMPORT_GPHOTO2_ERROR()
-%{
-PyObject *PyExc_GPhoto2Error = NULL;
-%}
-%init %{
-{
-  PyObject *module = PyImport_ImportModule("gphoto2");
-  if (module != NULL) {
-    PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
-    Py_DECREF(module);
-  }
-  if (PyExc_GPhoto2Error == NULL)
-#if PY_VERSION_HEX >= 0x03000000
-    return NULL;
-#else
-    return;
-#endif
-}
-%}
-%enddef
-
 %define GPHOTO2_ERROR(error)
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %enddef

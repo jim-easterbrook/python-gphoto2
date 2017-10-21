@@ -17,15 +17,7 @@
 
 %module(package="gphoto2") port_info_list
 
-%{
-#include "gphoto2/gphoto2.h"
-%}
-
-%include "macros.i"
-
-AUTODOC
-
-%include "typemaps.i"
+%include "common/preamble.i"
 
 %rename(PortInfoList) _GPPortInfoList;
 
@@ -44,8 +36,6 @@ CALLOC_ARGOUT(GPPortInfo *info)
 #endif
 
 #ifndef SWIGIMPORTED
-
-IMPORT_GPHOTO2_ERROR()
 
 // Make docstring parameter types more Pythonic
 %typemap(doc) GPPortInfoList * "$1_name: PortInfoList";

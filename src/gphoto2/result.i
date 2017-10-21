@@ -17,16 +17,9 @@
 
 %module(package="gphoto2") result
 
-%{
-#include "gphoto2/gphoto2.h"
-%}
+%include "common/preamble.i"
 
-%include "macros.i"
-
-AUTODOC
-
-%include "gphoto2/gphoto2-port-result.h"
-%include "gphoto2/gphoto2-result.h"
+#ifndef SWIGIMPORTED
 
 %pythoncode %{
 import logging
@@ -68,3 +61,8 @@ def check_result(result):
     _return_logger.log(severity, '[%d] %s', error, gp_result_as_string(error))
     return result
 %}
+
+#endif //ifndef SWIGIMPORTED
+
+%include "gphoto2/gphoto2-port-result.h"
+%include "gphoto2/gphoto2-result.h"

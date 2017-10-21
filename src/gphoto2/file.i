@@ -18,17 +18,7 @@
 %module(package="gphoto2") file
 #pragma SWIG nowarn=321
 
-%{
-#include "gphoto2/gphoto2.h"
-%}
-
-%include "macros.i"
-
-AUTODOC
-
-%include "typemaps.i"
-
-IMPORT_GPHOTO2_ERROR()
+%include "common/preamble.i"
 
 %rename(CameraFile) _CameraFile;
 

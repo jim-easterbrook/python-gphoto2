@@ -17,13 +17,7 @@
 
 %module(package="gphoto2") port_log
 
-%{
-#include "gphoto2/gphoto2.h"
-%}
-
-%include "macros.i"
-
-AUTODOC
+%include "common/preamble.i"
 
 #ifndef SWIGIMPORTED
 

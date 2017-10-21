@@ -17,18 +17,7 @@
 
 %module(package="gphoto2") widget
 
-%{
-#include "gphoto2/gphoto2.h"
-%}
-
-%include "macros.i"
-
-%import "camera.i"
-%import "context.i"
-
-%include "typemaps.i"
-
-AUTODOC
+%include "common/preamble.i"
 
 %rename(CameraWidget) _CameraWidget;
 
@@ -57,8 +46,6 @@ AUTODOC
 }
 
 #ifndef SWIGIMPORTED
-
-IMPORT_GPHOTO2_ERROR()
 
 // Make docstring parameter types more Pythonic
 %typemap(doc) (CameraWidget *) "$1_name: $*1_type"

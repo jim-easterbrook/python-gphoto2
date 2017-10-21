@@ -18,28 +18,13 @@
 %module(package="gphoto2", threads="1") camera
 %nothread;
 
-%{
-#include "gphoto2/gphoto2.h"
-%}
-
-%include "macros.i"
-
-AUTODOC
-
-%import "abilities_list.i"
-%import "filesys.i"
-%import "result.i"
-%import "widget.i"
-
-%include "typemaps.i"
+%include "common/preamble.i"
 
 %include "stdint.i"
 
-IMPORT_GPHOTO2_ERROR()
+%rename(Camera) _Camera;
 
 #ifndef SWIGIMPORTED
-
-%rename(Camera) _Camera;
 
 // Allow other Python threads to continue during some function calls
 %thread gp_camera_wait_for_event;

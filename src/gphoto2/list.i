@@ -17,21 +17,11 @@
 
 %module(package="gphoto2") list
 
-%{
-#include "gphoto2/gphoto2.h"
-%}
-
-%include "macros.i"
-
-AUTODOC
-
-%include "typemaps.i"
+%include "common/preamble.i"
 
 %rename(CameraList) _CameraList;
 
 #ifndef SWIGIMPORTED
-
-IMPORT_GPHOTO2_ERROR()
 
 // Make docstring parameter types more Pythonic
 %typemap(doc) CameraList * "$1_name: $*1_type"

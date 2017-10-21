@@ -26,6 +26,8 @@
 
 AUTODOC
 
+#ifndef SWIGIMPORTED
+
 %include "typemaps.i"
 
 %typemap(out) char ** {
@@ -39,6 +41,8 @@ AUTODOC
     line++;
   }
 }
+
+#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-port-version.h"
 %include "gphoto2/gphoto2-version.h"

@@ -27,9 +27,11 @@ AUTODOC
 
 %import "list.i"
 
-IMPORT_GPHOTO2_ERROR()
-
 %rename(Context) _GPContext;
+
+#ifndef SWIGIMPORTED
+
+IMPORT_GPHOTO2_ERROR()
 
 // Make docstring parameter types more Pythonic
 %typemap(doc) GPContext * "$1_name: Context";
@@ -37,11 +39,18 @@ IMPORT_GPHOTO2_ERROR()
 // gp_camera_autodetect() returns a pointer in an output parameter
 NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
-// Mark gp_context_new as constructor
-%newobject gp_context_new;
+// Ignore some functions
+%ignore gp_context_ref;
+%ignore gp_context_unref;
 
-// Mark gp_context_unref as destructor
-%delobject gp_context_unref;
+#if GPHOTO2_VERSION >= 0x020500
+// Add member methods to _GPContext
+MEMBER_FUNCTION(_GPContext, Context,
+    camera_autodetect, (CameraList *list),
+    gp_camera_autodetect, (list, $self))
+#endif
+
+#endif //ifndef SWIGIMPORTED
 
 // Add default constructor and destructor
 struct _GPContext {};
@@ -54,14 +63,7 @@ struct _GPContext {};
   }
 };
 %ignore _GPContext;
-%ignore gp_context_ref;
-%ignore gp_context_unref;
-
-#if GPHOTO2_VERSION >= 0x020500
-// Add member methods to _GPContext
-MEMBER_FUNCTION(_GPContext, Context,
-    camera_autodetect, (CameraList *list),
-    gp_camera_autodetect, (list, $self))
-#endif
+%newobject gp_context_new;
+%delobject gp_context_unref;
 
 %include "gphoto2/gphoto2-context.h"

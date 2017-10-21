@@ -37,6 +37,8 @@ AUTODOC
 
 IMPORT_GPHOTO2_ERROR()
 
+#ifndef SWIGIMPORTED
+
 %rename(Camera) _Camera;
 
 // Allow other Python threads to continue during some function calls
@@ -307,5 +309,7 @@ MEMBER_FUNCTION(_Camera, Camera,
 
 // Other structures are read only
 %immutable;
+
+#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-camera.h"

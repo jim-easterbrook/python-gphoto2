@@ -32,6 +32,8 @@ IMPORT_GPHOTO2_ERROR()
 
 %rename(CameraFile) _CameraFile;
 
+#ifndef SWIGIMPORTED
+
 // Make docstring parameter types more Pythonic
 %typemap(doc) CameraFile * "$1_name: $*1_type"
 %typemap(doc) CameraFileHandler * "$1_name: $*1_type"
@@ -166,15 +168,6 @@ static PyTypeObject FileDataType = {
   $result = SWIG_Python_AppendOutput($result, file_data);
 }
 
-// Add default constructor and destructor to _CameraFile
-struct _CameraFile {};
-DEFAULT_CTOR(_CameraFile, CameraFile, gp_file_new)
-DEFAULT_DTOR(_CameraFile, gp_file_unref)
-%ignore _CameraFile;
-%ignore gp_file_free;
-%ignore gp_file_ref;
-%ignore gp_file_unref;
-
 // Add member methods to _CameraFile
 MEMBER_FUNCTION(_CameraFile, CameraFile,
     set_name, (const char *name),
@@ -229,5 +222,16 @@ MEMBER_FUNCTION(_CameraFile, CameraFile,
 
 // These functions are internal
 %ignore gp_file_slurp;
+%ignore gp_file_free;
+%ignore gp_file_ref;
+%ignore gp_file_unref;
+
+#endif //ifndef SWIGIMPORTED
+
+// Add default constructor and destructor to _CameraFile
+struct _CameraFile {};
+DEFAULT_CTOR(_CameraFile, CameraFile, gp_file_new)
+DEFAULT_DTOR(_CameraFile, gp_file_unref)
+%ignore _CameraFile;
 
 %include "gphoto2/gphoto2-file.h"

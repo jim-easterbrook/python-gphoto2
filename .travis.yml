@@ -1,7 +1,7 @@
 language: python
 python:
   - "2.7"
-  - "3.3"
+  - "3.5"
 
 before_install:
   - sudo apt-get update -qq
@@ -9,8 +9,6 @@ before_install:
 
 script:
   - python setup.py build_swig
-  - PYTHON_GPHOTO2_BUILTIN=1 python setup.py build
-  - rm -rf build
   - PYTHON_GPHOTO2_NO_BUILTIN=1 python setup.py build
   - rm -rf build
-  - CC=clang PYTHON_GPHOTO2_BUILTIN=1 python setup.py build
+  - PYTHON_GPHOTO2_NO_BUILTIN=1 CC=clang python setup.py build

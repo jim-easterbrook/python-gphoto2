@@ -23,26 +23,14 @@
 
 %include "macros.i"
 
-AUTODOC
-
 %import "camera.i"
 %import "context.i"
 
 %include "typemaps.i"
 
-IMPORT_GPHOTO2_ERROR()
+AUTODOC
 
 %rename(CameraWidget) _CameraWidget;
-
-// Make docstring parameter types more Pythonic
-%typemap(doc) (CameraWidget *) "$1_name: $*1_type"
-
-%apply int *OUTPUT { CameraWidgetType * };
-%apply int *OUTPUT { int * };
-%apply float *OUTPUT { float * };
-
-// gp_widget_get_name() etc. return strings in output params
-STRING_ARGOUT()
 
 %typemap(in, numinputs=0) CameraWidget ** (CameraWidget *temp) {
   temp = NULL;
@@ -67,6 +55,20 @@ STRING_ARGOUT()
   $result = SWIG_Python_AppendOutput(
     $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
 }
+
+#ifndef SWIGIMPORTED
+
+IMPORT_GPHOTO2_ERROR()
+
+// Make docstring parameter types more Pythonic
+%typemap(doc) (CameraWidget *) "$1_name: $*1_type"
+
+%apply int *OUTPUT { CameraWidgetType * };
+%apply int *OUTPUT { int * };
+%apply float *OUTPUT { float * };
+
+// gp_widget_get_name() etc. return strings in output params
+STRING_ARGOUT()
 
 // Union to hold widget value as a void pointer
 %{
@@ -327,12 +329,6 @@ static int widget_dtor(CameraWidget *widget) {
   }
 }
 %}
-struct _CameraWidget {};
-DEFAULT_DTOR(_CameraWidget, widget_dtor)
-%ignore _CameraWidget;
-%ignore gp_widget_free;
-%ignore gp_widget_ref;
-%ignore gp_widget_unref;
 
 // Add member methods to _CameraWidget
 INT_MEMBER_FUNCTION(_CameraWidget, CameraWidget,
@@ -457,5 +453,16 @@ static int gp_widget_set_value_float(CameraWidget *widget, const float value) {
   return gp_widget_set_value(widget, &value);
   };
 %}
+
+// Ignore some functions
+%ignore gp_widget_free;
+%ignore gp_widget_ref;
+%ignore gp_widget_unref;
+
+#endif //ifndef SWIGIMPORTED
+
+struct _CameraWidget {};
+DEFAULT_DTOR(_CameraWidget, widget_dtor)
+%ignore _CameraWidget;
 
 %include "gphoto2/gphoto2-widget.h"

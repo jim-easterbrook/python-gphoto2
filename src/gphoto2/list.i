@@ -27,9 +27,11 @@ AUTODOC
 
 %include "typemaps.i"
 
-IMPORT_GPHOTO2_ERROR()
-
 %rename(CameraList) _CameraList;
+
+#ifndef SWIGIMPORTED
+
+IMPORT_GPHOTO2_ERROR()
 
 // Make docstring parameter types more Pythonic
 %typemap(doc) CameraList * "$1_name: $*1_type"
@@ -39,15 +41,6 @@ PLAIN_ARGOUT(CameraList **)
 
 // gp_list_get_name() & gp_list_get_value() return pointers in output params
 STRING_ARGOUT()
-
-// Add constructor and destructor to _CameraList
-struct _CameraList {};
-DEFAULT_CTOR(_CameraList, CameraList, gp_list_new)
-DEFAULT_DTOR(_CameraList, gp_list_unref)
-%ignore _CameraList;
-%ignore gp_list_free;
-%ignore gp_list_ref;
-%ignore gp_list_unref;
 
 // Make CameraList more like a Python list
 LEN_MEMBER_FUNCTION(_CameraList, CameraList, gp_list_count)
@@ -124,5 +117,18 @@ MEMBER_FUNCTION(_CameraList, CameraList,
 MEMBER_FUNCTION(_CameraList, CameraList,
     populate, (const char *format, int count),
     gp_list_populate, ($self, format, count))
+
+// Ignore some functions
+%ignore gp_list_free;
+%ignore gp_list_ref;
+%ignore gp_list_unref;
+
+#endif //ifndef SWIGIMPORTED
+
+// Add constructor and destructor to _CameraList
+struct _CameraList {};
+DEFAULT_CTOR(_CameraList, CameraList, gp_list_new)
+DEFAULT_DTOR(_CameraList, gp_list_unref)
+%ignore _CameraList;
 
 %include "gphoto2/gphoto2-list.h"

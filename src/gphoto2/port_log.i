@@ -57,11 +57,19 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
     LogFuncItem *this = data;
     PyObject *result = NULL;
     PyObject *arglist = NULL;
+#if PY_VERSION_HEX >= 0x03000000
+    if (this->data) {
+        arglist = Py_BuildValue("(iyyO)", level, domain, str, this->data);
+    } else {
+        arglist = Py_BuildValue("(iyy)", level, domain, str);
+    }
+#else
     if (this->data) {
         arglist = Py_BuildValue("(issO)", level, domain, str, this->data);
     } else {
         arglist = Py_BuildValue("(iss)", level, domain, str);
     }
+#endif
     if (arglist == NULL) {
         PyErr_Print();
     } else {

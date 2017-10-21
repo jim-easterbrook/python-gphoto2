@@ -43,9 +43,6 @@ CALLOC_ARGOUT(GPPortInfo *info)
 // gp_port_info_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(GPPortInfoList **)
 
-// several getter functions return string pointers in output params
-STRING_ARGOUT()
-
 // gp_port_info_get_type returns a pointer to an enum
 %apply int *OUTPUT { GPPortType * };
 

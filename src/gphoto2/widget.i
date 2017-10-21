@@ -54,9 +54,6 @@
 %apply int *OUTPUT { int * };
 %apply float *OUTPUT { float * };
 
-// gp_widget_get_name() etc. return strings in output params
-STRING_ARGOUT()
-
 // Union to hold widget value as a void pointer
 %{
 typedef union {
@@ -399,9 +396,6 @@ MEMBER_FUNCTION(_CameraWidget, CameraWidget,
 MEMBER_FUNCTION(_CameraWidget, CameraWidget,
     get_readonly, (int *readonly),
     gp_widget_get_readonly, ($self, readonly))
-
-// some methods return string pointers in output params
-STRING_ARGOUT()
 
 // Add type specific gp_widget_get_value methods
 %feature("docstring") gp_widget_get_value_text "Deprecated"

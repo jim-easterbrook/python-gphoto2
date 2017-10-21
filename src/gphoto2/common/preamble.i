@@ -28,7 +28,6 @@
 
 // Import all modules to ensure all type definitions are shared
 #ifndef SWIGIMPORTED
-%import "result.i"
 %import "abilities_list.i"
 %import "camera.i"
 %import "context.i"
@@ -37,6 +36,7 @@
 %import "list.i"
 %import "port_info_list.i"
 %import "port_log.i"
+%import "result.i"
 %import "version.i"
 %import "widget.i"
 #endif //ifndef SWIGIMPORTED
@@ -48,6 +48,21 @@
 #else
 %feature("autodoc", "2");
 #endif
+
+// Convert all char ** parameters to string return value
+%typemap(in, numinputs=0) char ** (char *temp) {
+  temp = NULL;
+  $1 = &temp;
+}
+%typemap(argout) char ** {
+  if (*$1) {
+    $result = SWIG_Python_AppendOutput($result, PyString_FromString(*$1));
+  }
+  else {
+    Py_INCREF(Py_None);
+    $result = SWIG_Python_AppendOutput($result, Py_None);
+  }
+}
 
 // Get PyExc_GPhoto2Error object
 %{

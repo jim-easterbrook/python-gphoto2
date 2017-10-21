@@ -19,22 +19,6 @@
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %enddef
 
-%define STRING_ARGOUT()
-%typemap(in, numinputs=0) char ** (char *temp) {
-  temp = NULL;
-  $1 = &temp;
-}
-%typemap(argout) char ** {
-  if (*$1) {
-    $result = SWIG_Python_AppendOutput($result, PyString_FromString(*$1));
-  }
-  else {
-    Py_INCREF(Py_None);
-    $result = SWIG_Python_AppendOutput($result, Py_None);
-  }
-}
-%enddef
-
 %define PLAIN_ARGOUT(typepattern)
 %typemap(in, numinputs=0) typepattern ($*1_type temp) {
   temp = NULL;

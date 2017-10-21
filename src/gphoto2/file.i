@@ -41,10 +41,6 @@ NEW_ARGOUT(CameraFile *camera_file, gp_file_new, gp_file_unref)
 int gp_file_open(CameraFile *camera_file, const char *filename);
 %ignore gp_file_open;
 
-// gp_file_get_name(), gp_file_get_mime_type() & gp_file_get_name_by_type
-// return pointers in output params
-STRING_ARGOUT()
-
 // Define a simple Python type that has the buffer interface
 // This definition is not SWIGGED, just compiled
 %{

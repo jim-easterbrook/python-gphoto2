@@ -19,9 +19,6 @@
 
 %include "common/preamble.i"
 
-// gp_filesystem_name() & others return pointers in output params
-STRING_ARGOUT()
-
 // gp_camera_file_get_info() etc. return a pointer in an output parameter
 CALLOC_ARGOUT(CameraFileInfo *info)
 

@@ -29,9 +29,6 @@
 // gp_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraList **)
 
-// gp_list_get_name() & gp_list_get_value() return pointers in output params
-STRING_ARGOUT()
-
 // Make CameraList more like a Python list
 LEN_MEMBER_FUNCTION(_CameraList, CameraList, gp_list_count)
 #if defined(SWIGPYTHON_BUILTIN)

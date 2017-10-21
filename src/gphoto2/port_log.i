@@ -25,6 +25,8 @@
 
 AUTODOC
 
+#ifndef SWIGIMPORTED
+
 // SWIG can't wrap functions with var args
 %ignore gp_logv;
 
@@ -80,8 +82,6 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
     PyGILState_Release(gstate);
 };
 %}
-
-#ifndef SWIGIMPORTED
 
 // Use typemaps to replace Python callback & data with gp_log_call_python
 // Allocate an empty LogFuncItem and make data optional
@@ -157,10 +157,6 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
     }
 }
 
-#endif //ifndef SWIGIMPORTED
-
-%include "gphoto2/gphoto2-port-log.h"
-
 %pythoncode %{
 import logging
 
@@ -193,3 +189,7 @@ def use_python_logging(mapping={}):
             break
     return gp_log_add_func(level, _gphoto2_logger_cb, (log_func, full_mapping))
 %}
+
+#endif //ifndef SWIGIMPORTED
+
+%include "gphoto2/gphoto2-port-log.h"

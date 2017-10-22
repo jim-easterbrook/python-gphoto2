@@ -63,55 +63,18 @@ typedef union {
 } widget_value;
 %}
 
-// Use typemaps to check/convert input to gp_widget_set_value
-%typemap(in) (const void *value)
-             (void *argp=0, int res=0, widget_value temp, int alloc=0) {
-  // Slightly dodgy use of first argument to get expected type
-  CameraWidgetType type;
-  int error = gp_widget_get_type(arg1, &type);
-  if (error < GP_OK) {
-    GPHOTO2_ERROR(error);
-    SWIG_fail;
-  }
-  switch (type) {
-    case GP_WIDGET_MENU:
-    case GP_WIDGET_TEXT:
-    case GP_WIDGET_RADIO:
-      temp.s_val = NULL;
-      res = SWIG_AsCharPtrAndSize($input, &temp.s_val, NULL, &alloc);
-      if (!SWIG_IsOK(res)) {
-        SWIG_exception_fail(SWIG_ArgError(res),
-          "in method '$symname', argument $argnum of type 'char *'");
-      }
-      $1 = temp.s_val;
-      break;
-    case GP_WIDGET_RANGE:
-      res = SWIG_AsVal_float($input, &temp.f_val);
-      if (!SWIG_IsOK(res)) {
-        SWIG_exception_fail(SWIG_ArgError(res),
-          "in method '$symname', argument $argnum of type 'float'");
-      }
-      $1 = &temp;
-      break;
-    case GP_WIDGET_DATE:
-    case GP_WIDGET_TOGGLE:
-      res = SWIG_AsVal_int($input, &temp.i_val);
-      if (!SWIG_IsOK(res)) {
-        SWIG_exception_fail(SWIG_ArgError(res),
-          "in method '$symname', argument $argnum of type 'int'");
-      }
-      $1 = &temp;
-      break;
-    default:
-      SWIG_exception_fail(SWIG_ERROR,
-        "in method '$symname', cannot set value of widget");
-      break;
-  }
-}
-%typemap(freearg, noblock=1) (const void *value) {
-  if (alloc$argnum == SWIG_NEWOBJ)
-    free(temp$argnum.s_val);
-}
+// gp_widget_set_value uses float* and int* as input values
+%apply float *INPUT {float *value}
+%apply int   *INPUT {int   *value}
+
+// Create overloaded gp_widget_set_value
+int gp_widget_set_value(CameraWidget *widget, char *value);
+int gp_widget_set_value(CameraWidget *widget, float *value);
+int gp_widget_set_value(CameraWidget *widget, int *value);
+
+// Ignore original void* version
+%ignore gp_widget_set_value(CameraWidget *widget, const void *value);
+
 %typemap(argout, noblock=1) (CameraWidget *widget, const void *value),
                             (struct _CameraWidget *self, const void *value) {
 }

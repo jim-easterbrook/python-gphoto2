@@ -64,13 +64,20 @@ typedef union {
 %}
 
 // gp_widget_set_value uses float* and int* as input values
-%apply float *INPUT {float *value}
-%apply int   *INPUT {int   *value}
+%apply float *INPUT {const float *value}
+%apply int   *INPUT {const int   *value}
+%typemap(argout) const float *value {}
+%typemap(argout) const int   *value {}
+
+// gp_widget_set_value uses void* as an input value
+%typemap(in) const void *value {
+    $1 = $input;
+}
 
 // Create overloaded gp_widget_set_value
-int gp_widget_set_value(CameraWidget *widget, char *value);
-int gp_widget_set_value(CameraWidget *widget, float *value);
-int gp_widget_set_value(CameraWidget *widget, int *value);
+int gp_widget_set_value(CameraWidget *widget, const char *value);
+int gp_widget_set_value(CameraWidget *widget, const float *value);
+int gp_widget_set_value(CameraWidget *widget, const int *value);
 
 // Ignore original void* version
 %ignore gp_widget_set_value(CameraWidget *widget, const void *value);

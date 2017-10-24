@@ -74,7 +74,8 @@ typedef union {
     $1 = $input;
 }
 
-%typecheck(SWIG_TYPECHECK_STRING) (CameraWidget *widget, const char *value) {
+%typecheck(SWIG_TYPECHECK_STRING) (CameraWidget *widget, const char *value),
+                                  (struct _CameraWidget *self, char const *value)  {
     CameraWidget     *widget;
     CameraWidgetType type;
     int              error;
@@ -89,7 +90,8 @@ typedef union {
     }
 }
 
-%typecheck(SWIG_TYPECHECK_FLOAT) (CameraWidget *widget, const float *value) {
+%typecheck(SWIG_TYPECHECK_FLOAT) (CameraWidget *widget, const float *value),
+                                 (struct _CameraWidget *self, float const *value) {
     CameraWidget     *widget;
     CameraWidgetType type;
     int              error;
@@ -104,7 +106,8 @@ typedef union {
     }
 }
 
-%typecheck(SWIG_TYPECHECK_INTEGER) (CameraWidget *widget, const int *value) {
+%typecheck(SWIG_TYPECHECK_INTEGER) (CameraWidget *widget, const int *value),
+                                   (struct _CameraWidget *self, int const *value)  {
     CameraWidget     *widget;
     CameraWidgetType type;
     int              error;
@@ -355,7 +358,13 @@ MEMBER_FUNCTION(_CameraWidget, CameraWidget,
     get_parent, (CameraWidget **parent),
     gp_widget_get_parent, ($self, parent))
 MEMBER_FUNCTION(_CameraWidget, CameraWidget,
-    set_value, (const void *value),
+    set_value, (const char *value),
+    gp_widget_set_value, ($self, value))
+MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+    set_value, (const float *value),
+    gp_widget_set_value, ($self, value))
+MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+    set_value, (const int *value),
     gp_widget_set_value, ($self, value))
 MEMBER_FUNCTION(_CameraWidget, CameraWidget,
     get_value, (void *value),

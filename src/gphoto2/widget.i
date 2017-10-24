@@ -74,6 +74,51 @@ typedef union {
     $1 = $input;
 }
 
+%typecheck(SWIG_TYPECHECK_STRING) (CameraWidget *widget, const char *value) {
+    CameraWidget     *widget;
+    CameraWidgetType type;
+    int              error;
+
+    $1 = 0;
+    error = SWIG_ConvertPtr($input, (void **)&widget, SWIGTYPE_p__CameraWidget, 0);
+    if (SWIG_IsOK(error)) {
+        error = gp_widget_get_type(widget, &type);
+        if (error >= GP_OK) {
+            $1 = ((type == GP_WIDGET_MENU) || (type == GP_WIDGET_TEXT) || (type == GP_WIDGET_RADIO)) ? 1 : 0;
+        }
+    }
+}
+
+%typecheck(SWIG_TYPECHECK_FLOAT) (CameraWidget *widget, const float *value) {
+    CameraWidget     *widget;
+    CameraWidgetType type;
+    int              error;
+
+    $1 = 0;
+    error = SWIG_ConvertPtr($input, (void **)&widget, SWIGTYPE_p__CameraWidget, 0);
+    if (SWIG_IsOK(error)) {
+        error = gp_widget_get_type(widget, &type);
+        if (error >= GP_OK) {
+            $1 = (type == GP_WIDGET_RANGE) ? 1 : 0;
+        }
+    }
+}
+
+%typecheck(SWIG_TYPECHECK_INTEGER) (CameraWidget *widget, const int *value) {
+    CameraWidget     *widget;
+    CameraWidgetType type;
+    int              error;
+
+    $1 = 0;
+    error = SWIG_ConvertPtr($input, (void **)&widget, SWIGTYPE_p__CameraWidget, 0);
+    if (SWIG_IsOK(error)) {
+        error = gp_widget_get_type(widget, &type);
+        if (error >= GP_OK) {
+            $1 = ((type == GP_WIDGET_DATE) || (type == GP_WIDGET_TOGGLE)) ? 1 : 0;
+        }
+    }
+}
+
 // Create overloaded gp_widget_set_value
 int gp_widget_set_value(CameraWidget *widget, const char *value);
 int gp_widget_set_value(CameraWidget *widget, const float *value);

@@ -84,7 +84,7 @@ mod_src_dir = os.path.join(
 
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-unused-but-set-variable',
-    '-Wno-strict-prototypes',
+    '-Wno-unused-label', '-Wno-strict-prototypes',
     '-DGPHOTO2_VERSION=' + '0x{:02x}{:02x}{:02x}'.format(*gphoto2_version)]
 if 'PYTHON_GPHOTO2_STRICT' in os.environ:
     extra_compile_args.append('-Werror')

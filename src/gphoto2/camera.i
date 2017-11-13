@@ -33,6 +33,8 @@
 %thread gp_camera_capture_preview;
 %thread gp_camera_get_config;
 %thread gp_camera_get_single_config;
+%thread gp_camera_set_config;
+%thread gp_camera_set_single_config;
 %thread gp_camera_folder_list_files;
 %thread gp_camera_folder_list_folders;
 %thread gp_camera_folder_delete_all;
@@ -139,11 +141,11 @@ MEMBER_FUNCTION_THREAD(_Camera, Camera,
     get_single_config, (const char *name, CameraWidget **widget, GPContext *context),
     gp_camera_get_single_config, ($self, name, widget, context))
 #endif
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     set_config, (CameraWidget *window, GPContext *context),
     gp_camera_set_config, ($self, window, context))
 #if GPHOTO2_VERSION >= 0x02050a
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     set_single_config, (const char *name, CameraWidget *widget, GPContext *context),
     gp_camera_set_single_config, ($self, name, widget, context))
 #endif

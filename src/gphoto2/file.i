@@ -15,7 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-%module(package="gphoto2") file
+%module(package="gphoto2", threads="1") file
+%nothread;
 #pragma SWIG nowarn=321
 
 %include "common/preamble.i"
@@ -27,6 +28,13 @@ typedef long int time_t;
 %apply time_t *OUTPUT { time_t * };
 
 #ifndef SWIGIMPORTED
+
+// Allow other Python threads to continue during some function calls
+%thread gp_file_append;
+%thread gp_file_copy;
+%thread gp_file_get_data_and_size;
+%thread gp_file_save;
+%thread gp_file_set_data_and_size;
 
 // Make docstring parameter types more Pythonic
 %typemap(doc) CameraFile * "$1_name: $*1_type"
@@ -184,22 +192,22 @@ MEMBER_FUNCTION(_CameraFile, CameraFile,
     get_name_by_type, (const char *basename, CameraFileType type, char **newname),
     gp_file_get_name_by_type, ($self, basename, type, newname))
 #endif
-MEMBER_FUNCTION(_CameraFile, CameraFile,
+MEMBER_FUNCTION_THREAD(_CameraFile, CameraFile,
     set_data_and_size, (char *data, unsigned long int size),
     gp_file_set_data_and_size, ($self, data, size))
-MEMBER_FUNCTION(_CameraFile, CameraFile,
+MEMBER_FUNCTION_THREAD(_CameraFile, CameraFile,
     get_data_and_size, (const char **data, unsigned long int *size),
     gp_file_get_data_and_size, ($self, data, size))
-MEMBER_FUNCTION(_CameraFile, CameraFile,
+MEMBER_FUNCTION_THREAD(_CameraFile, CameraFile,
     save, (const char *filename),
     gp_file_save, ($self, filename))
 MEMBER_FUNCTION(_CameraFile, CameraFile,
     clean, (),
     gp_file_clean, ($self))
-MEMBER_FUNCTION(_CameraFile, CameraFile,
+MEMBER_FUNCTION_THREAD(_CameraFile, CameraFile,
     copy, (CameraFile *source),
     gp_file_copy, ($self, source))
-MEMBER_FUNCTION(_CameraFile, CameraFile,
+MEMBER_FUNCTION_THREAD(_CameraFile, CameraFile,
     append, (const char *data, unsigned long int size),
     gp_file_append, ($self, data, size))
 

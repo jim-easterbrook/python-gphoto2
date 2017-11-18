@@ -15,6 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 1.8.1:
+  1/ Logging callbacks now pass 'bytes' objects in Python3.
+  2/ Increased number of functions allow other Python threads to run.
+
 Changes in 1.8.0:
   1/ The 'context' parameter is now optional for most functions.
   2/ Some deprecated functions have been removed.

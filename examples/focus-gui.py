@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2015-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2015-18  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -43,8 +43,8 @@ import math
 import sys
 
 from PIL import Image, ImageChops, ImageStat
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import Qt
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import Qt
 
 import gphoto2 as gp
 
@@ -137,7 +137,7 @@ class CameraHandler(QtCore.QObject):
         else:
             self._do_capture()
         # post event to trigger next capture
-        QtGui.QApplication.postEvent(
+        QtWidgets.QApplication.postEvent(
             self, QtCore.QEvent(self.do_next), Qt.LowEventPriority - 1)
 
     def _do_preview(self):
@@ -207,14 +207,14 @@ class CameraHandler(QtCore.QObject):
                 self.old_capturetarget = None
 
 
-class ImageWidget(QtGui.QLabel):
+class ImageWidget(QtWidgets.QLabel):
     clicked = QtCore.pyqtSignal(QtCore.QPoint)
 
     def mousePressEvent(self, event):
         self.clicked.emit(event.pos())
 
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setWindowTitle("Focus assistant")
@@ -222,43 +222,43 @@ class MainWindow(QtGui.QMainWindow):
         self.zoomed = False
         self.q_image = None
         # main widget
-        widget = QtGui.QWidget()
-        widget.setLayout(QtGui.QGridLayout())
+        widget = QtWidgets.QWidget()
+        widget.setLayout(QtWidgets.QGridLayout())
         widget.layout().setRowStretch(8, 1)
         self.setCentralWidget(widget)
         # image display area
-        self.image_display = QtGui.QScrollArea()
+        self.image_display = QtWidgets.QScrollArea()
         self.image_display.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.image_display.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.image_display.setWidget(ImageWidget())
         self.image_display.setWidgetResizable(True)
         widget.layout().addWidget(self.image_display, 0, 1, 10, 1)
         # histogram
-        self.histogram_display = QtGui.QLabel()
-        self.histogram_display.setPixmap(QtGui.QPixmap(100, 256))
+        self.histogram_display = QtWidgets.QLabel()
+        self.histogram_display.setPixmap(QtWidgets.QPixmap(100, 256))
         self.histogram_display.pixmap().fill(Qt.white)
         widget.layout().addWidget(self.histogram_display, 0, 0)
         # focus measurement
-        widget.layout().addWidget(QtGui.QLabel('Focus:'), 1, 0)
-        self.focus_display = QtGui.QLabel('-, -, -')
+        widget.layout().addWidget(QtWidgets.QLabel('Focus:'), 1, 0)
+        self.focus_display = QtWidgets.QLabel('-, -, -')
         widget.layout().addWidget(self.focus_display, 2, 0)
         # clipping measurement
-        widget.layout().addWidget(QtGui.QLabel('Clipping:'), 3, 0)
-        self.clipping_display = QtGui.QLabel('-, -, -')
+        widget.layout().addWidget(QtWidgets.QLabel('Clipping:'), 3, 0)
+        self.clipping_display = QtWidgets.QLabel('-, -, -')
         widget.layout().addWidget(self.clipping_display, 4, 0)
         # 'single' button
-        single_button = QtGui.QPushButton('preview')
+        single_button = QtWidgets.QPushButton('preview')
         single_button.setShortcut('Ctrl+G')
         widget.layout().addWidget(single_button, 5, 0)
         # 'continuous' button
-        continuous_button = QtGui.QPushButton('repeat preview')
+        continuous_button = QtWidgets.QPushButton('repeat preview')
         continuous_button.setShortcut('Ctrl+R')
         widget.layout().addWidget(continuous_button, 6, 0)
         # 'take photo' button
-        take_button = QtGui.QPushButton('take photo')
+        take_button = QtWidgets.QPushButton('take photo')
         widget.layout().addWidget(take_button, 7, 0)
         # 'quit' button
-        quit_button = QtGui.QPushButton('quit')
+        quit_button = QtWidgets.QPushButton('quit')
         quit_button.setShortcut('Ctrl+Q')
         widget.layout().addWidget(quit_button, 9, 0)
         # create camera handler and run it in a separate thread
@@ -267,7 +267,7 @@ class MainWindow(QtGui.QMainWindow):
         self.camera_handler.moveToThread(self.ch_thread)
         self.ch_thread.start()
         # connect things up
-        quit_button.clicked.connect(QtGui.qApp.closeAllWindows)
+        quit_button.clicked.connect(QtWidgets.qApp.closeAllWindows)
         single_button.clicked.connect(self.camera_handler.one_shot)
         continuous_button.clicked.connect(self.camera_handler.continuous)
         take_button.clicked.connect(self.camera_handler.take_photo)
@@ -278,11 +278,11 @@ class MainWindow(QtGui.QMainWindow):
     def new_image(self, image):
         w, h = image.size
         image_data = image.tobytes('raw', 'RGB')
-        self.q_image = QtGui.QImage(image_data, w, h, QtGui.QImage.Format_RGB888)
+        self.q_image = QtWidgets.QImage(image_data, w, h, QtWidgets.QImage.Format_RGB888)
         self._draw_image()
         # generate histogram and count clipped pixels
         histogram = image.histogram()
-        q_image = QtGui.QImage(100, 256, QtGui.QImage.Format_RGB888)
+        q_image = QtWidgets.QImage(100, 256, QtWidgets.QImage.Format_RGB888)
         q_image.fill(Qt.white)
         clipping = []
         start = 0
@@ -297,7 +297,7 @@ class MainWindow(QtGui.QMainWindow):
                 q_image.setPixel(y + 1, x, colour)
             clipping.append(band_hist[-1])
             start = stop
-        pixmap = QtGui.QPixmap.fromImage(q_image)
+        pixmap = QtWidgets.QPixmap.fromImage(q_image)
         self.histogram_display.setPixmap(pixmap)
         self.clipping_display.setText(
             ', '.join(map(lambda x: '{:d}'.format(x), clipping)))
@@ -327,7 +327,7 @@ class MainWindow(QtGui.QMainWindow):
         self.zoomed = not self.zoomed
         self._draw_image()
         if self.zoomed:
-            QtGui.QApplication.processEvents()
+            QtWidgets.QApplication.processEvents()
             size = self.image_display.viewport().size()
             for bar, value in ((self.image_display.horizontalScrollBar(),
                                 float(pos.x()) / float(size.width())),
@@ -345,7 +345,7 @@ class MainWindow(QtGui.QMainWindow):
     def _draw_image(self):
         if not self.q_image:
             return
-        pixmap = QtGui.QPixmap.fromImage(self.q_image)
+        pixmap = QtWidgets.QPixmap.fromImage(self.q_image)
         if not self.zoomed:
             pixmap = pixmap.scaled(
                 self.image_display.viewport().size(),
@@ -367,7 +367,7 @@ if __name__ == "__main__":
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
-    app = QtGui.QApplication([])
+    app = QtWidgets.QApplication([])
     main = MainWindow()
     main.show()
     sys.exit(app.exec_())

@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-18  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,49 +23,49 @@ from datetime import datetime
 import logging
 import sys
 
-from PyQt4 import QtGui, QtCore
-from PyQt4.QtCore import Qt
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtCore import Qt
 
 import gphoto2 as gp
 
-class MainWindow(QtGui.QMainWindow):
+class MainWindow(QtWidgets.QMainWindow):
     def __init__(self):
         self.do_init = QtCore.QEvent.registerEventType()
-        QtGui.QMainWindow.__init__(self)
+        QtWidgets.QMainWindow.__init__(self)
         self.setWindowTitle("Camera config")
         self.setMinimumWidth(600)
         # quit shortcut
-        quit_action = QtGui.QAction('Quit', self)
+        quit_action = QtWidgets.QAction('Quit', self)
         quit_action.setShortcuts(['Ctrl+Q', 'Ctrl+W'])
-        quit_action.triggered.connect(QtGui.qApp.closeAllWindows)
+        quit_action.triggered.connect(QtWidgets.qApp.closeAllWindows)
         self.addAction(quit_action)
         # main widget
-        widget = QtGui.QWidget()
-        widget.setLayout(QtGui.QGridLayout())
+        widget = QtWidgets.QWidget()
+        widget.setLayout(QtWidgets.QGridLayout())
         widget.layout().setColumnStretch(0, 1)
         self.setCentralWidget(widget)
         # 'apply' button
-        self.apply_button = QtGui.QPushButton('apply changes')
+        self.apply_button = QtWidgets.QPushButton('apply changes')
         self.apply_button.setEnabled(False)
         self.apply_button.clicked.connect(self.apply_changes)
         widget.layout().addWidget(self.apply_button, 1, 1)
         # 'cancel' button
-        quit_button = QtGui.QPushButton('cancel')
-        quit_button.clicked.connect(QtGui.qApp.closeAllWindows)
+        quit_button = QtWidgets.QPushButton('cancel')
+        quit_button.clicked.connect(QtWidgets.qApp.closeAllWindows)
         widget.layout().addWidget(quit_button, 1, 2)
         # defer full initialisation (slow operation) until gui is visible
-        QtGui.QApplication.postEvent(
+        QtWidgets.QApplication.postEvent(
             self, QtCore.QEvent(self.do_init), Qt.LowEventPriority - 1)
 
     def event(self, event):
         if event.type() != self.do_init:
-            return QtGui.QMainWindow.event(self, event)
+            return QtWidgets.QMainWindow.event(self, event)
         event.accept()
-        QtGui.QApplication.setOverrideCursor(Qt.WaitCursor)
+        QtWidgets.QApplication.setOverrideCursor(Qt.WaitCursor)
         try:
             self.initialise()
         finally:
-            QtGui.QApplication.restoreOverrideCursor()
+            QtWidgets.QApplication.restoreOverrideCursor()
         return True
 
     def initialise(self):
@@ -86,12 +86,12 @@ class MainWindow(QtGui.QMainWindow):
     def apply_changes(self):
         gp.check_result(gp.gp_camera_set_config(
             self.camera, self.camera_config))
-        QtGui.qApp.closeAllWindows()
+        QtWidgets.qApp.closeAllWindows()
 
-class SectionWidget(QtGui.QWidget):
+class SectionWidget(QtWidgets.QWidget):
     def __init__(self, config_changed, camera_config, parent=None):
-        QtGui.QWidget.__init__(self, parent)
-        self.setLayout(QtGui.QFormLayout())
+        QtWidgets.QWidget.__init__(self, parent)
+        self.setLayout(QtWidgets.QFormLayout())
         if gp.check_result(gp.gp_widget_get_readonly(camera_config)):
             self.setDisabled(True)
         child_count = gp.check_result(gp.gp_widget_count_children(camera_config))
@@ -105,7 +105,7 @@ class SectionWidget(QtGui.QWidget):
             child_type = gp.check_result(gp.gp_widget_get_type(child))
             if child_type == gp.GP_WIDGET_SECTION:
                 if not tabs:
-                    tabs = QtGui.QTabWidget()
+                    tabs = QtWidgets.QTabWidget()
                     self.layout().insertRow(0, tabs)
                 tabs.addTab(SectionWidget(config_changed, child), label)
             elif child_type == gp.GP_WIDGET_TEXT:
@@ -129,9 +129,9 @@ class SectionWidget(QtGui.QWidget):
             else:
                 print('Cannot make widget type %d for %s' % (child_type, label))
 
-class TextWidget(QtGui.QLineEdit):
+class TextWidget(QtWidgets.QLineEdit):
     def __init__(self, config_changed, config, parent=None):
-        QtGui.QLineEdit.__init__(self, parent)
+        QtWidgets.QLineEdit.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
         if gp.check_result(gp.gp_widget_get_readonly(config)):
@@ -152,9 +152,9 @@ class TextWidget(QtGui.QLineEdit):
         gp.check_result(gp.gp_widget_set_value(self.config, value))
         self.config_changed()
 
-class RangeWidget(QtGui.QSlider):
+class RangeWidget(QtWidgets.QSlider):
     def __init__(self, config_changed, config, parent=None):
-        QtGui.QSlider.__init__(self, Qt.Horizontal, parent)
+        QtWidgets.QSlider.__init__(self, Qt.Horizontal, parent)
         self.config_changed = config_changed
         self.config = config
         if gp.check_result(gp.gp_widget_get_readonly(config)):
@@ -171,9 +171,9 @@ class RangeWidget(QtGui.QSlider):
         gp.check_result(gp.gp_widget_set_value(self.config, value))
         self.config_changed()
 
-class ToggleWidget(QtGui.QCheckBox):
+class ToggleWidget(QtWidgets.QCheckBox):
     def __init__(self, config_changed, config, parent=None):
-        QtGui.QCheckBox.__init__(self, parent)
+        QtWidgets.QCheckBox.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
         if gp.check_result(gp.gp_widget_get_readonly(config)):
@@ -188,20 +188,20 @@ class ToggleWidget(QtGui.QCheckBox):
         gp.check_result(gp.gp_widget_set_value(self.config, (0, 1)[value]))
         self.config_changed()
 
-class RadioWidget(QtGui.QWidget):
+class RadioWidget(QtWidgets.QWidget):
     def __init__(self, config_changed, config, parent=None):
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
         if gp.check_result(gp.gp_widget_get_readonly(config)):
             self.setDisabled(True)
         assert gp.check_result(gp.gp_widget_count_children(config)) == 0
-        self.setLayout(QtGui.QHBoxLayout())
+        self.setLayout(QtWidgets.QHBoxLayout())
         value = gp.check_result(gp.gp_widget_get_value(config))
         self.buttons = []
         for choice in gp.check_result(gp.gp_widget_get_choices(config)):
             if choice:
-                button = QtGui.QRadioButton(choice)
+                button = QtWidgets.QRadioButton(choice)
                 self.layout().addWidget(button)
                 if choice == value:
                     button.setChecked(True)
@@ -215,9 +215,9 @@ class RadioWidget(QtGui.QWidget):
                 self.config_changed()
                 return
 
-class MenuWidget(QtGui.QComboBox):
+class MenuWidget(QtWidgets.QComboBox):
     def __init__(self, config_changed, config, parent=None):
-        QtGui.QComboBox.__init__(self, parent)
+        QtWidgets.QComboBox.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
         if gp.check_result(gp.gp_widget_get_readonly(config)):
@@ -238,9 +238,9 @@ class MenuWidget(QtGui.QComboBox):
         gp.check_result(gp.gp_widget_set_value(self.config, value))
         self.config_changed()
 
-class DateWidget(QtGui.QDateTimeEdit):
+class DateWidget(QtWidgets.QDateTimeEdit):
     def __init__(self, config_changed, config, parent=None):
-        QtGui.QDateTimeEdit.__init__(self, parent)
+        QtWidgets.QDateTimeEdit.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
         if gp.check_result(gp.gp_widget_get_readonly(config)):
@@ -262,7 +262,7 @@ if __name__ == "__main__":
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
-    app = QtGui.QApplication([])
+    app = QtWidgets.QApplication([])
     main = MainWindow()
     main.show()
     sys.exit(app.exec_())

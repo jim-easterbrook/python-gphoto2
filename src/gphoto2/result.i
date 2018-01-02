@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-18  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,6 +18,9 @@
 %module(package="gphoto2") result
 
 %include "common/preamble.i"
+
+%include "gphoto2/gphoto2-port-result.h"
+%include "gphoto2/gphoto2-result.h"
 
 #ifndef SWIGIMPORTED
 
@@ -63,6 +66,3 @@ def check_result(result):
 %}
 
 #endif //ifndef SWIGIMPORTED
-
-%include "gphoto2/gphoto2-port-result.h"
-%include "gphoto2/gphoto2-result.h"

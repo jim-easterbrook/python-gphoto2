@@ -21,8 +21,8 @@ Dependencies
 *   build tools: pkg-config, C compiler & linker
 
 Note that you need the "development headers" versions of libgphoto2_ and Python.
-In most cases you should use your Linux distribution's package manager to install these.
-The package names depend on your Linux variant.
+In most cases you should use your operating system's package manager to install these.
+The package names depend on the operating system.
 Look for ``libgphoto2-2-dev`` or ``libgphoto2-devel`` or something similar.
 
 Installation and testing
@@ -401,7 +401,7 @@ Licence
 
 | python-gphoto2 - Python interface to libgphoto2
 | http://github.com/jim-easterbrook/python-gphoto2
-| Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
+| Copyright (C) 2014-18  Jim Easterbrook  jim@jim-easterbrook.me.uk
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

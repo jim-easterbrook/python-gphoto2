@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-18  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -41,15 +41,21 @@ typedef struct LogFuncItem {
 static LogFuncItem *func_list = NULL;
 
 // Call Python function from C callback
+%}
 #if GPHOTO2_VERSION < 0x020500
+%{
 static void gp_log_call_python(GPLogLevel level, const char *domain,
                                const char *format, va_list args, void *data) {
     char str[1024];
     vsnprintf(str, sizeof(str), format, args);
+%}
 #else
+%{
 static void gp_log_call_python(GPLogLevel level, const char *domain,
                                const char *str, void *data) {
+%}
 #endif
+%{
     if (!Py_IsInitialized()) {
         return;
     }

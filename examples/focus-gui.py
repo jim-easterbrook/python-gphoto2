@@ -36,17 +36,17 @@ The histogram and clipping count are useful when setting exposure.
 
 from __future__ import print_function
 
-from datetime import datetime
 import io
 import logging
 import math
 import sys
 
 from PIL import Image, ImageChops, ImageStat
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import Qt
 
 import gphoto2 as gp
+
 
 class CameraHandler(QtCore.QObject):
     new_image = QtCore.pyqtSignal(object)
@@ -235,7 +235,7 @@ class MainWindow(QtWidgets.QMainWindow):
         widget.layout().addWidget(self.image_display, 0, 1, 10, 1)
         # histogram
         self.histogram_display = QtWidgets.QLabel()
-        self.histogram_display.setPixmap(QtWidgets.QPixmap(100, 256))
+        self.histogram_display.setPixmap(QtGui.QPixmap(100, 256))
         self.histogram_display.pixmap().fill(Qt.white)
         widget.layout().addWidget(self.histogram_display, 0, 0)
         # focus measurement
@@ -278,11 +278,11 @@ class MainWindow(QtWidgets.QMainWindow):
     def new_image(self, image):
         w, h = image.size
         image_data = image.tobytes('raw', 'RGB')
-        self.q_image = QtWidgets.QImage(image_data, w, h, QtWidgets.QImage.Format_RGB888)
+        self.q_image = QtGui.QImage(image_data, w, h, QtGui.QImage.Format_RGB888)
         self._draw_image()
         # generate histogram and count clipped pixels
         histogram = image.histogram()
-        q_image = QtWidgets.QImage(100, 256, QtWidgets.QImage.Format_RGB888)
+        q_image = QtGui.QImage(100, 256, QtGui.QImage.Format_RGB888)
         q_image.fill(Qt.white)
         clipping = []
         start = 0
@@ -293,11 +293,11 @@ class MainWindow(QtWidgets.QMainWindow):
             for x in range(len(band_hist)):
                 y = float(1 + band_hist[x]) / max_value
                 y = 98.0 * max(0.0, 1.0 + (math.log10(y) / 5.0))
-                q_image.setPixel(y,     x, colour)
+                q_image.setPixel(y, x, colour)
                 q_image.setPixel(y + 1, x, colour)
             clipping.append(band_hist[-1])
             start = stop
-        pixmap = QtWidgets.QPixmap.fromImage(q_image)
+        pixmap = QtGui.QPixmap.fromImage(q_image)
         self.histogram_display.setPixmap(pixmap)
         self.clipping_display.setText(
             ', '.join(map(lambda x: '{:d}'.format(x), clipping)))
@@ -345,7 +345,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _draw_image(self):
         if not self.q_image:
             return
-        pixmap = QtWidgets.QPixmap.fromImage(self.q_image)
+        pixmap = QtGui.QPixmap.fromImage(self.q_image)
         if not self.zoomed:
             pixmap = pixmap.scaled(
                 self.image_display.viewport().size(),

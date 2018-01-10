@@ -293,7 +293,7 @@ class MainWindow(QtWidgets.QMainWindow):
             for x in range(len(band_hist)):
                 y = float(1 + band_hist[x]) / max_value
                 y = 98.0 * max(0.0, 1.0 + (math.log10(y) / 5.0))
-                q_image.setPixel(y, x, colour)
+                q_image.setPixel(y,     x, colour)
                 q_image.setPixel(y + 1, x, colour)
             clipping.append(band_hist[-1])
             start = stop

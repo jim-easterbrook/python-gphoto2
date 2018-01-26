@@ -23,7 +23,8 @@ Dependencies
 Note that you need the "development headers" versions of libgphoto2_ and Python.
 In most cases you should use your operating system's package manager to install these.
 The package names depend on the operating system.
-Look for ``libgphoto2-2-dev`` or ``libgphoto2-devel`` or something similar.
+Look for ``libgphoto2-dev`` or ``libgphoto2-devel`` or something similar.
+If you install libgphoto2 from source (e.g. to get a newer version) then you probably should not install the ``dev`` package as well.
 
 Installation and testing
 ------------------------

@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-18  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -250,6 +250,16 @@ MEMBER_FUNCTION(_Camera, Camera,
   free(*$1);
 }
 
+// Define enums added during libgphoto2 development
+%{
+#if GPHOTO2_VERSION < 0x020408
+  int GP_EVENT_CAPTURE_COMPLETE = GP_EVENT_FOLDER_ADDED + 1;
+#endif
+#if GPHOTO2_VERSION < 0x020511
+  int GP_EVENT_FILE_CHANGED = GP_EVENT_CAPTURE_COMPLETE + 1;
+#endif
+%}
+
 // gp_camera_wait_for_event() returns two pointers in output parameters
 %typemap(in, numinputs=0) (CameraEventType * eventtype, void ** eventdata)
                           (CameraEventType temp_type, void *temp_data) {
@@ -258,16 +268,20 @@ MEMBER_FUNCTION(_Camera, Camera,
 }
 %typemap(argout) (CameraEventType * eventtype, void ** eventdata) {
   $result = SWIG_Python_AppendOutput($result, PyInt_FromLong(*$1));
-  if (*$1 == GP_EVENT_FILE_ADDED || *$1 == GP_EVENT_FOLDER_ADDED) {
+  if (*$1 == GP_EVENT_FILE_ADDED || *$1 == GP_EVENT_FOLDER_ADDED
+                                 || *$1 == GP_EVENT_FILE_CHANGED) {
     $result = SWIG_Python_AppendOutput(
       $result, SWIG_NewPointerObj(*$2, SWIGTYPE_p_CameraFilePath, SWIG_POINTER_OWN));
   }
   else if (*$1 == GP_EVENT_UNKNOWN && *$2 != NULL) {
     $result = SWIG_Python_AppendOutput($result, PyString_FromString(*$2));
+    free(*$2);
   }
   else {
     Py_INCREF(Py_None);
     $result = SWIG_Python_AppendOutput($result, Py_None);
+    if (*$2 != NULL)
+      free(*$2);
   }
 }
 

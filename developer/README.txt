@@ -45,13 +45,15 @@ Differences found so far:
 2.5.15 No change
 2.5.16 No change
 2.5.17 Add GP_EVENT_FILE_CHANGED enum
+2.5.18 No change
+2.5.19 No change
 
 Where there is no change, or the change only adds a constant, the SWIG generated bindings from the later version can be used with an earlier version. E.g. version 2.5.9 can be used to generate bindings for any version from 2.5.0 onwards. When an enum is extended the interface file needs to mirror the definition in order to compile with earlier versions of libgphoto2. You can rename the required source directories using the following mapping:
 
 2.4.7  -> 2.4.0
 2.4.14 -> 2.4.8
 2.5.9  -> 2.5.0
-2.5.17 -> 2.5.10
+2.5.19 -> 2.5.10
 
 Documentation
 -------------

@@ -307,7 +307,8 @@ Logging
 The libgphoto2_ library includes functions (such as ``gp_log()``) to output messages from its various functions.
 These messages are mostly used for debugging purposes, and it can be helpful to see them when using libgphoto2_ from Python.
 The Python interface includes a ``use_python_logging()`` function to connect libgphoto2_ logging to the standard Python logging system.
-You should call ``use_python_logging()`` near the start of your program, as shown in the examples.
+If you want to see the messages you should call ``use_python_logging()`` near the start of your program, as shown in the examples.
+In normal use you probably don't want to see these messages (libgphoto2_ is rather verbose) so this could be controlled by a "verbose" or "debug" option in your application.
 
 The libgphoto2_ logging messages have four possible severity levels, each of which is mapped to a suitable Python logging severity.
 You can override this mapping by passing your own to ``use_python_logging()``:

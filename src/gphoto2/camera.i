@@ -31,6 +31,7 @@
 %thread gp_camera_capture;
 %thread gp_camera_trigger_capture;
 %thread gp_camera_capture_preview;
+%thread gp_camera_init;
 %thread gp_camera_get_config;
 %thread gp_camera_get_single_config;
 %thread gp_camera_set_config;
@@ -124,7 +125,7 @@ MEMBER_FUNCTION(_Camera, Camera,
 INT_MEMBER_FUNCTION(_Camera, Camera,
     get_port_speed, (),
     gp_camera_get_port_speed, ($self))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera, Camera,
     init, (GPContext *context),
     gp_camera_init, ($self, context))
 MEMBER_FUNCTION(_Camera, Camera,

@@ -15,6 +15,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 1.8.3:
+  1/ Fix Qt5 usage in examples (thanks fatzh).
+  2/ Handle GP_EVENT_FILE_CHANGED (new in libgphoto2 2.5.17).
+  3/ Allow Python threads during gp_camera_init.
+
 Changes in 1.8.2:
   1/ Fix bug in v1.8.1 that caused installation problems on some systems.
 

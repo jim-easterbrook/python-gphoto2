@@ -179,9 +179,19 @@ def use_python_logging(mapping={}):
     """Install a callback to receive gphoto2 errors and forward them
     to Python's logging system.
 
-    The mapping parameter is a dictionary mapping any of the four
-    gphoto2 logging severity levels to a Python logging level. Note that
-    anything below Python DEBUG level will not be forwarded.
+    The return value is an id you can use to remove the logging callback
+    with gp_log_remove_func.
+
+    Parameters
+    ----------
+    * `mapping` :
+        a dictionary mapping any of the four gphoto2 logging severity
+        levels to a Python logging level. Note that anything below Python
+        DEBUG level will not be forwarded.
+
+    Returns
+    -------
+    an id or a gphoto2 error code.
 
     """
     full_mapping = {

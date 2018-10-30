@@ -266,6 +266,8 @@ MEMBER_FUNCTION(_Camera, Camera,
 // gp_camera_wait_for_event() returns two pointers in output parameters
 %typemap(in, numinputs=0) (CameraEventType * eventtype, void ** eventdata)
                           (CameraEventType temp_type, void *temp_data) {
+  temp_type = -1;
+  temp_data = NULL;
   $1 = &temp_type;
   $2 = &temp_data;
 }

@@ -27,6 +27,7 @@
 CALLOC_ARGOUT(GPPortInfo *info)
 #else
 %typemap(in, numinputs=0) GPPortInfo * (GPPortInfo temp) {
+  temp = NULL;
   $1 = &temp;
 }
 %typemap(argout) GPPortInfo * {

@@ -147,6 +147,8 @@ static PyTypeObject FileDataType = {
 // gp_file_get_data_and_size() returns a pointer to some data
 %typemap(in, numinputs=0) (const char ** data, unsigned long * size)
                           (char *temp_data, unsigned long temp_size) {
+  temp_data = NULL;
+  temp_size = 0;
   $1 = &temp_data;
   $2 = &temp_size;
 }

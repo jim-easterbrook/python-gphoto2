@@ -225,6 +225,8 @@ MEMBER_FUNCTION(_Camera, Camera,
         (CameraStorageInformation* temp_ptr, int temp_cnt),
     (CameraStorageInformation **sifs, int *nrofsifs)
         (CameraStorageInformation* temp_ptr, int temp_cnt){
+  temp_ptr = NULL;
+  temp_cnt = 0;
   $1 = &temp_ptr;
   $2 = &temp_cnt;
 }

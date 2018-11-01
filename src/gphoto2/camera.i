@@ -52,6 +52,13 @@
   $1 = NULL;
 }
 
+// Don't increment refcount on new config tree returned by gp_camera_get_config
+%typemap(argout) CameraWidget **window {
+  // Append result to output object
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
+}
+
 // gp_camera_get_abilities() returns a pointer in an output parameter
 CALLOC_ARGOUT(CameraAbilities *abilities)
 

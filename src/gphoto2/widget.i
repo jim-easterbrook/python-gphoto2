@@ -27,17 +27,19 @@
 }
 %typemap(argout) CameraWidget ** {
   if (*$1 != NULL) {
-    // Increment refcount on root widget
+    // Increment refcount on root widget, if this isn't the root
     CameraWidget *root;
     int error = gp_widget_get_root(*$1, &root);
     if (error < GP_OK) {
       GPHOTO2_ERROR(error);
       SWIG_fail;
     }
-    error = gp_widget_ref(root);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error);
-      SWIG_fail;
+    if (root != *$1) {
+      error = gp_widget_ref(root);
+      if (error < GP_OK) {
+        GPHOTO2_ERROR(error);
+        SWIG_fail;
+      }
     }
   }
   // Append result to output object

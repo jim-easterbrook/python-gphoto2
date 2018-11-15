@@ -21,25 +21,48 @@
 
 %rename(CameraWidget) _CameraWidget;
 
+/* These are the only wrapped functions that return a CameraWidget:
+gp_widget_get_child(..., CameraWidget **child)
+gp_widget_get_child_by_label(..., CameraWidget **child)
+gp_widget_get_child_by_id(..., CameraWidget **child)
+gp_widget_get_child_by_name(..., CameraWidget **child)
+gp_widget_get_root(..., CameraWidget **root)
+gp_widget_get_parent(..., CameraWidget **parent)
+gp_camera_get_config(..., CameraWidget **window, ...)
+gp_camera_get_single_config(..., CameraWidget **widget, ...)
+
+The gp_camera_get_xxx functions return a new widget, which may be the root of a
+tree. The others all return a pointer to an existing widget. To ensure this
+pointer remains valid the function must increment the ref count of the root
+widget, then decrement it when the returned pointer is destroyed.
+
+Fortunately the function signatures use different names for the CameraWidget
+result, so it's easy to use different typemaps for the different functions.
+Beware of changes in the libgphoto2 definitions though.
+*/
+
 %typemap(in, numinputs=0) CameraWidget ** (CameraWidget *temp) {
   temp = NULL;
   $1 = &temp;
 }
-%typemap(argout) CameraWidget ** {
+%typemap(argout) CameraWidget **window, CameraWidget **widget {
+  // Append result to output object
+  $result = SWIG_Python_AppendOutput(
+    $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
+}
+%typemap(argout) CameraWidget **child, CameraWidget **root, CameraWidget **parent {
   if (*$1 != NULL) {
-    // Increment refcount on root widget, if this isn't the root
+    // Increment refcount on root widget
     CameraWidget *root;
     int error = gp_widget_get_root(*$1, &root);
     if (error < GP_OK) {
       GPHOTO2_ERROR(error);
       SWIG_fail;
     }
-    if (root != *$1) {
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        GPHOTO2_ERROR(error);
-        SWIG_fail;
-      }
+    error = gp_widget_ref(root);
+    if (error < GP_OK) {
+      GPHOTO2_ERROR(error);
+      SWIG_fail;
     }
   }
   // Append result to output object
@@ -469,6 +492,7 @@ static int gp_widget_set_value_float(CameraWidget *widget, const float value) {
 %}
 
 // Ignore some functions
+%ignore gp_widget_new;
 %ignore gp_widget_free;
 %ignore gp_widget_ref;
 %ignore gp_widget_unref;

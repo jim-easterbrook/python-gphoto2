@@ -276,6 +276,9 @@ class GPhoto2Error(Exception):
 ''')
                         for name in ext_names:
                             im.write('from gphoto2.{} import *\n'.format(name))
+                        im.write('''
+__all__ = dir()
+''')
         # store SWIG version
         info_file = os.path.join('src', 'info.txt')
         with open(info_file, 'w') as info:

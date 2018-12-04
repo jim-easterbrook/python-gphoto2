@@ -30,7 +30,16 @@
 NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
 // Ignore some functions
+%ignore gp_context_cancel;
+%ignore gp_context_error;
+%ignore gp_context_idle;
+%ignore gp_context_message;
+%ignore gp_context_progress_start;
+%ignore gp_context_progress_stop;
+%ignore gp_context_progress_update;
+%ignore gp_context_question;
 %ignore gp_context_ref;
+%ignore gp_context_status;
 %ignore gp_context_unref;
 
 #if GPHOTO2_VERSION >= 0x020500

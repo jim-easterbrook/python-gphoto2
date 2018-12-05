@@ -42,12 +42,295 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 %ignore gp_context_status;
 %ignore gp_context_unref;
 
-#if GPHOTO2_VERSION >= 0x020500
+%ignore gp_context_set_idle_func;
+%ignore gp_context_set_error_func;
+%ignore gp_context_set_question_func;
+%ignore gp_context_set_cancel_func;
+
+// Macro for the six single callback function possibilities
+%define SINGLE_CALLBACK_FUNCTION(data_type, cb_func_type, install_func, cb_wrapper)
+
+// Define the struct
+%ignore data_type::context;
+%ignore data_type::func;
+%ignore data_type::data;
+%inline %{
+typedef struct data_type {
+    GPContext   *context;
+    PyObject    *func;
+    PyObject    *data;
+} data_type;
+%}
+// Add destructor
+%extend data_type {
+    ~data_type() {
+        printf("del data_type\n");
+        install_func($self->context, NULL, NULL);
+        Py_DECREF($self->func);
+        Py_DECREF($self->data);
+        free($self);
+    }
+};
+// Define typemaps
+%typemap(arginit) cb_func_type func (data_type *_global_callbacks) {
+    _global_callbacks = malloc(sizeof(data_type));
+    if (!_global_callbacks) {
+        PyErr_SetNone(PyExc_MemoryError);
+        SWIG_fail;
+    }
+    _global_callbacks->context = NULL;
+    _global_callbacks->func = NULL;
+    _global_callbacks->data = NULL;
+}
+%typemap(in) cb_func_type func {
+    if (!PyCallable_Check($input)) {
+        SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
+    }
+    _global_callbacks->func = $input;
+    Py_INCREF(_global_callbacks->func);
+    $1 = (cb_func_type) cb_wrapper;
+}
+%typemap(argout) cb_func_type func {
+    $result = SWIG_Python_AppendOutput($result,
+        SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_ ## data_type, SWIG_POINTER_OWN));
+    _global_callbacks = NULL;
+}
+%enddef // SINGLE_CALLBACK_FUNCTION
+
+SINGLE_CALLBACK_FUNCTION(StatusCallback, GPContextStatusFunc,
+                         gp_context_set_status_func, wrap_status_func)
+SINGLE_CALLBACK_FUNCTION(MessageCallback, GPContextMessageFunc,
+                         gp_context_set_message_func, wrap_message_func)
+
+// Define a Python type to store progress callback data
+%ignore ProgressCallbacks::context;
+%ignore ProgressCallbacks::func_1;
+%ignore ProgressCallbacks::func_2;
+%ignore ProgressCallbacks::func_3;
+%ignore ProgressCallbacks::data;
+
+%inline %{
+typedef struct ProgressCallbacks {
+    GPContext   *context;
+    PyObject    *func_1;
+    PyObject    *func_2;
+    PyObject    *func_3;
+    PyObject    *data;
+} ProgressCallbacks;
+%}
+
+%extend ProgressCallbacks {
+    ~ProgressCallbacks() {
+        printf("del ProgressCallbacks\n");
+        gp_context_set_progress_funcs($self->context, NULL, NULL, NULL, NULL);
+        Py_DECREF($self->func_1);
+        Py_DECREF($self->func_2);
+        Py_DECREF($self->func_3);
+        Py_DECREF($self->data);
+        free($self);
+    }
+};
+
+%define CB_PREAMBLE
+%{
+    PyGILState_STATE gstate = PyGILState_Ensure();
+    PyObject *result = NULL;
+    PyObject *arglist = NULL;
+    PyObject *self = NULL;
+    PyObject *py_context = SWIG_NewPointerObj(SWIG_as_voidptr(context), SWIGTYPE_p__GPContext, 0);
+%}
+%enddef
+
+%define CB_POSTAMBLE
+%{
+        Py_DECREF(arglist);
+        if (result == NULL) {
+            PyErr_Print();
+        } else {
+            Py_DECREF(result);
+        }
+    }
+    PyGILState_Release(gstate);
+%}
+%enddef
+
+%{
+// Call Python callbacks from C callbacks
+static void wrap_status_func(GPContext *context, const char *text, void *data) {
+    StatusCallback *this = data;
+%}
+CB_PREAMBLE
+%{
+#if PY_VERSION_HEX >= 0x03000000
+    arglist = Py_BuildValue("(OyO)", py_context, text, this->data);
+#else
+    arglist = Py_BuildValue("(OsO)", py_context, text, this->data);
+#endif
+    if (arglist == NULL) {
+        PyErr_Print();
+    } else {
+        result = PyObject_CallObject(this->func, arglist);
+%}
+CB_POSTAMBLE
+%{
+};
+
+static void wrap_message_func(GPContext *context, const char *text, void *data) {
+    MessageCallback *this = data;
+%}
+CB_PREAMBLE
+%{
+#if PY_VERSION_HEX >= 0x03000000
+    arglist = Py_BuildValue("(OyO)", py_context, text, this->data);
+#else
+    arglist = Py_BuildValue("(OsO)", py_context, text, this->data);
+#endif
+    if (arglist == NULL) {
+        PyErr_Print();
+    } else {
+        result = PyObject_CallObject(this->func, arglist);
+%}
+CB_POSTAMBLE
+%{
+};
+
+static int py_progress_start(GPContext *context, float target, const char *text, void *data) {
+    ProgressCallbacks *this = data;
+    int c_result = 0;
+%}
+CB_PREAMBLE
+%{
+#if PY_VERSION_HEX >= 0x03000000
+    arglist = Py_BuildValue("(OfyO)", py_context, target, text, this->data);
+#else
+    arglist = Py_BuildValue("(OfsO)", py_context, target, text, this->data);
+#endif
+    if (arglist == NULL) {
+        PyErr_Print();
+    } else {
+        result = PyObject_CallObject(this->func_1, arglist);
+        if (result) {
+            c_result = PyInt_AsLong(result);
+            if ((c_result == -1) && PyErr_Occurred())
+                PyErr_Print();
+        }
+    }
+%}
+CB_POSTAMBLE
+%{
+    return c_result;
+};
+
+static void py_progress_update(GPContext *context, unsigned int id, float current, void *data) {
+    ProgressCallbacks *this = data;
+%}
+CB_PREAMBLE
+%{
+    arglist = Py_BuildValue("(OifO)", py_context, id, current, this->data);
+    if (arglist == NULL) {
+        PyErr_Print();
+    } else {
+        result = PyObject_CallObject(this->func_2, arglist);
+%}
+CB_POSTAMBLE
+%{
+};
+
+static void py_progress_stop(GPContext *context, unsigned int id, void *data) {
+    ProgressCallbacks *this = data;
+%}
+CB_PREAMBLE
+%{
+    arglist = Py_BuildValue("(OiO)", py_context, id, this->data);
+    if (arglist == NULL) {
+        PyErr_Print();
+    } else {
+        result = PyObject_CallObject(this->func_3, arglist);
+%}
+CB_POSTAMBLE
+%{
+};
+
+%}
+
+// Use typemaps to install callbacks
+%typemap(arginit) GPContextProgressStartFunc start_func (ProgressCallbacks *_global_callbacks) {
+    _global_callbacks = malloc(sizeof(ProgressCallbacks));
+    if (!_global_callbacks) {
+        PyErr_SetNone(PyExc_MemoryError);
+        SWIG_fail;
+    }
+    _global_callbacks->context = NULL;
+    _global_callbacks->func_1 = NULL;
+    _global_callbacks->func_2 = NULL;
+    _global_callbacks->func_3 = NULL;
+    _global_callbacks->data = NULL;
+}
+%typemap(freearg) void *data {
+    free(_global_callbacks);
+}
+
+%typemap(in) void *data {
+    _global_callbacks->data = $input;
+    Py_INCREF(_global_callbacks->data);
+    $1 = _global_callbacks;
+}
+
+%typemap(check) GPContext *context {
+    _global_callbacks->context = $1;
+}
+
+%typemap(in) GPContextProgressStartFunc {
+    if (!PyCallable_Check($input)) {
+        SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
+    }
+    _global_callbacks->func_1 = $input;
+    Py_INCREF(_global_callbacks->func_1);
+    $1 = (GPContextProgressStartFunc) py_progress_start;
+}
+
+%typemap(in) GPContextProgressUpdateFunc {
+    if (!PyCallable_Check($input)) {
+        SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
+    }
+    _global_callbacks->func_2 = $input;
+    Py_INCREF(_global_callbacks->func_2);
+    $1 = (GPContextProgressUpdateFunc) py_progress_update;
+}
+
+%typemap(in) GPContextProgressStopFunc {
+    if (!PyCallable_Check($input)) {
+        SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
+    }
+    _global_callbacks->func_3 = $input;
+    Py_INCREF(_global_callbacks->func_3);
+    $1 = (GPContextProgressStopFunc) py_progress_stop;
+}
+
+%typemap(argout) GPContextProgressStartFunc {
+    $result = SWIG_Python_AppendOutput($result,
+        SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_ProgressCallbacks, SWIG_POINTER_OWN));
+    _global_callbacks = NULL;
+}
+
 // Add member methods to _GPContext
+#if GPHOTO2_VERSION >= 0x020500
 MEMBER_FUNCTION(_GPContext, Context,
     camera_autodetect, (CameraList *list),
     gp_camera_autodetect, (list, $self))
 #endif
+VOID_MEMBER_FUNCTION(_GPContext, Context,
+    set_message_func, (GPContextMessageFunc func, void *data),
+    gp_context_set_message_func, ($self, func, data))
+VOID_MEMBER_FUNCTION(_GPContext, Context,
+    set_progress_funcs, (GPContextProgressStartFunc start_func,
+                         GPContextProgressUpdateFunc update_func,
+                         GPContextProgressStopFunc stop_func,
+                         void *data),
+    gp_context_set_progress_funcs, ($self, start_func, update_func, stop_func, data))
+VOID_MEMBER_FUNCTION(_GPContext, Context,
+    set_status_func, (GPContextStatusFunc func, void *data),
+    gp_context_set_status_func, ($self, func, data))
 
 #endif //ifndef SWIGIMPORTED
 

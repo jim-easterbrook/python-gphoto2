@@ -157,3 +157,13 @@ int (*struct ## _ ## type ## _ ## member)() = function;
 #endif
 INT_MEMBER_FUNCTION(type, py_type, __len__, (), function, ())
 %enddef
+
+%define VOID_MEMBER_FUNCTION(type, py_type, member, member_args, function, function_args)
+//%feature("docstring") type::member "See also: gphoto2." #function
+%extend type {
+  void member member_args {
+    function function_args;
+  }
+};
+//%feature("docstring") function "See also: gphoto2." #py_type "." #member
+%enddef

@@ -29,7 +29,7 @@
 // gp_camera_autodetect() returns a pointer in an output parameter
 NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
-// Ignore some functions
+// Ignore "backend" functions
 %ignore gp_context_cancel;
 %ignore gp_context_error;
 %ignore gp_context_idle;
@@ -42,12 +42,7 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 %ignore gp_context_status;
 %ignore gp_context_unref;
 
-%ignore gp_context_set_idle_func;
-%ignore gp_context_set_error_func;
-%ignore gp_context_set_question_func;
-%ignore gp_context_set_cancel_func;
-
-// Macro for the six single callback function possibilities
+// Macro for the six single callback function variants
 %define SINGLE_CALLBACK_FUNCTION(data_type, cb_func_type, install_func, cb_wrapper)
 
 // Define the struct
@@ -64,7 +59,6 @@ typedef struct data_type {
 // Add destructor
 %extend data_type {
     ~data_type() {
-        printf("del data_type\n");
         install_func($self->context, NULL, NULL);
         Py_DECREF($self->func);
         Py_DECREF($self->data);
@@ -97,12 +91,20 @@ typedef struct data_type {
 }
 %enddef // SINGLE_CALLBACK_FUNCTION
 
+SINGLE_CALLBACK_FUNCTION(IdleCallback, GPContextIdleFunc,
+                         gp_context_set_idle_func, wrap_idle_func)
+SINGLE_CALLBACK_FUNCTION(ErrorCallback, GPContextErrorFunc,
+                         gp_context_set_error_func, wrap_error_func)
 SINGLE_CALLBACK_FUNCTION(StatusCallback, GPContextStatusFunc,
                          gp_context_set_status_func, wrap_status_func)
 SINGLE_CALLBACK_FUNCTION(MessageCallback, GPContextMessageFunc,
                          gp_context_set_message_func, wrap_message_func)
+SINGLE_CALLBACK_FUNCTION(QuestionCallback, GPContextQuestionFunc,
+                         gp_context_set_question_func, wrap_question_func)
+SINGLE_CALLBACK_FUNCTION(CancelCallback, GPContextCancelFunc,
+                         gp_context_set_cancel_func, wrap_cancel_func)
 
-// Define a Python type to store progress callback data
+// Progress callbacks are more complicated
 %ignore ProgressCallbacks::context;
 %ignore ProgressCallbacks::func_1;
 %ignore ProgressCallbacks::func_2;
@@ -121,7 +123,6 @@ typedef struct ProgressCallbacks {
 
 %extend ProgressCallbacks {
     ~ProgressCallbacks() {
-        printf("del ProgressCallbacks\n");
         gp_context_set_progress_funcs($self->context, NULL, NULL, NULL, NULL);
         Py_DECREF($self->func_1);
         Py_DECREF($self->func_2);
@@ -131,6 +132,7 @@ typedef struct ProgressCallbacks {
     }
 };
 
+// Macros for wrappers around Python callbacks
 %define CB_PREAMBLE
 %{
     PyGILState_STATE gstate = PyGILState_Ensure();
@@ -156,6 +158,40 @@ typedef struct ProgressCallbacks {
 
 %{
 // Call Python callbacks from C callbacks
+static void wrap_idle_func(GPContext *context, void *data) {
+    IdleCallback *this = data;
+%}
+CB_PREAMBLE
+%{
+    arglist = Py_BuildValue("(OO)", py_context, this->data);
+    if (arglist == NULL) {
+        PyErr_Print();
+    } else {
+        result = PyObject_CallObject(this->func, arglist);
+%}
+CB_POSTAMBLE
+%{
+};
+
+static void wrap_error_func(GPContext *context, const char *text, void *data) {
+    ErrorCallback *this = data;
+%}
+CB_PREAMBLE
+%{
+#if PY_VERSION_HEX >= 0x03000000
+    arglist = Py_BuildValue("(OyO)", py_context, text, this->data);
+#else
+    arglist = Py_BuildValue("(OsO)", py_context, text, this->data);
+#endif
+    if (arglist == NULL) {
+        PyErr_Print();
+    } else {
+        result = PyObject_CallObject(this->func, arglist);
+%}
+CB_POSTAMBLE
+%{
+};
+
 static void wrap_status_func(GPContext *context, const char *text, void *data) {
     StatusCallback *this = data;
 %}
@@ -194,6 +230,50 @@ CB_POSTAMBLE
 %{
 };
 
+static GPContextFeedback wrap_question_func(GPContext *context, const char *text, void *data) {
+    QuestionCallback *this = data;
+    GPContextFeedback c_result = GP_CONTEXT_FEEDBACK_OK;
+%}
+CB_PREAMBLE
+%{
+#if PY_VERSION_HEX >= 0x03000000
+    arglist = Py_BuildValue("(OyO)", py_context, text, this->data);
+#else
+    arglist = Py_BuildValue("(OsO)", py_context, text, this->data);
+#endif
+    if (arglist == NULL) {
+        PyErr_Print();
+    } else {
+        result = PyObject_CallObject(this->func, arglist);
+        if (result) {
+            c_result = PyInt_AsLong(result);
+        }
+%}
+CB_POSTAMBLE
+%{
+    return c_result;
+};
+
+static GPContextFeedback wrap_cancel_func(GPContext *context, void *data) {
+    CancelCallback *this = data;
+    GPContextFeedback c_result = GP_CONTEXT_FEEDBACK_OK;
+%}
+CB_PREAMBLE
+%{
+    arglist = Py_BuildValue("(OO)", py_context, this->data);
+    if (arglist == NULL) {
+        PyErr_Print();
+    } else {
+        result = PyObject_CallObject(this->func, arglist);
+        if (result) {
+            c_result = PyInt_AsLong(result);
+        }
+%}
+CB_POSTAMBLE
+%{
+    return c_result;
+};
+
 static int py_progress_start(GPContext *context, float target, const char *text, void *data) {
     ProgressCallbacks *this = data;
     int c_result = 0;
@@ -214,7 +294,6 @@ CB_PREAMBLE
             if ((c_result == -1) && PyErr_Occurred())
                 PyErr_Print();
         }
-    }
 %}
 CB_POSTAMBLE
 %{
@@ -320,8 +399,20 @@ MEMBER_FUNCTION(_GPContext, Context,
     gp_camera_autodetect, (list, $self))
 #endif
 VOID_MEMBER_FUNCTION(_GPContext, Context,
+    set_idle_func, (GPContextIdleFunc func, void *data),
+    gp_context_set_idle_func, ($self, func, data))
+VOID_MEMBER_FUNCTION(_GPContext, Context,
+    set_error_func, (GPContextErrorFunc func, void *data),
+    gp_context_set_error_func, ($self, func, data))
+VOID_MEMBER_FUNCTION(_GPContext, Context,
     set_message_func, (GPContextMessageFunc func, void *data),
     gp_context_set_message_func, ($self, func, data))
+VOID_MEMBER_FUNCTION(_GPContext, Context,
+    set_question_func, (GPContextQuestionFunc func, void *data),
+    gp_context_set_question_func, ($self, func, data))
+VOID_MEMBER_FUNCTION(_GPContext, Context,
+    set_cancel_func, (GPContextCancelFunc func, void *data),
+    gp_context_set_cancel_func, ($self, func, data))
 VOID_MEMBER_FUNCTION(_GPContext, Context,
     set_progress_funcs, (GPContextProgressStartFunc start_func,
                          GPContextProgressUpdateFunc update_func,

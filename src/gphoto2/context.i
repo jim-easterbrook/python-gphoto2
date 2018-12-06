@@ -42,6 +42,17 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 %ignore gp_context_status;
 %ignore gp_context_unref;
 
+#if GPHOTO2_VERSION < 0x020500
+%ignore gp_context_set_idle_func;
+%ignore gp_context_set_error_func;
+%ignore gp_context_set_message_func;
+%ignore gp_context_set_question_func;
+%ignore gp_context_set_cancel_func;
+%ignore gp_context_set_progress_funcs;
+%ignore gp_context_set_status_func;
+
+#else // GPHOTO2_VERSION < 0x020500
+
 // Macro for the six single callback function variants
 %define SINGLE_CALLBACK_FUNCTION(data_type, cb_func_type, install_func, cb_wrapper)
 
@@ -393,11 +404,9 @@ CB_POSTAMBLE
 }
 
 // Add member methods to _GPContext
-#if GPHOTO2_VERSION >= 0x020500
 MEMBER_FUNCTION(_GPContext, Context,
     camera_autodetect, (CameraList *list),
     gp_camera_autodetect, (list, $self))
-#endif
 VOID_MEMBER_FUNCTION(_GPContext, Context,
     set_idle_func, (GPContextIdleFunc func, void *data),
     gp_context_set_idle_func, ($self, func, data))
@@ -422,6 +431,8 @@ VOID_MEMBER_FUNCTION(_GPContext, Context,
 VOID_MEMBER_FUNCTION(_GPContext, Context,
     set_status_func, (GPContextStatusFunc func, void *data),
     gp_context_set_status_func, ($self, func, data))
+
+#endif // GPHOTO2_VERSION >= 0x020500
 
 #endif //ifndef SWIGIMPORTED
 

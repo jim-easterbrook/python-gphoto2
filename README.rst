@@ -20,6 +20,8 @@ Dependencies
 *   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.4 or greater
 *   build tools: pkg-config, C compiler & linker
 
+Support for libgphoto2 v2.4 is incomplete and will be withdrawn in a subsequent release of python-gphoto2.
+
 Note that you need the "development headers" versions of libgphoto2_ and Python.
 In most cases you should use your operating system's package manager to install these.
 The package names depend on the operating system.
@@ -121,6 +123,9 @@ See the example programs for typical usage of the Python gphoto2 API.
 "C" interface
 ^^^^^^^^^^^^^
 
+These functions are as similar as possible to their libgphoto2_ equivalents.
+Most of them return an error code which you must check.
+
 Using SWIG_ to generate the Python interfaces automatically means that every function in libgphoto2_ *should* be available to Python.
 The ``pydoc`` command can be used to show the documentation of a function::
 
@@ -199,10 +204,11 @@ Here is a complete example program (without any error checking):
 "Object oriented" interface
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Many of the libgphoto2_ functions have been added as methods of the appropriate GPhoto2 object.
+This is the preferred way to use libgphoto2_ from Python.
+Most of the libgphoto2_ functions have been added as methods of the appropriate GPhoto2 object.
 This allows GPhoto2 to be used in a more "Pythonic" style.
 For example, ``gp.gp_camera_init(camera, context)`` can be replaced by ``camera.init(context)``.
-These object methods also include error checking.
+These methods also include error checking.
 If an error occurs they raise a Python ``GPhoto2Error`` exception.
 
 The example program can be re-written as follows:
@@ -219,8 +225,7 @@ The example program can be re-written as follows:
     print(str(text))
     camera.exit(context)
 
-The object methods are more "hand crafted" than the rest of the Python bindings, which are automatically generated from the library header files.
-This means that there may be some functions in the "C" interface that do not have corresponding object methods.
+No additional error checking is required.
 
 Error checking
 ^^^^^^^^^^^^^^
@@ -352,6 +357,14 @@ Another reader of the mailing list may have the same camera model and already kn
 
 Notes on some gphoto2 functions
 -------------------------------
+
+gp_context_set_idle_func / gp_context_set_progress_funcs / etc.
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These functions are only usable since python-gphoto2 version 1.9.0.
+They return a Python object which your program must store until the callback(s) are no longer required.
+Deleting the returned object cancels the callback(s), so there is no need to do this yourself.
+See the ``context_with_callbacks.py`` example for a convenient way to do this.
 
 gp_file_get_data_and_size / CameraFile.get_data_and_size
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -27,6 +27,9 @@ import sys
 
 import gphoto2 as gp
 
+# Callback functions. These should have the function signatures shown
+# (with an extra 'self' if they're part of a class).
+
 def cb_idle(context, data):
     print('cb_idle', data)
 
@@ -57,6 +60,10 @@ def cb_progress_update(context, id_, current, data):
 def cb_progress_stop(context, id_, data):
     print('cb_progress_stop', id_, data)
 
+# Using a Python contextmanager to ensure callbacks are deleted when the
+# gphoto2 context is no longer required. This example uses every
+# available callback. You probably don't need all of them.
+
 @contextmanager
 def context_with_callbacks():
     context = gp.Context()
@@ -73,6 +80,9 @@ def context_with_callbacks():
         yield context
     finally:
         del callbacks
+
+# Perform a few simple operations on a camera after setting up
+# callbacks.
 
 def main():
     logging.basicConfig(

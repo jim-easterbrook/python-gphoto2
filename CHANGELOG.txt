@@ -15,6 +15,11 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 1.9.0:
+  1/ Enabled use of context callback functions such as
+     gp_context_set_progress_funcs.
+  2/ Added a time lapse movie example script.
+
 Changes in 1.8.5:
   1/ Fix memory leak in gp_camera_get_config.
 

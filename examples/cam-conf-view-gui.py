@@ -41,9 +41,15 @@ class MainWindow(QtWidgets.QMainWindow):
     quit_action = None
 
     def set_splitter(self, inqtsplittertype, inwidget1, inwidget2):
-        self.splitter1 = QtWidgets.QSplitter(Qt.Horizontal)
+        if (hasattr(self,'splitter1')):
+            self.mainwid.layout().removeWidget(self.splitter1)
+            self.splitter1.close()
+        self.splitter1 = QtWidgets.QSplitter(inqtsplittertype)
         self.splitter1.addWidget(inwidget1)
         self.splitter1.addWidget(inwidget2)
+        self.splitter1.setSizes([600, 600]); # equal splitter at start
+        self.mainwid.layout().addWidget(self.splitter1)
+        self.mainwid.layout().update()
 
     def create_main_menu(self):
         self.mainMenu = self.menuBar()
@@ -66,17 +72,36 @@ class MainWindow(QtWidgets.QMainWindow):
         self.zoomfitview_action.setShortcuts(['Ctrl+F'])
         self.zoomfitview_action.triggered.connect(self.zoom_fit_view)
         self.switchlayout_action = QtWidgets.QAction('Switch Layout', self)
-        self.switchlayout_action.setShortcuts(['Ctrl-A'])
-        self.switchlayout_action.triggered.connect(self.switch_layout)
+        self.switchlayout_action.setShortcuts(['Ctrl+A'])
+        self.switchlayout_action.triggered.connect(self.switch_splitter_layout)
         self.viewMenu.addAction(self.zoomorig_action)
         self.viewMenu.addAction(self.zoomfitview_action)
         self.viewMenu.addAction(self.switchlayout_action)
 
+    def replicate_main_window(self):
+        # main widget
+        self.widget = QtWidgets.QWidget()
+        self.widget.setLayout(QtWidgets.QGridLayout())
+        self.widget.layout().setColumnStretch(0, 1)
+        #self.setCentralWidget(self.widget)
+        # 'apply' button
+        self.apply_button = QtWidgets.QPushButton('apply changes')
+        self.apply_button.setEnabled(False)
+        self.apply_button.clicked.connect(self.apply_changes)
+        self.widget.layout().addWidget(self.apply_button, 1, 1)
+        # 'cancel' button
+        #~ quit_button = QtWidgets.QPushButton('cancel')
+        #~ quit_button.clicked.connect(QtWidgets.qApp.closeAllWindows)
+        #~ widget.layout().addWidget(quit_button, 1, 2)
+
+
     def __init__(self):
+        self.current_splitter_style=0
         self.do_init = QtCore.QEvent.registerEventType()
         QtWidgets.QMainWindow.__init__(self)
         self.setWindowTitle("Camera config cam-conf-view-gui.py")
-        self.setMinimumWidth(600)
+        self.setMinimumWidth(800)
+        self.setMinimumHeight(600)
         # quit shortcut
         self.quit_action = QtWidgets.QAction('Quit', self)
         self.quit_action.setShortcuts(['Ctrl+Q', 'Ctrl+W'])
@@ -85,10 +110,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.addAction(self.quit_action)
         # main menu
         self.create_main_menu()
-        # main widget
-        self.widget = QtWidgets.QWidget()
-        self.widget.setLayout(QtWidgets.QGridLayout())
-        self.setCentralWidget(self.widget)
+        # replicate main window from camera-config-gui-oo
+        self.replicate_main_window()
         # frames
         self.frameview = QtWidgets.QFrame(self)
         self.frameview.setFrameShape(QtWidgets.QFrame.StyledPanel)
@@ -101,12 +124,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.scrollconf = QtWidgets.QScrollArea(self)
         self.scrollconf.setWidgetResizable(True)
         self.contentconf = QtWidgets.QWidget()
+        self.contentconf.setLayout(QtWidgets.QGridLayout())
+        self.contentconf.layout().setColumnStretch(0, 1)
         self.scrollconf.setWidget(self.contentconf)
         self.frameconflayout.addWidget(self.scrollconf)
 
+        self.mainwid = QtWidgets.QWidget()
+        self.mainwid.setLayout(QtWidgets.QGridLayout())
+        self.setCentralWidget(self.mainwid)
         self.set_splitter(Qt.Horizontal, self.frameview, self.frameconf)
-        self.widget.layout().addWidget(self.splitter1, 1, 1)
-        self.widget.layout().setContentsMargins(2,2,2,2);
 
         # defer full initialisation (slow operation) until gui is visible
         self.camera = gp.Camera()
@@ -130,15 +156,16 @@ class MainWindow(QtWidgets.QMainWindow):
         self.camera_config = self.camera.get_config()
         # create corresponding tree of tab widgets
         self.setWindowTitle(self.camera_config.get_label())
-        #~ self.centralWidget().layout().addWidget(SectionWidget(
-            #~ self.config_changed, self.camera_config), 0, 0, 1, 3)
+        self.configsection = ccgoo.SectionWidget(self.config_changed, self.camera_config)
+        self.widget.layout().addWidget(self.configsection, 0, 0, 1, 3)
+        self.scrollconf.setWidget(self.widget)
 
     def config_changed(self):
         self.apply_button.setEnabled(True)
 
     def apply_changes(self):
         self.camera.set_config(self.camera_config)
-        QtWidgets.qApp.closeAllWindows()
+        #QtWidgets.qApp.closeAllWindows()
 
     def load_settings(self):
         print("load_settings")
@@ -152,8 +179,20 @@ class MainWindow(QtWidgets.QMainWindow):
     def zoom_fit_view(self):
         print("zoom_fit_view")
 
-    def switch_layout(self):
-        print("switch_layout")
+    def set_splitter_layout_style(self):
+        if self.current_splitter_style == 0:
+            self.set_splitter(Qt.Horizontal, self.frameview, self.frameconf)
+        elif self.current_splitter_style == 1:
+            self.set_splitter(Qt.Vertical, self.frameview, self.frameconf)
+        elif self.current_splitter_style == 2:
+            self.set_splitter(Qt.Horizontal, self.frameconf, self.frameview)
+        elif self.current_splitter_style == 3:
+            self.set_splitter(Qt.Vertical, self.frameconf, self.frameview)
+
+    def switch_splitter_layout(self):
+        print("switch_splitter_layout")
+        self.current_splitter_style = (self.current_splitter_style + 1) % 4
+        self.set_splitter_layout_style()
 
 
 if __name__ == "__main__":

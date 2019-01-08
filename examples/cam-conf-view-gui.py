@@ -23,9 +23,10 @@
 
 from __future__ import print_function
 
-import io
 from datetime import datetime
+import io
 import logging
+import math
 import sys, os
 
 from PIL import Image, ImageChops, ImageStat
@@ -150,23 +151,54 @@ class MainWindow(QtWidgets.QMainWindow):
         #~ quit_button.clicked.connect(QtWidgets.qApp.closeAllWindows)
         #~ widget.layout().addWidget(quit_button, 1, 2)
 
+
+    class ScrollAreaWheel(QtWidgets.QScrollArea): # SO:9475772
+        def __init__(self, parent=None):
+            super(MainWindow.ScrollAreaWheel, self).__init__(parent)
+            self.parent = parent
+        def wheelEvent(self, event):
+            super(MainWindow.ScrollAreaWheel, self).wheelEvent(event)
+            self.wheelDelta = 1 if (event.angleDelta().y() > 0) else -1
+            #~ print("wheelEvent", event.angleDelta()) # PyQt5.QtCore.QPoint(0, 120) or (0, -120)
+            #print("wheelEvent", event.pixelDelta()) # PyQt5.QtCore.QPoint()
+            print("wheelEvent", self.wheelDelta)
+
     def replicate_fg_viewer(self):
         # image display area
-        self.image_display = QtWidgets.QScrollArea()
+        self.image_display = MainWindow.ScrollAreaWheel(self) # QtWidgets.QScrollArea()
         self.image_display.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.image_display.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.image_display.setWidget(fg.ImageWidget())
+        self.imgwid = fg.ImageWidget()
+        #self.id_layout = QtWidgets.QHBoxLayout(self.image_display)
+        self.id_layout = QtWidgets.QGridLayout(self.image_display)
+        self.image_display.setWidget(self.id_layout.widget())
+        #self.image_display.setWidget(self.imgwid)
         self.image_display.setWidgetResizable(True)
-        self.contentview.layout().addWidget(self.image_display, 0, 1, 10, 1)
+        self.image_display.setAlignment(Qt.AlignCenter)
+        self.id_layout.addWidget(self.imgwid, 0, 0, Qt.AlignCenter)
+        # (QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0)
+        # If rowSpan and/or columnSpan is -1, then the widget will extend to the bottom and/or right edge, respectively.
+        #~ print("AO: {} {}".format( self.contentview.frameGeometry().width(), self.contentview.frameGeometry().height() ) ) # 640 480?
+        #~ print("AO: {} {}".format( self.contentview.geometry().width(), self.contentview.geometry().height() ) ) # 640 480?
+        #~ screenShape = QtWidgets.QDesktopWidget().screenGeometry() # 1366 768
+        #~ print("AO: {} {}".format( screenShape.width(), screenShape.height() ) )
+        #~ self.contentview.layout().addWidget(self.image_display, 0, 0)#, 1, 1) #, Qt.AlignCenter)
+        self.contentview.layout().addWidget(self.image_display) #, 0, 0) #, Qt.AlignCenter)
+        #self.contentview.layout().setAlignment(self.image_display, Qt.AlignCenter)
+
         self.new_image_sig.connect(self.new_image)
+        #self.contentview.triggered.connect(self.zoom_original)
+
+    #~ def onContentViewResize(self, event):
+        #~ print(event.size())
 
     def __init__(self):
         self.current_splitter_style=0
         self.do_init = QtCore.QEvent.registerEventType()
         QtWidgets.QMainWindow.__init__(self)
         self.setWindowTitle("Camera config cam-conf-view-gui.py")
-        self.setMinimumWidth(800)
-        self.setMinimumHeight(600)
+        self.setMinimumWidth(400)
+        self.setMinimumHeight(300)
         # quit shortcut
         self.quit_action = QtWidgets.QAction('Quit', self)
         self.quit_action.setShortcuts(['Ctrl+Q', 'Ctrl+W'])
@@ -180,13 +212,14 @@ class MainWindow(QtWidgets.QMainWindow):
         # frames
         self.frameview = QtWidgets.QFrame(self)
         self.frameview.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.frameviewlayout = QtWidgets.QHBoxLayout(self.frameview)
+        #~ self.frameviewlayout = QtWidgets.QHBoxLayout(self.frameview)
+        self.frameviewlayout = QtWidgets.QGridLayout(self.frameview)
         self.frameviewlayout.setSpacing(0);
         self.frameviewlayout.setContentsMargins(0,0,0,0);
         self.contentview = QtWidgets.QWidget()
         self.contentview.setLayout(QtWidgets.QGridLayout())
+        #~ self.contentview.resizeEvent = self.onContentViewResize
         self.frameviewlayout.addWidget(self.contentview)
-        print(self.contentview)
         self.replicate_fg_viewer()
 
         self.frameconf = QtWidgets.QFrame(self)
@@ -213,11 +246,24 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QApplication.postEvent(
             self, QtCore.QEvent(self.do_init), Qt.LowEventPriority - 1)
 
+    def getSizeToFit(self, inwfit, inhfit, inworig, inhorig):
+        if (inhfit > inwfit):
+            neww, newh = int(inwfit), int(inhorig*(inwfit/inworig))
+        else:
+            neww, newh = int(inworig*(inhfit/inhorig)), int(inhfit)
+        return neww, newh
+
     def event(self, event):
         if event.type() != self.do_init:
             return QtWidgets.QMainWindow.event(self, event)
         event.accept()
         QtWidgets.QApplication.setOverrideCursor(Qt.WaitCursor)
+        #print("AO: {} {}".format( self.contentview.frameGeometry().width(), self.contentview.frameGeometry().height() ) ) # 187 258, OK
+        # set initial size
+        inwfit, inhfit = self.contentview.frameGeometry().width(), self.contentview.frameGeometry().height()
+        # just start with arbitrary known aspect ratio
+        neww, newh = self.getSizeToFit(inwfit, inhfit, 640, 480)
+        self.imgwid.resize(neww, newh)
         try:
             self.initialise()
         finally:
@@ -323,24 +369,24 @@ class MainWindow(QtWidgets.QMainWindow):
         image_data = image.tobytes('raw', 'RGB')
         self.q_image = QtGui.QImage(image_data, w, h, QtGui.QImage.Format_RGB888)
         self._draw_image()
-        # generate histogram and count clipped pixels
-        histogram = image.histogram()
-        q_image = QtGui.QImage(100, 256, QtGui.QImage.Format_RGB888)
-        q_image.fill(Qt.white)
-        clipping = []
-        start = 0
-        for colour in (0xff0000, 0x00ff00, 0x0000ff):
-            stop = start + 256
-            band_hist = histogram[start:stop]
-            max_value = float(1 + max(band_hist))
-            for x in range(len(band_hist)):
-                y = float(1 + band_hist[x]) / max_value
-                y = 98.0 * max(0.0, 1.0 + (math.log10(y) / 5.0))
-                q_image.setPixel(y,     x, colour)
-                q_image.setPixel(y + 1, x, colour)
-            clipping.append(band_hist[-1])
-            start = stop
-        pixmap = QtGui.QPixmap.fromImage(q_image)
+        #~ # generate histogram and count clipped pixels
+        #~ histogram = image.histogram()
+        #~ q_image = QtGui.QImage(100, 256, QtGui.QImage.Format_RGB888)
+        #~ q_image.fill(Qt.white)
+        #~ clipping = []
+        #~ start = 0
+        #~ for colour in (0xff0000, 0x00ff00, 0x0000ff):
+            #~ stop = start + 256
+            #~ band_hist = histogram[start:stop]
+            #~ max_value = float(1 + max(band_hist))
+            #~ for x in range(len(band_hist)):
+                #~ y = float(1 + band_hist[x]) / max_value
+                #~ #y = 98.0 * max(0.0, 1.0 + (math.log10(y) / 5.0))
+                #~ q_image.setPixel(y,     x, colour)
+                #~ q_image.setPixel(y + 1, x, colour)
+            #~ #clipping.append(band_hist[-1])
+            #~ start = stop
+        #~ pixmap = QtGui.QPixmap.fromImage(q_image)
         #~ self.histogram_display.setPixmap(pixmap)
         #~ self.clipping_display.setText(
             #~ ', '.join(map(lambda x: '{:d}'.format(x), clipping)))
@@ -376,8 +422,14 @@ class MainWindow(QtWidgets.QMainWindow):
         pixmap = pixmap.scaled(
             self.image_display.viewport().size(),
             Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        self.image_display.widget().setPixmap(pixmap)
+        #~ self.image_display.widget().setPixmap(pixmap)
+        #~ self.id_layout.widget().setPixmap(pixmap)
+        self.imgwid.setPixmap(pixmap)
 
+    def my_wheelEvent(self, event):
+        #self.zoom += event.angleDelta().y()/2880
+        #self.view.scale(self.zoom, self.zoom)
+        print("wheelEvent")
 
 if __name__ == "__main__":
     logging.basicConfig(

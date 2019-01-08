@@ -19,15 +19,18 @@
 
 # another camera config gui, with load/save settings to file, and live view
 # started: sdaau 2019, on with python3-gphoto2, Ubuntu 18.04
-# uses camera-config-gui-oo.py
+# uses camera-config-gui-oo.py, focus-gui.py
 
 from __future__ import print_function
 
+import io
 from datetime import datetime
 import logging
 import sys, os
 
-from PyQt5 import QtCore, QtWidgets
+from PIL import Image, ImageChops, ImageStat
+
+from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 
@@ -36,9 +39,58 @@ import gphoto2 as gp
 THISSCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(1,THISSCRIPTDIR)
 ccgoo = __import__('camera-config-gui-oo')
+fg = __import__('focus-gui')
 
 class MainWindow(QtWidgets.QMainWindow):
     quit_action = None
+    new_image_sig = QtCore.pyqtSignal(object)
+
+    def _reset_config(self):
+        if self.old_capturetarget is not None:
+            # find the capture target item
+            OK, capture_target = gp.gp_widget_get_child_by_name(
+                self.config, 'capturetarget')
+            if OK >= gp.GP_OK:
+                # set config
+                capture_target.set_value(self.old_capturetarget)
+                self.camera.set_config(self.config)
+                self.old_capturetarget = None
+
+    def closeEvent(self, event):
+        #~ self.camera_handler.shut_down() # ->
+        #~ self.running = False
+        self._reset_config()
+        self.camera.exit()
+        #~ self.ch_thread.quit()
+        #~ self.ch_thread.wait()
+        return super(MainWindow, self).closeEvent(event)
+
+    def _set_config(self):
+        # find the capture target item
+        OK, capture_target = gp.gp_widget_get_child_by_name(
+            self.config, 'capturetarget')
+        if OK >= gp.GP_OK:
+            if self.old_capturetarget is None:
+                self.old_capturetarget = capture_target.get_value()
+            choice_count = capture_target.count_choices()
+            for n in range(choice_count):
+                choice = capture_target.get_choice(n)
+                if 'internal' in choice.lower():
+                    # set config
+                    capture_target.set_value(choice)
+                    self.camera.set_config(self.config)
+                    break
+        # find the image format config item
+        OK, image_format = gp.gp_widget_get_child_by_name(
+            self.config, 'imageformat')
+        if OK >= gp.GP_OK:
+            # get current setting
+            value = image_format.get_value()
+            # make sure it's not raw
+            if 'raw' in value.lower():
+                print('Cannot preview raw images')
+                return False
+        return True
 
     def set_splitter(self, inqtsplittertype, inwidget1, inwidget2):
         if (hasattr(self,'splitter1')):
@@ -74,11 +126,15 @@ class MainWindow(QtWidgets.QMainWindow):
         self.switchlayout_action = QtWidgets.QAction('Switch Layout', self)
         self.switchlayout_action.setShortcuts(['Ctrl+A'])
         self.switchlayout_action.triggered.connect(self.switch_splitter_layout)
+        self.dopreview_action = QtWidgets.QAction('Do Preview', self)
+        self.dopreview_action.setShortcuts(['Ctrl+P'])
+        self.dopreview_action.triggered.connect(self._do_preview)
+        self.viewMenu.addAction(self.switchlayout_action)
+        self.viewMenu.addAction(self.dopreview_action)
         self.viewMenu.addAction(self.zoomorig_action)
         self.viewMenu.addAction(self.zoomfitview_action)
-        self.viewMenu.addAction(self.switchlayout_action)
 
-    def replicate_main_window(self):
+    def replicate_ccgoo_main_window(self):
         # main widget
         self.widget = QtWidgets.QWidget()
         self.widget.setLayout(QtWidgets.QGridLayout())
@@ -94,6 +150,15 @@ class MainWindow(QtWidgets.QMainWindow):
         #~ quit_button.clicked.connect(QtWidgets.qApp.closeAllWindows)
         #~ widget.layout().addWidget(quit_button, 1, 2)
 
+    def replicate_fg_viewer(self):
+        # image display area
+        self.image_display = QtWidgets.QScrollArea()
+        self.image_display.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.image_display.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        self.image_display.setWidget(fg.ImageWidget())
+        self.image_display.setWidgetResizable(True)
+        self.contentview.layout().addWidget(self.image_display, 0, 1, 10, 1)
+        self.new_image_sig.connect(self.new_image)
 
     def __init__(self):
         self.current_splitter_style=0
@@ -111,13 +176,22 @@ class MainWindow(QtWidgets.QMainWindow):
         # main menu
         self.create_main_menu()
         # replicate main window from camera-config-gui-oo
-        self.replicate_main_window()
+        self.replicate_ccgoo_main_window()
         # frames
         self.frameview = QtWidgets.QFrame(self)
         self.frameview.setFrameShape(QtWidgets.QFrame.StyledPanel)
+        self.frameviewlayout = QtWidgets.QHBoxLayout(self.frameview)
+        self.frameviewlayout.setSpacing(0);
+        self.frameviewlayout.setContentsMargins(0,0,0,0);
+        self.contentview = QtWidgets.QWidget()
+        self.contentview.setLayout(QtWidgets.QGridLayout())
+        self.frameviewlayout.addWidget(self.contentview)
+        print(self.contentview)
+        self.replicate_fg_viewer()
+
         self.frameconf = QtWidgets.QFrame(self)
         self.frameconf.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        self.frameconf.setStyleSheet("padding: 0;")
+        self.frameconf.setStyleSheet("padding: 0;") # nope
         self.frameconflayout = QtWidgets.QHBoxLayout(self.frameconf)
         self.frameconflayout.setSpacing(0);
         self.frameconflayout.setContentsMargins(0,0,0,0);
@@ -150,10 +224,44 @@ class MainWindow(QtWidgets.QMainWindow):
             QtWidgets.QApplication.restoreOverrideCursor()
         return True
 
-    def initialise(self):
+    def CameraHandlerInit(self):
         # get camera config tree
         self.camera.init()
         self.camera_config = self.camera.get_config()
+        # from CameraHandler::Init:
+        self.old_capturetarget = None
+        # get the camera model
+        OK, camera_model = gp.gp_widget_get_child_by_name(
+            self.camera_config, 'cameramodel')
+        if OK < gp.GP_OK:
+            OK, camera_model = gp.gp_widget_get_child_by_name(
+                self.camera_config, 'model')
+        if OK >= gp.GP_OK:
+            self.camera_model = camera_model.get_value()
+            print('Camera model:', self.camera_model)
+        else:
+            print('No camera model info')
+            self.camera_model = ''
+        if self.camera_model == 'unknown':
+            # find the capture size class config item
+            # need to set this on my Canon 350d to get preview to work at all
+            OK, capture_size_class = gp.gp_widget_get_child_by_name(
+                self.camera_config, 'capturesizeclass')
+            if OK >= gp.GP_OK:
+                # set value
+                value = capture_size_class.get_choice(2)
+                capture_size_class.set_value(value)
+                # set config
+                self.camera.set_config(self.camera_config)
+        else:
+            # put camera into preview mode to raise mirror
+            print(gp.gp_camera_capture_preview(self.camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+
+    def initialise(self):
+        #~ # get camera config tree
+        #~ self.camera.init()
+        #~ self.camera_config = self.camera.get_config()
+        self.CameraHandlerInit()
         # create corresponding tree of tab widgets
         self.setWindowTitle(self.camera_config.get_label())
         self.configsection = ccgoo.SectionWidget(self.config_changed, self.camera_config)
@@ -193,6 +301,82 @@ class MainWindow(QtWidgets.QMainWindow):
         print("switch_splitter_layout")
         self.current_splitter_style = (self.current_splitter_style + 1) % 4
         self.set_splitter_layout_style()
+
+    def _do_preview(self):
+        # capture preview image
+        OK, camera_file = gp.gp_camera_capture_preview(self.camera)
+        if OK < gp.GP_OK:
+            print('Failed to capture preview')
+            self.running = False
+            return
+        self._send_file(camera_file)
+
+    def _send_file(self, camera_file):
+        file_data = camera_file.get_data_and_size()
+        image = Image.open(io.BytesIO(file_data))
+        image.load()
+        self.new_image_sig.emit(image)
+
+    @QtCore.pyqtSlot(object)
+    def new_image(self, image):
+        w, h = image.size
+        image_data = image.tobytes('raw', 'RGB')
+        self.q_image = QtGui.QImage(image_data, w, h, QtGui.QImage.Format_RGB888)
+        self._draw_image()
+        # generate histogram and count clipped pixels
+        histogram = image.histogram()
+        q_image = QtGui.QImage(100, 256, QtGui.QImage.Format_RGB888)
+        q_image.fill(Qt.white)
+        clipping = []
+        start = 0
+        for colour in (0xff0000, 0x00ff00, 0x0000ff):
+            stop = start + 256
+            band_hist = histogram[start:stop]
+            max_value = float(1 + max(band_hist))
+            for x in range(len(band_hist)):
+                y = float(1 + band_hist[x]) / max_value
+                y = 98.0 * max(0.0, 1.0 + (math.log10(y) / 5.0))
+                q_image.setPixel(y,     x, colour)
+                q_image.setPixel(y + 1, x, colour)
+            clipping.append(band_hist[-1])
+            start = stop
+        pixmap = QtGui.QPixmap.fromImage(q_image)
+        #~ self.histogram_display.setPixmap(pixmap)
+        #~ self.clipping_display.setText(
+            #~ ', '.join(map(lambda x: '{:d}'.format(x), clipping)))
+        #~ # measure focus by summing inter-pixel differences
+        #~ shifted = ImageChops.offset(image, 1, 0)
+        #~ diff = ImageChops.difference(image, shifted).crop((1, 0, w, h))
+        #~ stats = ImageStat.Stat(diff)
+        #~ h_rms = stats.rms
+        #~ shifted = ImageChops.offset(image, 0, 1)
+        #~ diff = ImageChops.difference(image, shifted).crop((0, 1, w, h))
+        #~ stats = ImageStat.Stat(diff)
+        #~ rms = stats.rms
+        #~ for n in range(len(rms)):
+            #~ rms[n] += h_rms[n]
+        #~ # "auto-ranging" of focus measurement
+        #~ while self.focus_scale < 1.0e12 and (max(rms) * self.focus_scale) < 1.0:
+            #~ self.focus_scale *= 10.0
+            #~ print('+', self.focus_scale)
+        #~ while self.focus_scale > 1.0e-12 and (max(rms) * self.focus_scale) > 100.0:
+            #~ self.focus_scale /= 10.0
+            #~ print('-', self.focus_scale)
+        #~ self.focus_display.setText(
+            #~ ', '.join(map(lambda x: '{:.2f}'.format(x * self.focus_scale), rms)))
+
+    def _draw_image(self):
+        if not self.q_image:
+            return
+        pixmap = QtGui.QPixmap.fromImage(self.q_image)
+        #~ if not self.zoomed:
+            #~ pixmap = pixmap.scaled(
+                #~ self.image_display.viewport().size(),
+                #~ Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        pixmap = pixmap.scaled(
+            self.image_display.viewport().size(),
+            Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.image_display.widget().setPixmap(pixmap)
 
 
 if __name__ == "__main__":

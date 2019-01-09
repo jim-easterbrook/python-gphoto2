@@ -147,9 +147,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.apply_button.clicked.connect(self.apply_changes)
         self.widget.layout().addWidget(self.apply_button, 1, 1)
         # 'cancel' button
-        #~ quit_button = QtWidgets.QPushButton('cancel')
-        #~ quit_button.clicked.connect(QtWidgets.qApp.closeAllWindows)
-        #~ widget.layout().addWidget(quit_button, 1, 2)
+        #quit_button = QtWidgets.QPushButton('cancel')
+        #quit_button.clicked.connect(QtWidgets.qApp.closeAllWindows)
+        #widget.layout().addWidget(quit_button, 1, 2)
 
 
     class ScrollAreaWheel(QtWidgets.QScrollArea): # SO:9475772
@@ -157,25 +157,100 @@ class MainWindow(QtWidgets.QMainWindow):
             super(MainWindow.ScrollAreaWheel, self).__init__(parent)
             self.parent = parent
         def wheelEvent(self, event):
-            super(MainWindow.ScrollAreaWheel, self).wheelEvent(event)
+            #super(MainWindow.ScrollAreaWheel, self).wheelEvent(event)
+            #event.accept()
             self.wheelDelta = 1 if (event.angleDelta().y() > 0) else -1
-            #~ print("wheelEvent", event.angleDelta()) # PyQt5.QtCore.QPoint(0, 120) or (0, -120)
+            #print("wheelEvent", event.angleDelta()) # PyQt5.QtCore.QPoint(0, 120) or (0, -120)
             #print("wheelEvent", event.pixelDelta()) # PyQt5.QtCore.QPoint()
-            print("wheelEvent", self.wheelDelta)
+            if self.wheelDelta == 1: self.parent.zoom *= self.parent.zoomfact
+            else: self.parent.zoom /= self.parent.zoomfact
+            print("wheelEvent", self.wheelDelta, self.parent.zoom)
+            self.parent.do_scale()
+
+    # https://github.com/baoboa/pyqt5/blob/master/examples/widgets/imageviewer.py
+    def adjustScrollBar(self, scrollBar, factor):
+        print(scrollBar.value(), scrollBar.pageStep())
+        scrollBar.setValue(int(factor * scrollBar.value()
+                                + ((factor - 1) * scrollBar.pageStep()/2)))
+
+    def eventFilter(self, source, event):
+        if (event.type() == QtCore.QEvent.Wheel):
+        #if ((event.type() == QtCore.QEvent.Wheel)
+            #and (source is self.imglab)):
+            #and (source is self.image_display.viewport())):
+            #~ self.wheelDelta = 1 if (event.angleDelta().y() > 0) else -1
+            #~ print("wheel source", source, self.wheelDelta, source is self.image_display.viewport(), source is self.imglab)
+            #return True # means don't process
+            #event.ignore()
+            #self.image_display.viewport().wheelEvent(event) # cannot
+            #return True
+            if ( (source is self.image_display.viewport()) or (source is self.imglab) ):
+                self.wheelDelta = 1 if (event.angleDelta().y() > 0) else -1
+                if self.wheelDelta == 1: self.zoom *= self.zoomfact
+                else: self.zoom /= self.zoomfact
+
+                if (self.imglab.pixmap()):
+                    self.imglab.resize(self.zoom * self.imglab.pixmap().size())
+                #~ if (self.image_display.viewport()):
+                    #~ self.image_display.viewport().resize(self.zoom * self.image_display.viewport().size())
+
+                self.adjustScrollBar(self.image_display.horizontalScrollBar(), self.zoom)
+                self.adjustScrollBar(self.image_display.verticalScrollBar(), self.zoom)
+
+                print("wheel source", source, self.wheelDelta, self.zoom, source is self.image_display.viewport(), source is self.imglab)
+
+
+        return super(MainWindow, self).eventFilter(source, event)
+
+    def do_scale(self):
+        #if (self.imglab.pixmap()):
+        if (self.pixmap):
+            #~ self.imgwid.resize(self.zoom * self.imglab.pixmap().size()) # stops resize
+            #~ self.image_display.resize(self.zoom * self.imglab.pixmap().size())
+            print("do_scale", self.zoom * self.pixmap.size())
+            self.imgwid.resize(self.zoom * self.pixmap.size()) #setFixedSize  must be for resize (also .resize works), if setWidgetResizable(False) # also works on its own in that case, but does not stay put
+            # scaled pixmap is enough
+            pixmap = self.pixmap.scaled(
+                #~ #self.image_display.viewport().size(),
+                #~ self.zoom * self.pixmap.size() ,
+                Qt.KeepAspectRatio, Qt.SmoothTransformation)
+            self.imglab.setPixmap(pixmap)
+
+            #~ self.imglab.resize(self.zoom * self.pixmap.size()) # wrong scrollbar pos w/ only this
+        self.adjustScrollBar(self.image_display.horizontalScrollBar(), self.zoom)
+        self.adjustScrollBar(self.image_display.verticalScrollBar(), self.zoom)
 
     def replicate_fg_viewer(self):
         # image display area
         self.image_display = MainWindow.ScrollAreaWheel(self) # QtWidgets.QScrollArea()
         self.image_display.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.image_display.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.imgwid = fg.ImageWidget()
+        self.image_display.setContentsMargins(0,0,0,0);
+        self.imgwid = QtWidgets.QWidget()
+        self.imgwid.setContentsMargins(0,0,0,0);
+        self.image_display.setWidget(self.imgwid)
+        self.image_label_lay = QtWidgets.QGridLayout(self.imgwid)
+        self.image_label_lay.setSpacing(0);
+        self.image_label_lay.setContentsMargins(0,0,0,0);
+        self.imglab = fg.ImageWidget() # QtWidgets.QLabel
+        self.imglab.setStyleSheet("background-color: rgb(255,0,0); margin:5px; border:1px solid rgb(0, 255, 0); ")
+        self.imglab.setBackgroundRole(QtGui.QPalette.Base);
         #self.id_layout = QtWidgets.QHBoxLayout(self.image_display)
-        self.id_layout = QtWidgets.QGridLayout(self.image_display)
-        self.image_display.setWidget(self.id_layout.widget())
-        #self.image_display.setWidget(self.imgwid)
-        self.image_display.setWidgetResizable(True)
+        #self.id_layout = QtWidgets.QGridLayout(self.image_display)
+        #~ self.id_layout = QtWidgets.QGridLayout(self.imglab)
+        #self.image_display.setWidget(self.id_layout.widget())
+        #~ self.image_display.setWidget(self.imglab)
+        self.image_display.setWidgetResizable(False)
         self.image_display.setAlignment(Qt.AlignCenter)
-        self.id_layout.addWidget(self.imgwid, 0, 0, Qt.AlignCenter)
+        #~ self.id_layout.addWidget(self.imglab, 0, 0, Qt.AlignCenter)
+        self.image_label_lay.addWidget(self.imglab, 0, 0, QtCore.Qt.AlignCenter)
+
+        #~ self.image_display.viewport().installEventFilter(self)
+        #~ self.imglab.installEventFilter(self)
+        self.imglab.setFocusPolicy( Qt.StrongFocus );
+        #~ self.imglab.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        self.imglab.setScaledContents(True)
+        #~ self.imglab.resize(50,50);
         # (QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0)
         # If rowSpan and/or columnSpan is -1, then the widget will extend to the bottom and/or right edge, respectively.
         #~ print("AO: {} {}".format( self.contentview.frameGeometry().width(), self.contentview.frameGeometry().height() ) ) # 640 480?
@@ -183,8 +258,9 @@ class MainWindow(QtWidgets.QMainWindow):
         #~ screenShape = QtWidgets.QDesktopWidget().screenGeometry() # 1366 768
         #~ print("AO: {} {}".format( screenShape.width(), screenShape.height() ) )
         #~ self.contentview.layout().addWidget(self.image_display, 0, 0)#, 1, 1) #, Qt.AlignCenter)
-        self.contentview.layout().addWidget(self.image_display) #, 0, 0) #, Qt.AlignCenter)
+        #~ self.contentview.layout().addWidget(self.image_display) #, 0, 0) #, Qt.AlignCenter)
         #self.contentview.layout().setAlignment(self.image_display, Qt.AlignCenter)
+        self.frameviewlayout.addWidget(self.image_display)
 
         self.new_image_sig.connect(self.new_image)
         #self.contentview.triggered.connect(self.zoom_original)
@@ -192,8 +268,17 @@ class MainWindow(QtWidgets.QMainWindow):
     #~ def onContentViewResize(self, event):
         #~ print(event.size())
 
+    def updateStatusBar(self):
+        msgstr = "Camera model: {} ; ".format(self.camera_model if (self.camera_model) else "No info")
+        if self.lastPreviewSize:
+            msgstr += "last preview: {} x {}".format(self.lastPreviewSize[0], self.lastPreviewSize[1])
+        self.statusBar().showMessage(msgstr)
+
     def __init__(self):
+        self.zoom = 1
+        self.zoomfact = 1.2
         self.current_splitter_style=0
+        self.lastPreviewSize = None
         self.do_init = QtCore.QEvent.registerEventType()
         QtWidgets.QMainWindow.__init__(self)
         self.setWindowTitle("Camera config cam-conf-view-gui.py")
@@ -216,10 +301,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.frameviewlayout = QtWidgets.QGridLayout(self.frameview)
         self.frameviewlayout.setSpacing(0);
         self.frameviewlayout.setContentsMargins(0,0,0,0);
-        self.contentview = QtWidgets.QWidget()
-        self.contentview.setLayout(QtWidgets.QGridLayout())
+        #~ self.contentview = QtWidgets.QWidget()
+        #~ self.contentview.setLayout(QtWidgets.QGridLayout())
         #~ self.contentview.resizeEvent = self.onContentViewResize
-        self.frameviewlayout.addWidget(self.contentview)
+        #~ self.frameviewlayout.addWidget(self.contentview)
         self.replicate_fg_viewer()
 
         self.frameconf = QtWidgets.QFrame(self)
@@ -229,7 +314,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.frameconflayout.setSpacing(0);
         self.frameconflayout.setContentsMargins(0,0,0,0);
         self.scrollconf = QtWidgets.QScrollArea(self)
-        self.scrollconf.setWidgetResizable(True)
+        self.scrollconf.setWidgetResizable(False)
         self.contentconf = QtWidgets.QWidget()
         self.contentconf.setLayout(QtWidgets.QGridLayout())
         self.contentconf.layout().setColumnStretch(0, 1)
@@ -260,10 +345,11 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QApplication.setOverrideCursor(Qt.WaitCursor)
         #print("AO: {} {}".format( self.contentview.frameGeometry().width(), self.contentview.frameGeometry().height() ) ) # 187 258, OK
         # set initial size
-        inwfit, inhfit = self.contentview.frameGeometry().width(), self.contentview.frameGeometry().height()
+        inwfit, inhfit = self.frameview.frameGeometry().width(), self.frameview.frameGeometry().height()
         # just start with arbitrary known aspect ratio
         neww, newh = self.getSizeToFit(inwfit, inhfit, 640, 480)
-        self.imgwid.resize(neww, newh)
+        print("event")
+        self.imglab.resize(neww, newh)
         try:
             self.initialise()
         finally:
@@ -288,6 +374,7 @@ class MainWindow(QtWidgets.QMainWindow):
         else:
             print('No camera model info')
             self.camera_model = ''
+        self.updateStatusBar()
         if self.camera_model == 'unknown':
             # find the capture size class config item
             # need to set this on my Canon 350d to get preview to work at all
@@ -365,66 +452,70 @@ class MainWindow(QtWidgets.QMainWindow):
 
     @QtCore.pyqtSlot(object)
     def new_image(self, image):
+        self.lastPreviewSize = image.size
+        self.updateStatusBar()
         w, h = image.size
         image_data = image.tobytes('raw', 'RGB')
         self.q_image = QtGui.QImage(image_data, w, h, QtGui.QImage.Format_RGB888)
         self._draw_image()
-        #~ # generate histogram and count clipped pixels
-        #~ histogram = image.histogram()
-        #~ q_image = QtGui.QImage(100, 256, QtGui.QImage.Format_RGB888)
-        #~ q_image.fill(Qt.white)
-        #~ clipping = []
-        #~ start = 0
-        #~ for colour in (0xff0000, 0x00ff00, 0x0000ff):
-            #~ stop = start + 256
-            #~ band_hist = histogram[start:stop]
-            #~ max_value = float(1 + max(band_hist))
-            #~ for x in range(len(band_hist)):
-                #~ y = float(1 + band_hist[x]) / max_value
-                #~ #y = 98.0 * max(0.0, 1.0 + (math.log10(y) / 5.0))
-                #~ q_image.setPixel(y,     x, colour)
-                #~ q_image.setPixel(y + 1, x, colour)
-            #~ #clipping.append(band_hist[-1])
-            #~ start = stop
-        #~ pixmap = QtGui.QPixmap.fromImage(q_image)
-        #~ self.histogram_display.setPixmap(pixmap)
-        #~ self.clipping_display.setText(
-            #~ ', '.join(map(lambda x: '{:d}'.format(x), clipping)))
-        #~ # measure focus by summing inter-pixel differences
-        #~ shifted = ImageChops.offset(image, 1, 0)
-        #~ diff = ImageChops.difference(image, shifted).crop((1, 0, w, h))
-        #~ stats = ImageStat.Stat(diff)
-        #~ h_rms = stats.rms
-        #~ shifted = ImageChops.offset(image, 0, 1)
-        #~ diff = ImageChops.difference(image, shifted).crop((0, 1, w, h))
-        #~ stats = ImageStat.Stat(diff)
-        #~ rms = stats.rms
-        #~ for n in range(len(rms)):
-            #~ rms[n] += h_rms[n]
-        #~ # "auto-ranging" of focus measurement
-        #~ while self.focus_scale < 1.0e12 and (max(rms) * self.focus_scale) < 1.0:
-            #~ self.focus_scale *= 10.0
-            #~ print('+', self.focus_scale)
-        #~ while self.focus_scale > 1.0e-12 and (max(rms) * self.focus_scale) > 100.0:
-            #~ self.focus_scale /= 10.0
-            #~ print('-', self.focus_scale)
-        #~ self.focus_display.setText(
-            #~ ', '.join(map(lambda x: '{:.2f}'.format(x * self.focus_scale), rms)))
+        # # generate histogram and count clipped pixels
+        # histogram = image.histogram()
+        # q_image = QtGui.QImage(100, 256, QtGui.QImage.Format_RGB888)
+        # q_image.fill(Qt.white)
+        # clipping = []
+        # start = 0
+        # for colour in (0xff0000, 0x00ff00, 0x0000ff):
+        #     stop = start + 256
+        #     band_hist = histogram[start:stop]
+        #     max_value = float(1 + max(band_hist))
+        #     for x in range(len(band_hist)):
+        #         y = float(1 + band_hist[x]) / max_value
+        #         #y = 98.0 * max(0.0, 1.0 + (math.log10(y) / 5.0))
+        #         q_image.setPixel(y,     x, colour)
+        #         q_image.setPixel(y + 1, x, colour)
+        #     #clipping.append(band_hist[-1])
+        #     start = stop
+        # pixmap = QtGui.QPixmap.fromImage(q_image)
+        # self.histogram_display.setPixmap(pixmap)
+        # self.clipping_display.setText(
+        #     ', '.join(map(lambda x: '{:d}'.format(x), clipping)))
+        # # measure focus by summing inter-pixel differences
+        # shifted = ImageChops.offset(image, 1, 0)
+        # diff = ImageChops.difference(image, shifted).crop((1, 0, w, h))
+        # stats = ImageStat.Stat(diff)
+        # h_rms = stats.rms
+        # shifted = ImageChops.offset(image, 0, 1)
+        # diff = ImageChops.difference(image, shifted).crop((0, 1, w, h))
+        # stats = ImageStat.Stat(diff)
+        # rms = stats.rms
+        # for n in range(len(rms)):
+        #     rms[n] += h_rms[n]
+        # # "auto-ranging" of focus measurement
+        # while self.focus_scale < 1.0e12 and (max(rms) * self.focus_scale) < 1.0:
+        #     self.focus_scale *= 10.0
+        #     print('+', self.focus_scale)
+        # while self.focus_scale > 1.0e-12 and (max(rms) * self.focus_scale) > 100.0:
+        #     self.focus_scale /= 10.0
+        #     print('-', self.focus_scale)
+        # self.focus_display.setText(
+        #     ', '.join(map(lambda x: '{:.2f}'.format(x * self.focus_scale), rms)))
 
     def _draw_image(self):
         if not self.q_image:
             return
-        pixmap = QtGui.QPixmap.fromImage(self.q_image)
-        #~ if not self.zoomed:
-            #~ pixmap = pixmap.scaled(
-                #~ self.image_display.viewport().size(),
-                #~ Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        pixmap = pixmap.scaled(
-            self.image_display.viewport().size(),
-            Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        self.pixmap = QtGui.QPixmap.fromImage(self.q_image)
+        # if not self.zoomed:
+        #     pixmap = pixmap.scaled(
+        #         self.image_display.viewport().size(),
+        #         Qt.KeepAspectRatio, Qt.SmoothTransformation)
+        #~ pixmap = pixmap.scaled(
+            #~ self.image_display.viewport().size(),
+            #~ Qt.KeepAspectRatio, Qt.SmoothTransformation)
         #~ self.image_display.widget().setPixmap(pixmap)
         #~ self.id_layout.widget().setPixmap(pixmap)
-        self.imgwid.setPixmap(pixmap)
+                #self.image_display.scale(self.zoom)
+        self.imglab.setPixmap(self.pixmap)
+
 
     def my_wheelEvent(self, event):
         #self.zoom += event.angleDelta().y()/2880

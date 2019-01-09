@@ -301,24 +301,28 @@ class MainWindow(QtWidgets.QMainWindow):
     def do_scale(self):
         #if (self.imglab.pixmap()):
         if (self.pixmap):
-            #~ self.imgwid.resize(self.zoom * self.imglab.pixmap().size()) # stops resize
-            #~ self.image_display.resize(self.zoom * self.imglab.pixmap().size())
-            print("do_scale", self.zoom * self.pixmap.size())
-            #~ self.image_display.set_scale(self.zoom);
-            self.imgwid.set_scale(self.zoom);
-            #~ self.imgwid.paintEvent(None)
-            #~ self.imgwid.repaint()
-            self.imgwid.resize(self.zoom * self.pixmap.size()) #setFixedSize  must be for resize (also .resize works), if setWidgetResizable(False) # also works on its own in that case, but does not stay put
-            if self.image_display.m_wheelevent:
-                wex, iwtlx = self.image_display.m_wheelevent.globalX(), self.mapToGlobal(self.imgwid.rect().topLeft()).x()
-                wey, iwtly = self.image_display.m_wheelevent.globalY(), self.mapToGlobal(self.imgwid.rect().topLeft()).y()
-                self.wheeldx = (wex - iwtlx)*abs(self.imgwid.m_scalechange)
-                self.wheeldy = (wey - iwtly)*abs(self.imgwid.m_scalechange)
-                print("wex", wex, iwtlx, self.wheeldx)
-                sys.stdout.flush()
+            orig_size = self.pixmap.size()
+        else:
+            orig_size = self.imgwid.size()
 
-                self.image_display.horizontalScrollBar().setValue(self.image_display.horizontalScrollBar().value() + self.wheeldx);
-                self.image_display.verticalScrollBar().setValue(self.image_display.verticalScrollBar().value() + self.wheeldy);
+        #~ self.imgwid.resize(self.zoom * self.imglab.pixmap().size()) # stops resize
+        #~ self.image_display.resize(self.zoom * self.imglab.pixmap().size())
+        print("do_scale", self.zoom * orig_size)
+        #~ self.image_display.set_scale(self.zoom);
+        self.imgwid.set_scale(self.zoom);
+        #~ self.imgwid.paintEvent(None)
+        #~ self.imgwid.repaint()
+        self.imgwid.resize(self.zoom * orig_size) #setFixedSize  must be for resize (also .resize works), if setWidgetResizable(False) # also works on its own in that case, but does not stay put
+        if self.image_display.m_wheelevent:
+            wex, iwtlx = self.image_display.m_wheelevent.globalX(), self.mapToGlobal(self.imgwid.rect().topLeft()).x()
+            wey, iwtly = self.image_display.m_wheelevent.globalY(), self.mapToGlobal(self.imgwid.rect().topLeft()).y()
+            self.wheeldx = (wex - iwtlx)*abs(self.imgwid.m_scalechange)
+            self.wheeldy = (wey - iwtly)*abs(self.imgwid.m_scalechange)
+            print("wex", wex, iwtlx, self.wheeldx)
+            sys.stdout.flush()
+
+            self.image_display.horizontalScrollBar().setValue(self.image_display.horizontalScrollBar().value() + self.wheeldx);
+            self.image_display.verticalScrollBar().setValue(self.image_display.verticalScrollBar().value() + self.wheeldy);
             # # scaled pixmap is enough
             # pixmap = self.pixmap.scaled(
             #     #~ #self.image_display.viewport().size(),
@@ -339,7 +343,8 @@ class MainWindow(QtWidgets.QMainWindow):
         #~ self.imgwid = QtWidgets.QWidget()
         self.imgwid = ImageViewerB()
         self.imgwid.setContentsMargins(0,0,0,0);
-        self.imgwid.setStyleSheet("background-color: rgb(255,0,0); margin:5px; border:1px solid rgb(0, 255, 0); ")
+        #self.imgwid.setStyleSheet("background-color: rgb(255,0,0); margin:5px; border:1px solid rgb(0, 255, 0); ")
+        self.imgwid.setStyleSheet("background-color: qradialgradient(cx: 0.5, cy: 0.5, radius: 2, fx: 0.5, fy: 1, stop: 0 rgba(255,30,30,255), stop: 0.2 rgba(255,30,30,144), stop: 0.4 rgba(255,30,30,32)); margin:5px; border:1px solid rgb(0, 255, 0); ")
         self.image_display.setWidget(self.imgwid)
         # self.image_label_lay = QtWidgets.QGridLayout(self.imgwid)
         # self.image_label_lay.setSpacing(0);
@@ -394,6 +399,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.wheeldx = 0
         self.wheeldy = 0
         self.do_init = QtCore.QEvent.registerEventType()
+        self.pixmap = None
         QtWidgets.QMainWindow.__init__(self)
         self.setWindowTitle("Camera config cam-conf-view-gui.py")
         self.setMinimumWidth(1000)

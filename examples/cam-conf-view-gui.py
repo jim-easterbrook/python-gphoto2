@@ -72,28 +72,28 @@ class ImageViewerB(QtWidgets.QWidget):
         #~ if self.mModified:
         if self.m_pixmap:
             painter = QtGui.QPainter(self)
-            painter.begin(self)
+            #~ painter.begin(self)
             painter.translate(self.rect().center())
             painter.scale(self.m_scale, self.m_scale)
-            if self.m_delta:
-                painter.translate(self.m_delta)
+            #if self.m_delta:
+            #    painter.translate(self.m_delta)
             painter.drawPixmap(self.m_rect.topLeft(), self.m_pixmap)
-            painter.end()
+            #~ painter.end()
         #~ painter.drawPixmap(0, 0, self.mPixmap)
         #~ self.drawBackground(painter)
         #~ self.mPixmap = pixmap
         #~ self.mModified = False
-    def mousePressEvent(self, event):
-        self.m_reference = event.pos()
-        QtWidgets.qApp.setOverrideCursor(Qt.ClosedHandCursor)
-        self.setMouseTracking(True)
-    def mouseMoveEvent(self, event):
-        self.m_delta += (event.pos() - self.m_reference) * 1.0/self.m_scale;
-        self.m_reference = event.pos();
-        self.update();
-    def mouseReleaseEvent(self, event):
-        QtWidgets.qApp.restoreOverrideCursor()
-        self.setMouseTracking(False)
+    #def mousePressEvent(self, event):
+    #    self.m_reference = event.pos()
+    #    QtWidgets.qApp.setOverrideCursor(Qt.ClosedHandCursor)
+    #    self.setMouseTracking(True)
+    #def mouseMoveEvent(self, event):
+    #    self.m_delta += (event.pos() - self.m_reference) * 1.0/self.m_scale;
+    #    self.m_reference = event.pos();
+    #    self.update();
+    #def mouseReleaseEvent(self, event):
+    #    QtWidgets.qApp.restoreOverrideCursor()
+    #    self.setMouseTracking(False)
     def setPixmap(self, pix):
         self.m_pixmap = pix
         self.m_rect = self.m_pixmap.rect()
@@ -223,6 +223,9 @@ class MainWindow(QtWidgets.QMainWindow):
         def __init__(self, parent=None):
             super(MainWindow.ScrollAreaWheel, self).__init__(parent)
             self.parent = parent
+            self.m_reference = None
+            self.m_delta = QtCore.QPoint(0,0)
+            self.m_scale = 1.0
         def wheelEvent(self, event):
             #super(MainWindow.ScrollAreaWheel, self).wheelEvent(event)
             #event.accept()
@@ -233,6 +236,25 @@ class MainWindow(QtWidgets.QMainWindow):
             else: self.parent.zoom /= self.parent.zoomfact
             print("wheelEvent", self.wheelDelta, self.parent.zoom)
             self.parent.do_scale()
+        def mousePressEvent(self, event):
+            self.m_reference = event.pos()
+            QtWidgets.qApp.setOverrideCursor(Qt.ClosedHandCursor)
+            self.setMouseTracking(True)
+        def mouseMoveEvent(self, event):
+            self.m_delta = (event.pos() - self.m_reference) * 1.0/self.m_scale;
+            self.m_reference = event.pos();
+            print(self.horizontalScrollBar().value(), self.m_delta.x(), self.verticalScrollBar().value(), self.m_delta.y())
+            self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() - self.m_delta.x());
+            self.verticalScrollBar().setValue(self.verticalScrollBar().value() - self.m_delta.y());
+            #~ self.update();
+        def mouseReleaseEvent(self, event):
+            QtWidgets.qApp.restoreOverrideCursor()
+            self.setMouseTracking(False)
+        def set_scale(self, s):
+            #~ self.m_scale = s
+            #~ self.update()
+            pass
+
 
     # https://github.com/baoboa/pyqt5/blob/master/examples/widgets/imageviewer.py
     def adjustScrollBar(self, scrollBar, factor):
@@ -275,6 +297,7 @@ class MainWindow(QtWidgets.QMainWindow):
             #~ self.imgwid.resize(self.zoom * self.imglab.pixmap().size()) # stops resize
             #~ self.image_display.resize(self.zoom * self.imglab.pixmap().size())
             print("do_scale", self.zoom * self.pixmap.size())
+            #~ self.image_display.set_scale(self.zoom);
             self.imgwid.set_scale(self.zoom);
             #~ self.imgwid.paintEvent(None)
             #~ self.imgwid.repaint()

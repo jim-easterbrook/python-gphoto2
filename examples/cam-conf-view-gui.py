@@ -54,6 +54,8 @@ class ImageViewerB(QtWidgets.QWidget):
         self.m_reference = None
         self.m_delta = QtCore.QPoint(0,0)
         self.m_scale = 1.0
+        self.m_scalechange = 0.0
+        self.been_sized = False
         self.initUI()
     def initUI(self):
         #~ self.setGeometry(5, 5, 30, 30)
@@ -104,10 +106,51 @@ class ImageViewerB(QtWidgets.QWidget):
         self.m_scale *= s
         self.update()
     def set_scale(self, s):
+        self.m_scalechange = s - self.m_scale
         self.m_scale = s
         self.update()
     def sizeHint(self):
         return QtCore.QSize(30, 20)
+
+class ScrollAreaWheel(QtWidgets.QScrollArea): # SO:9475772
+    def __init__(self, parent=None):
+        super(ScrollAreaWheel, self).__init__(parent)
+        self.parent = parent
+        self.m_reference = None
+        self.m_delta = QtCore.QPoint(0,0)
+        self.m_scale = 1.0
+        self.m_wheelevent = None
+    def wheelEvent(self, event):
+        #super(MainWindow.ScrollAreaWheel, self).wheelEvent(event)
+        #event.accept()
+        self.wheelDelta = 1 if (event.angleDelta().y() > 0) else -1
+        #print("wheelEvent", event.angleDelta()) # PyQt5.QtCore.QPoint(0, 120) or (0, -120)
+        #print("wheelEvent", event.pixelDelta()) # PyQt5.QtCore.QPoint()
+        if self.wheelDelta == 1: self.parent.zoom *= self.parent.zoomfact
+        else: self.parent.zoom /= self.parent.zoomfact
+        self.m_wheelevent = event
+        print("wheelEvent", self.wheelDelta, self.parent.zoom)
+        self.parent.do_scale()
+    def mousePressEvent(self, event):
+        self.m_reference = event.pos()
+        QtWidgets.qApp.setOverrideCursor(Qt.ClosedHandCursor)
+        self.setMouseTracking(True)
+    def mouseMoveEvent(self, event):
+        self.m_delta = (event.pos() - self.m_reference) * 1.0/self.m_scale;
+        self.m_reference = event.pos();
+        print(self.horizontalScrollBar().value(), self.m_delta.x(), self.verticalScrollBar().value(), self.m_delta.y())
+        self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() - self.m_delta.x());
+        self.verticalScrollBar().setValue(self.verticalScrollBar().value() - self.m_delta.y());
+        #~ self.update();
+    def mouseReleaseEvent(self, event):
+        QtWidgets.qApp.restoreOverrideCursor()
+        self.setMouseTracking(False)
+    def set_scale(self, s):
+        #~ self.m_scale = s
+        #~ self.update()
+        pass
+
+
 
 class MainWindow(QtWidgets.QMainWindow):
     quit_action = None
@@ -179,7 +222,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.load_action.setShortcuts(['Ctrl+L'])
         self.load_action.triggered.connect(self.load_settings)
         self.save_action = QtWidgets.QAction('Save settings', self)
-        self.save_action.setShortcuts(['Ctrl+S', 'Ctrl+W'])
+        self.save_action.setShortcuts(['Ctrl+S'])
         self.save_action.triggered.connect(self.save_settings)
         self.fileMenu.addAction(self.load_action)
         self.fileMenu.addAction(self.save_action)
@@ -195,7 +238,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.switchlayout_action.setShortcuts(['Ctrl+A'])
         self.switchlayout_action.triggered.connect(self.switch_splitter_layout)
         self.dopreview_action = QtWidgets.QAction('Do Preview', self)
-        self.dopreview_action.setShortcuts(['Ctrl+P'])
+        self.dopreview_action.setShortcuts(['Ctrl+X'])
         self.dopreview_action.triggered.connect(self._do_preview)
         self.viewMenu.addAction(self.switchlayout_action)
         self.viewMenu.addAction(self.dopreview_action)
@@ -218,42 +261,6 @@ class MainWindow(QtWidgets.QMainWindow):
         #quit_button.clicked.connect(QtWidgets.qApp.closeAllWindows)
         #widget.layout().addWidget(quit_button, 1, 2)
 
-
-    class ScrollAreaWheel(QtWidgets.QScrollArea): # SO:9475772
-        def __init__(self, parent=None):
-            super(MainWindow.ScrollAreaWheel, self).__init__(parent)
-            self.parent = parent
-            self.m_reference = None
-            self.m_delta = QtCore.QPoint(0,0)
-            self.m_scale = 1.0
-        def wheelEvent(self, event):
-            #super(MainWindow.ScrollAreaWheel, self).wheelEvent(event)
-            #event.accept()
-            self.wheelDelta = 1 if (event.angleDelta().y() > 0) else -1
-            #print("wheelEvent", event.angleDelta()) # PyQt5.QtCore.QPoint(0, 120) or (0, -120)
-            #print("wheelEvent", event.pixelDelta()) # PyQt5.QtCore.QPoint()
-            if self.wheelDelta == 1: self.parent.zoom *= self.parent.zoomfact
-            else: self.parent.zoom /= self.parent.zoomfact
-            print("wheelEvent", self.wheelDelta, self.parent.zoom)
-            self.parent.do_scale()
-        def mousePressEvent(self, event):
-            self.m_reference = event.pos()
-            QtWidgets.qApp.setOverrideCursor(Qt.ClosedHandCursor)
-            self.setMouseTracking(True)
-        def mouseMoveEvent(self, event):
-            self.m_delta = (event.pos() - self.m_reference) * 1.0/self.m_scale;
-            self.m_reference = event.pos();
-            print(self.horizontalScrollBar().value(), self.m_delta.x(), self.verticalScrollBar().value(), self.m_delta.y())
-            self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() - self.m_delta.x());
-            self.verticalScrollBar().setValue(self.verticalScrollBar().value() - self.m_delta.y());
-            #~ self.update();
-        def mouseReleaseEvent(self, event):
-            QtWidgets.qApp.restoreOverrideCursor()
-            self.setMouseTracking(False)
-        def set_scale(self, s):
-            #~ self.m_scale = s
-            #~ self.update()
-            pass
 
 
     # https://github.com/baoboa/pyqt5/blob/master/examples/widgets/imageviewer.py
@@ -302,6 +309,16 @@ class MainWindow(QtWidgets.QMainWindow):
             #~ self.imgwid.paintEvent(None)
             #~ self.imgwid.repaint()
             self.imgwid.resize(self.zoom * self.pixmap.size()) #setFixedSize  must be for resize (also .resize works), if setWidgetResizable(False) # also works on its own in that case, but does not stay put
+            if self.image_display.m_wheelevent:
+                wex, iwtlx = self.image_display.m_wheelevent.globalX(), self.mapToGlobal(self.imgwid.rect().topLeft()).x()
+                wey, iwtly = self.image_display.m_wheelevent.globalY(), self.mapToGlobal(self.imgwid.rect().topLeft()).y()
+                self.wheeldx = (wex - iwtlx)*abs(self.imgwid.m_scalechange)
+                self.wheeldy = (wey - iwtly)*abs(self.imgwid.m_scalechange)
+                print("wex", wex, iwtlx, self.wheeldx)
+                sys.stdout.flush()
+
+                self.image_display.horizontalScrollBar().setValue(self.image_display.horizontalScrollBar().value() + self.wheeldx);
+                self.image_display.verticalScrollBar().setValue(self.image_display.verticalScrollBar().value() + self.wheeldy);
             # # scaled pixmap is enough
             # pixmap = self.pixmap.scaled(
             #     #~ #self.image_display.viewport().size(),
@@ -310,12 +327,12 @@ class MainWindow(QtWidgets.QMainWindow):
             # self.imglab.setPixmap(pixmap)
 
             #~ self.imglab.resize(self.zoom * self.pixmap.size()) # wrong scrollbar pos w/ only this
-        self.adjustScrollBar(self.image_display.horizontalScrollBar(), self.zoom)
-        self.adjustScrollBar(self.image_display.verticalScrollBar(), self.zoom)
+        #~ self.adjustScrollBar(self.image_display.horizontalScrollBar(), self.zoom)
+        #~ self.adjustScrollBar(self.image_display.verticalScrollBar(), self.zoom)
 
     def replicate_fg_viewer(self):
         # image display area
-        self.image_display = MainWindow.ScrollAreaWheel(self) # QtWidgets.QScrollArea()
+        self.image_display = ScrollAreaWheel(self) # QtWidgets.QScrollArea()
         self.image_display.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.image_display.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.image_display.setContentsMargins(0,0,0,0);
@@ -335,8 +352,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # #~ self.id_layout = QtWidgets.QGridLayout(self.imglab)
         # #self.image_display.setWidget(self.id_layout.widget())
         # #~ self.image_display.setWidget(self.imglab)
-        # self.image_display.setWidgetResizable(False)
-        # self.image_display.setAlignment(Qt.AlignCenter)
+        self.image_display.setWidgetResizable(False)
+        self.image_display.setAlignment(Qt.AlignCenter)
         # #~ self.id_layout.addWidget(self.imglab, 0, 0, Qt.AlignCenter)
         # self.image_label_lay.addWidget(self.imglab, 0, 0, QtCore.Qt.AlignCenter)
 
@@ -374,11 +391,13 @@ class MainWindow(QtWidgets.QMainWindow):
         self.zoomfact = 1.2
         self.current_splitter_style=0
         self.lastPreviewSize = None
+        self.wheeldx = 0
+        self.wheeldy = 0
         self.do_init = QtCore.QEvent.registerEventType()
         QtWidgets.QMainWindow.__init__(self)
         self.setWindowTitle("Camera config cam-conf-view-gui.py")
-        self.setMinimumWidth(400)
-        self.setMinimumHeight(300)
+        self.setMinimumWidth(1000)
+        self.setMinimumHeight(600)
         # quit shortcut
         self.quit_action = QtWidgets.QAction('Quit', self)
         self.quit_action.setShortcuts(['Ctrl+Q', 'Ctrl+W'])
@@ -611,6 +630,9 @@ class MainWindow(QtWidgets.QMainWindow):
                 #self.image_display.scale(self.zoom)
         #self.imglab.setPixmap(self.pixmap)
         self.imgwid.setPixmap(self.pixmap)
+        if not(self.imgwid.been_sized):
+            self.do_scale()
+            self.imgwid.been_sized = True
         #~ self.imgwid.update()
 
 

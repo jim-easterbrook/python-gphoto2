@@ -61,6 +61,9 @@ class ImageViewerB(QtWidgets.QWidget):
         #~ self.setGeometry(5, 5, 30, 30)
         #~ self.setMinimumSize(30, 20)
         #~ self.installEventFilter(self)
+        tempmap = QtGui.QPixmap("grad.png")
+        #~ self.new_image(tempmap)
+        self.setPixmap(tempmap)
         self.show()
         #~ self.repaint()
     def eventFilter(self, source, event):
@@ -313,12 +316,33 @@ class MainWindow(QtWidgets.QMainWindow):
         #~ self.imgwid.paintEvent(None)
         #~ self.imgwid.repaint()
         self.imgwid.resize(self.zoom * orig_size) #setFixedSize  must be for resize (also .resize works), if setWidgetResizable(False) # also works on its own in that case, but does not stay put
+
+# printout:
+# iwtlx does NOT change, remains on 50 always (imgwid.rect.TopLeft via self.mapToGlobal)
+# wex does sometimes - but it is the location of mouse pointer
+# 3rd arg (iwtlxw) does change, which is imgwid.rect.TopLeft via self.imgwid.mapToGlobal
+# (4th arg is wheeldx):
+
+#~ wex 281 50 119 46.19999999999999
+#~ wex 281 50 119 46.19999999999999
+#~ wex 281 50 116 46.19999999999999
+#~ wex 281 50 106 55.44
+#~ wex 281 50 84 66.528
+#~ wex 310 50 26 89.85599999999998
+#~ wex 310 50 -55 89.85599999999998
+#~ wex 310 50 -98 89.85599999999998
+#~ wex 310 50 -187 107.82719999999999
+#~ wex 310 50 -294 129.39263999999997
+#~ wex 310 50 -423 155.27116799999996
+#~ wex 310 50 -578 186.32540159999994
+#~ wex 310 50 -764 223.59048192
+
         if self.image_display.m_wheelevent:
             wex, iwtlx = self.image_display.m_wheelevent.globalX(), self.mapToGlobal(self.imgwid.rect().topLeft()).x()
             wey, iwtly = self.image_display.m_wheelevent.globalY(), self.mapToGlobal(self.imgwid.rect().topLeft()).y()
             self.wheeldx = (wex - iwtlx)*abs(self.imgwid.m_scalechange)
             self.wheeldy = (wey - iwtly)*abs(self.imgwid.m_scalechange)
-            print("wex", wex, iwtlx, self.wheeldx)
+            print("wex", wex, iwtlx, self.imgwid.mapToGlobal(self.imgwid.m_rect.topLeft()).x(), self.wheeldx)
             sys.stdout.flush()
 
             self.image_display.horizontalScrollBar().setValue(self.image_display.horizontalScrollBar().value() + self.wheeldx);
@@ -447,6 +471,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.set_splitter(Qt.Horizontal, self.frameview, self.frameconf)
 
         # defer full initialisation (slow operation) until gui is visible
+        #~ tempmap = QtGui.QPixmap("grad.png")
+        #~ self.new_image(tempmap)
+
         self.camera = gp.Camera()
         QtWidgets.QApplication.postEvent(
             self, QtCore.QEvent(self.do_init), Qt.LowEventPriority - 1)

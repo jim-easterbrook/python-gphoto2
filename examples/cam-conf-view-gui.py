@@ -320,7 +320,7 @@ class MainWindow(QtWidgets.QMainWindow):
 # printout:
 # iwtlx does NOT change, remains on 50 always (imgwid.rect.TopLeft via self.mapToGlobal)
 # wex does sometimes - but it is the location of mouse pointer
-# 3rd arg (iwtlxw) does change, which is imgwid.rect.TopLeft via self.imgwid.mapToGlobal
+# 3rd arg (iwtlxiw) does change, which is imgwid.rect.TopLeft via self.imgwid.mapToGlobal
 # (4th arg is wheeldx):
 
 #~ wex 281 50 119 46.19999999999999
@@ -337,12 +337,20 @@ class MainWindow(QtWidgets.QMainWindow):
 #~ wex 310 50 -578 186.32540159999994
 #~ wex 310 50 -764 223.59048192
 
+# currently, do_scale in respect to iwtlx is "late" - if I go three times forward, starting to go back will again go forward for three times, before actually turning back
+# same thing for iwtlxiw
+# in both cases, when it gets "late", occasionally the SVG background shows, meaning either the image or the background are not scaled right
+
         if self.image_display.m_wheelevent:
             wex, iwtlx = self.image_display.m_wheelevent.globalX(), self.mapToGlobal(self.imgwid.rect().topLeft()).x()
             wey, iwtly = self.image_display.m_wheelevent.globalY(), self.mapToGlobal(self.imgwid.rect().topLeft()).y()
+            iwtlxiw = self.imgwid.mapToGlobal(self.imgwid.m_rect.topLeft()).x()
+            iwtlyiw = self.imgwid.mapToGlobal(self.imgwid.m_rect.topLeft()).y()
+
+            #self.wheeldx = (wex - iwtlx)*abs(self.imgwid.m_scalechange)
             self.wheeldx = (wex - iwtlx)*abs(self.imgwid.m_scalechange)
             self.wheeldy = (wey - iwtly)*abs(self.imgwid.m_scalechange)
-            print("wex", wex, iwtlx, self.imgwid.mapToGlobal(self.imgwid.m_rect.topLeft()).x(), self.wheeldx)
+            print("wex", wex, iwtlx, iwtlxiw, self.wheeldx)
             sys.stdout.flush()
 
             self.image_display.horizontalScrollBar().setValue(self.image_display.horizontalScrollBar().value() + self.wheeldx);

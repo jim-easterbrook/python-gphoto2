@@ -424,7 +424,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hasCamInited = False
         self.lastException = None
         try:
-            self.camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera'
+            self.camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
             self.hasCamInited = True
         except Exception as ex:
             self.lastException = ex
@@ -592,12 +592,63 @@ def getSaveCamConfJson(args):
     camera = gp.Camera()
     hasCamInited = False
     try:
-        camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera'
+        camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
         hasCamInited = True
     except Exception as ex:
         lastException = ex
-        if type(ex) == gp.GPhoto2Error: #gphoto2.GPhoto2Error:
-            pass
+        print("No camera: {} {}; ".format( type(lastException).__name__, lastException.args))
+        #if type(ex) == gp.GPhoto2Error: #gphoto2.GPhoto2Error:
+        #    pass
+    if hasCamInited:
+        camera_config = camera.get_config()
+        # from CameraHandler::Init:
+        old_capturetarget = None
+        # get the camera model
+        OK, camera_model = gp.gp_widget_get_child_by_name(
+            camera_config, 'cameramodel')
+        if OK < gp.GP_OK:
+            OK, camera_model = gp.gp_widget_get_child_by_name(
+                camera_config, 'model')
+        if OK >= gp.GP_OK:
+            camera_model = camera_model.get_value()
+            print('Camera model:', camera_model)
+        else:
+            print('No camera model info')
+            camera_model = ''
+        if camera_model == 'unknown':
+            # find the capture size class config item
+            # need to set this on my Canon 350d to get preview to work at all
+            OK, capture_size_class = gp.gp_widget_get_child_by_name(
+                camera_config, 'capturesizeclass')
+            if OK >= gp.GP_OK:
+                # set value
+                value = capture_size_class.get_choice(2)
+                capture_size_class.set_value(value)
+                # set config
+                camera.set_config(camera_config)
+        else:
+            # put camera into preview mode to raise mirror
+            print(gp.gp_camera_capture_preview(camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+    else: # camera not inited
+        print("Sorry, no camera present, cannot execute command; exiting.")
+        sys.exit(1)
+
+def loadSetCamConfJson(args):
+    if (not(args.load_set_cam_conf_json)):
+        print("loadSetCamConfJson: Sorry, unusable/empty output .json filename; aborting")
+        sys.exit(1)
+    jsonfile = os.path.realpath(args.load_set_cam_conf_json)
+    print("loadSetCamConfJson: saving to {}".format(jsonfile))
+    camera = gp.Camera()
+    hasCamInited = False
+    try:
+        camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
+        hasCamInited = True
+    except Exception as ex:
+        lastException = ex
+        print("No camera: {} {}; ".format( type(lastException).__name__, lastException.args))
+        #if type(ex) == gp.GPhoto2Error: #gphoto2.GPhoto2Error:
+        #    pass
     if hasCamInited:
         camera_config = camera.get_config()
         # from CameraHandler::Init:
@@ -633,17 +684,24 @@ def getSaveCamConfJson(args):
         sys.exit(1)
 
 def main():
-    parser = argparse.ArgumentParser(description="{} - interact with camera via python-gphoto2. Called without command line arguments, will start a Qt GUI.".format(APPNAME))
-    parser.add_argument('--get-save-cam-conf-json', default=argparse.SUPPRESS, help='Get and save the camera configuration to .json file. The string argument is the filename, action is aborted if the argument is empty (default: suppress)') # "%(default)s"
+    # set up logging
+    logging.basicConfig(
+        format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
+    gp.check_result(gp.use_python_logging())
+
+    # command line argument parser
+    parser = argparse.ArgumentParser(description="{} - interact with camera via python-gphoto2. Called without command line arguments, it will start a Qt GUI.".format(APPNAME))
+    mexg = parser.add_mutually_exclusive_group()
+    mexg.add_argument('--get-save-cam-conf-json', default=argparse.SUPPRESS, help='Get and save the camera configuration to .json file. The string argument is the filename, action is aborted if no camera online, or if the argument is empty (default: suppress)') # "%(default)s"
+    mexg.add_argument('--load-set-cam-conf-json', default=argparse.SUPPRESS, help='Load and set the camera configuration from .json file. The string argument is the filename, action is aborted if no camera online, or if the argument is empty (default: suppress)') # "%(default)s"
     args = parser.parse_args() # in case of --help, this also prints help and exits before Qt window is raised
     #~ print(args)
     if (hasattr(args, 'get_save_cam_conf_json')):
         getSaveCamConfJson(args)
+    elif (hasattr(args, 'load_set_cam_conf_json')):
+        loadSetCamConfJson(args)
 
     # start Qt Gui
-    logging.basicConfig(
-        format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
-    gp.check_result(gp.use_python_logging())
     app = QtWidgets.QApplication([APPNAME]) # SO: 18133302
     main = MainWindow()
     main.show()

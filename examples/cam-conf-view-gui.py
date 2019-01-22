@@ -28,6 +28,7 @@ import io
 import logging
 import math
 import sys, os
+import re
 
 from PIL import Image, ImageDraw, ImageFont, ImageChops, ImageStat
 
@@ -42,6 +43,9 @@ sys.path.insert(1,THISSCRIPTDIR)
 ccgoo = __import__('camera-config-gui-oo')
 fg = __import__('focus-gui')
 NOCAMIMG = "cam-conf-no-cam.png"
+APPNAME = "cam-conf-view-gui.py"
+
+patTrailDigSpace = re.compile(r'(?<=\.)(\d+?)(0+)(?=[^\d]|$)') # SO: 32348435
 
 # SO:35514531 - see also SO:46934526, 40683840, 9475772, https://github.com/baoboa/pyqt5/blob/master/examples/widgets/imageviewer.py
 class PhotoViewer(QtWidgets.QGraphicsView):
@@ -50,6 +54,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
     def __init__(self, parent):
         super(PhotoViewer, self).__init__(parent)
         self.parent = parent
+        self.isMouseOver = False
         self.ZOOMFACT = 1.25
         self._zoom = 0
         self._zoomfactor = 1
@@ -92,23 +97,25 @@ class PhotoViewer(QtWidgets.QGraphicsView):
                 scenerect = self.transform().mapRect(rect)
                 factor = min(viewrect.width() / scenerect.width(),
                              viewrect.height() / scenerect.height())
-                print("fiv factor {} vr_w {} sr_w {} u_w {} vr_h {} sr_h {} u_h {} ".format(factor, viewrect.width(), scenerect.width(), unity.width(), viewrect.height(), scenerect.height(), unity.height() ))
+                #~ print("fiv factor {} vr_w {} sr_w {} u_w {} vr_h {} sr_h {} u_h {} ".format(factor, viewrect.width(), scenerect.width(), unity.width(), viewrect.height(), scenerect.height(), unity.height() ))
                 # here, view scaled to fit:
                 self._zoomfactor = factor
                 self._zoom = math.log( self._zoomfactor, self.ZOOMFACT )
                 self.scale(factor, factor)
                 self.parent.updateStatusBar()
+                if (self.isMouseOver): # should be true on wheel, regardless
+                    self.setDragState()
             #self._zoom = 0
 
     def setPhoto(self, pixmap=None):
         self._zoom = 0
         if pixmap and not pixmap.isNull():
             self._empty = False
-            self.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
+            #self.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
             self._photo.setPixmap(pixmap)
         else:
             self._empty = True
-            self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
+            #self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
             self._photo.setPixmap(QtGui.QPixmap())
         #self.fitInView()
 
@@ -119,7 +126,9 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             unity = self.transform().mapRect(QtCore.QRectF(0, 0, 1, 1))
             self.scale(1 / unity.width(), 1 / unity.height())
             self.parent.updateStatusBar()
-            self.printUnityFactor()
+            #~ self.printUnityFactor()
+            if (self.isMouseOver): # should be true on wheel, regardless
+                self.setDragState()
 
     def wheelEvent(self, event):
         if self.hasPhoto():
@@ -144,13 +153,37 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             # so better to go along with scale(factor) here, for smoother browsing:
             self.scale(factor, factor)
             self.parent.updateStatusBar()
-            self.printUnityFactor()
+            #~ self.printUnityFactor()
+            if (self.isMouseOver): # should be true on wheel, regardless
+                self.setDragState()
 
     def mousePressEvent(self, event):
         if self._photo.isUnderMouse():
             self.photoClicked.emit(QtCore.QPoint(event.pos()))
         super(PhotoViewer, self).mousePressEvent(event)
 
+    def getCanDrag(self):
+        return ((self.horizontalScrollBar().maximum() > 0) or (self.verticalScrollBar().maximum() > 0))
+
+    def setDragState(self):
+        # here we mostly want to take case of the mouse cursor/pointer - and show the hand only when dragging is possible
+        canDrag = self.getCanDrag()
+        #~ print("Mouse Entered, {} {} {} {} {} {} {}".format(self.horizontalScrollBar().minimum(), self.horizontalScrollBar().pageStep(), self.horizontalScrollBar().maximum(), self.verticalScrollBar().minimum(), self.verticalScrollBar().pageStep(), self.verticalScrollBar().maximum(), canDrag))
+        if (canDrag):
+            self.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
+        else:
+            self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
+
+    def enterEvent(self, event):
+        self.isMouseOver = True
+        self.setDragState()
+        return super(PhotoViewer, self).enterEvent(event)
+
+    def leaveEvent(self, event):
+        #print("Mouse Left")
+        self.isMouseOver = False
+        # no need for setDragState - is autohandled, as we leave
+        return super(PhotoViewer, self).enterEvent(event)
 
 
 class MainWindow(QtWidgets.QMainWindow):
@@ -281,6 +314,11 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.lastPreviewSize:
                 msgstr += "last preview: {} x {} ".format(self.lastPreviewSize[0], self.lastPreviewSize[1])
         msgstr += "zoom: {:.3f} {:.3f}".format(self.image_display._zoom, self.image_display._zoomfactor)
+        def replacer(m):
+            retstr = m.group(1).replace(r'0', ' ')+' '*len(m.group(2))
+            #~ print('"{}" "{}" "{}" -> "{}"'.format(m.group(0),m.group(1),m.group(2),retstr))
+            return retstr
+        msgstr = patTrailDigSpace.sub(lambda m: replacer(m), msgstr)
         self.statusBar().showMessage(msgstr)
 
     def checkCreateNoCamImg(self):
@@ -315,7 +353,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hasCamInited = False
         self.do_init = QtCore.QEvent.registerEventType()
         QtWidgets.QMainWindow.__init__(self)
-        self.setWindowTitle("Camera config cam-conf-view-gui.py")
+        self.setWindowTitle("Camera config {}".format(APPNAME))
         self.setMinimumWidth(1000)
         self.setMinimumHeight(600)
         # quit shortcut
@@ -451,11 +489,11 @@ class MainWindow(QtWidgets.QMainWindow):
         print("save_settings")
 
     def zoom_original(self):
-        print("zoom_original")
+        #~ print("zoom_original")
         self.image_display.resetZoom()
 
     def zoom_fit_view(self):
-        print("zoom_fit_view")
+        #~ print("zoom_fit_view")
         self.image_display.fitInView()
 
     def set_splitter_layout_style(self):
@@ -469,7 +507,7 @@ class MainWindow(QtWidgets.QMainWindow):
             self.set_splitter(Qt.Vertical, self.frameconf, self.frameview)
 
     def switch_splitter_layout(self):
-        print("switch_splitter_layout")
+        #~ print("switch_splitter_layout")
         self.current_splitter_style = (self.current_splitter_style + 1) % 4
         self.set_splitter_layout_style()
 
@@ -549,7 +587,7 @@ if __name__ == "__main__":
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
-    app = QtWidgets.QApplication([])
+    app = QtWidgets.QApplication([APPNAME]) # SO: 18133302
     main = MainWindow()
     main.show()
     sys.exit(app.exec_())

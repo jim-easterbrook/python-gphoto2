@@ -66,6 +66,20 @@ def get_camera_model(camera_config):
         camera_model = ''
     return camera_model
 
+def get_gphoto2_CameraWidgetType_string(innumenum):
+    switcher = {
+        0: "GP_WIDGET_WINDOW",
+        1: "GP_WIDGET_SECTION",
+        2: "GP_WIDGET_TEXT",
+        3: "GP_WIDGET_RANGE",
+        4: "GP_WIDGET_TOGGLE",
+        5: "GP_WIDGET_RADIO",
+        6: "GP_WIDGET_MENU",
+        7: "GP_WIDGET_BUTTON",
+        8: "GP_WIDGET_DATE"
+    }
+    return switcher.get(innumenum, "Invalid camwidget type")
+
 def get_camera_config_children(childrenarr, savearr):
     for child in childrenarr:
         tmpdict = OrderedDict()
@@ -73,11 +87,18 @@ def get_camera_config_children(childrenarr, savearr):
         tmpdict['name'] = child.get_name()
         tmpdict['label'] = child.get_label()
         tmpdict['type'] = child.get_type()
+        tmpdict['typestr'] = get_gphoto2_CameraWidgetType_string( tmpdict['type'] )
         if ((tmpdict['type'] == gp.GP_WIDGET_RADIO) or (tmpdict['type'] == gp.GP_WIDGET_MENU)):
             tmpdict['count_choices'] = child.count_choices()
+            tmpchoices = []
+            for choice in child.get_choices():
+                tmpchoices.append(choice)
+            tmpdict['choices'] = ",".join(tmpchoices)
         if (child.count_children() > 0):
             tmpdict['children'] = []
             get_camera_config_children(child.get_children(), tmpdict['children'])
+        else:
+            tmpdict['value'] = child.get_value()
         savearr.append(tmpdict)
 
 def get_camera_config_object(camera_config):

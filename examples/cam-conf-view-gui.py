@@ -50,7 +50,9 @@ class PhotoViewer(QtWidgets.QGraphicsView):
     def __init__(self, parent):
         super(PhotoViewer, self).__init__(parent)
         self.parent = parent
+        self.ZOOMFACT = 1.25
         self._zoom = 0
+        self._zoomfactor = 1
         self._empty = True
         self._scene = QtWidgets.QGraphicsScene(self)
         self._photo = QtWidgets.QGraphicsPixmapItem()
@@ -66,6 +68,18 @@ class PhotoViewer(QtWidgets.QGraphicsView):
     def hasPhoto(self):
         return not self._empty
 
+    def printUnityFactor(self):
+        rect = QtCore.QRectF(self._photo.pixmap().rect())
+        unity = self.transform().mapRect(QtCore.QRectF(0, 0, 1, 1))
+        #self.scale(1 / unity.width(), 1 / unity.height())
+        viewrect = self.viewport().rect()
+        scenerect = self.transform().mapRect(rect)
+        factor = min(viewrect.width() / scenerect.width(),
+                     viewrect.height() / scenerect.height())
+        # NB: u_w == u_h gives "previous" or "current" _zoomfactor (depending where its called)
+        # NB: vr_w, vr_h remain same after zoom, sr_w, sr_h change (both are pixel sizes)
+        print("factor {} vr_w {} sr_w {} u_w {} vr_h {} sr_h {} u_h {} ".format(factor, viewrect.width(), scenerect.width(), unity.width(), viewrect.height(), scenerect.height(), unity.height() ))
+
     def fitInView(self, scale=True):
         rect = QtCore.QRectF(self._photo.pixmap().rect())
         if not rect.isNull():
@@ -77,8 +91,9 @@ class PhotoViewer(QtWidgets.QGraphicsView):
                 scenerect = self.transform().mapRect(rect)
                 factor = min(viewrect.width() / scenerect.width(),
                              viewrect.height() / scenerect.height())
+                print("factor {} vr_w {} sr_w {} u_w {} vr_h {} sr_h {} u_h {} ".format(factor, viewrect.width(), scenerect.width(), unity.width(), viewrect.height(), scenerect.height(), unity.height() ))
                 self.scale(factor, factor)
-            self._zoom = 0
+            #self._zoom = 0
 
     def setPhoto(self, pixmap=None):
         self._zoom = 0
@@ -92,13 +107,24 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             self._photo.setPixmap(QtGui.QPixmap())
         #self.fitInView()
 
+    def resetZoom(self):
+        if self.hasPhoto():
+            self._zoom = 0
+            self._zoomfactor = 1.0
+            unity = self.transform().mapRect(QtCore.QRectF(0, 0, 1, 1))
+            self.scale(1 / unity.width(), 1 / unity.height())
+            self.parent.updateStatusBar()
+            self.printUnityFactor()
+
     def wheelEvent(self, event):
         if self.hasPhoto():
             if event.angleDelta().y() > 0:
-                factor = 1.25
+                factor = self.ZOOMFACT # 1.25
+                self._zoomfactor = self._zoomfactor * self.ZOOMFACT
                 self._zoom += 1
             else:
-                factor = 0.8
+                factor = 1.0/self.ZOOMFACT #0.8
+                self._zoomfactor = self._zoomfactor / self.ZOOMFACT
                 self._zoom -= 1
             #if self._zoom > 0:
             #    self.scale(factor, factor)
@@ -107,8 +133,13 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             #    pass
             #else:
             #    self._zoom = 0
+            # note: resetTransform() with scale(_zoomfactor) works - but it also messes up anchor under the mouse
+            #self.resetTransform() #self.resetMatrix() # SO: 39101834, but it causes "AttributeError ... has no attribute 'resetMatrix'" SO:54311832, but as per qt doc, likely resetTransform is same as resetMatrix
+            #self.scale(self._zoomfactor, self._zoomfactor)
+            # so better to go along with scale(factor) here, for smoother browsing:
             self.scale(factor, factor)
             self.parent.updateStatusBar()
+            self.printUnityFactor()
 
     def mousePressEvent(self, event):
         if self._photo.isUnderMouse():
@@ -244,7 +275,7 @@ class MainWindow(QtWidgets.QMainWindow):
             msgstr = "Camera model: {} ; ".format(self.camera_model if (self.camera_model) else "No info")
             if self.lastPreviewSize:
                 msgstr += "last preview: {} x {} ".format(self.lastPreviewSize[0], self.lastPreviewSize[1])
-        msgstr += "zoom: {}".format(self.image_display._zoom)
+        msgstr += "zoom: {} {:.3f}".format(self.image_display._zoom, self.image_display._zoomfactor)
         self.statusBar().showMessage(msgstr)
 
     def checkCreateNoCamImg(self):
@@ -270,7 +301,6 @@ class MainWindow(QtWidgets.QMainWindow):
             d = ImageDraw.Draw(nocamimg)
             d.text((20,nocamsizec[1]-4), "No camera (unknown)", fill=(240,240,240))
             nocamimg.save(nocamimgpath)
-
 
 
     def __init__(self):
@@ -417,6 +447,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def zoom_original(self):
         print("zoom_original")
+        self.image_display.resetZoom()
 
     def zoom_fit_view(self):
         print("zoom_fit_view")

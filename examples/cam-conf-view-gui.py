@@ -43,115 +43,73 @@ ccgoo = __import__('camera-config-gui-oo')
 fg = __import__('focus-gui')
 
 
-# SO:46934526,40683840
-class ImageViewerB(QtWidgets.QWidget):
-    #~ paintTrigger = pyqtSignal()
-    def __init__(self):
-        super().__init__()
-        #~ self.mModified = True
-        self.m_pixmap = None
-        self.m_rect = None
-        self.m_reference = None
-        self.m_delta = QtCore.QPoint(0,0)
-        self.m_scale = 1.0
-        self.m_scalechange = 0.0
-        self.been_sized = False
-        self.initUI()
-    def initUI(self):
-        #~ self.setGeometry(5, 5, 30, 30)
-        #~ self.setMinimumSize(30, 20)
-        #~ self.installEventFilter(self)
-        tempmap = QtGui.QPixmap("grad.png")
-        #~ self.new_image(tempmap)
-        self.setPixmap(tempmap)
-        self.show()
-        #~ self.repaint()
-    def eventFilter(self, source, event):
-        print("eventFilter", event.type())
-        if (event.type() == QtCore.QEvent.Paint):
-            self.paintEvent(event)
-        return super(ImageViewerB, self).eventFilter(source, event)
-    def paintEvent(self, event):
-        print("paintevent", self.m_pixmap)
-        #~ QtWidgets.QWidget.paintEvent(self, event)
-        #~ if self.mModified:
-        if self.m_pixmap:
-            painter = QtGui.QPainter(self)
-            #~ painter.begin(self)
-            painter.translate(self.rect().center())
-            painter.scale(self.m_scale, self.m_scale)
-            #if self.m_delta:
-            #    painter.translate(self.m_delta)
-            painter.drawPixmap(self.m_rect.topLeft(), self.m_pixmap)
-            #~ painter.end()
-        #~ painter.drawPixmap(0, 0, self.mPixmap)
-        #~ self.drawBackground(painter)
-        #~ self.mPixmap = pixmap
-        #~ self.mModified = False
-    #def mousePressEvent(self, event):
-    #    self.m_reference = event.pos()
-    #    QtWidgets.qApp.setOverrideCursor(Qt.ClosedHandCursor)
-    #    self.setMouseTracking(True)
-    #def mouseMoveEvent(self, event):
-    #    self.m_delta += (event.pos() - self.m_reference) * 1.0/self.m_scale;
-    #    self.m_reference = event.pos();
-    #    self.update();
-    #def mouseReleaseEvent(self, event):
-    #    QtWidgets.qApp.restoreOverrideCursor()
-    #    self.setMouseTracking(False)
-    def setPixmap(self, pix):
-        self.m_pixmap = pix
-        self.m_rect = self.m_pixmap.rect()
-        #~ print("setPixmap", self.m_rect, self.m_pixmap)
-        self.m_rect.translate(-self.m_rect.center())
-        self.update()
-    def scale(self, s):
-        self.m_scale *= s
-        self.update()
-    def set_scale(self, s):
-        self.m_scalechange = s - self.m_scale
-        self.m_scale = s
-        self.update()
-    def sizeHint(self):
-        return QtCore.QSize(30, 20)
+# SO:35514531 - also SO:46934526,40683840, 9475772
+class PhotoViewer(QtWidgets.QGraphicsView):
+    photoClicked = QtCore.pyqtSignal(QtCore.QPoint)
 
-class ScrollAreaWheel(QtWidgets.QScrollArea): # SO:9475772
-    def __init__(self, parent=None):
-        super(ScrollAreaWheel, self).__init__(parent)
-        self.parent = parent
-        self.m_reference = None
-        self.m_delta = QtCore.QPoint(0,0)
-        self.m_scale = 1.0
-        self.m_wheelevent = None
+    def __init__(self, parent):
+        super(PhotoViewer, self).__init__(parent)
+        self._zoom = 0
+        self._empty = True
+        self._scene = QtWidgets.QGraphicsScene(self)
+        self._photo = QtWidgets.QGraphicsPixmapItem()
+        self._scene.addItem(self._photo)
+        self.setScene(self._scene)
+        self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)#Off)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)#Off)
+        self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(30, 30, 30)))
+        self.setFrameShape(QtWidgets.QFrame.NoFrame)
+
+    def hasPhoto(self):
+        return not self._empty
+
+    def fitInView(self, scale=True):
+        rect = QtCore.QRectF(self._photo.pixmap().rect())
+        if not rect.isNull():
+            self.setSceneRect(rect)
+            if self.hasPhoto():
+                unity = self.transform().mapRect(QtCore.QRectF(0, 0, 1, 1))
+                self.scale(1 / unity.width(), 1 / unity.height())
+                viewrect = self.viewport().rect()
+                scenerect = self.transform().mapRect(rect)
+                factor = min(viewrect.width() / scenerect.width(),
+                             viewrect.height() / scenerect.height())
+                self.scale(factor, factor)
+            self._zoom = 0
+
+    def setPhoto(self, pixmap=None):
+        self._zoom = 0
+        if pixmap and not pixmap.isNull():
+            self._empty = False
+            self.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
+            self._photo.setPixmap(pixmap)
+        else:
+            self._empty = True
+            self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
+            self._photo.setPixmap(QtGui.QPixmap())
+        self.fitInView()
+
     def wheelEvent(self, event):
-        #super(MainWindow.ScrollAreaWheel, self).wheelEvent(event)
-        #event.accept()
-        self.wheelDelta = 1 if (event.angleDelta().y() > 0) else -1
-        #print("wheelEvent", event.angleDelta()) # PyQt5.QtCore.QPoint(0, 120) or (0, -120)
-        #print("wheelEvent", event.pixelDelta()) # PyQt5.QtCore.QPoint()
-        if self.wheelDelta == 1: self.parent.zoom *= self.parent.zoomfact
-        else: self.parent.zoom /= self.parent.zoomfact
-        self.m_wheelevent = event
-        print("wheelEvent", self.wheelDelta, self.parent.zoom)
-        self.parent.do_scale()
+        if self.hasPhoto():
+            if event.angleDelta().y() > 0:
+                factor = 1.25
+                self._zoom += 1
+            else:
+                factor = 0.8
+                self._zoom -= 1
+            if self._zoom > 0:
+                self.scale(factor, factor)
+            elif self._zoom == 0:
+                self.fitInView()
+            else:
+                self._zoom = 0
+
     def mousePressEvent(self, event):
-        self.m_reference = event.pos()
-        QtWidgets.qApp.setOverrideCursor(Qt.ClosedHandCursor)
-        self.setMouseTracking(True)
-    def mouseMoveEvent(self, event):
-        self.m_delta = (event.pos() - self.m_reference) * 1.0/self.m_scale;
-        self.m_reference = event.pos();
-        print(self.horizontalScrollBar().value(), self.m_delta.x(), self.verticalScrollBar().value(), self.m_delta.y())
-        self.horizontalScrollBar().setValue(self.horizontalScrollBar().value() - self.m_delta.x());
-        self.verticalScrollBar().setValue(self.verticalScrollBar().value() - self.m_delta.y());
-        #~ self.update();
-    def mouseReleaseEvent(self, event):
-        QtWidgets.qApp.restoreOverrideCursor()
-        self.setMouseTracking(False)
-    def set_scale(self, s):
-        #~ self.m_scale = s
-        #~ self.update()
-        pass
+        if self._photo.isUnderMouse():
+            self.photoClicked.emit(QtCore.QPoint(event.pos()))
+        super(PhotoViewer, self).mousePressEvent(event)
 
 
 
@@ -367,48 +325,50 @@ class MainWindow(QtWidgets.QMainWindow):
         #~ self.adjustScrollBar(self.image_display.verticalScrollBar(), self.zoom)
 
     def replicate_fg_viewer(self):
-        # image display area
-        self.image_display = ScrollAreaWheel(self) # QtWidgets.QScrollArea()
-        self.image_display.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.image_display.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        self.image_display.setContentsMargins(0,0,0,0);
-        #~ self.imgwid = QtWidgets.QWidget()
-        self.imgwid = ImageViewerB()
-        self.imgwid.setContentsMargins(0,0,0,0);
-        #self.imgwid.setStyleSheet("background-color: rgb(255,0,0); margin:5px; border:1px solid rgb(0, 255, 0); ")
-        self.imgwid.setStyleSheet("background-color: qradialgradient(cx: 0.5, cy: 0.5, radius: 2, fx: 0.5, fy: 1, stop: 0 rgba(255,30,30,255), stop: 0.2 rgba(255,30,30,144), stop: 0.4 rgba(255,30,30,32)); margin:5px; border:1px solid rgb(0, 255, 0); ")
-        self.image_display.setWidget(self.imgwid)
-        # self.image_label_lay = QtWidgets.QGridLayout(self.imgwid)
-        # self.image_label_lay.setSpacing(0);
-        # self.image_label_lay.setContentsMargins(0,0,0,0);
-        # self.imglab = fg.ImageWidget() # QtWidgets.QLabel
-        # self.imglab.setStyleSheet("background-color: rgb(255,0,0); margin:5px; border:1px solid rgb(0, 255, 0); ")
-        # self.imglab.setBackgroundRole(QtGui.QPalette.Base);
-        # #self.id_layout = QtWidgets.QHBoxLayout(self.image_display)
-        # #self.id_layout = QtWidgets.QGridLayout(self.image_display)
-        # #~ self.id_layout = QtWidgets.QGridLayout(self.imglab)
-        # #self.image_display.setWidget(self.id_layout.widget())
-        # #~ self.image_display.setWidget(self.imglab)
-        self.image_display.setWidgetResizable(False)
-        self.image_display.setAlignment(Qt.AlignCenter)
-        # #~ self.id_layout.addWidget(self.imglab, 0, 0, Qt.AlignCenter)
-        # self.image_label_lay.addWidget(self.imglab, 0, 0, QtCore.Qt.AlignCenter)
+        # # image display area
+        # self.image_display = ScrollAreaWheel(self) # QtWidgets.QScrollArea()
+        # self.image_display.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        # self.image_display.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+        # self.image_display.setContentsMargins(0,0,0,0);
+        # #~ self.imgwid = QtWidgets.QWidget()
+        # self.imgwid = ImageViewerB()
+        # self.imgwid.setContentsMargins(0,0,0,0);
+        # #self.imgwid.setStyleSheet("background-color: rgb(255,0,0); margin:5px; border:1px solid rgb(0, 255, 0); ")
+        # self.imgwid.setStyleSheet("background-color: qradialgradient(cx: 0.5, cy: 0.5, radius: 2, fx: 0.5, fy: 1, stop: 0 rgba(255,30,30,255), stop: 0.2 rgba(255,30,30,144), stop: 0.4 rgba(255,30,30,32)); margin:5px; border:1px solid rgb(0, 255, 0); ")
+        # self.image_display.setWidget(self.imgwid)
+        # # self.image_label_lay = QtWidgets.QGridLayout(self.imgwid)
+        # # self.image_label_lay.setSpacing(0);
+        # # self.image_label_lay.setContentsMargins(0,0,0,0);
+        # # self.imglab = fg.ImageWidget() # QtWidgets.QLabel
+        # # self.imglab.setStyleSheet("background-color: rgb(255,0,0); margin:5px; border:1px solid rgb(0, 255, 0); ")
+        # # self.imglab.setBackgroundRole(QtGui.QPalette.Base);
+        # # #self.id_layout = QtWidgets.QHBoxLayout(self.image_display)
+        # # #self.id_layout = QtWidgets.QGridLayout(self.image_display)
+        # # #~ self.id_layout = QtWidgets.QGridLayout(self.imglab)
+        # # #self.image_display.setWidget(self.id_layout.widget())
+        # # #~ self.image_display.setWidget(self.imglab)
+        # self.image_display.setWidgetResizable(False)
+        # self.image_display.setAlignment(Qt.AlignCenter)
+        # # #~ self.id_layout.addWidget(self.imglab, 0, 0, Qt.AlignCenter)
+        # # self.image_label_lay.addWidget(self.imglab, 0, 0, QtCore.Qt.AlignCenter)
+#
+        # # #~ self.image_display.viewport().installEventFilter(self)
+        # # #~ self.imglab.installEventFilter(self)
+        # # self.imglab.setFocusPolicy( Qt.StrongFocus );
+        # # #~ self.imglab.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
+        # # self.imglab.setScaledContents(True)
+        # # #~ self.imglab.resize(50,50);
+        # # # (QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0)
+        # # # If rowSpan and/or columnSpan is -1, then the widget will extend to the bottom and/or right edge, respectively.
+        # # #~ print("AO: {} {}".format( self.contentview.frameGeometry().width(), self.contentview.frameGeometry().height() ) ) # 640 480?
+        # # #~ print("AO: {} {}".format( self.contentview.geometry().width(), self.contentview.geometry().height() ) ) # 640 480?
+        # # #~ screenShape = QtWidgets.QDesktopWidget().screenGeometry() # 1366 768
+        # # #~ print("AO: {} {}".format( screenShape.width(), screenShape.height() ) )
+        # # #~ self.contentview.layout().addWidget(self.image_display, 0, 0)#, 1, 1) #, Qt.AlignCenter)
+        # # #~ self.contentview.layout().addWidget(self.image_display) #, 0, 0) #, Qt.AlignCenter)
+        # # #self.contentview.layout().setAlignment(self.image_display, Qt.AlignCenter)
 
-        # #~ self.image_display.viewport().installEventFilter(self)
-        # #~ self.imglab.installEventFilter(self)
-        # self.imglab.setFocusPolicy( Qt.StrongFocus );
-        # #~ self.imglab.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
-        # self.imglab.setScaledContents(True)
-        # #~ self.imglab.resize(50,50);
-        # # (QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0)
-        # # If rowSpan and/or columnSpan is -1, then the widget will extend to the bottom and/or right edge, respectively.
-        # #~ print("AO: {} {}".format( self.contentview.frameGeometry().width(), self.contentview.frameGeometry().height() ) ) # 640 480?
-        # #~ print("AO: {} {}".format( self.contentview.geometry().width(), self.contentview.geometry().height() ) ) # 640 480?
-        # #~ screenShape = QtWidgets.QDesktopWidget().screenGeometry() # 1366 768
-        # #~ print("AO: {} {}".format( screenShape.width(), screenShape.height() ) )
-        # #~ self.contentview.layout().addWidget(self.image_display, 0, 0)#, 1, 1) #, Qt.AlignCenter)
-        # #~ self.contentview.layout().addWidget(self.image_display) #, 0, 0) #, Qt.AlignCenter)
-        # #self.contentview.layout().setAlignment(self.image_display, Qt.AlignCenter)
+        self.image_display = PhotoViewer(self)
         self.frameviewlayout.addWidget(self.image_display)
 
         self.new_image_sig.connect(self.new_image)
@@ -691,4 +651,8 @@ if __name__ == "__main__":
     main.show()
     sys.exit(app.exec_())
 
+
+# for testing https://stackoverflow.com/questions/40683840/zooming-and-panning-an-image-in-a-qscrollarea:
+# sudo apt install qtbase5-dev # installs: libgles2-mesa-dev libqt5opengl5-dev qt5-qmake qt5-qmake-bin qtbase5-dev qtbase5-dev-tools
+# I have qt5-qmake-bin -> use /usr/lib/qt5/bin/qmake, else qt4 version is used!
 

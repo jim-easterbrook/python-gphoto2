@@ -23,7 +23,6 @@
 
 from __future__ import print_function
 
-from datetime import datetime
 import io
 import logging
 import math
@@ -32,6 +31,10 @@ import re
 import argparse
 import json, codecs
 from collections import OrderedDict
+from datetime import datetime
+import time
+import tzlocal # sudo -H pip install tzlocal # pip2, pip3
+my_timezone = tzlocal.get_localzone()
 
 from PIL import Image, ImageDraw, ImageFont, ImageChops, ImageStat
 
@@ -104,6 +107,9 @@ def get_camera_config_children(childrenarr, savearr):
 def get_camera_config_object(camera_config):
     retdict = OrderedDict()
     retdict['camera_model'] = get_camera_model(camera_config)
+    unixts = time.time()
+    retdict['ts_taken_on'] = unixts
+    retdict['date_taken_on'] = tzlocal.get_localzone().localize(datetime.utcfromtimestamp(unixts), is_dst=None).replace(microsecond=0).isoformat(' ')
     retarray = []
     # # from camera-config-gui-oo.py
     # for child in camera_config.get_children():

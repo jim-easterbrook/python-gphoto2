@@ -30,6 +30,7 @@ import math
 import sys, os
 import re
 import argparse
+import json
 
 from PIL import Image, ImageDraw, ImageFont, ImageChops, ImageStat
 
@@ -109,7 +110,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             #self._zoom = 0
 
     def setPhoto(self, pixmap=None):
-        self._zoom = 0
+        #self._zoom = 0
         if pixmap and not pixmap.isNull():
             self._empty = False
             #self.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
@@ -615,20 +616,23 @@ def getSaveCamConfJson(args):
         else:
             print('No camera model info')
             camera_model = ''
-        if camera_model == 'unknown':
-            # find the capture size class config item
-            # need to set this on my Canon 350d to get preview to work at all
-            OK, capture_size_class = gp.gp_widget_get_child_by_name(
-                camera_config, 'capturesizeclass')
-            if OK >= gp.GP_OK:
-                # set value
-                value = capture_size_class.get_choice(2)
-                capture_size_class.set_value(value)
-                # set config
-                camera.set_config(camera_config)
-        else:
-            # put camera into preview mode to raise mirror
-            print(gp.gp_camera_capture_preview(camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+        #if camera_model == 'unknown':
+        #    # find the capture size class config item
+        #    # need to set this on my Canon 350d to get preview to work at all
+        #    OK, capture_size_class = gp.gp_widget_get_child_by_name(
+        #        camera_config, 'capturesizeclass')
+        #    if OK >= gp.GP_OK:
+        #        # set value
+        #        value = capture_size_class.get_choice(2)
+        #        capture_size_class.set_value(value)
+        #        # set config
+        #        camera.set_config(camera_config)
+        #else:
+        #    # put camera into preview mode to raise mirror
+        #    print(gp.gp_camera_capture_preview(camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+        print(camera_config) # <Swig Object of type '_CameraWidget *' at 0x7fac9b6e53e8>
+        print("Saved config to {}; exiting.".format(jsonfile))
+        sys.exit(0)
     else: # camera not inited
         print("Sorry, no camera present, cannot execute command; exiting.")
         sys.exit(1)

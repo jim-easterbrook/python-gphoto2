@@ -18,7 +18,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # another camera config gui, with load/save settings to file, and live view
-# started: sdaau 2019, on with python3-gphoto2, Ubuntu 18.04
+# started: sdaau 2019, on with python3-gphoto2 and `sudo -H pip2 install gphoto2`, Ubuntu 18.04
 # uses camera-config-gui-oo.py, focus-gui.py
 
 from __future__ import print_function
@@ -29,6 +29,7 @@ import logging
 import math
 import sys, os
 import re
+import argparse
 
 from PIL import Image, ImageDraw, ImageFont, ImageChops, ImageStat
 
@@ -582,8 +583,64 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pixmap = QtGui.QPixmap.fromImage(self.q_image)
         self.image_display.setPhoto(self.pixmap)
 
+def getSaveCamConfJson(args):
+    if (not(args.get_save_cam_conf_json)):
+        print("getSaveCamConfJson: Sorry, unusable/empty output .json filename; aborting")
+        sys.exit(1)
+    jsonfile = os.path.realpath(args.get_save_cam_conf_json)
+    print("getSaveCamConfJson: saving to {}".format(jsonfile))
+    camera = gp.Camera()
+    hasCamInited = False
+    try:
+        camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera'
+        hasCamInited = True
+    except Exception as ex:
+        lastException = ex
+        if type(ex) == gp.GPhoto2Error: #gphoto2.GPhoto2Error:
+            pass
+    if hasCamInited:
+        camera_config = camera.get_config()
+        # from CameraHandler::Init:
+        old_capturetarget = None
+        # get the camera model
+        OK, camera_model = gp.gp_widget_get_child_by_name(
+            camera_config, 'cameramodel')
+        if OK < gp.GP_OK:
+            OK, camera_model = gp.gp_widget_get_child_by_name(
+                camera_config, 'model')
+        if OK >= gp.GP_OK:
+            camera_model = camera_model.get_value()
+            print('Camera model:', camera_model)
+        else:
+            print('No camera model info')
+            camera_model = ''
+        if camera_model == 'unknown':
+            # find the capture size class config item
+            # need to set this on my Canon 350d to get preview to work at all
+            OK, capture_size_class = gp.gp_widget_get_child_by_name(
+                camera_config, 'capturesizeclass')
+            if OK >= gp.GP_OK:
+                # set value
+                value = capture_size_class.get_choice(2)
+                capture_size_class.set_value(value)
+                # set config
+                camera.set_config(camera_config)
+        else:
+            # put camera into preview mode to raise mirror
+            print(gp.gp_camera_capture_preview(camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+    else: # camera not inited
+        print("Sorry, no camera present, cannot execute command; exiting.")
+        sys.exit(1)
 
-if __name__ == "__main__":
+def main():
+    parser = argparse.ArgumentParser(description="{} - interact with camera via python-gphoto2. Called without command line arguments, will start a Qt GUI.".format(APPNAME))
+    parser.add_argument('--get-save-cam-conf-json', default=argparse.SUPPRESS, help='Get and save the camera configuration to .json file. The string argument is the filename, action is aborted if the argument is empty (default: suppress)') # "%(default)s"
+    args = parser.parse_args() # in case of --help, this also prints help and exits before Qt window is raised
+    #~ print(args)
+    if (hasattr(args, 'get_save_cam_conf_json')):
+        getSaveCamConfJson(args)
+
+    # start Qt Gui
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
@@ -591,6 +648,10 @@ if __name__ == "__main__":
     main = MainWindow()
     main.show()
     sys.exit(app.exec_())
+
+
+if __name__ == "__main__":
+    main()
 
 
 # for testing https://stackoverflow.com/questions/40683840/zooming-and-panning-an-image-in-a-qscrollarea:

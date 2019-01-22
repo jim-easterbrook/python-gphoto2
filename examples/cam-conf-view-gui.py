@@ -49,6 +49,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
 
     def __init__(self, parent):
         super(PhotoViewer, self).__init__(parent)
+        self.parent = parent
         self._zoom = 0
         self._empty = True
         self._scene = QtWidgets.QGraphicsScene(self)
@@ -89,7 +90,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             self._empty = True
             self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
             self._photo.setPixmap(QtGui.QPixmap())
-        self.fitInView()
+        #self.fitInView()
 
     def wheelEvent(self, event):
         if self.hasPhoto():
@@ -99,12 +100,15 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             else:
                 factor = 0.8
                 self._zoom -= 1
-            if self._zoom > 0:
-                self.scale(factor, factor)
-            elif self._zoom == 0:
-                self.fitInView()
-            else:
-                self._zoom = 0
+            #if self._zoom > 0:
+            #    self.scale(factor, factor)
+            #elif self._zoom == 0:
+            #    #self.fitInView()
+            #    pass
+            #else:
+            #    self._zoom = 0
+            self.scale(factor, factor)
+            self.parent.updateStatusBar()
 
     def mousePressEvent(self, event):
         if self._photo.isUnderMouse():
@@ -129,12 +133,13 @@ class MainWindow(QtWidgets.QMainWindow):
                 self.old_capturetarget = None
 
     def closeEvent(self, event):
-        #~ self.camera_handler.shut_down() # ->
-        #~ self.running = False
-        self._reset_config()
-        self.camera.exit()
-        #~ self.ch_thread.quit()
-        #~ self.ch_thread.wait()
+        if self.hasCamInited:
+            #~ self.camera_handler.shut_down() # ->
+            #~ self.running = False
+            self._reset_config()
+            self.camera.exit()
+            #~ self.ch_thread.quit()
+            #~ self.ch_thread.wait()
         return super(MainWindow, self).closeEvent(event)
 
     def _set_config(self):
@@ -232,12 +237,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.new_image_sig.connect(self.new_image)
 
     def updateStatusBar(self):
+        msgstr = ""
         if self.lastException:
             msgstr = "No camera: {} {}; ".format( type(self.lastException).__name__, self.lastException.args)
         if self.hasCamInited:
             msgstr = "Camera model: {} ; ".format(self.camera_model if (self.camera_model) else "No info")
             if self.lastPreviewSize:
-                msgstr += "last preview: {} x {}".format(self.lastPreviewSize[0], self.lastPreviewSize[1])
+                msgstr += "last preview: {} x {} ".format(self.lastPreviewSize[0], self.lastPreviewSize[1])
+        msgstr += "zoom: {}".format(self.image_display._zoom)
         self.statusBar().showMessage(msgstr)
 
     def checkCreateNoCamImg(self):
@@ -343,7 +350,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hasCamInited = False
         self.lastException = None
         try:
-            self.camera.init()
+            self.camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera'
             self.hasCamInited = True
         except Exception as ex:
             self.lastException = ex

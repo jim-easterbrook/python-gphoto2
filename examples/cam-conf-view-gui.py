@@ -66,21 +66,37 @@ def get_camera_model(camera_config):
         camera_model = ''
     return camera_model
 
+def get_camera_config_children(childrenarr, savearr):
+    for child in childrenarr:
+        tmpdict = OrderedDict()
+        tmpdict['ro'] = child.get_readonly()
+        tmpdict['name'] = child.get_name()
+        tmpdict['label'] = child.get_label()
+        tmpdict['type'] = child.get_type()
+        if ((tmpdict['type'] == gp.GP_WIDGET_RADIO) or (tmpdict['type'] == gp.GP_WIDGET_MENU)):
+            tmpdict['count_choices'] = child.count_choices()
+        if (child.count_children() > 0):
+            tmpdict['children'] = []
+            get_camera_config_children(child.get_children(), tmpdict['children'])
+        savearr.append(tmpdict)
+
 def get_camera_config_object(camera_config):
     retdict = OrderedDict()
     retdict['camera_model'] = get_camera_model(camera_config)
     retarray = []
-    # from camera-config-gui-oo.py
-    for child in camera_config.get_children():
-        tmpdict = OrderedDict()
-        tmpdict['ro'] = child.get_readonly()
-        tmpdict['label'] = child.get_label()
-        tmpdict['name'] = child.get_name()
-        tmpdict['type'] = child.get_type()
-        if ((tmpdict['type'] == gp.GP_WIDGET_RADIO) or (tmpdict['type'] == gp.GP_WIDGET_MENU)):
-            tmpdict['count_choices'] = child.count_choices()
-        retarray.append(tmpdict)
-    retdict['config'] = retarray
+    # # from camera-config-gui-oo.py
+    # for child in camera_config.get_children():
+    #     tmpdict = OrderedDict()
+    #     tmpdict['ro'] = child.get_readonly()
+    #     tmpdict['label'] = child.get_label()
+    #     tmpdict['name'] = child.get_name()
+    #     tmpdict['type'] = child.get_type()
+    #     if ((tmpdict['type'] == gp.GP_WIDGET_RADIO) or (tmpdict['type'] == gp.GP_WIDGET_MENU)):
+    #         tmpdict['count_choices'] = child.count_choices()
+    #     retarray.append(tmpdict)
+    # retdict['config'] = retarray
+    retdict['children'] = []
+    get_camera_config_children(camera_config.get_children(), retdict['children'])
     return retdict
 
 # SO:35514531 - see also SO:46934526, 40683840, 9475772, https://github.com/baoboa/pyqt5/blob/master/examples/widgets/imageviewer.py
@@ -635,21 +651,22 @@ def getSaveCamConfJson(args):
         #if type(ex) == gp.GPhoto2Error: #gphoto2.GPhoto2Error:
         #    pass
     if hasCamInited:
-        camera_config = camera.get_config()
+        camera_config = camera.get_config() # may print: WARNING: gphoto2: (b'_get_config [config.c:7649]') b"Type of property 'Owner Name' expected: 0x4002 got: 0x0000"
         # from CameraHandler::Init:
-        old_capturetarget = None
+        #~ old_capturetarget = None
         # get the camera model
-        OK, camera_model = gp.gp_widget_get_child_by_name(
-            camera_config, 'cameramodel')
-        if OK < gp.GP_OK:
-            OK, camera_model = gp.gp_widget_get_child_by_name(
-                camera_config, 'model')
-        if OK >= gp.GP_OK:
-            camera_model = camera_model.get_value()
-            print('Camera model:', camera_model)
-        else:
-            print('No camera model info')
-            camera_model = ''
+        #OK, camera_model = gp.gp_widget_get_child_by_name(
+        #    camera_config, 'cameramodel')
+        #if OK < gp.GP_OK:
+        #    OK, camera_model = gp.gp_widget_get_child_by_name(
+        #        camera_config, 'model')
+        #if OK >= gp.GP_OK:
+        #    camera_model = camera_model.get_value()
+        #    print('Camera model:', camera_model)
+        #else:
+        #    print('No camera model info')
+        #    camera_model = ''
+        #~ camera_model = get_camera_model(camera_config)
         #if camera_model == 'unknown':
         #    # find the capture size class config item
         #    # need to set this on my Canon 350d to get preview to work at all
@@ -727,7 +744,7 @@ def loadSetCamConfJson(args):
 def main():
     # set up logging
     logging.basicConfig(
-        format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
+        format='%(filename)s:%(lineno)d %(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
 
     # command line argument parser

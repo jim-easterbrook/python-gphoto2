@@ -29,7 +29,7 @@ import logging
 import math
 import sys, os
 
-from PIL import Image, ImageChops, ImageStat
+from PIL import Image, ImageDraw, ImageFont, ImageChops, ImageStat
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QRect
@@ -41,9 +41,9 @@ THISSCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(1,THISSCRIPTDIR)
 ccgoo = __import__('camera-config-gui-oo')
 fg = __import__('focus-gui')
+NOCAMIMG = "cam-conf-no-cam.png"
 
-
-# SO:35514531 - also SO:46934526,40683840, 9475772
+# SO:35514531 - see also SO:46934526, 40683840, 9475772, https://github.com/baoboa/pyqt5/blob/master/examples/widgets/imageviewer.py
 class PhotoViewer(QtWidgets.QGraphicsView):
     photoClicked = QtCore.pyqtSignal(QtCore.QPoint)
 
@@ -222,176 +222,56 @@ class MainWindow(QtWidgets.QMainWindow):
         #quit_button.clicked.connect(QtWidgets.qApp.closeAllWindows)
         #widget.layout().addWidget(quit_button, 1, 2)
 
-
-
-    # https://github.com/baoboa/pyqt5/blob/master/examples/widgets/imageviewer.py
-    def adjustScrollBar(self, scrollBar, factor):
-        print(scrollBar.value(), scrollBar.pageStep())
-        scrollBar.setValue(int(factor * scrollBar.value()
-                                + ((factor - 1) * scrollBar.pageStep()/2)))
-
     def eventFilter(self, source, event):
-        if (event.type() == QtCore.QEvent.Wheel):
-        #if ((event.type() == QtCore.QEvent.Wheel)
-            #and (source is self.imglab)):
-            #and (source is self.image_display.viewport())):
-            #~ self.wheelDelta = 1 if (event.angleDelta().y() > 0) else -1
-            #~ print("wheel source", source, self.wheelDelta, source is self.image_display.viewport(), source is self.imglab)
-            #return True # means don't process
-            #event.ignore()
-            #self.image_display.viewport().wheelEvent(event) # cannot
-            #return True
-            if ( (source is self.image_display.viewport()) or (source is self.imglab) ):
-                self.wheelDelta = 1 if (event.angleDelta().y() > 0) else -1
-                if self.wheelDelta == 1: self.zoom *= self.zoomfact
-                else: self.zoom /= self.zoomfact
-
-                if (self.imglab.pixmap()):
-                    self.imglab.resize(self.zoom * self.imglab.pixmap().size())
-                #~ if (self.image_display.viewport()):
-                    #~ self.image_display.viewport().resize(self.zoom * self.image_display.viewport().size())
-
-                self.adjustScrollBar(self.image_display.horizontalScrollBar(), self.zoom)
-                self.adjustScrollBar(self.image_display.verticalScrollBar(), self.zoom)
-
-                print("wheel source", source, self.wheelDelta, self.zoom, source is self.image_display.viewport(), source is self.imglab)
-
+        #if (event.type() == QtCore.QEvent.Wheel): # no need anymore
         return super(MainWindow, self).eventFilter(source, event)
 
-
-    def do_scale(self):
-        #if (self.imglab.pixmap()):
-        if (self.pixmap):
-            orig_size = self.pixmap.size()
-        else:
-            orig_size = self.imgwid.size()
-
-        #~ self.imgwid.resize(self.zoom * self.imglab.pixmap().size()) # stops resize
-        #~ self.image_display.resize(self.zoom * self.imglab.pixmap().size())
-        print("do_scale", self.zoom * orig_size)
-        #~ self.image_display.set_scale(self.zoom);
-        self.imgwid.set_scale(self.zoom);
-        #~ self.imgwid.paintEvent(None)
-        #~ self.imgwid.repaint()
-        self.imgwid.resize(self.zoom * orig_size) #setFixedSize  must be for resize (also .resize works), if setWidgetResizable(False) # also works on its own in that case, but does not stay put
-
-# printout:
-# iwtlx does NOT change, remains on 50 always (imgwid.rect.TopLeft via self.mapToGlobal)
-# wex does sometimes - but it is the location of mouse pointer
-# 3rd arg (iwtlxiw) does change, which is imgwid.rect.TopLeft via self.imgwid.mapToGlobal
-# (4th arg is wheeldx):
-
-#~ wex 281 50 119 46.19999999999999
-#~ wex 281 50 119 46.19999999999999
-#~ wex 281 50 116 46.19999999999999
-#~ wex 281 50 106 55.44
-#~ wex 281 50 84 66.528
-#~ wex 310 50 26 89.85599999999998
-#~ wex 310 50 -55 89.85599999999998
-#~ wex 310 50 -98 89.85599999999998
-#~ wex 310 50 -187 107.82719999999999
-#~ wex 310 50 -294 129.39263999999997
-#~ wex 310 50 -423 155.27116799999996
-#~ wex 310 50 -578 186.32540159999994
-#~ wex 310 50 -764 223.59048192
-
-# currently, do_scale in respect to iwtlx is "late" - if I go three times forward, starting to go back will again go forward for three times, before actually turning back
-# same thing for iwtlxiw
-# in both cases, when it gets "late", occasionally the SVG background shows, meaning either the image or the background are not scaled right
-
-        if self.image_display.m_wheelevent:
-            wex, iwtlx = self.image_display.m_wheelevent.globalX(), self.mapToGlobal(self.imgwid.rect().topLeft()).x()
-            wey, iwtly = self.image_display.m_wheelevent.globalY(), self.mapToGlobal(self.imgwid.rect().topLeft()).y()
-            iwtlxiw = self.imgwid.mapToGlobal(self.imgwid.m_rect.topLeft()).x()
-            iwtlyiw = self.imgwid.mapToGlobal(self.imgwid.m_rect.topLeft()).y()
-
-            #self.wheeldx = (wex - iwtlx)*abs(self.imgwid.m_scalechange)
-            self.wheeldx = (wex - iwtlx)*abs(self.imgwid.m_scalechange)
-            self.wheeldy = (wey - iwtly)*abs(self.imgwid.m_scalechange)
-            print("wex", wex, iwtlx, iwtlxiw, self.wheeldx)
-            sys.stdout.flush()
-
-            self.image_display.horizontalScrollBar().setValue(self.image_display.horizontalScrollBar().value() + self.wheeldx);
-            self.image_display.verticalScrollBar().setValue(self.image_display.verticalScrollBar().value() + self.wheeldy);
-            # # scaled pixmap is enough
-            # pixmap = self.pixmap.scaled(
-            #     #~ #self.image_display.viewport().size(),
-            #     #~ self.zoom * self.pixmap.size() ,
-            #     Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            # self.imglab.setPixmap(pixmap)
-
-            #~ self.imglab.resize(self.zoom * self.pixmap.size()) # wrong scrollbar pos w/ only this
-        #~ self.adjustScrollBar(self.image_display.horizontalScrollBar(), self.zoom)
-        #~ self.adjustScrollBar(self.image_display.verticalScrollBar(), self.zoom)
-
     def replicate_fg_viewer(self):
-        # # image display area
-        # self.image_display = ScrollAreaWheel(self) # QtWidgets.QScrollArea()
-        # self.image_display.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        # self.image_display.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
-        # self.image_display.setContentsMargins(0,0,0,0);
-        # #~ self.imgwid = QtWidgets.QWidget()
-        # self.imgwid = ImageViewerB()
-        # self.imgwid.setContentsMargins(0,0,0,0);
-        # #self.imgwid.setStyleSheet("background-color: rgb(255,0,0); margin:5px; border:1px solid rgb(0, 255, 0); ")
-        # self.imgwid.setStyleSheet("background-color: qradialgradient(cx: 0.5, cy: 0.5, radius: 2, fx: 0.5, fy: 1, stop: 0 rgba(255,30,30,255), stop: 0.2 rgba(255,30,30,144), stop: 0.4 rgba(255,30,30,32)); margin:5px; border:1px solid rgb(0, 255, 0); ")
-        # self.image_display.setWidget(self.imgwid)
-        # # self.image_label_lay = QtWidgets.QGridLayout(self.imgwid)
-        # # self.image_label_lay.setSpacing(0);
-        # # self.image_label_lay.setContentsMargins(0,0,0,0);
-        # # self.imglab = fg.ImageWidget() # QtWidgets.QLabel
-        # # self.imglab.setStyleSheet("background-color: rgb(255,0,0); margin:5px; border:1px solid rgb(0, 255, 0); ")
-        # # self.imglab.setBackgroundRole(QtGui.QPalette.Base);
-        # # #self.id_layout = QtWidgets.QHBoxLayout(self.image_display)
-        # # #self.id_layout = QtWidgets.QGridLayout(self.image_display)
-        # # #~ self.id_layout = QtWidgets.QGridLayout(self.imglab)
-        # # #self.image_display.setWidget(self.id_layout.widget())
-        # # #~ self.image_display.setWidget(self.imglab)
-        # self.image_display.setWidgetResizable(False)
-        # self.image_display.setAlignment(Qt.AlignCenter)
-        # # #~ self.id_layout.addWidget(self.imglab, 0, 0, Qt.AlignCenter)
-        # # self.image_label_lay.addWidget(self.imglab, 0, 0, QtCore.Qt.AlignCenter)
-#
-        # # #~ self.image_display.viewport().installEventFilter(self)
-        # # #~ self.imglab.installEventFilter(self)
-        # # self.imglab.setFocusPolicy( Qt.StrongFocus );
-        # # #~ self.imglab.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Ignored)
-        # # self.imglab.setScaledContents(True)
-        # # #~ self.imglab.resize(50,50);
-        # # # (QWidget * widget, int fromRow, int fromColumn, int rowSpan, int columnSpan, Qt::Alignment alignment = 0)
-        # # # If rowSpan and/or columnSpan is -1, then the widget will extend to the bottom and/or right edge, respectively.
-        # # #~ print("AO: {} {}".format( self.contentview.frameGeometry().width(), self.contentview.frameGeometry().height() ) ) # 640 480?
-        # # #~ print("AO: {} {}".format( self.contentview.geometry().width(), self.contentview.geometry().height() ) ) # 640 480?
-        # # #~ screenShape = QtWidgets.QDesktopWidget().screenGeometry() # 1366 768
-        # # #~ print("AO: {} {}".format( screenShape.width(), screenShape.height() ) )
-        # # #~ self.contentview.layout().addWidget(self.image_display, 0, 0)#, 1, 1) #, Qt.AlignCenter)
-        # # #~ self.contentview.layout().addWidget(self.image_display) #, 0, 0) #, Qt.AlignCenter)
-        # # #self.contentview.layout().setAlignment(self.image_display, Qt.AlignCenter)
-
         self.image_display = PhotoViewer(self)
         self.frameviewlayout.addWidget(self.image_display)
-
         self.new_image_sig.connect(self.new_image)
-        #self.contentview.triggered.connect(self.zoom_original)
-
-    #~ def onContentViewResize(self, event):
-        #~ print(event.size())
 
     def updateStatusBar(self):
-        msgstr = "Camera model: {} ; ".format(self.camera_model if (self.camera_model) else "No info")
-        if self.lastPreviewSize:
-            msgstr += "last preview: {} x {}".format(self.lastPreviewSize[0], self.lastPreviewSize[1])
+        if self.lastException:
+            msgstr = "No camera: {} {}; ".format( type(self.lastException).__name__, self.lastException.args)
+        if self.hasCamInited:
+            msgstr = "Camera model: {} ; ".format(self.camera_model if (self.camera_model) else "No info")
+            if self.lastPreviewSize:
+                msgstr += "last preview: {} x {}".format(self.lastPreviewSize[0], self.lastPreviewSize[1])
         self.statusBar().showMessage(msgstr)
 
+    def checkCreateNoCamImg(self):
+        nocamimgpath = os.path.join(THISSCRIPTDIR, NOCAMIMG)
+        if (not(os.path.isfile(nocamimgpath))):
+            # create gradient background with text:
+            nocamsize = (320, 240)
+            nocamsizec = (nocamsize[0]/2, nocamsize[1]/2)
+            colA = (80, 80, 80) ; colB = (210, 30, 30) ; # colB is center
+            nocamimg = Image.new('RGB', nocamsize, color=0xFF)
+            gradoffset = (-50, 20)
+            nocammaxd = math.sqrt((nocamsizec[0]+abs(gradoffset[0]))**2 + (nocamsizec[1]+abs(gradoffset[1]))**2)
+            for ix in range(nocamsize[0]):
+                for iy in range(nocamsize[1]):
+                    dist = math.sqrt( (ix-nocamsizec[0]-gradoffset[0])**2 + (iy-nocamsizec[1]-gradoffset[1])**2 )
+                    distnorm = dist/nocammaxd
+                    r = colA[0]*distnorm + colB[0]*(1.0-distnorm)
+                    g = colA[1]*distnorm + colB[1]*(1.0-distnorm)
+                    b = colA[2]*distnorm + colB[2]*(1.0-distnorm)
+                    nocamimg.putpixel((ix, iy), (int(r), int(g), int(b)) )
+            # SO:2726171 "Per PIL's docs, ImageDraw's default font is a bitmap font, and therefore it cannot be scaled. For scaling, you need to select a true-type font."
+            # SO:24085996 ImageFont: "On Windows, if the given file name does not exist, the loader also looks in Windows fonts directory."
+            d = ImageDraw.Draw(nocamimg)
+            d.text((20,nocamsizec[1]-4), "No camera (unknown)", fill=(240,240,240))
+            nocamimg.save(nocamimgpath)
+
+
+
     def __init__(self):
-        self.zoom = 1
-        self.zoomfact = 1.2
         self.current_splitter_style=0
         self.lastPreviewSize = None
-        self.wheeldx = 0
-        self.wheeldy = 0
+        self.lastException = None
+        self.hasCamInited = False
         self.do_init = QtCore.QEvent.registerEventType()
-        self.pixmap = None
         QtWidgets.QMainWindow.__init__(self)
         self.setWindowTitle("Camera config cam-conf-view-gui.py")
         self.setMinimumWidth(1000)
@@ -409,14 +289,12 @@ class MainWindow(QtWidgets.QMainWindow):
         # frames
         self.frameview = QtWidgets.QFrame(self)
         self.frameview.setFrameShape(QtWidgets.QFrame.StyledPanel)
-        #~ self.frameviewlayout = QtWidgets.QHBoxLayout(self.frameview)
         self.frameviewlayout = QtWidgets.QGridLayout(self.frameview)
         self.frameviewlayout.setSpacing(0);
         self.frameviewlayout.setContentsMargins(0,0,0,0);
-        #~ self.contentview = QtWidgets.QWidget()
-        #~ self.contentview.setLayout(QtWidgets.QGridLayout())
-        #~ self.contentview.resizeEvent = self.onContentViewResize
-        #~ self.frameviewlayout.addWidget(self.contentview)
+
+        self.checkCreateNoCamImg()
+
         self.replicate_fg_viewer()
 
         self.frameconf = QtWidgets.QFrame(self)
@@ -446,13 +324,6 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QApplication.postEvent(
             self, QtCore.QEvent(self.do_init), Qt.LowEventPriority - 1)
 
-    def getSizeToFit(self, inwfit, inhfit, inworig, inhorig):
-        if (inhfit > inwfit):
-            neww, newh = int(inwfit), int(inhorig*(inwfit/inworig))
-        else:
-            neww, newh = int(inworig*(inhfit/inhorig)), int(inhfit)
-        return neww, newh
-
     def event(self, event):
         if event.type() != self.do_init:
             return QtWidgets.QMainWindow.event(self, event)
@@ -460,11 +331,7 @@ class MainWindow(QtWidgets.QMainWindow):
         QtWidgets.QApplication.setOverrideCursor(Qt.WaitCursor)
         #print("AO: {} {}".format( self.contentview.frameGeometry().width(), self.contentview.frameGeometry().height() ) ) # 187 258, OK
         # set initial size
-        inwfit, inhfit = self.frameview.frameGeometry().width(), self.frameview.frameGeometry().height()
-        # # just start with arbitrary known aspect ratio
-        # neww, newh = self.getSizeToFit(inwfit, inhfit, 640, 480)
-        # print("event")
-        # self.imglab.resize(neww, newh)
+        #inwfit, inhfit = self.frameview.frameGeometry().width(), self.frameview.frameGeometry().height()
         try:
             self.initialise()
         finally:
@@ -473,48 +340,60 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def CameraHandlerInit(self):
         # get camera config tree
-        self.camera.init()
-        self.camera_config = self.camera.get_config()
-        # from CameraHandler::Init:
-        self.old_capturetarget = None
-        # get the camera model
-        OK, camera_model = gp.gp_widget_get_child_by_name(
-            self.camera_config, 'cameramodel')
-        if OK < gp.GP_OK:
+        self.hasCamInited = False
+        self.lastException = None
+        try:
+            self.camera.init()
+            self.hasCamInited = True
+        except Exception as ex:
+            self.lastException = ex
+            if type(ex) == gp.GPhoto2Error: #gphoto2.GPhoto2Error:
+                nocamimgpath = os.path.join(THISSCRIPTDIR, NOCAMIMG)
+                temppixmap = QtGui.QPixmap(nocamimgpath)
+                self.image_display.setPhoto(temppixmap)
+        if self.hasCamInited:
+            self.camera_config = self.camera.get_config()
+            # from CameraHandler::Init:
+            self.old_capturetarget = None
+            # get the camera model
             OK, camera_model = gp.gp_widget_get_child_by_name(
-                self.camera_config, 'model')
-        if OK >= gp.GP_OK:
-            self.camera_model = camera_model.get_value()
-            print('Camera model:', self.camera_model)
-        else:
-            print('No camera model info')
-            self.camera_model = ''
-        self.updateStatusBar()
-        if self.camera_model == 'unknown':
-            # find the capture size class config item
-            # need to set this on my Canon 350d to get preview to work at all
-            OK, capture_size_class = gp.gp_widget_get_child_by_name(
-                self.camera_config, 'capturesizeclass')
+                self.camera_config, 'cameramodel')
+            if OK < gp.GP_OK:
+                OK, camera_model = gp.gp_widget_get_child_by_name(
+                    self.camera_config, 'model')
             if OK >= gp.GP_OK:
-                # set value
-                value = capture_size_class.get_choice(2)
-                capture_size_class.set_value(value)
-                # set config
-                self.camera.set_config(self.camera_config)
-        else:
-            # put camera into preview mode to raise mirror
-            print(gp.gp_camera_capture_preview(self.camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+                self.camera_model = camera_model.get_value()
+                print('Camera model:', self.camera_model)
+            else:
+                print('No camera model info')
+                self.camera_model = ''
+            if self.camera_model == 'unknown':
+                # find the capture size class config item
+                # need to set this on my Canon 350d to get preview to work at all
+                OK, capture_size_class = gp.gp_widget_get_child_by_name(
+                    self.camera_config, 'capturesizeclass')
+                if OK >= gp.GP_OK:
+                    # set value
+                    value = capture_size_class.get_choice(2)
+                    capture_size_class.set_value(value)
+                    # set config
+                    self.camera.set_config(self.camera_config)
+            else:
+                # put camera into preview mode to raise mirror
+                print(gp.gp_camera_capture_preview(self.camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+        self.updateStatusBar()
 
     def initialise(self):
         #~ # get camera config tree
         #~ self.camera.init()
         #~ self.camera_config = self.camera.get_config()
         self.CameraHandlerInit()
-        # create corresponding tree of tab widgets
-        self.setWindowTitle(self.camera_config.get_label())
-        self.configsection = ccgoo.SectionWidget(self.config_changed, self.camera_config)
-        self.widget.layout().addWidget(self.configsection, 0, 0, 1, 3)
-        self.scrollconf.setWidget(self.widget)
+        if self.hasCamInited:
+            # create corresponding tree of tab widgets
+            self.setWindowTitle(self.camera_config.get_label())
+            self.configsection = ccgoo.SectionWidget(self.config_changed, self.camera_config)
+            self.widget.layout().addWidget(self.configsection, 0, 0, 1, 3)
+            self.scrollconf.setWidget(self.widget)
 
     def config_changed(self):
         self.apply_button.setEnabled(True)
@@ -619,28 +498,8 @@ class MainWindow(QtWidgets.QMainWindow):
         if not self.q_image:
             return
         self.pixmap = QtGui.QPixmap.fromImage(self.q_image)
-        # if not self.zoomed:
-        #     pixmap = pixmap.scaled(
-        #         self.image_display.viewport().size(),
-        #         Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        #~ pixmap = pixmap.scaled(
-            #~ self.image_display.viewport().size(),
-            #~ Qt.KeepAspectRatio, Qt.SmoothTransformation)
-        #~ self.image_display.widget().setPixmap(pixmap)
-        #~ self.id_layout.widget().setPixmap(pixmap)
-                #self.image_display.scale(self.zoom)
-        #self.imglab.setPixmap(self.pixmap)
-        self.imgwid.setPixmap(self.pixmap)
-        if not(self.imgwid.been_sized):
-            self.do_scale()
-            self.imgwid.been_sized = True
-        #~ self.imgwid.update()
+        self.image_display.setPhoto(self.pixmap)
 
-
-    # def my_wheelEvent(self, event):
-    #     #self.zoom += event.angleDelta().y()/2880
-    #     #self.view.scale(self.zoom, self.zoom)
-    #     print("wheelEvent")
 
 if __name__ == "__main__":
     logging.basicConfig(

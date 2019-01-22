@@ -78,7 +78,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
                      viewrect.height() / scenerect.height())
         # NB: u_w == u_h gives "previous" or "current" _zoomfactor (depending where its called)
         # NB: vr_w, vr_h remain same after zoom, sr_w, sr_h change (both are pixel sizes)
-        print("factor {} vr_w {} sr_w {} u_w {} vr_h {} sr_h {} u_h {} ".format(factor, viewrect.width(), scenerect.width(), unity.width(), viewrect.height(), scenerect.height(), unity.height() ))
+        print("puf factor {} vr_w {} sr_w {} u_w {} vr_h {} sr_h {} u_h {} ".format(factor, viewrect.width(), scenerect.width(), unity.width(), viewrect.height(), scenerect.height(), unity.height() ))
 
     def fitInView(self, scale=True):
         rect = QtCore.QRectF(self._photo.pixmap().rect())
@@ -86,13 +86,18 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             self.setSceneRect(rect)
             if self.hasPhoto():
                 unity = self.transform().mapRect(QtCore.QRectF(0, 0, 1, 1))
+                # here, unity.width() == unity.height(); view is reset to actual in pixels (so: _zoomfactor=1, _zoom=0):
                 self.scale(1 / unity.width(), 1 / unity.height())
                 viewrect = self.viewport().rect()
                 scenerect = self.transform().mapRect(rect)
                 factor = min(viewrect.width() / scenerect.width(),
                              viewrect.height() / scenerect.height())
-                print("factor {} vr_w {} sr_w {} u_w {} vr_h {} sr_h {} u_h {} ".format(factor, viewrect.width(), scenerect.width(), unity.width(), viewrect.height(), scenerect.height(), unity.height() ))
+                print("fiv factor {} vr_w {} sr_w {} u_w {} vr_h {} sr_h {} u_h {} ".format(factor, viewrect.width(), scenerect.width(), unity.width(), viewrect.height(), scenerect.height(), unity.height() ))
+                # here, view scaled to fit:
+                self._zoomfactor = factor
+                self._zoom = math.log( self._zoomfactor, self.ZOOMFACT )
                 self.scale(factor, factor)
+                self.parent.updateStatusBar()
             #self._zoom = 0
 
     def setPhoto(self, pixmap=None):
@@ -275,7 +280,7 @@ class MainWindow(QtWidgets.QMainWindow):
             msgstr = "Camera model: {} ; ".format(self.camera_model if (self.camera_model) else "No info")
             if self.lastPreviewSize:
                 msgstr += "last preview: {} x {} ".format(self.lastPreviewSize[0], self.lastPreviewSize[1])
-        msgstr += "zoom: {} {:.3f}".format(self.image_display._zoom, self.image_display._zoomfactor)
+        msgstr += "zoom: {:.3f} {:.3f}".format(self.image_display._zoom, self.image_display._zoomfactor)
         self.statusBar().showMessage(msgstr)
 
     def checkCreateNoCamImg(self):
@@ -451,6 +456,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def zoom_fit_view(self):
         print("zoom_fit_view")
+        self.image_display.fitInView()
 
     def set_splitter_layout_style(self):
         if self.current_splitter_style == 0:

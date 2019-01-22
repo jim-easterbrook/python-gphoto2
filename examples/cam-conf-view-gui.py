@@ -30,7 +30,8 @@ import math
 import sys, os
 import re
 import argparse
-import json
+import json, codecs
+from collections import OrderedDict
 
 from PIL import Image, ImageDraw, ImageFont, ImageChops, ImageStat
 
@@ -43,11 +44,44 @@ import gphoto2 as gp
 THISSCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(1,THISSCRIPTDIR)
 ccgoo = __import__('camera-config-gui-oo')
-fg = __import__('focus-gui')
+#fg = __import__('focus-gui')
 NOCAMIMG = "cam-conf-no-cam.png"
 APPNAME = "cam-conf-view-gui.py"
 
 patTrailDigSpace = re.compile(r'(?<=\.)(\d+?)(0+)(?=[^\d]|$)') # SO: 32348435
+
+
+def get_camera_model(camera_config):
+    # get the camera model
+    OK, camera_model = gp.gp_widget_get_child_by_name(
+        camera_config, 'cameramodel')
+    if OK < gp.GP_OK:
+        OK, camera_model = gp.gp_widget_get_child_by_name(
+            camera_config, 'model')
+    if OK >= gp.GP_OK:
+        camera_model = camera_model.get_value()
+        #print('Camera model:', camera_model)
+    else:
+        #print('No camera model info')
+        camera_model = ''
+    return camera_model
+
+def get_camera_config_object(camera_config):
+    retdict = OrderedDict()
+    retdict['camera_model'] = get_camera_model(camera_config)
+    retarray = []
+    # from camera-config-gui-oo.py
+    for child in camera_config.get_children():
+        tmpdict = OrderedDict()
+        tmpdict['ro'] = child.get_readonly()
+        tmpdict['label'] = child.get_label()
+        tmpdict['name'] = child.get_name()
+        tmpdict['type'] = child.get_type()
+        if ((tmpdict['type'] == gp.GP_WIDGET_RADIO) or (tmpdict['type'] == gp.GP_WIDGET_MENU)):
+            tmpdict['count_choices'] = child.count_choices()
+        retarray.append(tmpdict)
+    retdict['config'] = retarray
+    return retdict
 
 # SO:35514531 - see also SO:46934526, 40683840, 9475772, https://github.com/baoboa/pyqt5/blob/master/examples/widgets/imageviewer.py
 class PhotoViewer(QtWidgets.QGraphicsView):
@@ -631,6 +665,9 @@ def getSaveCamConfJson(args):
         #    # put camera into preview mode to raise mirror
         #    print(gp.gp_camera_capture_preview(camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
         print(camera_config) # <Swig Object of type '_CameraWidget *' at 0x7fac9b6e53e8>
+        camconfobj = get_camera_config_object(camera_config)
+        with open(jsonfile, 'wb') as f: # SO:14870531
+            json.dump(camconfobj, codecs.getwriter('utf-8')(f), ensure_ascii=False, indent=2)
         print("Saved config to {}; exiting.".format(jsonfile))
         sys.exit(0)
     else: # camera not inited

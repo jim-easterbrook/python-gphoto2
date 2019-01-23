@@ -222,6 +222,52 @@ def stop_capture_view():
         print("Sorry, no camera present, cannot execute command; exiting.")
         sys.exit(1)
 
+def get_json_filters(args):
+    jsonfilters = []
+    if hasattr(args, 'include_names_json'):
+        splitnames = args.include_names_json.split(",")
+        for iname in splitnames:
+            splitnameeq = iname.split("=") # 1-element array if = not present; 2-element array if present
+            splitnameeq = list(filter(None, splitnameeq)) # remove empty strings from list
+            jsonfilters.append(splitnameeq)
+    jsonfilters = list(filter(None, jsonfilters)) # remove empty strings from list
+    return jsonfilters
+
+def copy_json_filter_props(inarr, outarr, inpropcount, outpropcount, jsonfilters):
+    for inchild in inarr:
+        inpropcount.numtot += 1
+        if inchild['ro'] == 1:
+            inpropcount.numro += 1
+        else:
+            inpropcount.numrw += 1
+        shouldCopy = False
+        if len(jsonfilters)>0:
+            for jfilter in jsonfilters:
+                if len(jfilter) == 2:
+                    key = jfilter[0] ; val = jfilter[1]
+                    if ( str(inchild[key]) == val ):
+                        shouldCopy = True
+                elif len(jfilter) == 1:
+                    if inchild["name"] == jfilter[0]:
+                        shouldCopy = True
+        else: # len(jsonfilters) == 0: ; no filters, pass everything
+            shouldCopy = True
+        # copy with flatten hierarchy - only copy dicts that have 'value' (else they have 'children'):
+        if ( ('value' in inchild.keys()) and (inchild['value'] is not None) ):
+            if shouldCopy:
+                outpropcount.numtot += 1
+                if inchild['ro'] == 1:
+                    outpropcount.numro += 1
+                else:
+                    outpropcount.numrw += 1
+                if 'Error' in str(inchild['value']):
+                    outpropcount.numexc += 1
+                outarr.append(inchild)
+        else: # if the child dict has no 'value' then it has 'children'
+            if 'children' in inchild.keys():
+                copy_json_filter_props(inchild['children'], outarr, inpropcount, outpropcount, jsonfilters)
+
+
 # SO:35514531 - see also SO:46934526, 40683840, 9475772, https://github.com/baoboa/pyqt5/blob/master/examples/widgets/imageviewer.py
 class PhotoViewer(QtWidgets.QGraphicsView):
     photoClicked = QtCore.pyqtSignal(QtCore.QPoint)
@@ -769,8 +815,35 @@ def copyFilterCamConfJson(args):
     injsonfile = os.path.realpath(args.load_cam_conf_json)
     outjsonfile = os.path.realpath(args.save_cam_conf_json)
     print("loadSetCamConfJson: input load from {}, output save to {}".format(injsonfile, outjsonfile))
-    camera = gp.Camera()
-    hasCamInited = False
+    # no need for camera here
+    # open and parse injsonfile as object
+    with open(injsonfile) as in_data_file:
+        indatadict = json.load(in_data_file, object_pairs_hook=OrderedDict)
+    # check filters
+    jsonfilters = get_json_filters(args)
+    jsonfilterslen = len(jsonfilters)
+    if jsonfilterslen > 0:
+        print("Got {} json filters; including only properties names(/values) in filters in output file".format(jsonfilterslen))
+    else:
+        print("Got no ({}) json filters; copying input (flattened) to output file".format(jsonfilterslen))
+    retdict = OrderedDict()
+    retdict['camera_model'] = indatadict['camera_model']
+    retdict['orig_ts_taken_on'] = indatadict['ts_taken_on']
+    retdict['orig_date_taken_on'] = indatadict['date_taken_on']
+    unixts, isots, fsuffts = get_formatted_ts( time.time() )
+    retdict['ts_taken_on'] = unixts
+    retdict['date_taken_on'] = isots
+    inpropcount = PropCount()
+    outpropcount = PropCount()
+    retdict['children'] = []
+    copy_json_filter_props(indatadict['children'], retdict['children'], inpropcount, outpropcount, jsonfilters)
+    print("Processed input props: {} ro, {} rw, {} total; got output props: {} ro, {} rw, {} total".format(
+        inpropcount.numro, inpropcount.numrw, inpropcount.numtot, outpropcount.numro, outpropcount.numrw, outpropcount.numtot
+    ))
+    # save
+    with open(outjsonfile, 'wb') as f: # SO:14870531
+        json.dump(retdict, codecs.getwriter('utf-8')(f), ensure_ascii=False, indent=2)
+    print("Saved filtered copy to output file {}".format(outjsonfile))
     sys.exit(0)
 
 def loadSetCamConfJson(args):
@@ -809,11 +882,11 @@ def main():
     # command line argument parser
     parser = argparse.ArgumentParser(description="{} - interact with camera via python-gphoto2. Called without command line arguments, it will start a Qt GUI.".format(APPNAME))
     #mexg = parser.add_mutually_exclusive_group() # mexg.add_argument
-    parser.add_argument('--save-cam-conf-json', default=argparse.SUPPRESS, help='Get and save the camera configuration to .json file, if standalone (together with --load-cam-conf-json, can be used for filtering json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty. Note that if camera is online, but mirror is not raised, process will complete with errors and fewer properties collected in json file (default: suppress)') # "%(default)s"
-    parser.add_argument('--load-cam-conf-json', default=argparse.SUPPRESS, help='Load and set the camera configuration from .json file, if standalone (together with --save-cam-conf-json, can be used for filtering json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty (default: suppress)') # "%(default)s"
-    parser.add_argument('--include-names-json', default=argparse.SUPPRESS, help='Comma separated list of property names to be filtered/included. If only --save-cam-conf-json, then only those properties in the list are saved in the json file; if only --load-cam-conf-json, only those properties in the list found in the file are applied to the camera; if both, the output json contains only properties in the list found in input json. Can also use `ro=0` or `ro=1` as filtering criteria; ignored if empty (default: suppress)') # "%(default)s"
-    parser.add_argument('--start-capture-view', default='', help='Command - start capture view (raise mirror) on the camera, then exit', action='store_const', const=start_capture_view) # "%(default)s"
-    parser.add_argument('--stop-capture-view', default='', help='Command - stop capture view (release mirror) on the camera, then exit', action='store_const', const=stop_capture_view) # "%(default)s"
+    parser.add_argument('--save-cam-conf-json', default=argparse.SUPPRESS, help='Get and save the camera configuration to .json file, if standalone (together with --load-cam-conf-json, can be used for copying filtered json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty. Note that if camera is online, but mirror is not raised, process will complete with errors and fewer properties collected in json file (default: suppress)') # "%(default)s"
+    parser.add_argument('--load-cam-conf-json', default=argparse.SUPPRESS, help='Load and set the camera configuration from .json file, if standalone (together with --save-cam-conf-json, can be used for copying filtered json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty (default: suppress)') # "%(default)s"
+    parser.add_argument('--include-names-json', default=argparse.SUPPRESS, help='Comma separated list of property names to be filtered/included. If only --save-cam-conf-json, then only those properties in the list are saved in the json file; if only --load-cam-conf-json, only those properties in the list found in the file are applied to the camera; if both, the output json contains only properties in the list found in input json. Can also use `ro=0` or `ro=1` as filtering criteria. If empty ignored, though a json copy causes flattening of hierarchy (removal of nodes with children and without value) (default: suppress)') # "%(default)s"
+    parser.add_argument('--start-capture-view', default='', help='Command - start capture view (extend lens/raise mirror) on the camera, then exit', action='store_const', const=start_capture_view) # "%(default)s"
+    parser.add_argument('--stop-capture-view', default='', help='Command - stop capture view (retract lens/release mirror) on the camera, then exit', action='store_const', const=stop_capture_view) # "%(default)s"
     args = parser.parse_args() # in case of --help, this also prints help and exits before Qt window is raised
     #~ print(args)
     if (args.start_capture_view): args.start_capture_view()

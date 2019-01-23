@@ -856,8 +856,8 @@ def loadSetCamConfJson(args):
     if (not(args.load_cam_conf_json)):
         print("loadSetCamConfJson: Sorry, unusable/empty output .json filename; aborting")
         sys.exit(1)
-    jsonfile = os.path.realpath(args.load_cam_conf_json)
-    print("loadSetCamConfJson: saving to {}".format(jsonfile))
+    injsonfile = os.path.realpath(args.load_cam_conf_json)
+    print("loadSetCamConfJson: loading from {}".format(injsonfile))
     camera = gp.Camera()
     hasCamInited = False
     try:
@@ -870,11 +870,37 @@ def loadSetCamConfJson(args):
         #    pass
     if hasCamInited:
         camera_config = camera.get_config()
-        # from CameraHandler::Init:
-        old_capturetarget = None
-        # get the camera model
-        camera_model = get_camera_model(camera_config)
-        put_camera_capture_preview_mirror(camera, camera_config, camera_model)
+        ## get the camera model
+        #camera_model = get_camera_model(camera_config)
+        #put_camera_capture_preview_mirror(camera, camera_config, camera_model)
+        injsonfile = os.path.realpath(args.load_cam_conf_json)
+        # open and parse injsonfile as object
+        with open(injsonfile) as in_data_file:
+            indatadict = json.load(in_data_file, object_pairs_hook=OrderedDict)
+        print("Getting flattened object (removes hierarchy/nodes with only children and without value) from {} ...".format(injsonfile))
+        inpropcount = PropCount()
+        outpropcount = PropCount()
+        jsonfilters = [] # empty here
+        flatproparray = []
+        copy_json_filter_props(indatadict['children'], flatproparray, inpropcount, outpropcount, jsonfilters)
+        print("Flattened {} ro, {} rw, {} total input props to: {} ro, {} rw, {} total flat props".format(
+            inpropcount.numro, inpropcount.numrw, inpropcount.numtot, outpropcount.numro, outpropcount.numrw, outpropcount.numtot
+        ))
+        print("Applying only {} read/write props (ignoring {} read-only ones, out of {} total props) to camera:".format(
+            outpropcount.numrw, outpropcount.numro, len(flatproparray)
+        ))
+        numappliedprops = 0
+        for ix, tprop in enumerate(flatproparray):
+            if tprop['ro'] == 1:
+                print(" {:3d}: (ignoring read-only prop '{}' ({}))".format(ix+1, tprop['name'], tprop['label'] ))
+            else:
+                numappliedprops += 1
+                print(" {:3d}: Applying prop {}/{}: '{}' = '{}' ({}))".format(ix+1, numappliedprops, outpropcount.numrw, tprop['name'], tprop['value'], tprop['label']))
+                #~ OK, capture = gp.gp_widget_get_child_by_name( camera_config, tprop['name'] )
+                #~ if OK >= gp.GP_OK:
+                    #~ capture.set_value(tprop['value'])
+        #~ camera.set_config(camera_config) # must have this, else value is not effectuated!
+        sys.exit(0)
     else: # camera not inited
         print("Sorry, no camera present, cannot execute command; exiting.")
         sys.exit(1)

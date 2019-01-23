@@ -189,7 +189,7 @@ def start_capture_view():
         camera_config = camera.get_config()
         camera_model = get_camera_model(camera_config)
         put_camera_capture_preview_mirror(camera, camera_config, camera_model)
-        print("Started capture view (raised mirror) on camera: {}".format(camera_model))
+        print("Started capture view (extended lens/raised mirror) on camera: {}".format(camera_model))
         sys.exit(0)
     else: # camera not inited
         print("Sorry, no camera present, cannot execute command; exiting.")
@@ -209,9 +209,14 @@ def stop_capture_view():
         camera_model = get_camera_model(camera_config)
         # NOTE: for Canon S3 IS, getting: -2 None; and also
         # `gphoto2 --set-config viewfinder=0`: Error: viewfinder not found in configuration tree.
+        #OK, viewfinder = gp.gp_widget_get_child_by_name( camera_config, 'viewfinder' )
         # https://github.com/gphoto/gphoto2/issues/195
-        OK, viewfinder = gp.gp_widget_get_child_by_name( camera_config, 'viewfinder' )
-        print("{} {}".format(OK, viewfinder))
+        # `gphoto2 --set-config capture=0` works to retract the lens, however
+        OK, capture = gp.gp_widget_get_child_by_name( camera_config, 'capture' )
+        if OK >= gp.GP_OK:
+            capture.set_value(0)
+            camera.set_config(camera_config) # must have this, else value is not effectuated!
+        print("Stopped capture view (retracted lens/released mirror) on camera: {} ({} {})".format(camera_model, OK, capture))
         sys.exit(0)
     else: # camera not inited
         print("Sorry, no camera present, cannot execute command; exiting.")

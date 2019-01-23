@@ -83,9 +83,35 @@ def get_gphoto2_CameraWidgetType_string(innumenum):
     }
     return switcher.get(innumenum, "Invalid camwidget type")
 
-def get_camera_config_children(childrenarr, savearr):
+class PropCount(object):
+    def __init__(self):
+        self.numro = 0
+        self.numrw = 0
+        self.numtot = 0
+        self.numexc = 0
+    def __str__(self):
+        return "{},{},{},{}".format(self.numtot,self.numrw,self.numro,self.numexc)
+
+def get_formatted_ts(inunixts=None):
+    if inunixts is None:
+        unixts = time.time()
+    else:
+        unixts = inunixts
+    tzlocalts = tzlocal.get_localzone().localize(datetime.utcfromtimestamp(unixts), is_dst=None).replace(microsecond=0)
+    isots = tzlocalts.isoformat(' ')
+    fsuffts = tzlocalts.strftime('%Y%m%d_%H%M%S') # file suffix timestamp
+    return (unixts, isots, fsuffts)
+
+
+def get_camera_config_children(childrenarr, savearr, propcount):
     for child in childrenarr:
         tmpdict = OrderedDict()
+        propcount.numtot += 1
+        if child.get_readonly():
+            propcount.numro += 1
+        else:
+            propcount.numrw += 1
+        tmpdict['idx'] = str(propcount)
         tmpdict['ro'] = child.get_readonly()
         tmpdict['name'] = child.get_name()
         tmpdict['label'] = child.get_label()
@@ -99,17 +125,23 @@ def get_camera_config_children(childrenarr, savearr):
             tmpdict['choices'] = ",".join(tmpchoices)
         if (child.count_children() > 0):
             tmpdict['children'] = []
-            get_camera_config_children(child.get_children(), tmpdict['children'])
+            get_camera_config_children(child.get_children(), tmpdict['children'], propcount)
         else:
-            tmpdict['value'] = child.get_value()
+            # NOTE: camera HAS to be "into preview mode to raise mirror", otherwise at this point can get "gphoto2.GPhoto2Error: [-2] Bad parameters" for get_value
+            try:
+                tmpdict['value'] = child.get_value()
+            except Exception as ex:
+                tmpdict['value'] = "{} {}".format( type(ex).__name__, ex.args)
+                propcount.numexc += 1
         savearr.append(tmpdict)
 
 def get_camera_config_object(camera_config):
     retdict = OrderedDict()
     retdict['camera_model'] = get_camera_model(camera_config)
-    unixts = time.time()
+    unixts, isots, fsuffts = get_formatted_ts( time.time() )
     retdict['ts_taken_on'] = unixts
-    retdict['date_taken_on'] = tzlocal.get_localzone().localize(datetime.utcfromtimestamp(unixts), is_dst=None).replace(microsecond=0).isoformat(' ')
+    retdict['date_taken_on'] = isots
+    propcount = PropCount()
     retarray = []
     # # from camera-config-gui-oo.py
     # for child in camera_config.get_children():
@@ -123,7 +155,9 @@ def get_camera_config_object(camera_config):
     #     retarray.append(tmpdict)
     # retdict['config'] = retarray
     retdict['children'] = []
-    get_camera_config_children(camera_config.get_children(), retdict['children'])
+    get_camera_config_children(camera_config.get_children(), retdict['children'], propcount)
+    excstr = "no errors - OK." if (propcount.numexc == 0) else "{} errors - bad (please check if camera mirror is up)!".format(propcount.numexc)
+    print("Parsed camera config: {} properties total, of which {} read-write and {} read-only; with {}".format(propcount.numtot, propcount.numrw, propcount.numro, excstr))
     return retdict
 
 # SO:35514531 - see also SO:46934526, 40683840, 9475772, https://github.com/baoboa/pyqt5/blob/master/examples/widgets/imageviewer.py
@@ -514,18 +548,19 @@ class MainWindow(QtWidgets.QMainWindow):
             self.camera_config = self.camera.get_config()
             # from CameraHandler::Init:
             self.old_capturetarget = None
-            # get the camera model
-            OK, camera_model = gp.gp_widget_get_child_by_name(
-                self.camera_config, 'cameramodel')
-            if OK < gp.GP_OK:
-                OK, camera_model = gp.gp_widget_get_child_by_name(
-                    self.camera_config, 'model')
-            if OK >= gp.GP_OK:
-                self.camera_model = camera_model.get_value()
-                print('Camera model:', self.camera_model)
-            else:
-                print('No camera model info')
-                self.camera_model = ''
+            # # get the camera model
+            # OK, camera_model = gp.gp_widget_get_child_by_name(
+            #     self.camera_config, 'cameramodel')
+            # if OK < gp.GP_OK:
+            #     OK, camera_model = gp.gp_widget_get_child_by_name(
+            #         self.camera_config, 'model')
+            # if OK >= gp.GP_OK:
+            #     self.camera_model = camera_model.get_value()
+            #     print('Camera model:', self.camera_model)
+            # else:
+            #     print('No camera model info')
+            #     self.camera_model = ''
+            self.camera_model = get_camera_model(self.camera_config)
             if self.camera_model == 'unknown':
                 # find the capture size class config item
                 # need to set this on my Canon 350d to get preview to work at all
@@ -662,10 +697,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.image_display.setPhoto(self.pixmap)
 
 def getSaveCamConfJson(args):
-    if (not(args.get_save_cam_conf_json)):
+    if (not(args.save_cam_conf_json)):
         print("getSaveCamConfJson: Sorry, unusable/empty output .json filename; aborting")
         sys.exit(1)
-    jsonfile = os.path.realpath(args.get_save_cam_conf_json)
+    jsonfile = os.path.realpath(args.save_cam_conf_json)
     print("getSaveCamConfJson: saving to {}".format(jsonfile))
     camera = gp.Camera()
     hasCamInited = False
@@ -718,11 +753,16 @@ def getSaveCamConfJson(args):
         print("Sorry, no camera present, cannot execute command; exiting.")
         sys.exit(1)
 
+def copyFilterCamConfJson(args):
+    if (not(args.load_cam_conf_json) or not(args.save_cam_conf_json)):
+        print("copyFilterCamConfJson: Sorry, unusable/empty input or output .json filename; aborting")
+        sys.exit(1)
+
 def loadSetCamConfJson(args):
-    if (not(args.load_set_cam_conf_json)):
+    if (not(args.load_cam_conf_json)):
         print("loadSetCamConfJson: Sorry, unusable/empty output .json filename; aborting")
         sys.exit(1)
-    jsonfile = os.path.realpath(args.load_set_cam_conf_json)
+    jsonfile = os.path.realpath(args.load_cam_conf_json)
     print("loadSetCamConfJson: saving to {}".format(jsonfile))
     camera = gp.Camera()
     hasCamInited = False
@@ -738,18 +778,19 @@ def loadSetCamConfJson(args):
         camera_config = camera.get_config()
         # from CameraHandler::Init:
         old_capturetarget = None
-        # get the camera model
-        OK, camera_model = gp.gp_widget_get_child_by_name(
-            camera_config, 'cameramodel')
-        if OK < gp.GP_OK:
-            OK, camera_model = gp.gp_widget_get_child_by_name(
-                camera_config, 'model')
-        if OK >= gp.GP_OK:
-            camera_model = camera_model.get_value()
-            print('Camera model:', camera_model)
-        else:
-            print('No camera model info')
-            camera_model = ''
+        # # get the camera model
+        # OK, camera_model = gp.gp_widget_get_child_by_name(
+        #     camera_config, 'cameramodel')
+        # if OK < gp.GP_OK:
+        #     OK, camera_model = gp.gp_widget_get_child_by_name(
+        #         camera_config, 'model')
+        # if OK >= gp.GP_OK:
+        #     camera_model = camera_model.get_value()
+        #     print('Camera model:', camera_model)
+        # else:
+        #     print('No camera model info')
+        #     camera_model = ''
+        camera_model = get_camera_model(camera_config)
         if camera_model == 'unknown':
             # find the capture size class config item
             # need to set this on my Canon 350d to get preview to work at all
@@ -776,15 +817,18 @@ def main():
 
     # command line argument parser
     parser = argparse.ArgumentParser(description="{} - interact with camera via python-gphoto2. Called without command line arguments, it will start a Qt GUI.".format(APPNAME))
-    mexg = parser.add_mutually_exclusive_group()
-    mexg.add_argument('--get-save-cam-conf-json', default=argparse.SUPPRESS, help='Get and save the camera configuration to .json file. The string argument is the filename, action is aborted if no camera online, or if the argument is empty (default: suppress)') # "%(default)s"
-    mexg.add_argument('--load-set-cam-conf-json', default=argparse.SUPPRESS, help='Load and set the camera configuration from .json file. The string argument is the filename, action is aborted if no camera online, or if the argument is empty (default: suppress)') # "%(default)s"
+    #mexg = parser.add_mutually_exclusive_group() # mexg.add_argument
+    parser.add_argument('--save-cam-conf-json', default=argparse.SUPPRESS, help='Get and save the camera configuration to .json file, if standalone (together with --load-cam-conf-json, can be used for filtering json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty. Note that if camera is online, but mirror is not raised, process will complete with errors and fewer properties collected in json file (default: suppress)') # "%(default)s"
+    parser.add_argument('--load-cam-conf-json', default=argparse.SUPPRESS, help='Load and set the camera configuration from .json file, if standalone (together with --save-cam-conf-json, can be used for filtering json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty (default: suppress)') # "%(default)s"
+    parser.add_argument('--include-names-json', default=argparse.SUPPRESS, help='Comma separated list of property names to be filtered/included. If only --save-cam-conf-json, then only those properties in the list are saved in the json file; if only --load-cam-conf-json, only those properties in the list found in the file are applied to the camera; if both, the output json contains only properties in the list found in input json. Can also use `ro=0` or `ro=1` as filtering criteria; ignored if empty (default: suppress)') # "%(default)s"
     args = parser.parse_args() # in case of --help, this also prints help and exits before Qt window is raised
     #~ print(args)
-    if (hasattr(args, 'get_save_cam_conf_json')):
+    if (hasattr(args, 'save_cam_conf_json') and not(hasattr(args, 'load_cam_conf_json'))):
         getSaveCamConfJson(args)
-    elif (hasattr(args, 'load_set_cam_conf_json')):
+    elif (hasattr(args, 'load_cam_conf_json') and not(hasattr(args, 'save_cam_conf_json'))):
         loadSetCamConfJson(args)
+    elif (hasattr(args, 'load_cam_conf_json') and hasattr(args, 'save_cam_conf_json')):
+        copyFilterCamConfJson(args)
 
     # start Qt Gui
     app = QtWidgets.QApplication([APPNAME]) # SO: 18133302

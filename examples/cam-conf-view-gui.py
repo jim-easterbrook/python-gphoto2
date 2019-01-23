@@ -160,6 +160,22 @@ def get_camera_config_object(camera_config):
     print("Parsed camera config: {} properties total, of which {} read-write and {} read-only; with {}".format(propcount.numtot, propcount.numrw, propcount.numro, excstr))
     return retdict
 
+def put_camera_capture_preview_mirror(camera, camera_config, camera_model):
+    if camera_model == 'unknown':
+        # find the capture size class config item
+        # need to set this on my Canon 350d to get preview to work at all
+        OK, capture_size_class = gp.gp_widget_get_child_by_name(
+            camera_config, 'capturesizeclass')
+        if OK >= gp.GP_OK:
+            # set value
+            value = capture_size_class.get_choice(2)
+            capture_size_class.set_value(value)
+            # set config
+            camera.set_config(camera_config)
+    else:
+        # put camera into preview mode to raise mirror
+        print(gp.gp_camera_capture_preview(camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+
 # SO:35514531 - see also SO:46934526, 40683840, 9475772, https://github.com/baoboa/pyqt5/blob/master/examples/widgets/imageviewer.py
 class PhotoViewer(QtWidgets.QGraphicsView):
     photoClicked = QtCore.pyqtSignal(QtCore.QPoint)
@@ -561,20 +577,21 @@ class MainWindow(QtWidgets.QMainWindow):
             #     print('No camera model info')
             #     self.camera_model = ''
             self.camera_model = get_camera_model(self.camera_config)
-            if self.camera_model == 'unknown':
-                # find the capture size class config item
-                # need to set this on my Canon 350d to get preview to work at all
-                OK, capture_size_class = gp.gp_widget_get_child_by_name(
-                    self.camera_config, 'capturesizeclass')
-                if OK >= gp.GP_OK:
-                    # set value
-                    value = capture_size_class.get_choice(2)
-                    capture_size_class.set_value(value)
-                    # set config
-                    self.camera.set_config(self.camera_config)
-            else:
-                # put camera into preview mode to raise mirror
-                print(gp.gp_camera_capture_preview(self.camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+            # if self.camera_model == 'unknown':
+            #     # find the capture size class config item
+            #     # need to set this on my Canon 350d to get preview to work at all
+            #     OK, capture_size_class = gp.gp_widget_get_child_by_name(
+            #         self.camera_config, 'capturesizeclass')
+            #     if OK >= gp.GP_OK:
+            #         # set value
+            #         value = capture_size_class.get_choice(2)
+            #         capture_size_class.set_value(value)
+            #         # set config
+            #         self.camera.set_config(self.camera_config)
+            # else:
+            #     # put camera into preview mode to raise mirror
+            #     print(gp.gp_camera_capture_preview(self.camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+            put_camera_capture_preview_mirror(self.camera, self.camera_config, self.camera_model)
         self.updateStatusBar()
 
     def initialise(self):
@@ -743,6 +760,7 @@ def getSaveCamConfJson(args):
         #else:
         #    # put camera into preview mode to raise mirror
         #    print(gp.gp_camera_capture_preview(camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+        #~ put_camera_capture_preview_mirror(camera, camera_config, camera_model)
         print(camera_config) # <Swig Object of type '_CameraWidget *' at 0x7fac9b6e53e8>
         camconfobj = get_camera_config_object(camera_config)
         with open(jsonfile, 'wb') as f: # SO:14870531
@@ -791,20 +809,21 @@ def loadSetCamConfJson(args):
         #     print('No camera model info')
         #     camera_model = ''
         camera_model = get_camera_model(camera_config)
-        if camera_model == 'unknown':
-            # find the capture size class config item
-            # need to set this on my Canon 350d to get preview to work at all
-            OK, capture_size_class = gp.gp_widget_get_child_by_name(
-                camera_config, 'capturesizeclass')
-            if OK >= gp.GP_OK:
-                # set value
-                value = capture_size_class.get_choice(2)
-                capture_size_class.set_value(value)
-                # set config
-                camera.set_config(camera_config)
-        else:
-            # put camera into preview mode to raise mirror
-            print(gp.gp_camera_capture_preview(camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+        # if camera_model == 'unknown':
+        #     # find the capture size class config item
+        #     # need to set this on my Canon 350d to get preview to work at all
+        #     OK, capture_size_class = gp.gp_widget_get_child_by_name(
+        #         camera_config, 'capturesizeclass')
+        #     if OK >= gp.GP_OK:
+        #         # set value
+        #         value = capture_size_class.get_choice(2)
+        #         capture_size_class.set_value(value)
+        #         # set config
+        #         camera.set_config(camera_config)
+        # else:
+        #     # put camera into preview mode to raise mirror
+        #     print(gp.gp_camera_capture_preview(camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+        put_camera_capture_preview_mirror(camera, camera_config, camera_model)
     else: # camera not inited
         print("Sorry, no camera present, cannot execute command; exiting.")
         sys.exit(1)

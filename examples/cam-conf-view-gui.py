@@ -176,6 +176,47 @@ def put_camera_capture_preview_mirror(camera, camera_config, camera_model):
         # put camera into preview mode to raise mirror
         print(gp.gp_camera_capture_preview(camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
 
+def start_capture_view():
+    camera = gp.Camera()
+    hasCamInited = False
+    try:
+        camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
+        hasCamInited = True
+    except Exception as ex:
+        lastException = ex
+        print("No camera: {} {}; ".format( type(lastException).__name__, lastException.args))
+    if hasCamInited:
+        camera_config = camera.get_config()
+        camera_model = get_camera_model(camera_config)
+        put_camera_capture_preview_mirror(camera, camera_config, camera_model)
+        print("Started capture view (raised mirror) on camera: {}".format(camera_model))
+        sys.exit(0)
+    else: # camera not inited
+        print("Sorry, no camera present, cannot execute command; exiting.")
+        sys.exit(1)
+
+def stop_capture_view():
+    camera = gp.Camera()
+    hasCamInited = False
+    try:
+        camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
+        hasCamInited = True
+    except Exception as ex:
+        lastException = ex
+        print("No camera: {} {}; ".format( type(lastException).__name__, lastException.args))
+    if hasCamInited:
+        camera_config = camera.get_config()
+        camera_model = get_camera_model(camera_config)
+        # NOTE: for Canon S3 IS, getting: -2 None; and also
+        # `gphoto2 --set-config viewfinder=0`: Error: viewfinder not found in configuration tree.
+        # https://github.com/gphoto/gphoto2/issues/195
+        OK, viewfinder = gp.gp_widget_get_child_by_name( camera_config, 'viewfinder' )
+        print("{} {}".format(OK, viewfinder))
+        sys.exit(0)
+    else: # camera not inited
+        print("Sorry, no camera present, cannot execute command; exiting.")
+        sys.exit(1)
+
 # SO:35514531 - see also SO:46934526, 40683840, 9475772, https://github.com/baoboa/pyqt5/blob/master/examples/widgets/imageviewer.py
 class PhotoViewer(QtWidgets.QGraphicsView):
     photoClicked = QtCore.pyqtSignal(QtCore.QPoint)
@@ -720,6 +761,12 @@ def copyFilterCamConfJson(args):
     if (not(args.load_cam_conf_json) or not(args.save_cam_conf_json)):
         print("copyFilterCamConfJson: Sorry, unusable/empty input or output .json filename; aborting")
         sys.exit(1)
+    injsonfile = os.path.realpath(args.load_cam_conf_json)
+    outjsonfile = os.path.realpath(args.save_cam_conf_json)
+    print("loadSetCamConfJson: input load from {}, output save to {}".format(injsonfile, outjsonfile))
+    camera = gp.Camera()
+    hasCamInited = False
+    sys.exit(0)
 
 def loadSetCamConfJson(args):
     if (not(args.load_cam_conf_json)):
@@ -760,9 +807,13 @@ def main():
     parser.add_argument('--save-cam-conf-json', default=argparse.SUPPRESS, help='Get and save the camera configuration to .json file, if standalone (together with --load-cam-conf-json, can be used for filtering json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty. Note that if camera is online, but mirror is not raised, process will complete with errors and fewer properties collected in json file (default: suppress)') # "%(default)s"
     parser.add_argument('--load-cam-conf-json', default=argparse.SUPPRESS, help='Load and set the camera configuration from .json file, if standalone (together with --save-cam-conf-json, can be used for filtering json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty (default: suppress)') # "%(default)s"
     parser.add_argument('--include-names-json', default=argparse.SUPPRESS, help='Comma separated list of property names to be filtered/included. If only --save-cam-conf-json, then only those properties in the list are saved in the json file; if only --load-cam-conf-json, only those properties in the list found in the file are applied to the camera; if both, the output json contains only properties in the list found in input json. Can also use `ro=0` or `ro=1` as filtering criteria; ignored if empty (default: suppress)') # "%(default)s"
+    parser.add_argument('--start-capture-view', default='', help='Command - start capture view (raise mirror) on the camera, then exit', action='store_const', const=start_capture_view) # "%(default)s"
+    parser.add_argument('--stop-capture-view', default='', help='Command - stop capture view (release mirror) on the camera, then exit', action='store_const', const=stop_capture_view) # "%(default)s"
     args = parser.parse_args() # in case of --help, this also prints help and exits before Qt window is raised
     #~ print(args)
-    if (hasattr(args, 'save_cam_conf_json') and not(hasattr(args, 'load_cam_conf_json'))):
+    if (args.start_capture_view): args.start_capture_view()
+    elif (args.stop_capture_view): args.stop_capture_view()
+    elif (hasattr(args, 'save_cam_conf_json') and not(hasattr(args, 'load_cam_conf_json'))):
         getSaveCamConfJson(args)
     elif (hasattr(args, 'load_cam_conf_json') and not(hasattr(args, 'save_cam_conf_json'))):
         loadSetCamConfJson(args)

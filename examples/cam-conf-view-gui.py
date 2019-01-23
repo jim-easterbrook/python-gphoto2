@@ -97,6 +97,10 @@ def get_formatted_ts(inunixts=None):
         unixts = time.time()
     else:
         unixts = inunixts
+    # note, for unixts as float:
+    # Python3 produces 1548278272.2560065 (7 decimals), Python2 produces 1548278269.337123 (6 decimals)
+    # so force rounding to 6 decimals:
+    unixts = round(unixts,6)
     tzlocalts = tzlocal.get_localzone().localize(datetime.utcfromtimestamp(unixts), is_dst=None).replace(microsecond=0)
     isots = tzlocalts.isoformat(' ')
     fsuffts = tzlocalts.strftime('%Y%m%d_%H%M%S') # file suffix timestamp
@@ -801,7 +805,8 @@ def getSaveCamConfJson(args):
         #print(camera_config) # <Swig Object of type '_CameraWidget *' at 0x7fac9b6e53e8>
         camconfobj = get_camera_config_object(camera_config)
         with open(jsonfile, 'wb') as f: # SO:14870531
-            json.dump(camconfobj, codecs.getwriter('utf-8')(f), ensure_ascii=False, indent=2)
+            # add separators if indent is not none for python2, [Issue 16333: Trailing whitespace in json dump when using indent](https://bugs.python.org/issue16333)
+            json.dump(camconfobj, codecs.getwriter('utf-8')(f), ensure_ascii=False, indent=2, separators=(',', ': '))
         print("Saved config to {}; exiting.".format(jsonfile))
         sys.exit(0)
     else: # camera not inited
@@ -842,7 +847,8 @@ def copyFilterCamConfJson(args):
     ))
     # save
     with open(outjsonfile, 'wb') as f: # SO:14870531
-        json.dump(retdict, codecs.getwriter('utf-8')(f), ensure_ascii=False, indent=2)
+        # add separators if indent is not none for python2, [Issue 16333: Trailing whitespace in json dump when using indent](https://bugs.python.org/issue16333)
+        json.dump(retdict, codecs.getwriter('utf-8')(f), ensure_ascii=False, indent=2, separators=(',', ': '))
     print("Saved filtered copy to output file {}".format(outjsonfile))
     sys.exit(0)
 

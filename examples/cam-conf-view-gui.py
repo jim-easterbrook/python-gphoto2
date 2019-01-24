@@ -26,6 +26,8 @@ NOTE that properties are reported by the camera, depending on the camera state! 
 For instance, if camera is not in capture mode, then upon --save-cam-conf-json, the properties "imgsettings" and "capturesettings" (which otherwise contain other properties as children) will return error.
 If camera is in capture mode, and prop "shootingmode" is "Auto" - then "iso" has "Auto" option, "exposurecompensation" and "flashcompensation" is read-write, "aperture" and "shutterspeed" is read-only
 If camera is in capture mode, and prop "shootingmode" is "Manual" - then "iso" loses "Auto" option, "exposurecompensation" and "flashcompensation" become read-only, "aperture" and "shutterspeed" become read-write
+NOTE: some properties may take a while to update, see [waiting for variables to update, and wait_for_event causing picture to be taken? · Issue #75 · jim-easterbrook/python-gphoto2 · GitHub](https://github.com/jim-easterbrook/python-gphoto2/issues/75)
+Upon loading json files on camera that change some modes, you might get an error, in which case you can try loading the same file again
 """
 
 from __future__ import print_function
@@ -43,7 +45,7 @@ import time
 import tzlocal # sudo -H pip install tzlocal # pip2, pip3
 my_timezone = tzlocal.get_localzone()
 
-from PIL import Image, ImageDraw, ImageFont, ImageChops, ImageStat
+from PIL import Image, ImageDraw, ImageFont #, ImageChops, ImageStat
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QRect
@@ -69,6 +71,9 @@ BLACKLISTPROPSREGEX = [
     'opcode', 'datetime', 'serialnumber', 'manufacturer', 'cameramodel', 'deviceversion', 'vendorextension', r'^d0'
 ]
 BLACKLISTPROPSREGEX = [re.compile(x) for x in BLACKLISTPROPSREGEX]
+
+PROPNAMESTOSETFIRST = [ "shootingmode" ]
+
 
 def get_camera_model(camera_config):
     # get the camera model
@@ -875,9 +880,12 @@ def loadSetCamConfJson(args):
     injsonfile = os.path.realpath(args.load_cam_conf_json)
     print("loadSetCamConfJson: loading from {}".format(injsonfile))
     camera = gp.Camera()
+    ctx = gp.Context()
     hasCamInited = False
     try:
-        camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
+        #camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
+        # do init with ctx for wait_for_event; see https://github.com/jim-easterbrook/python-gphoto2/issues/29
+        camera.init(ctx)
         hasCamInited = True
     except Exception as ex:
         lastException = ex
@@ -906,19 +914,36 @@ def loadSetCamConfJson(args):
             outpropcount.numrw, outpropcount.numro, len(flatproparray)
         ))
         numappliedprops = 0
-        usedlabels = []
-        for ix, tprop in enumerate(flatproparray):
+        usedlabels = [] ; usednames = []
+        # NOTE - some of the camera properties depend on others;
+        # say for shootingmode=Manual, some vars are r/w, but for shootingmode=Auto, same vars become r/o
+        # thus we split off flatproparray in two parts, executed first the one, then the other
+        flatproparrayfirst = []
+        for iname in PROPNAMESTOSETFIRST: # SO: 54343917
+            # find the object having the name iname
+            foundidx = -1
+            for ix, idict in enumerate(flatproparray):
+                if idict.get('name') == iname:
+                    foundidx = ix
+                    break
+            if foundidx > -1:
+                # remove dict object via pop at index, save removed object
+                remdict = flatproparray.pop(foundidx)
+                # add removed object to newarr:
+                flatproparrayfirst.append(remdict)
+        print("First pass (of applying cam settings):")
+        usednamesfirst = []
+        passedpropsfirst = 0
+        # no need to check duplicates or blacklisted here:
+        for ix, tprop in enumerate(flatproparrayfirst):
             if tprop['ro'] == 1:
                 print(" {:3d}: (ignoring read-only prop '{}' ({}))".format(ix+1, tprop['name'], tprop['label'] ))
-            # duplicate label has to handle not just equal labels, but also "White Balance" in "WhiteBalance", and "Shooting Mode" in "Canon Shooting Mode"
-            elif ( (tprop['label'] in '\t'.join(usedlabels)) or (tprop['label'].replace(' ','') in '\t'.join(usedlabels)) ):
-                print(" {:3d}: (ignoring duplicate label prop '{}' ({}))".format(ix+1, tprop['name'], tprop['label'] ))
-            elif ( any([pat.match(tprop['name']) for pat in BLACKLISTPROPSREGEX]) ):
-                print(" {:3d}: (ignoring blacklisted name prop '{}' ({}))".format(ix+1, tprop['name'], tprop['label'] ))
             else:
                 numappliedprops += 1
                 print(" {:3d}: Applying prop {}/{}: '{}' = '{}' ({}))".format(ix+1, numappliedprops, outpropcount.numrw, tprop['name'], tprop['value'], tprop['label']))
                 usedlabels.append(tprop['label'])
+                #usednames.append(tprop['name'])
+                usednamesfirst.append(tprop['name'])
                 # note, if tprop['name'] or a Python var is directly used, getting:
                 # TypeError: in method 'gp_widget_get_child_by_name', argument 2 of type 'char const *'
                 # "{}".format(tprop['name']) gets around this error
@@ -930,6 +955,47 @@ def loadSetCamConfJson(args):
                         gpprop.set_value( "{}".format(tprop['value']) )
                     else:
                         gpprop.set_value( tprop['value'] )
+            passedpropsfirst = ix+1
+        print("  applying props: {}.".format(",".join(usednamesfirst)))
+        camera.set_config(camera_config) # must have this, else value is not effectuated!
+        # Note: out here, even if set_config returned, we might still have the old props readonly values
+        #for ix in range(100):
+        #    OK, gpprop = gp.gp_widget_get_child_by_name( camera_config, "exposurecompensation" )
+        #    if OK >= gp.GP_OK:
+        #        print(gpprop.get_readonly())
+        # when actually changing property, the wait_for_event blocking might take longer than the whole timeout (a second), and will print "[2, <Swig Object of type 'CameraFilePath *' at 0x7fbbaf971a40>]"
+        # when not changing property, wait_for_event will exit more quickly (but still wait the whole timeout (a second)), and will print "[1, None]"
+        # however, when changing property with wait_for_event, camera takes a picture, too?! [waiting for variables to update, and wait_for_event causing picture to be taken? · Issue #75 · jim-easterbrook/python-gphoto2 · GitHub](https://github.com/jim-easterbrook/python-gphoto2/issues/75)
+        #print(camera.wait_for_event(1000, ctx)) # or gp.gp_camera_wait_for_event(camera,1000,ctx)
+        #camera_config = camera.get_config() # redoing get_config instead of sleep/wait does not get rid of "Sorry, the property ... is currently read-only."
+        # sleeping for 5 sec seems enough to allow changes between auto and manual shootingmode, without taking a picture... but 1 sec is not; 3 seems enough..
+        # so just do time.sleep for now - 2 sec seems enough
+        time.sleep(2)
+        print("Second pass (of applying cam settings):")
+        for ix, tprop in enumerate(flatproparray):
+            propnum = passedpropsfirst + ix + 1
+            if tprop['ro'] == 1:
+                print(" {:3d}: (ignoring read-only prop '{}' ({}))".format(propnum, tprop['name'], tprop['label'] ))
+            # duplicate label has to handle not just equal labels, but also "White Balance" in "WhiteBalance", and "Shooting Mode" in "Canon Shooting Mode"
+            # but it should not confuse "Capture" with "Capture Target"
+            #elif ( (tprop['label'] in '\t'.join(usedlabels)) or (tprop['label'].replace(' ','') in '\t'.join(usedlabels)) ):
+            # so, only look for exact duplicates - rest, if needed, can be blacklisted:
+            elif ( tprop['label'] in usedlabels ):
+                print(" {:3d}: (ignoring duplicate label prop '{}' ({}))".format(propnum, tprop['name'], tprop['label'] ))
+            elif ( any([pat.match(tprop['name']) for pat in BLACKLISTPROPSREGEX]) ):
+                print(" {:3d}: (ignoring blacklisted name prop '{}' ({}))".format(propnum, tprop['name'], tprop['label'] ))
+            else:
+                numappliedprops += 1
+                print(" {:3d}: Applying prop {}/{}: '{}' = '{}' ({}))".format(propnum, numappliedprops, outpropcount.numrw, tprop['name'], tprop['value'], tprop['label']))
+                usedlabels.append(tprop['label'])
+                usednames.append(tprop['name'])
+                OK, gpprop = gp.gp_widget_get_child_by_name( camera_config, "{}".format(tprop['name']) )
+                if OK >= gp.GP_OK:
+                    if ( type(tprop['value']).__name__ == "unicode" ):
+                        gpprop.set_value( "{}".format(tprop['value']) )
+                    else:
+                        gpprop.set_value( tprop['value'] )
+        print("  applying props: {} (+ {}).".format( ",".join(usednames), ",".join(usednamesfirst) ))
         camera.set_config(camera_config) # must have this, else value is not effectuated!
         print("Applied {} properties from file {} to camera; exiting.".format(numappliedprops, injsonfile))
         sys.exit(0)
@@ -948,7 +1014,7 @@ def main():
     #mexg = parser.add_mutually_exclusive_group() # mexg.add_argument
     parser.add_argument('--save-cam-conf-json', default=argparse.SUPPRESS, help='Get and save the camera configuration to .json file, if standalone (together with --load-cam-conf-json, can be used for copying filtered json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty. Note that if camera is online, but mirror is not raised, process will complete with errors and fewer properties collected in json file (default: suppress)') # "%(default)s"
     parser.add_argument('--load-cam-conf-json', default=argparse.SUPPRESS, help='Load and set the camera configuration from .json file, if standalone (together with --save-cam-conf-json, can be used for copying filtered json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty (default: suppress)') # "%(default)s"
-    parser.add_argument('--include-names-json', default=argparse.SUPPRESS, help='Comma separated list of property names to be filtered/included. If only --save-cam-conf-json, then only those properties in the list are saved in the json file; if only --load-cam-conf-json, only those properties in the list found in the file are applied to the camera; if both, the output json contains only properties in the list found in input json. Can also use `ro=0` or `ro=1` as filtering criteria. If empty ignored, though a json copy causes flattening of hierarchy (removal of nodes with children and without value) (default: suppress)') # "%(default)s"
+    parser.add_argument('--include-names-json', default=argparse.SUPPRESS, help='Comma separated list of property names to be filtered/included. When using --load-cam-conf-json with --save-cam-conf-json, a json copy with flattening of hierarchy (removal of nodes with children and without value) is performed; in that case --include-names-json can be used to include only certain properties in the output. Can also use `ro=0` or `ro=1` as filtering criteria. If empty ignored (default: suppress)') # "%(default)s"
     parser.add_argument('--start-capture-view', default='', help='Command - start capture view (extend lens/raise mirror) on the camera, then exit', action='store_const', const=start_capture_view) # "%(default)s"
     parser.add_argument('--stop-capture-view', default='', help='Command - stop capture view (retract lens/release mirror) on the camera, then exit', action='store_const', const=stop_capture_view) # "%(default)s"
     args = parser.parse_args() # in case of --help, this also prints help and exits before Qt window is raised

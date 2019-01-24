@@ -666,6 +666,14 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         if self.hasCamInited:
+            # retract lens? might not react here, depending on what the value for capture is, so have to do 1, 0
+            # also, it always sets out of capture on exit, so nevermind
+            #OK, capture = gp.gp_widget_get_child_by_name( self.camera_config, 'capture' )
+            #if OK >= gp.GP_OK:
+            #    capture.set_value(1)
+            #    self.camera.set_config(self.camera_config) # must have this, else value is not effectuated!
+            #    capture.set_value(0)
+            #    self.camera.set_config(self.camera_config) # must have this, else value is not effectuated!
             #~ self.camera_handler.shut_down() # ->
             #~ self.running = False
             self._reset_config()

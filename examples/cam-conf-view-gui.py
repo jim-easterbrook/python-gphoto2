@@ -21,6 +21,13 @@
 # started: sdaau 2019, on with python3-gphoto2 and `sudo -H pip2 install gphoto2`, Ubuntu 18.04
 # uses camera-config-gui-oo.py, focus-gui.py
 
+"""
+NOTE that properties are reported by the camera, depending on the camera state! On Canon S3 IS:
+For instance, if camera is not in capture mode, then upon --save-cam-conf-json, the properties "imgsettings" and "capturesettings" (which otherwise contain other properties as children) will return error.
+If camera is in capture mode, and prop "shootingmode" is "Auto" - then "iso" has "Auto" option, "exposurecompensation" and "flashcompensation" is read-write, "aperture" and "shutterspeed" is read-only
+If camera is in capture mode, and prop "shootingmode" is "Manual" - then "iso" loses "Auto" option, "exposurecompensation" and "flashcompensation" become read-only, "aperture" and "shutterspeed" become read-write
+"""
+
 from __future__ import print_function
 
 import io
@@ -53,6 +60,15 @@ APPNAME = "cam-conf-view-gui.py"
 
 patTrailDigSpace = re.compile(r'(?<=\.)(\d+?)(0+)(?=[^\d]|$)') # SO: 32348435
 
+# blacklist by properties' names, as on a Canon S3 IS serialnumber etc are read-write
+# make it react by regex too, as on a Canon S3 IS there is read-write:
+# 'd04a' = '0' (PTP Property 0xd04a)), 'd034' = '1548282664' (UNIX Time)) ...
+# which should likely not be changed; most of ^d0.* properties are read-only or duplicates,
+# but still good to ignore them all in one go:
+BLACKLISTPROPSREGEX = [
+    'opcode', 'datetime', 'serialnumber', 'manufacturer', 'cameramodel', 'deviceversion', 'vendorextension', r'^d0'
+]
+BLACKLISTPROPSREGEX = [re.compile(x) for x in BLACKLISTPROPSREGEX]
 
 def get_camera_model(camera_config):
     # get the camera model
@@ -886,20 +902,36 @@ def loadSetCamConfJson(args):
         print("Flattened {} ro, {} rw, {} total input props to: {} ro, {} rw, {} total flat props".format(
             inpropcount.numro, inpropcount.numrw, inpropcount.numtot, outpropcount.numro, outpropcount.numrw, outpropcount.numtot
         ))
-        print("Applying only {} read/write props (ignoring {} read-only ones, out of {} total props) to camera:".format(
+        print("Applying at most {} read/write props (ignoring {} read-only ones, out of {} total props) to camera:".format(
             outpropcount.numrw, outpropcount.numro, len(flatproparray)
         ))
         numappliedprops = 0
+        usedlabels = []
         for ix, tprop in enumerate(flatproparray):
             if tprop['ro'] == 1:
                 print(" {:3d}: (ignoring read-only prop '{}' ({}))".format(ix+1, tprop['name'], tprop['label'] ))
+            # duplicate label has to handle not just equal labels, but also "White Balance" in "WhiteBalance", and "Shooting Mode" in "Canon Shooting Mode"
+            elif ( (tprop['label'] in '\t'.join(usedlabels)) or (tprop['label'].replace(' ','') in '\t'.join(usedlabels)) ):
+                print(" {:3d}: (ignoring duplicate label prop '{}' ({}))".format(ix+1, tprop['name'], tprop['label'] ))
+            elif ( any([pat.match(tprop['name']) for pat in BLACKLISTPROPSREGEX]) ):
+                print(" {:3d}: (ignoring blacklisted name prop '{}' ({}))".format(ix+1, tprop['name'], tprop['label'] ))
             else:
                 numappliedprops += 1
                 print(" {:3d}: Applying prop {}/{}: '{}' = '{}' ({}))".format(ix+1, numappliedprops, outpropcount.numrw, tprop['name'], tprop['value'], tprop['label']))
-                #~ OK, capture = gp.gp_widget_get_child_by_name( camera_config, tprop['name'] )
-                #~ if OK >= gp.GP_OK:
-                    #~ capture.set_value(tprop['value'])
-        #~ camera.set_config(camera_config) # must have this, else value is not effectuated!
+                usedlabels.append(tprop['label'])
+                # note, if tprop['name'] or a Python var is directly used, getting:
+                # TypeError: in method 'gp_widget_get_child_by_name', argument 2 of type 'char const *'
+                # "{}".format(tprop['name']) gets around this error
+                OK, gpprop = gp.gp_widget_get_child_by_name( camera_config, "{}".format(tprop['name']) )
+                if OK >= gp.GP_OK:
+                    # note that sometimes TypeError: in method 'CameraWidget_set_value', argument 2 of type 'int'
+                    # tprop['value'] can be int, or str in Python 3/unicode in Python 2; when unicode, must be reformatted into string with "{}".format(), else TypeError: in method 'CameraWidget_set_value', argument 2 of type 'char const *'
+                    if ( type(tprop['value']).__name__ == "unicode" ):
+                        gpprop.set_value( "{}".format(tprop['value']) )
+                    else:
+                        gpprop.set_value( tprop['value'] )
+        camera.set_config(camera_config) # must have this, else value is not effectuated!
+        print("Applied {} properties from file {} to camera; exiting.".format(numappliedprops, injsonfile))
         sys.exit(0)
     else: # camera not inited
         print("Sorry, no camera present, cannot execute command; exiting.")

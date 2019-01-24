@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*- # must specify, else 2.7 chokes on Unicode in comments
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
@@ -293,6 +294,16 @@ def copy_json_filter_props(inarr, outarr, inpropcount, outpropcount, jsonfilters
                 copy_json_filter_props(inchild['children'], outarr, inpropcount, outpropcount, jsonfilters)
 
 
+def do_GetSaveCamConfJson(camera, jsonfile):
+    camera_config = camera.get_config() # may print: WARNING: gphoto2: (b'_get_config [config.c:7649]') b"Type of property 'Owner Name' expected: 0x4002 got: 0x0000"
+    #print(camera_config) # <Swig Object of type '_CameraWidget *' at 0x7fac9b6e53e8>
+    camconfobj = get_camera_config_object(camera_config)
+    with open(jsonfile, 'wb') as f: # SO:14870531
+        # add separators if indent is not none for python2, [Issue 16333: Trailing whitespace in json dump when using indent](https://bugs.python.org/issue16333)
+        json.dump(camconfobj, codecs.getwriter('utf-8')(f), ensure_ascii=False, indent=2, separators=(',', ': '))
+    print("Saved config to {}.".format(jsonfile))
+
+
 def getSaveCamConfJson(args):
     if (not(args.save_cam_conf_json)):
         print("getSaveCamConfJson: Sorry, unusable/empty output .json filename; aborting")
@@ -310,13 +321,8 @@ def getSaveCamConfJson(args):
         #if type(ex) == gp.GPhoto2Error: #gphoto2.GPhoto2Error:
         #    pass
     if hasCamInited:
-        camera_config = camera.get_config() # may print: WARNING: gphoto2: (b'_get_config [config.c:7649]') b"Type of property 'Owner Name' expected: 0x4002 got: 0x0000"
-        #print(camera_config) # <Swig Object of type '_CameraWidget *' at 0x7fac9b6e53e8>
-        camconfobj = get_camera_config_object(camera_config)
-        with open(jsonfile, 'wb') as f: # SO:14870531
-            # add separators if indent is not none for python2, [Issue 16333: Trailing whitespace in json dump when using indent](https://bugs.python.org/issue16333)
-            json.dump(camconfobj, codecs.getwriter('utf-8')(f), ensure_ascii=False, indent=2, separators=(',', ': '))
-        print("Saved config to {}; exiting.".format(jsonfile))
+        do_GetSaveCamConfJson(camera, jsonfile)
+        print("Exiting.")
         sys.exit(0)
     else: # camera not inited
         print("Sorry, no camera present, cannot execute command; exiting.")
@@ -361,6 +367,112 @@ def copyFilterCamConfJson(args):
     print("Saved filtered copy to output file {}".format(outjsonfile))
     sys.exit(0)
 
+def do_LoadSetCamConfJson(camera, injsonfile):
+    camera_config = camera.get_config()
+    ## get the camera model
+    #camera_model = get_camera_model(camera_config)
+    #put_camera_capture_preview_mirror(camera, camera_config, camera_model)
+    # open and parse injsonfile as object
+    with open(injsonfile) as in_data_file:
+        indatadict = json.load(in_data_file, object_pairs_hook=OrderedDict)
+    print("Getting flattened object (removes hierarchy/nodes with only children and without value) from {} ...".format(injsonfile))
+    inpropcount = PropCount()
+    outpropcount = PropCount()
+    jsonfilters = [] # empty here
+    flatproparray = []
+    copy_json_filter_props(indatadict['children'], flatproparray, inpropcount, outpropcount, jsonfilters)
+    print("Flattened {} ro, {} rw, {} total input props to: {} ro, {} rw, {} total flat props".format(
+        inpropcount.numro, inpropcount.numrw, inpropcount.numtot, outpropcount.numro, outpropcount.numrw, outpropcount.numtot
+    ))
+    print("Applying at most {} read/write props (ignoring {} read-only ones, out of {} total props) to camera:".format(
+        outpropcount.numrw, outpropcount.numro, len(flatproparray)
+    ))
+    numappliedprops = 0
+    usedlabels = [] ; usednames = []
+    # NOTE - some of the camera properties depend on others;
+    # say for shootingmode=Manual, some vars are r/w, but for shootingmode=Auto, same vars become r/o
+    # thus we split off flatproparray in two parts, executed first the one, then the other
+    flatproparrayfirst = []
+    for iname in PROPNAMESTOSETFIRST: # SO: 54343917
+        # find the object having the name iname
+        foundidx = -1
+        for ix, idict in enumerate(flatproparray):
+            if idict.get('name') == iname:
+                foundidx = ix
+                break
+        if foundidx > -1:
+            # remove dict object via pop at index, save removed object
+            remdict = flatproparray.pop(foundidx)
+            # add removed object to newarr:
+            flatproparrayfirst.append(remdict)
+    print("First pass (of applying cam settings):")
+    usednamesfirst = []
+    passedpropsfirst = 0
+    # no need to check duplicates or blacklisted here:
+    for ix, tprop in enumerate(flatproparrayfirst):
+        if tprop['ro'] == 1:
+            print(" {:3d}: (ignoring read-only prop '{}' ({}))".format(ix+1, tprop['name'], tprop['label'] ))
+        else:
+            numappliedprops += 1
+            print(" {:3d}: Applying prop {}/{}: '{}' = '{}' ({}))".format(ix+1, numappliedprops, outpropcount.numrw, tprop['name'], tprop['value'], tprop['label']))
+            usedlabels.append(tprop['label'])
+            #usednames.append(tprop['name'])
+            usednamesfirst.append(tprop['name'])
+            # note, if tprop['name'] or a Python var is directly used, getting:
+            # TypeError: in method 'gp_widget_get_child_by_name', argument 2 of type 'char const *'
+            # "{}".format(tprop['name']) gets around this error
+            OK, gpprop = gp.gp_widget_get_child_by_name( camera_config, "{}".format(tprop['name']) )
+            if OK >= gp.GP_OK:
+                # note that sometimes TypeError: in method 'CameraWidget_set_value', argument 2 of type 'int'
+                # tprop['value'] can be int, or str in Python 3/unicode in Python 2; when unicode, must be reformatted into string with "{}".format(), else TypeError: in method 'CameraWidget_set_value', argument 2 of type 'char const *'
+                if ( type(tprop['value']).__name__ == "unicode" ):
+                    gpprop.set_value( "{}".format(tprop['value']) )
+                else:
+                    gpprop.set_value( tprop['value'] )
+        passedpropsfirst = ix+1
+    print("  applying props: {}.".format(",".join(usednamesfirst)))
+    camera.set_config(camera_config) # must have this, else value is not effectuated!
+    # Note: out here, even if set_config returned, we might still have the old props readonly values
+    #for ix in range(100):
+    #    OK, gpprop = gp.gp_widget_get_child_by_name( camera_config, "exposurecompensation" )
+    #    if OK >= gp.GP_OK:
+    #        print(gpprop.get_readonly())
+    # when actually changing property, the wait_for_event blocking might take longer than the whole timeout (a second), and will print "[2, <Swig Object of type 'CameraFilePath *' at 0x7fbbaf971a40>]"
+    # when not changing property, wait_for_event will exit more quickly (but still wait the whole timeout (a second)), and will print "[1, None]"
+    # however, when changing property with wait_for_event, camera takes a picture, too?! [waiting for variables to update, and wait_for_event causing picture to be taken? · Issue #75 · jim-easterbrook/python-gphoto2 · GitHub](https://github.com/jim-easterbrook/python-gphoto2/issues/75)
+    #print(camera.wait_for_event(1000, ctx)) # or gp.gp_camera_wait_for_event(camera,1000,ctx)
+    #camera_config = camera.get_config() # redoing get_config instead of sleep/wait does not get rid of "Sorry, the property ... is currently read-only."
+    # sleeping for 5 sec seems enough to allow changes between auto and manual shootingmode, without taking a picture... but 1 sec is not; 3 seems enough..
+    # so just do time.sleep for now - 2 sec seems enough
+    time.sleep(2)
+    print("Second pass (of applying cam settings):")
+    for ix, tprop in enumerate(flatproparray):
+        propnum = passedpropsfirst + ix + 1
+        if tprop['ro'] == 1:
+            print(" {:3d}: (ignoring read-only prop '{}' ({}))".format(propnum, tprop['name'], tprop['label'] ))
+        # duplicate label has to handle not just equal labels, but also "White Balance" in "WhiteBalance", and "Shooting Mode" in "Canon Shooting Mode"
+        # but it should not confuse "Capture" with "Capture Target"
+        #elif ( (tprop['label'] in '\t'.join(usedlabels)) or (tprop['label'].replace(' ','') in '\t'.join(usedlabels)) ):
+        # so, only look for exact duplicates - rest, if needed, can be blacklisted:
+        elif ( tprop['label'] in usedlabels ):
+            print(" {:3d}: (ignoring duplicate label prop '{}' ({}))".format(propnum, tprop['name'], tprop['label'] ))
+        elif ( any([pat.match(tprop['name']) for pat in BLACKLISTPROPSREGEX]) ):
+            print(" {:3d}: (ignoring blacklisted name prop '{}' ({}))".format(propnum, tprop['name'], tprop['label'] ))
+        else:
+            numappliedprops += 1
+            print(" {:3d}: Applying prop {}/{}: '{}' = '{}' ({}))".format(propnum, numappliedprops, outpropcount.numrw, tprop['name'], tprop['value'], tprop['label']))
+            usedlabels.append(tprop['label'])
+            usednames.append(tprop['name'])
+            OK, gpprop = gp.gp_widget_get_child_by_name( camera_config, "{}".format(tprop['name']) )
+            if OK >= gp.GP_OK:
+                if ( type(tprop['value']).__name__ == "unicode" ):
+                    gpprop.set_value( "{}".format(tprop['value']) )
+                else:
+                    gpprop.set_value( tprop['value'] )
+    print("  applying props: {} (+ {}).".format( ",".join(usednames), ",".join(usednamesfirst) ))
+    camera.set_config(camera_config) # must have this, else value is not effectuated!
+    print("Applied {} properties from file {} to camera.".format(numappliedprops, injsonfile))
+
 def loadSetCamConfJson(args):
     if (not(args.load_cam_conf_json)):
         print("loadSetCamConfJson: Sorry, unusable/empty output .json filename; aborting")
@@ -381,111 +493,8 @@ def loadSetCamConfJson(args):
         #if type(ex) == gp.GPhoto2Error: #gphoto2.GPhoto2Error:
         #    pass
     if hasCamInited:
-        camera_config = camera.get_config()
-        ## get the camera model
-        #camera_model = get_camera_model(camera_config)
-        #put_camera_capture_preview_mirror(camera, camera_config, camera_model)
-        injsonfile = os.path.realpath(args.load_cam_conf_json)
-        # open and parse injsonfile as object
-        with open(injsonfile) as in_data_file:
-            indatadict = json.load(in_data_file, object_pairs_hook=OrderedDict)
-        print("Getting flattened object (removes hierarchy/nodes with only children and without value) from {} ...".format(injsonfile))
-        inpropcount = PropCount()
-        outpropcount = PropCount()
-        jsonfilters = [] # empty here
-        flatproparray = []
-        copy_json_filter_props(indatadict['children'], flatproparray, inpropcount, outpropcount, jsonfilters)
-        print("Flattened {} ro, {} rw, {} total input props to: {} ro, {} rw, {} total flat props".format(
-            inpropcount.numro, inpropcount.numrw, inpropcount.numtot, outpropcount.numro, outpropcount.numrw, outpropcount.numtot
-        ))
-        print("Applying at most {} read/write props (ignoring {} read-only ones, out of {} total props) to camera:".format(
-            outpropcount.numrw, outpropcount.numro, len(flatproparray)
-        ))
-        numappliedprops = 0
-        usedlabels = [] ; usednames = []
-        # NOTE - some of the camera properties depend on others;
-        # say for shootingmode=Manual, some vars are r/w, but for shootingmode=Auto, same vars become r/o
-        # thus we split off flatproparray in two parts, executed first the one, then the other
-        flatproparrayfirst = []
-        for iname in PROPNAMESTOSETFIRST: # SO: 54343917
-            # find the object having the name iname
-            foundidx = -1
-            for ix, idict in enumerate(flatproparray):
-                if idict.get('name') == iname:
-                    foundidx = ix
-                    break
-            if foundidx > -1:
-                # remove dict object via pop at index, save removed object
-                remdict = flatproparray.pop(foundidx)
-                # add removed object to newarr:
-                flatproparrayfirst.append(remdict)
-        print("First pass (of applying cam settings):")
-        usednamesfirst = []
-        passedpropsfirst = 0
-        # no need to check duplicates or blacklisted here:
-        for ix, tprop in enumerate(flatproparrayfirst):
-            if tprop['ro'] == 1:
-                print(" {:3d}: (ignoring read-only prop '{}' ({}))".format(ix+1, tprop['name'], tprop['label'] ))
-            else:
-                numappliedprops += 1
-                print(" {:3d}: Applying prop {}/{}: '{}' = '{}' ({}))".format(ix+1, numappliedprops, outpropcount.numrw, tprop['name'], tprop['value'], tprop['label']))
-                usedlabels.append(tprop['label'])
-                #usednames.append(tprop['name'])
-                usednamesfirst.append(tprop['name'])
-                # note, if tprop['name'] or a Python var is directly used, getting:
-                # TypeError: in method 'gp_widget_get_child_by_name', argument 2 of type 'char const *'
-                # "{}".format(tprop['name']) gets around this error
-                OK, gpprop = gp.gp_widget_get_child_by_name( camera_config, "{}".format(tprop['name']) )
-                if OK >= gp.GP_OK:
-                    # note that sometimes TypeError: in method 'CameraWidget_set_value', argument 2 of type 'int'
-                    # tprop['value'] can be int, or str in Python 3/unicode in Python 2; when unicode, must be reformatted into string with "{}".format(), else TypeError: in method 'CameraWidget_set_value', argument 2 of type 'char const *'
-                    if ( type(tprop['value']).__name__ == "unicode" ):
-                        gpprop.set_value( "{}".format(tprop['value']) )
-                    else:
-                        gpprop.set_value( tprop['value'] )
-            passedpropsfirst = ix+1
-        print("  applying props: {}.".format(",".join(usednamesfirst)))
-        camera.set_config(camera_config) # must have this, else value is not effectuated!
-        # Note: out here, even if set_config returned, we might still have the old props readonly values
-        #for ix in range(100):
-        #    OK, gpprop = gp.gp_widget_get_child_by_name( camera_config, "exposurecompensation" )
-        #    if OK >= gp.GP_OK:
-        #        print(gpprop.get_readonly())
-        # when actually changing property, the wait_for_event blocking might take longer than the whole timeout (a second), and will print "[2, <Swig Object of type 'CameraFilePath *' at 0x7fbbaf971a40>]"
-        # when not changing property, wait_for_event will exit more quickly (but still wait the whole timeout (a second)), and will print "[1, None]"
-        # however, when changing property with wait_for_event, camera takes a picture, too?! [waiting for variables to update, and wait_for_event causing picture to be taken? · Issue #75 · jim-easterbrook/python-gphoto2 · GitHub](https://github.com/jim-easterbrook/python-gphoto2/issues/75)
-        #print(camera.wait_for_event(1000, ctx)) # or gp.gp_camera_wait_for_event(camera,1000,ctx)
-        #camera_config = camera.get_config() # redoing get_config instead of sleep/wait does not get rid of "Sorry, the property ... is currently read-only."
-        # sleeping for 5 sec seems enough to allow changes between auto and manual shootingmode, without taking a picture... but 1 sec is not; 3 seems enough..
-        # so just do time.sleep for now - 2 sec seems enough
-        time.sleep(2)
-        print("Second pass (of applying cam settings):")
-        for ix, tprop in enumerate(flatproparray):
-            propnum = passedpropsfirst + ix + 1
-            if tprop['ro'] == 1:
-                print(" {:3d}: (ignoring read-only prop '{}' ({}))".format(propnum, tprop['name'], tprop['label'] ))
-            # duplicate label has to handle not just equal labels, but also "White Balance" in "WhiteBalance", and "Shooting Mode" in "Canon Shooting Mode"
-            # but it should not confuse "Capture" with "Capture Target"
-            #elif ( (tprop['label'] in '\t'.join(usedlabels)) or (tprop['label'].replace(' ','') in '\t'.join(usedlabels)) ):
-            # so, only look for exact duplicates - rest, if needed, can be blacklisted:
-            elif ( tprop['label'] in usedlabels ):
-                print(" {:3d}: (ignoring duplicate label prop '{}' ({}))".format(propnum, tprop['name'], tprop['label'] ))
-            elif ( any([pat.match(tprop['name']) for pat in BLACKLISTPROPSREGEX]) ):
-                print(" {:3d}: (ignoring blacklisted name prop '{}' ({}))".format(propnum, tprop['name'], tprop['label'] ))
-            else:
-                numappliedprops += 1
-                print(" {:3d}: Applying prop {}/{}: '{}' = '{}' ({}))".format(propnum, numappliedprops, outpropcount.numrw, tprop['name'], tprop['value'], tprop['label']))
-                usedlabels.append(tprop['label'])
-                usednames.append(tprop['name'])
-                OK, gpprop = gp.gp_widget_get_child_by_name( camera_config, "{}".format(tprop['name']) )
-                if OK >= gp.GP_OK:
-                    if ( type(tprop['value']).__name__ == "unicode" ):
-                        gpprop.set_value( "{}".format(tprop['value']) )
-                    else:
-                        gpprop.set_value( tprop['value'] )
-        print("  applying props: {} (+ {}).".format( ",".join(usednames), ",".join(usednamesfirst) ))
-        camera.set_config(camera_config) # must have this, else value is not effectuated!
-        print("Applied {} properties from file {} to camera; exiting.".format(numappliedprops, injsonfile))
+        do_LoadSetCamConfJson(camera, injsonfile)
+        print("Exiting.")
         sys.exit(0)
     else: # camera not inited
         print("Sorry, no camera present, cannot execute command; exiting.")
@@ -846,6 +855,7 @@ class MainWindow(QtWidgets.QMainWindow):
         #~ self.new_image(tempmap)
 
         self.camera = gp.Camera()
+        self.ctx = gp.Context()
         QtWidgets.QApplication.postEvent(
             self, QtCore.QEvent(self.do_init), Qt.LowEventPriority - 1)
 
@@ -868,7 +878,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hasCamInited = False
         self.lastException = None
         try:
-            self.camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
+            #self.camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
+            self.camera.init(self.ctx) # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
             self.hasCamInited = True
         except Exception as ex:
             self.lastException = ex

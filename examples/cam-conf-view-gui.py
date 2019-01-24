@@ -758,10 +758,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.widget.layout().setColumnStretch(0, 1)
         #self.setCentralWidget(self.widget)
         # 'apply' button
-        self.apply_button = QtWidgets.QPushButton('apply changes')
-        self.apply_button.setEnabled(False)
-        self.apply_button.clicked.connect(self.apply_changes)
-        self.widget.layout().addWidget(self.apply_button, 1, 1)
+        if self.args.config_apply_btn == 1:
+            self.apply_button = QtWidgets.QPushButton('apply changes')
+            self.apply_button.setEnabled(False)
+            self.apply_button.clicked.connect(self.apply_changes)
+            self.widget.layout().addWidget(self.apply_button, 1, 1)
         # 'cancel' button
         #quit_button = QtWidgets.QPushButton('cancel')
         #quit_button.clicked.connect(QtWidgets.qApp.closeAllWindows)
@@ -820,7 +821,9 @@ class MainWindow(QtWidgets.QMainWindow):
             nocamimg.save(nocamimgpath)
 
 
-    def __init__(self):
+    def __init__(self, args):
+        self.args = args
+        print(args)
         self.current_splitter_style=0
         self.lastPreviewSize = None
         self.lastException = None
@@ -939,7 +942,24 @@ class MainWindow(QtWidgets.QMainWindow):
             self.recreate_section_widget()
 
     def config_changed(self):
-        self.apply_button.setEnabled(True)
+        if self.args.config_apply_btn == 1:
+            self.apply_button.setEnabled(True)
+        else:
+            # NOTE: if I just call self.apply_changes() here, then some things work (e.g. changing 'capture')
+            # but some things (changing 'shootingmode', 'exposurecompensation') cause segmentation fault in QMetaObject::activate via QComboBox::currentIndexChanged
+            # therefore using a one-shot timer instead, to escape the context of the GUI for changing the GUI
+            # also, without timer.stop() in handler, the handler may seem not to do anything?!
+            #import traceback
+            #traceback.print_stack()
+            #self.apply_changes()
+            def handler():
+                #print("handler")
+                self.apply_changes()
+                timer.stop()
+                timer.deleteLater()
+            timer = QtCore.QTimer()
+            timer.timeout.connect(handler)
+            timer.start(0)
 
     def reconstruct_config_section(self):
         # assumes first setup already done, so there are existing tabs:
@@ -1091,6 +1111,7 @@ def main():
     parser.add_argument('--include-names-json', default=argparse.SUPPRESS, help='Comma separated list of property names to be filtered/included. When using --load-cam-conf-json with --save-cam-conf-json, a json copy with flattening of hierarchy (removal of nodes with children and without value) is performed; in that case --include-names-json can be used to include only certain properties in the output. Can also use `ro=0` or `ro=1` as filtering criteria. If empty ignored (default: suppress)') # "%(default)s"
     parser.add_argument('--start-capture-view', default='', help='Command - start capture view (extend lens/raise mirror) on the camera, then exit', action='store_const', const=start_capture_view) # "%(default)s"
     parser.add_argument('--stop-capture-view', default='', help='Command - stop capture view (retract lens/release mirror) on the camera, then exit', action='store_const', const=stop_capture_view) # "%(default)s"
+    parser.add_argument('--config-apply-btn', type=int, default=0, help='GUI option: 0: do not create apply button, update on change; 1: create apply button, update on its click (default: %(default)s)') # ""
     args = parser.parse_args() # in case of --help, this also prints help and exits before Qt window is raised
     #~ print(args)
     if (args.start_capture_view): args.start_capture_view()
@@ -1104,7 +1125,7 @@ def main():
 
     # start Qt Gui
     app = QtWidgets.QApplication([APPNAME]) # SO: 18133302
-    main = MainWindow()
+    main = MainWindow(args)
     main.show()
     sys.exit(app.exec_())
 

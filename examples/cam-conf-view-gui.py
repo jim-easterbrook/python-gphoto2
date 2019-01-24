@@ -75,7 +75,7 @@ BLACKLISTPROPSREGEX = [
 BLACKLISTPROPSREGEX = [re.compile(x) for x in BLACKLISTPROPSREGEX]
 
 PROPNAMESTOSETFIRST = [ "shootingmode" ]
-
+MINFPS=0.5 # just for the text in status bar
 
 def get_camera_model(camera_config):
     # get the camera model
@@ -786,6 +786,9 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.lastPreviewSize:
                 msgstr += "last preview: {} x {} ".format(self.lastPreviewSize[0], self.lastPreviewSize[1])
         msgstr += "zoom: {:.3f} {:.3f}".format(self.image_display._zoom, self.image_display._zoomfactor)
+        if self.fps:
+            msgstr += " ; {}".format(self.fps)
+            self.fps = ""
         if self.singleStatusMsg:
             msgstr += " ({})".format(self.singleStatusMsg)
             self.singleStatusMsg = ""
@@ -826,6 +829,8 @@ class MainWindow(QtWidgets.QMainWindow):
         print(args)
         self.current_splitter_style=0
         self.lastPreviewSize = None
+        self.timestamp = None
+        self.fps = ""
         self.lastException = None
         self.lastOpenPath = None
         self.lastSavePath = None
@@ -1043,11 +1048,20 @@ class MainWindow(QtWidgets.QMainWindow):
     @QtCore.pyqtSlot(object)
     def new_image(self, image):
         self.lastPreviewSize = image.size
-        self.updateStatusBar()
         w, h = image.size
         image_data = image.tobytes('raw', 'RGB')
         self.q_image = QtGui.QImage(image_data, w, h, QtGui.QImage.Format_RGB888)
         self._draw_image()
+        if self.timestamp is not None:
+            tstampnow = time.time()
+            tdelta = tstampnow - self.timestamp
+            fps = 1.0/tdelta
+            self.fps = "(<{} fps)".format(MINFPS) if (fps<MINFPS) else "{:.2f} fps".format(fps)
+            #self.timestamp = None
+            self.timestamp = tstampnow
+        else:
+            self.timestamp = time.time()
+        self.updateStatusBar()
         # # generate histogram and count clipped pixels
         # histogram = image.histogram()
         # q_image = QtGui.QImage(100, 256, QtGui.QImage.Format_RGB888)

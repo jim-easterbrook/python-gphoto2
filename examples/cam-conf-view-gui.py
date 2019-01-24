@@ -854,6 +854,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.frameconflayout.setContentsMargins(0,0,0,0);
         self.scrollconf = QtWidgets.QScrollArea(self)
         self.scrollconf.setWidgetResizable(False)
+        # self.contentconf is just used for init here; afterward is replaced by self.widget (self.configsection)
         self.contentconf = QtWidgets.QWidget()
         self.contentconf.setLayout(QtWidgets.QGridLayout())
         self.contentconf.layout().setColumnStretch(0, 1)
@@ -911,6 +912,14 @@ class MainWindow(QtWidgets.QMainWindow):
             put_camera_capture_preview_mirror(self.camera, self.camera_config, self.camera_model)
         self.updateStatusBar()
 
+    def recreate_section_widget(self):
+        if ( hasattr(self, 'configsection') and (self.configsection) ):
+            #print("Removing {}".format(self.configsection))
+            self.widget.layout().removeWidget(self.configsection)
+        self.configsection = ccgoo.SectionWidget(self.config_changed, self.camera_config)
+        self.widget.layout().addWidget(self.configsection, 0, 0, 1, 3)
+        self.scrollconf.setWidget(self.widget)
+
     def initialise(self):
         #~ # get camera config tree
         #~ self.camera.init()
@@ -919,16 +928,30 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.hasCamInited:
             # create corresponding tree of tab widgets
             self.setWindowTitle(self.camera_config.get_label())
-            self.configsection = ccgoo.SectionWidget(self.config_changed, self.camera_config)
-            self.widget.layout().addWidget(self.configsection, 0, 0, 1, 3)
-            self.scrollconf.setWidget(self.widget)
+            self.recreate_section_widget()
 
     def config_changed(self):
         self.apply_button.setEnabled(True)
 
+    def reconstruct_config_section(self):
+        # assumes first setup already done, so there are existing tabs:
+        #from PyQt5.QtCore import pyqtRemoveInputHook
+        #import pdb
+        #pyqtRemoveInputHook()
+        #pdb.set_trace()
+        tabs = self.configsection.children()[1]
+        lastindex = tabs.currentIndex()
+        self.camera_config = self.camera.get_config() # get the latest state of camera config
+        self.replicate_ccgoo_main_window() # must run first, else it keeps duplicating content - must run, so after reconstruction, scrollbars are correct
+        self.recreate_section_widget() # must run, so UI reflects the latest state
+        tabs = self.configsection.children()[1]
+        tabs.setCurrentIndex(lastindex)
+
     def apply_changes(self):
         self.camera.set_config(self.camera_config)
         #QtWidgets.qApp.closeAllWindows()
+        # here we'd need to reconstruct, to get the proper config values
+        self.reconstruct_config_section()
 
     def load_settings(self):
         print("load_settings")

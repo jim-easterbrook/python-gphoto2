@@ -51,6 +51,7 @@ from PIL import Image, ImageDraw, ImageFont #, ImageChops, ImageStat
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QRect
 from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import QFileDialog
 
 import gphoto2 as gp
 
@@ -128,6 +129,12 @@ def get_formatted_ts(inunixts=None):
     fsuffts = tzlocalts.strftime('%Y%m%d_%H%M%S') # file suffix timestamp
     return (unixts, isots, fsuffts)
 
+def get_stamped_filename(infilename, inunixts):
+    unixts, isots, fsuffts = get_formatted_ts( inunixts )
+    outfilename = re.sub(r"_\d{8}_\d{6}", "", infilename) # remove any of our timestamps
+    # "split" at first period (if any), and insert (or append) our timestamp there:
+    outfilename = re.sub(r'^([^.\n]*)([.]*)(.*)$', r'\1_'+fsuffts+r'\2\3', outfilename)
+    return outfilename
 
 def get_camera_config_children(childrenarr, savearr, propcount):
     for child in childrenarr:
@@ -161,10 +168,12 @@ def get_camera_config_children(childrenarr, savearr, propcount):
                 propcount.numexc += 1
         savearr.append(tmpdict)
 
-def get_camera_config_object(camera_config):
+def get_camera_config_object(camera_config, inunixts=None):
     retdict = OrderedDict()
     retdict['camera_model'] = get_camera_model(camera_config)
-    unixts, isots, fsuffts = get_formatted_ts( time.time() )
+    if inunixts is None: myunixts = time.time()
+    else: myunixts = inunixts
+    unixts, isots, fsuffts = get_formatted_ts( myunixts )
     retdict['ts_taken_on'] = unixts
     retdict['date_taken_on'] = isots
     propcount = PropCount()
@@ -294,14 +303,14 @@ def copy_json_filter_props(inarr, outarr, inpropcount, outpropcount, jsonfilters
                 copy_json_filter_props(inchild['children'], outarr, inpropcount, outpropcount, jsonfilters)
 
 
-def do_GetSaveCamConfJson(camera, jsonfile):
+def do_GetSaveCamConfJson(camera, jsonfile, inunixts=None):
     camera_config = camera.get_config() # may print: WARNING: gphoto2: (b'_get_config [config.c:7649]') b"Type of property 'Owner Name' expected: 0x4002 got: 0x0000"
     #print(camera_config) # <Swig Object of type '_CameraWidget *' at 0x7fac9b6e53e8>
-    camconfobj = get_camera_config_object(camera_config)
+    camconfobj = get_camera_config_object(camera_config, inunixts)
     with open(jsonfile, 'wb') as f: # SO:14870531
         # add separators if indent is not none for python2, [Issue 16333: Trailing whitespace in json dump when using indent](https://bugs.python.org/issue16333)
         json.dump(camconfobj, codecs.getwriter('utf-8')(f), ensure_ascii=False, indent=2, separators=(',', ': '))
-    print("Saved config to {}.".format(jsonfile))
+    print("Saved config to {}".format(jsonfile))
 
 
 def getSaveCamConfJson(args):
@@ -768,6 +777,9 @@ class MainWindow(QtWidgets.QMainWindow):
             if self.lastPreviewSize:
                 msgstr += "last preview: {} x {} ".format(self.lastPreviewSize[0], self.lastPreviewSize[1])
         msgstr += "zoom: {:.3f} {:.3f}".format(self.image_display._zoom, self.image_display._zoomfactor)
+        if self.singleStatusMsg:
+            msgstr += " ({})".format(self.singleStatusMsg)
+            self.singleStatusMsg = ""
         def replacer(m):
             retstr = m.group(1).replace(r'0', ' ')+' '*len(m.group(2))
             #~ print('"{}" "{}" "{}" -> "{}"'.format(m.group(0),m.group(1),m.group(2),retstr))
@@ -804,6 +816,9 @@ class MainWindow(QtWidgets.QMainWindow):
         self.current_splitter_style=0
         self.lastPreviewSize = None
         self.lastException = None
+        self.lastOpenPath = None
+        self.lastSavePath = None
+        self.singleStatusMsg = ""
         self.hasCamInited = False
         self.do_init = QtCore.QEvent.registerEventType()
         QtWidgets.QMainWindow.__init__(self)
@@ -919,7 +934,22 @@ class MainWindow(QtWidgets.QMainWindow):
         print("load_settings")
 
     def save_settings(self):
-        print("save_settings")
+        #print("save_settings")
+        if self.lastSavePath is not None:
+            startpath, startfile = os.path.split(self.lastSavePath)
+        else: # is None
+            startpath = os.getcwd()
+            startfile = "{}.json".format( re.sub(r'\s+', '', self.camera_model) )
+        unixts = time.time()
+        startfile = get_stamped_filename(startfile, unixts)
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getSaveFileName(self, "Save Camera Settings", os.path.join(startpath, startfile), "JSON Text Files (*.json);;All Files (*)", options=options)
+        if fileName:
+            do_GetSaveCamConfJson(self.camera, fileName, unixts)
+            self.lastSavePath = fileName
+            self.singleStatusMsg = "saved cam config to file; see terminal stdout for more"
+            self.updateStatusBar()
 
     def zoom_original(self):
         #~ print("zoom_original")
@@ -1025,7 +1055,7 @@ def main():
     # command line argument parser
     parser = argparse.ArgumentParser(description="{} - interact with camera via python-gphoto2. Called without command line arguments, it will start a Qt GUI.".format(APPNAME))
     #mexg = parser.add_mutually_exclusive_group() # mexg.add_argument
-    parser.add_argument('--save-cam-conf-json', default=argparse.SUPPRESS, help='Get and save the camera configuration to .json file, if standalone (together with --load-cam-conf-json, can be used for copying filtered json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty. Note that if camera is online, but mirror is not raised, process will complete with errors and fewer properties collected in json file (default: suppress)') # "%(default)s"
+    parser.add_argument('--save-cam-conf-json', default=argparse.SUPPRESS, help='Get and save the camera configuration to .json file, if standalone (together with --load-cam-conf-json, can be used for copying filtered json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty. Overwrites existing files without prompting. Note that if camera is online, but mirror is not raised, process will complete with errors and fewer properties collected in json file (default: suppress)') # "%(default)s"
     parser.add_argument('--load-cam-conf-json', default=argparse.SUPPRESS, help='Load and set the camera configuration from .json file, if standalone (together with --save-cam-conf-json, can be used for copying filtered json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty (default: suppress)') # "%(default)s"
     parser.add_argument('--include-names-json', default=argparse.SUPPRESS, help='Comma separated list of property names to be filtered/included. When using --load-cam-conf-json with --save-cam-conf-json, a json copy with flattening of hierarchy (removal of nodes with children and without value) is performed; in that case --include-names-json can be used to include only certain properties in the output. Can also use `ro=0` or `ro=1` as filtering criteria. If empty ignored (default: suppress)') # "%(default)s"
     parser.add_argument('--start-capture-view', default='', help='Command - start capture view (extend lens/raise mirror) on the camera, then exit', action='store_const', const=start_capture_view) # "%(default)s"

@@ -29,6 +29,7 @@ If camera is in capture mode, and prop "shootingmode" is "Auto" - then "iso" has
 If camera is in capture mode, and prop "shootingmode" is "Manual" - then "iso" loses "Auto" option, "exposurecompensation" and "flashcompensation" become read-only, "aperture" and "shutterspeed" become read-write
 NOTE: some properties may take a while to update, see [waiting for variables to update, and wait_for_event causing picture to be taken? · Issue #75 · jim-easterbrook/python-gphoto2 · GitHub](https://github.com/jim-easterbrook/python-gphoto2/issues/75)
 Upon loading json files on camera that change some modes, you might get an error, in which case you can try loading the same file again
+NOTE: if doing live view on Canon, while capture=0, then still an image is returned - but it is the last captured image (except if immediately after camera startup, when capture=0 is ignored, and live view captures regardless). However, sometimes live view may freeze even with capture=1 - in which case, switching Camera Output from Off to LCD/Video Out and back to Off helps.
 """
 
 from __future__ import print_function
@@ -76,6 +77,7 @@ BLACKLISTPROPSREGEX = [re.compile(x) for x in BLACKLISTPROPSREGEX]
 
 PROPNAMESTOSETFIRST = [ "shootingmode" ]
 MINFPS=0.5 # just for the text in status bar
+SLEEPWAITCHANGE=2 # amount of seconds to wait for variable update after first pass, when loading json file
 
 def get_camera_model(camera_config):
     # get the camera model
@@ -209,7 +211,8 @@ def put_camera_capture_preview_mirror(camera, camera_config, camera_model):
             camera.set_config(camera_config)
     else:
         # put camera into preview mode to raise mirror
-        print(gp.gp_camera_capture_preview(camera)) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
+        ret = gp.gp_camera_capture_preview(camera) # OK, camera_file
+        #print(ret) # [0, <Swig Object of type 'CameraFile *' at 0x7fb5a0044a40>]
 
 def start_capture_view():
     camera = gp.Camera()
@@ -453,7 +456,7 @@ def do_LoadSetCamConfJson(camera, injsonfile):
     #camera_config = camera.get_config() # redoing get_config instead of sleep/wait does not get rid of "Sorry, the property ... is currently read-only."
     # sleeping for 5 sec seems enough to allow changes between auto and manual shootingmode, without taking a picture... but 1 sec is not; 3 seems enough..
     # so just do time.sleep for now - 2 sec seems enough
-    time.sleep(2)
+    time.sleep(SLEEPWAITCHANGE)
     print("Second pass (of applying cam settings):")
     for ix, tprop in enumerate(flatproparray):
         propnum = passedpropsfirst + ix + 1
@@ -826,7 +829,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def __init__(self, args):
         self.args = args
-        print(args)
         self.current_splitter_style=0
         self.lastPreviewSize = None
         self.timestamp = None
@@ -987,13 +989,43 @@ class MainWindow(QtWidgets.QMainWindow):
         self.reconstruct_config_section()
 
     def load_settings(self):
-        print("load_settings")
+        #print("load_settings")
+        self.updateStatusBar() # clear last singleStatusMsg
+        if self.lastOpenPath is not None:
+            startpath, startfile = os.path.split(self.lastOpenPath)
+        elif self.lastSavePath is not None:
+            startpath, startfile = os.path.split(self.lastSavePath)
+        else: # both None
+            startpath = os.getcwd()
+            startfile = ""
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        fileName, _ = QFileDialog.getOpenFileName(self, "Load Camera Settings", os.path.join(startpath, startfile), "JSON Text Files (*.json);;All Files (*)", options=options)
+        if fileName:
+            do_LoadSetCamConfJson(self.camera, fileName)
+            # update GUI also
+            self.camera_config = self.camera.get_config()
+            # avoid GUI context
+            def handler():
+                #print("handler")
+                self.apply_changes()
+                timer.stop()
+                timer.deleteLater()
+            timer = QtCore.QTimer()
+            timer.timeout.connect(handler)
+            timer.start(0)
+            self.lastOpenPath = fileName
+            self.singleStatusMsg = "loaded file to cam config; see terminal stdout for more"
+            self.updateStatusBar()
 
     def save_settings(self):
         #print("save_settings")
+        self.updateStatusBar() # clear last singleStatusMsg
         if self.lastSavePath is not None:
             startpath, startfile = os.path.split(self.lastSavePath)
-        else: # is None
+        elif self.lastOpenPath is not None:
+            startpath, startfile = os.path.split(self.lastOpenPath)
+        else: # both None
             startpath = os.getcwd()
             startfile = "{}.json".format( re.sub(r'\s+', '', self.camera_model) )
         unixts = time.time()

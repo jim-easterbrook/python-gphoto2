@@ -66,7 +66,7 @@ APPNAME = "cam-conf-view-gui.py"
 
 patTrailDigSpace = re.compile(r'(?<=\.)(\d+?)(0+)(?=[^\d]|$)') # SO: 32348435
 
-# blacklist by properties' names, as on a Canon S3 IS serialnumber etc are read-write
+# blacklist by properties' names, since on a Canon S3 IS, serialnumber etc are read-write
 # make it react by regex too, as on a Canon S3 IS there is read-write:
 # 'd04a' = '0' (PTP Property 0xd04a)), 'd034' = '1548282664' (UNIX Time)) ...
 # which should likely not be changed; most of ^d0.* properties are read-only or duplicates,
@@ -279,6 +279,7 @@ def do_capture_image(camera):
         path.folder, path.name, gp.GP_FILE_TYPE_NORMAL)
     # saving of image implied in current directory:
     camera_file.save(path.name)
+    # file_delete does indeed delete the image from camera!
     camera.file_delete(path.folder, path.name)
     # reset configuration
     capturetarget_cfg.set_value(capturetarget)
@@ -959,6 +960,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _do_continuous(self):
         if not self.running:
             self._reset_config()
+            #self.updateStatusBar() # clear last singleStatusMsg? clears fps, but kills new loaded image line...
             return
         # if self.camera_model == 'unknown':
         #     self._do_preview()
@@ -977,6 +979,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def continuous(self):
         if self.running:
             self.running = False
+            self.updateStatusBar() # clear last singleStatusMsg - clears fps upon stop
             return
         #if not self._set_config(): # or can use self.hasCamInited here
         #    return
@@ -1158,6 +1161,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _capture_image(self):
         startts = time.time()
+        self.running = False # disable loop/repeat preview, else it overwrites the image once loaded! However just changing this, does not change the checked status of the menu item
+        self.repeatpreview_action.setChecked(False) # this in itself does not do triggered.connect(self.continuous), and stop the repeat preview loop; so needed just for the menu item
+        self.singleStatusMsg = "Capturing image - wait ..."
         self.updateStatusBar() # clear last singleStatusMsg
         imgfilename = do_capture_image(self.camera)
         imgpathname = os.path.realpath(imgfilename)

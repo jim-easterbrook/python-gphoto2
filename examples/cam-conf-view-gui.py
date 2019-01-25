@@ -30,7 +30,7 @@ If camera is in capture mode, and prop "shootingmode" is "Manual" - then "iso" l
 NOTE: some properties may take a while to update, see [waiting for variables to update, and wait_for_event causing picture to be taken? · Issue #75 · jim-easterbrook/python-gphoto2 · GitHub](https://github.com/jim-easterbrook/python-gphoto2/issues/75)
 Upon loading json files on camera that change some modes, you might get an error, in which case you can try loading the same file again
 NOTE: if doing live view on Canon, while capture=0, then still an image is returned - but it is the last captured image (except if immediately after camera startup, when capture=0 is ignored, and live view captures regardless). However, sometimes live view may freeze even with capture=1 - in which case, switching Camera Output from Off to LCD/Video Out and back to Off helps.
-NOTE: If switching from viewing full res image capture, to lower resolution live view preview, the view can get "lost"; in that case, hit Ctrl-F for fit to view once, then can do Ctrl-Z for original scale, or mouse wheel to zoom in/out the preview.
+NOTE: Switching from viewing full res image capture, to lower resolution live view preview, and vice versa, should automatically fit the view. But if the view gets "lost": in that case, hit Ctrl-F for fit to view once, then can do Ctrl-Z for original scale (or mouse wheel to zoom in/out the preview).
 """
 
 from __future__ import print_function
@@ -816,8 +816,8 @@ class MainWindow(QtWidgets.QMainWindow):
             msgstr = "No camera: {} {}; ".format( type(self.lastException).__name__, self.lastException.args)
         if self.hasCamInited:
             msgstr = "Camera model: {} ; ".format(self.camera_model if (self.camera_model) else "No info")
-            if self.lastPreviewSize:
-                msgstr += "last imgsize: {} x {} ".format(self.lastPreviewSize[0], self.lastPreviewSize[1])
+            if self.lastImageSize:
+                msgstr += "last imgsize: {} x {} ".format(self.lastImageSize[0], self.lastImageSize[1])
         msgstr += "zoom: {:.3f} {:.3f}".format(self.image_display._zoom, self.image_display._zoomfactor)
         if self.fps:
             msgstr += " ; {}".format(self.fps)
@@ -860,7 +860,8 @@ class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, args):
         self.args = args
         self.current_splitter_style=0
-        self.lastPreviewSize = None
+        self.lastImageSize = None
+        self.lastImageType = None # 0 - preview; 1 - capture image
         self.timestamp = None
         self.fps = ""
         self.lastException = None
@@ -1109,6 +1110,7 @@ class MainWindow(QtWidgets.QMainWindow):
         image = Image.open(imgpathname)
         image.load()
         self.new_image_sig.emit(image)
+        self.lastImageType = 1
         self.image_display.fitInView()
         endts = time.time()
         self.singleStatusMsg = "Captured image: {} [{:.3f} s]".format(imgpathname, endts-startts)
@@ -1119,10 +1121,14 @@ class MainWindow(QtWidgets.QMainWindow):
         image = Image.open(io.BytesIO(file_data))
         image.load()
         self.new_image_sig.emit(image)
+        if self.lastImageType != 0:
+            self.image_display.fitInView() # reset previous offsets..
+            self.image_display.resetZoom() # .. then back to zoom_original for preview img
+            self.lastImageType = 0
 
     @QtCore.pyqtSlot(object)
     def new_image(self, image):
-        self.lastPreviewSize = image.size
+        self.lastImageSize = image.size
         w, h = image.size
         image_data = image.tobytes('raw', 'RGB')
         self.q_image = QtGui.QImage(image_data, w, h, QtGui.QImage.Format_RGB888)

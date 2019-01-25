@@ -20,7 +20,7 @@
 
 # another camera config gui, with load/save settings to file, and live view
 # started: sdaau 2019, on with python3-gphoto2 and `sudo -H pip2 install gphoto2`, Ubuntu 18.04
-# uses camera-config-gui-oo.py, focus-gui.py
+# uses camera-config-gui-oo.py, and code from focus-gui.py, time_lapse.py
 
 """
 NOTE that properties are reported by the camera, depending on the camera state! On Canon S3 IS:
@@ -261,6 +261,7 @@ def stop_capture_view():
         print("Sorry, no camera present, cannot execute command; exiting.")
         sys.exit(1)
 
+# mostly from time_lapse.py (_send_file is from focus-gui.py)
 def do_capture_image(camera):
     # adjust camera configuratiuon
     cfg = camera.get_config()
@@ -683,15 +684,16 @@ class MainWindow(QtWidgets.QMainWindow):
     new_image_sig = QtCore.pyqtSignal(object)
 
     def _reset_config(self):
-        if self.old_capturetarget is not None:
-            # find the capture target item
-            OK, capture_target = gp.gp_widget_get_child_by_name(
-                self.config, 'capturetarget')
-            if OK >= gp.GP_OK:
-                # set config
-                capture_target.set_value(self.old_capturetarget)
-                self.camera.set_config(self.config)
-                self.old_capturetarget = None
+        if self.hasCamInited:
+            if self.old_capturetarget is not None:
+                # find the capture target item
+                OK, capture_target = gp.gp_widget_get_child_by_name(
+                    self.camera_config, 'capturetarget')
+                if OK >= gp.GP_OK:
+                    # set config
+                    capture_target.set_value(self.old_capturetarget)
+                    self.camera.set_config(self.camera_config)
+                    self.old_capturetarget = None
 
     def closeEvent(self, event):
         if self.hasCamInited:
@@ -704,7 +706,7 @@ class MainWindow(QtWidgets.QMainWindow):
             #    capture.set_value(0)
             #    self.camera.set_config(self.camera_config) # must have this, else value is not effectuated!
             #~ self.camera_handler.shut_down() # ->
-            #~ self.running = False
+            self.running = False
             self._reset_config()
             self.camera.exit()
             #~ self.ch_thread.quit()
@@ -712,31 +714,34 @@ class MainWindow(QtWidgets.QMainWindow):
         return super(MainWindow, self).closeEvent(event)
 
     def _set_config(self):
-        # find the capture target item
-        OK, capture_target = gp.gp_widget_get_child_by_name(
-            self.config, 'capturetarget')
-        if OK >= gp.GP_OK:
-            if self.old_capturetarget is None:
-                self.old_capturetarget = capture_target.get_value()
-            choice_count = capture_target.count_choices()
-            for n in range(choice_count):
-                choice = capture_target.get_choice(n)
-                if 'internal' in choice.lower():
-                    # set config
-                    capture_target.set_value(choice)
-                    self.camera.set_config(self.config)
-                    break
-        # find the image format config item
-        OK, image_format = gp.gp_widget_get_child_by_name(
-            self.config, 'imageformat')
-        if OK >= gp.GP_OK:
-            # get current setting
-            value = image_format.get_value()
-            # make sure it's not raw
-            if 'raw' in value.lower():
-                print('Cannot preview raw images')
-                return False
-        return True
+        if self.hasCamInited:
+            # find the capture target item
+            OK, capture_target = gp.gp_widget_get_child_by_name(
+                self.camera_config, 'capturetarget')
+            if OK >= gp.GP_OK:
+                if self.old_capturetarget is None:
+                    self.old_capturetarget = capture_target.get_value()
+                choice_count = capture_target.count_choices()
+                for n in range(choice_count):
+                    choice = capture_target.get_choice(n)
+                    if 'internal' in choice.lower():
+                        # set config
+                        capture_target.set_value(choice)
+                        self.camera.set_config(self.camera_config)
+                        break
+            # find the image format config item
+            OK, image_format = gp.gp_widget_get_child_by_name(
+                self.camera_config, 'imageformat')
+            if OK >= gp.GP_OK:
+                # get current setting
+                value = image_format.get_value()
+                # make sure it's not raw
+                if 'raw' in value.lower():
+                    print('Cannot preview raw images')
+                    return False
+            return True
+        else:
+            return False
 
     def set_splitter(self, inqtsplittertype, inwidget1, inwidget2):
         if (hasattr(self,'splitter1')):
@@ -775,11 +780,17 @@ class MainWindow(QtWidgets.QMainWindow):
         self.dopreview_action = QtWidgets.QAction('Do &Preview', self)
         self.dopreview_action.setShortcuts(['Ctrl+X'])
         self.dopreview_action.triggered.connect(self._do_preview)
+        self.repeatpreview_action = QtWidgets.QAction('&Repeat Preview', self)
+        self.repeatpreview_action.setShortcuts(['Ctrl+R'])
+        self.repeatpreview_action.setCheckable(True)
+        self.repeatpreview_action.setChecked(False)
+        self.repeatpreview_action.triggered.connect(self.continuous)
         self.docapture_action = QtWidgets.QAction('Capture &Image', self)
         self.docapture_action.setShortcuts(['Ctrl+I'])
         self.docapture_action.triggered.connect(self._capture_image)
         self.viewMenu.addAction(self.switchlayout_action)
         self.viewMenu.addAction(self.dopreview_action)
+        self.viewMenu.addAction(self.repeatpreview_action)
         self.viewMenu.addAction(self.docapture_action)
         self.viewMenu.addAction(self.zoomorig_action)
         self.viewMenu.addAction(self.zoomfitview_action)
@@ -870,6 +881,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.singleStatusMsg = ""
         self.hasCamInited = False
         self.do_init = QtCore.QEvent.registerEventType()
+        self.do_next = QtCore.QEvent.registerEventType()
+        self.running = False
         QtWidgets.QMainWindow.__init__(self)
         self.setWindowTitle("Camera config {}".format(APPNAME))
         self.setMinimumWidth(1000)
@@ -925,18 +938,45 @@ class MainWindow(QtWidgets.QMainWindow):
             self, QtCore.QEvent(self.do_init), Qt.LowEventPriority - 1)
 
     def event(self, event):
-        if event.type() != self.do_init:
+        if ( (event.type() != self.do_init) and (event.type() != self.do_next) ):
             return QtWidgets.QMainWindow.event(self, event)
         event.accept()
-        QtWidgets.QApplication.setOverrideCursor(Qt.WaitCursor)
-        #print("AO: {} {}".format( self.contentview.frameGeometry().width(), self.contentview.frameGeometry().height() ) ) # 187 258, OK
-        # set initial size
-        #inwfit, inhfit = self.frameview.frameGeometry().width(), self.frameview.frameGeometry().height()
-        try:
-            self.initialise()
-        finally:
-            QtWidgets.QApplication.restoreOverrideCursor()
-        return True
+        if event.type() == self.do_init:
+            QtWidgets.QApplication.setOverrideCursor(Qt.WaitCursor)
+            #print("AO: {} {}".format( self.contentview.frameGeometry().width(), self.contentview.frameGeometry().height() ) ) # 187 258, OK
+            # set initial size
+            #inwfit, inhfit = self.frameview.frameGeometry().width(), self.frameview.frameGeometry().height()
+            try:
+                self.initialise()
+            finally:
+                QtWidgets.QApplication.restoreOverrideCursor()
+            return True
+        elif event.type() == self.do_next:
+            self._do_continuous()
+            return True
+
+    def _do_continuous(self):
+        if not self.running:
+            self._reset_config()
+            return
+        # if self.camera_model == 'unknown':
+        #     self._do_preview()
+        # else:
+        #     self._do_capture()
+        print("{} in _do_continuous".format(time.time()))
+        # post event to trigger next capture
+        QtWidgets.QApplication.postEvent(
+            self, QtCore.QEvent(self.do_next), Qt.LowEventPriority - 1)
+
+    @QtCore.pyqtSlot()
+    def continuous(self):
+        if self.running:
+            self.running = False
+            return
+        #if not self._set_config():
+        #    return
+        self.running = True
+        self._do_continuous()
 
     def CameraHandlerInit(self):
         # get camera config tree

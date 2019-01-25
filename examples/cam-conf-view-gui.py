@@ -829,18 +829,19 @@ class MainWindow(QtWidgets.QMainWindow):
             msgstr = "Camera model: {} ; ".format(self.camera_model if (self.camera_model) else "No info")
             if self.lastImageSize:
                 msgstr += "last imgsize: {} x {} ".format(self.lastImageSize[0], self.lastImageSize[1])
-        msgstr += "zoom: {:.3f} {:.3f}".format(self.image_display._zoom, self.image_display._zoomfactor)
+        zoomstr = "zoom: {:.3f} {:.3f}".format(self.image_display._zoom, self.image_display._zoomfactor)
+        def replacer(m):
+            retstr = m.group(1).replace(r'0', ' ')+' '*len(m.group(2))
+            #~ print('"{}" "{}" "{}" -> "{}"'.format(m.group(0),m.group(1),m.group(2),retstr))
+            return retstr
+        zoomstr = patTrailDigSpace.sub(lambda m: replacer(m), zoomstr)
+        msgstr += zoomstr
         if self.fps:
             msgstr += " ; {}".format(self.fps)
             self.fps = ""
         if self.singleStatusMsg:
             msgstr += " ({})".format(self.singleStatusMsg)
             self.singleStatusMsg = ""
-        def replacer(m):
-            retstr = m.group(1).replace(r'0', ' ')+' '*len(m.group(2))
-            #~ print('"{}" "{}" "{}" -> "{}"'.format(m.group(0),m.group(1),m.group(2),retstr))
-            return retstr
-        msgstr = patTrailDigSpace.sub(lambda m: replacer(m), msgstr)
         self.statusBar().showMessage(msgstr)
 
     def checkCreateNoCamImg(self):
@@ -963,7 +964,11 @@ class MainWindow(QtWidgets.QMainWindow):
         #     self._do_preview()
         # else:
         #     self._do_capture()
-        print("{} in _do_continuous".format(time.time()))
+        #~ print("{} in _do_continuous".format(time.time()))
+        if self.hasCamInited:
+             self._do_preview()
+        else:
+            self._do_preview_camnotinit()
         # post event to trigger next capture
         QtWidgets.QApplication.postEvent(
             self, QtCore.QEvent(self.do_next), Qt.LowEventPriority - 1)
@@ -973,7 +978,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.running:
             self.running = False
             return
-        #if not self._set_config():
+        #if not self._set_config(): # or can use self.hasCamInited here
         #    return
         self.running = True
         self._do_continuous()
@@ -1142,6 +1147,15 @@ class MainWindow(QtWidgets.QMainWindow):
             return
         self._send_file(camera_file)
 
+    def _do_preview_camnotinit(self):
+        # since cam not inited here, just load the cam-conf-no-cam.png/NOCAMIMG
+        #self.updateStatusBar() # clear last singleStatusMsg? nope, makes the fps flicker!
+        nocamimgpath = os.path.join(THISSCRIPTDIR, NOCAMIMG)
+        image = Image.open(nocamimgpath)
+        image.load()
+        self.singleStatusMsg = "No cam img: {} x {}".format(image.size[0], image.size[1])
+        self.new_image_sig.emit(image)
+
     def _capture_image(self):
         startts = time.time()
         self.updateStatusBar() # clear last singleStatusMsg
@@ -1177,7 +1191,7 @@ class MainWindow(QtWidgets.QMainWindow):
             tstampnow = time.time()
             tdelta = tstampnow - self.timestamp
             fps = 1.0/tdelta
-            self.fps = "(<{} fps)".format(MINFPS) if (fps<MINFPS) else "{:.2f} fps".format(fps)
+            self.fps = "(<{} fps)".format(MINFPS) if (fps<MINFPS) else "{:7.2f} fps".format(fps)
             #self.timestamp = None
             self.timestamp = tstampnow
         else:
@@ -1234,8 +1248,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
 def main():
     # set up logging
+    # note that: '%(filename)s:%(lineno)d' just prints 'port_log.py:127'
     logging.basicConfig(
-        format='%(filename)s:%(lineno)d %(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
+        format='%(asctime)s %(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     gp.check_result(gp.use_python_logging())
 
     # command line argument parser

@@ -30,6 +30,7 @@ If camera is in capture mode, and prop "shootingmode" is "Manual" - then "iso" l
 NOTE: some properties may take a while to update, see [waiting for variables to update, and wait_for_event causing picture to be taken? · Issue #75 · jim-easterbrook/python-gphoto2 · GitHub](https://github.com/jim-easterbrook/python-gphoto2/issues/75)
 Upon loading json files on camera that change some modes, you might get an error, in which case you can try loading the same file again
 NOTE: if doing live view on Canon, while capture=0, then still an image is returned - but it is the last captured image (except if immediately after camera startup, when capture=0 is ignored, and live view captures regardless). However, sometimes live view may freeze even with capture=1 - in which case, switching Camera Output from Off to LCD/Video Out and back to Off helps.
+NOTE: If switching from viewing full res image capture, to lower resolution live view preview, the view can get "lost"; in that case, hit Ctrl-F for fit to view once, then can do Ctrl-Z for original scale, or mouse wheel to zoom in/out the preview.
 """
 
 from __future__ import print_function
@@ -259,6 +260,31 @@ def stop_capture_view():
     else: # camera not inited
         print("Sorry, no camera present, cannot execute command; exiting.")
         sys.exit(1)
+
+def do_capture_image(camera):
+    # adjust camera configuratiuon
+    cfg = camera.get_config()
+    capturetarget_cfg = cfg.get_child_by_name('capturetarget')
+    capturetarget = capturetarget_cfg.get_value()
+    capturetarget_cfg.set_value('Internal RAM')
+    #imageformat_cfg = cfg.get_child_by_name('imageformat')
+    #imageformat = imageformat_cfg.get_value()
+    #imageformat_cfg.set_value('Small Fine JPEG')
+    camera.set_config(cfg)
+    # do capture
+    path = camera.capture(gp.GP_CAPTURE_IMAGE)
+    print('capture cam path: {} {}'.format(path.folder, path.name))
+    camera_file = camera.file_get(
+        path.folder, path.name, gp.GP_FILE_TYPE_NORMAL)
+    # saving of image implied in current directory:
+    camera_file.save(path.name)
+    camera.file_delete(path.folder, path.name)
+    # reset configuration
+    capturetarget_cfg.set_value(capturetarget)
+    #imageformat_cfg.set_value(imageformat)
+    camera.set_config(cfg)
+    return path.name
+
 
 def get_json_filters(args):
     jsonfilters = []
@@ -725,32 +751,36 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def create_main_menu(self):
         self.mainMenu = self.menuBar()
-        self.fileMenu = self.mainMenu.addMenu('File')
+        self.fileMenu = self.mainMenu.addMenu('&File')
         # actions
-        self.load_action = QtWidgets.QAction('Load settings', self)
+        self.load_action = QtWidgets.QAction('&Load settings', self)
         self.load_action.setShortcuts(['Ctrl+L'])
         self.load_action.triggered.connect(self.load_settings)
-        self.save_action = QtWidgets.QAction('Save settings', self)
+        self.save_action = QtWidgets.QAction('&Save settings', self)
         self.save_action.setShortcuts(['Ctrl+S'])
         self.save_action.triggered.connect(self.save_settings)
         self.fileMenu.addAction(self.load_action)
         self.fileMenu.addAction(self.save_action)
         self.fileMenu.addAction(self.quit_action)
-        self.viewMenu = self.mainMenu.addMenu('View')
-        self.zoomorig_action = QtWidgets.QAction('Zoom original', self)
+        self.viewMenu = self.mainMenu.addMenu('&View')
+        self.zoomorig_action = QtWidgets.QAction('&Zoom original', self)
         self.zoomorig_action.setShortcuts(['Ctrl+Z'])
         self.zoomorig_action.triggered.connect(self.zoom_original)
-        self.zoomfitview_action = QtWidgets.QAction('Zoom to fit view', self)
+        self.zoomfitview_action = QtWidgets.QAction('Zoom to &fit view', self)
         self.zoomfitview_action.setShortcuts(['Ctrl+F'])
         self.zoomfitview_action.triggered.connect(self.zoom_fit_view)
-        self.switchlayout_action = QtWidgets.QAction('Switch Layout', self)
+        self.switchlayout_action = QtWidgets.QAction('Switch &Layout', self)
         self.switchlayout_action.setShortcuts(['Ctrl+A'])
         self.switchlayout_action.triggered.connect(self.switch_splitter_layout)
-        self.dopreview_action = QtWidgets.QAction('Do Preview', self)
+        self.dopreview_action = QtWidgets.QAction('Do &Preview', self)
         self.dopreview_action.setShortcuts(['Ctrl+X'])
         self.dopreview_action.triggered.connect(self._do_preview)
+        self.docapture_action = QtWidgets.QAction('Capture &Image', self)
+        self.docapture_action.setShortcuts(['Ctrl+I'])
+        self.docapture_action.triggered.connect(self._capture_image)
         self.viewMenu.addAction(self.switchlayout_action)
         self.viewMenu.addAction(self.dopreview_action)
+        self.viewMenu.addAction(self.docapture_action)
         self.viewMenu.addAction(self.zoomorig_action)
         self.viewMenu.addAction(self.zoomfitview_action)
 
@@ -787,7 +817,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.hasCamInited:
             msgstr = "Camera model: {} ; ".format(self.camera_model if (self.camera_model) else "No info")
             if self.lastPreviewSize:
-                msgstr += "last preview: {} x {} ".format(self.lastPreviewSize[0], self.lastPreviewSize[1])
+                msgstr += "last imgsize: {} x {} ".format(self.lastPreviewSize[0], self.lastPreviewSize[1])
         msgstr += "zoom: {:.3f} {:.3f}".format(self.image_display._zoom, self.image_display._zoomfactor)
         if self.fps:
             msgstr += " ; {}".format(self.fps)
@@ -844,7 +874,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setMinimumWidth(1000)
         self.setMinimumHeight(600)
         # quit shortcut
-        self.quit_action = QtWidgets.QAction('Quit', self)
+        self.quit_action = QtWidgets.QAction('&Quit', self)
         self.quit_action.setShortcuts(['Ctrl+Q', 'Ctrl+W'])
         self.quit_action.setStatusTip('Exit application')
         self.quit_action.triggered.connect(QtWidgets.qApp.closeAllWindows)
@@ -1023,8 +1053,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.updateStatusBar() # clear last singleStatusMsg
         if self.lastSavePath is not None:
             startpath, startfile = os.path.split(self.lastSavePath)
-        elif self.lastOpenPath is not None:
-            startpath, startfile = os.path.split(self.lastOpenPath)
+        #elif self.lastOpenPath is not None: # not this, else we lose name proposal based on camera model unless save_settings got called first
+        #    startpath, startfile = os.path.split(self.lastOpenPath)
         else: # both None
             startpath = os.getcwd()
             startfile = "{}.json".format( re.sub(r'\s+', '', self.camera_model) )
@@ -1070,6 +1100,19 @@ class MainWindow(QtWidgets.QMainWindow):
             self.running = False
             return
         self._send_file(camera_file)
+
+    def _capture_image(self):
+        startts = time.time()
+        self.updateStatusBar() # clear last singleStatusMsg
+        imgfilename = do_capture_image(self.camera)
+        imgpathname = os.path.realpath(imgfilename)
+        image = Image.open(imgpathname)
+        image.load()
+        self.new_image_sig.emit(image)
+        self.image_display.fitInView()
+        endts = time.time()
+        self.singleStatusMsg = "Captured image: {} [{:.3f} s]".format(imgpathname, endts-startts)
+        self.updateStatusBar()
 
     def _send_file(self, camera_file):
         file_data = camera_file.get_data_and_size()

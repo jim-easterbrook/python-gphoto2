@@ -679,6 +679,42 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         # no need for setDragState - is autohandled, as we leave
         return super(PhotoViewer, self).enterEvent(event)
 
+# monkeypatch ccgoo.RangeWidget - it reacted only on self.sliderReleased.connect(self.new_value),
+# which reacts only if slider dragged first, making it impossible to control from say VNC
+class MyRangeWidget(QtWidgets.QSlider):
+    def __init__(self, config_changed, config, parent=None):
+        QtWidgets.QSlider.__init__(self, Qt.Horizontal, parent)
+        self.config_changed = config_changed
+        self.config = config
+        if self.config.get_readonly():
+            self.setDisabled(True)
+        assert self.config.count_children() == 0
+        lo, hi, self.inc = self.config.get_range()
+        value = self.config.get_value()
+        self.setRange(int(lo * self.inc), int(hi * self.inc))
+        self.setValue(int(value * self.inc))
+        # signals: valueChanged; sliderPressed; sliderMoved; sliderReleased;
+        # want to react only on single press that changes value - good for VNC control
+        # with valueChanged, reacts on single press - but just pages the slider, doesn't set it at location!
+        # because of this, none of these built-in signals will help.. have to implement mousePressEvent as in SO: 52689047
+        # then valueChanged works fine
+        self.valueChanged.connect(self.new_value)
+
+    def mousePressEvent(self, e): # SO: 52689047
+        if e.button() == Qt.LeftButton:
+            e.accept()
+            x = e.pos().x()
+            value = (self.maximum() - self.minimum()) * x / self.width() + self.minimum()
+            self.setValue(value)
+        else:
+            return super().mousePressEvent(self, e)
+
+    def new_value(self):
+        #print("MyRangeWidget new_value")
+        value = float(self.value()) * self.inc
+        self.config.set_value(value)
+        self.config_changed()
+ccgoo.RangeWidget = MyRangeWidget
 
 class MainWindow(QtWidgets.QMainWindow):
     quit_action = None
@@ -1055,11 +1091,22 @@ class MainWindow(QtWidgets.QMainWindow):
         #pdb.set_trace()
         tabs = self.configsection.children()[1]
         lastindex = tabs.currentIndex()
+        # get also the values of self.scrollconf scrollbars
+        lastconfhscroll = (self.scrollconf.horizontalScrollBar().value(), self.scrollconf.horizontalScrollBar().minimum(), self.scrollconf.horizontalScrollBar().singleStep(), self.scrollconf.horizontalScrollBar().pageStep(), self.scrollconf.horizontalScrollBar().maximum())
+        lastconfvscroll = (self.scrollconf.verticalScrollBar().value(), self.scrollconf.verticalScrollBar().minimum(), self.scrollconf.verticalScrollBar().singleStep(), self.scrollconf.verticalScrollBar().pageStep(), self.scrollconf.verticalScrollBar().maximum())
+        # Pre-reconstruct: hslide (302, 0, 20, 471, 302) .. vslide (0, 0, 20, 520, 772)
+        #print("Pre-reconstruct: hslide {} .. vslide {}".format(lastconfhscroll, lastconfvscroll))
         self.camera_config = self.camera.get_config() # get the latest state of camera config
         self.replicate_ccgoo_main_window() # must run first, else it keeps duplicating content - must run, so after reconstruction, scrollbars are correct
         self.recreate_section_widget() # must run, so UI reflects the latest state
         tabs = self.configsection.children()[1]
         tabs.setCurrentIndex(lastindex)
+        #curconfhscroll = (self.scrollconf.horizontalScrollBar().value(), self.scrollconf.horizontalScrollBar().minimum(), self.scrollconf.horizontalScrollBar().singleStep(), self.scrollconf.horizontalScrollBar().pageStep(), self.scrollconf.horizontalScrollBar().maximum())
+        #curconfvscroll = (self.scrollconf.verticalScrollBar().value(), self.scrollconf.verticalScrollBar().minimum(), self.scrollconf.verticalScrollBar().singleStep(), self.scrollconf.verticalScrollBar().pageStep(), self.scrollconf.verticalScrollBar().maximum())
+        # Post-reconstruct: hslide (0, 0, 20, 471, 302) .. vslide (0, 0, 20, 520, 772)
+        #print("Post-reconstruct: hslide {} .. vslide {}".format(curconfhscroll, curconfvscroll))
+        self.scrollconf.horizontalScrollBar().setValue(lastconfhscroll[0])
+        self.scrollconf.verticalScrollBar().setValue(lastconfvscroll[0])
 
     def apply_changes(self):
         self.camera.set_config(self.camera_config)

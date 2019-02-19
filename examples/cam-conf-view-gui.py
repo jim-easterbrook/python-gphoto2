@@ -764,6 +764,8 @@ class MainWindow(QtWidgets.QMainWindow):
             self.camera.exit()
             #~ self.ch_thread.quit()
             #~ self.ch_thread.wait()
+        self.settings.setValue("geometry", self.saveGeometry())
+        self.settings.setValue("windowState", self.saveState())
         return super(MainWindow, self).closeEvent(event)
 
     def _set_config(self):
@@ -946,6 +948,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.do_next = QtCore.QEvent.registerEventType()
         self.running = False
         QtWidgets.QMainWindow.__init__(self)
+        self.settings = QtCore.QSettings("MyCompany", APPNAME) # SO:11352157
+        if not self.settings.value("geometry") == None:
+            self.restoreGeometry(self.settings.value("geometry"))
+        if not self.settings.value("windowState") == None:
+            self.restoreState(self.settings.value("windowState"))
         self.setWindowTitle("Camera config {}".format(APPNAME))
         self.setMinimumWidth(1000)
         self.setMinimumHeight(600)

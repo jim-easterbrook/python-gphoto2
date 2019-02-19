@@ -624,16 +624,30 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             if (self.isMouseOver): # should be true on wheel, regardless
                 self.setDragState()
 
+    def zoomPlus(self):
+        if self.hasPhoto():
+            factor = self.ZOOMFACT # 1.25
+            self._zoomfactor = self._zoomfactor * self.ZOOMFACT
+            self._zoom += 1
+            self.scale(factor, factor)
+            self.parent.updateStatusBar()
+            self.setDragState()
+
+    def zoomMinus(self):
+        if self.hasPhoto():
+            factor = 1.0/self.ZOOMFACT #0.8
+            self._zoomfactor = self._zoomfactor / self.ZOOMFACT
+            self._zoom -= 1
+            self.scale(factor, factor)
+            self.parent.updateStatusBar()
+            self.setDragState()
+
     def wheelEvent(self, event):
         if self.hasPhoto():
             if event.angleDelta().y() > 0:
-                factor = self.ZOOMFACT # 1.25
-                self._zoomfactor = self._zoomfactor * self.ZOOMFACT
-                self._zoom += 1
+                self.zoomPlus()
             else:
-                factor = 1.0/self.ZOOMFACT #0.8
-                self._zoomfactor = self._zoomfactor / self.ZOOMFACT
-                self._zoom -= 1
+                self.zoomMinus()
             #if self._zoom > 0:
             #    self.scale(factor, factor)
             #elif self._zoom == 0:
@@ -644,12 +658,13 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             # note: resetTransform() with scale(_zoomfactor) works - but it also messes up anchor under the mouse
             #self.resetTransform() #self.resetMatrix() # SO: 39101834, but it causes "AttributeError ... has no attribute 'resetMatrix'" SO:54311832, but as per qt doc, likely resetTransform is same as resetMatrix
             #self.scale(self._zoomfactor, self._zoomfactor)
-            # so better to go along with scale(factor) here, for smoother browsing:
-            self.scale(factor, factor)
-            self.parent.updateStatusBar()
+            # so better to go along with scale(factor) here, for smoother browsing: (moved to handlers)
+            #self.scale(factor, factor)
+            #self.parent.updateStatusBar()
             #~ self.printUnityFactor()
-            if (self.isMouseOver): # should be true on wheel, regardless
-                self.setDragState()
+            # also setdragstate needs to be sent to handlers
+            #if (self.isMouseOver): # should be true on wheel, regardless
+            #    self.setDragState()
 
     def mousePressEvent(self, event):
         if self._photo.isUnderMouse():
@@ -697,8 +712,9 @@ class MyRangeWidget(QtWidgets.QSlider):
         # want to react only on single press that changes value - good for VNC control
         # with valueChanged, reacts on single press - but just pages the slider, doesn't set it at location!
         # because of this, none of these built-in signals will help.. have to implement mousePressEvent as in SO: 52689047
-        # then valueChanged works fine
-        self.valueChanged.connect(self.new_value)
+        # then valueChanged works fine; but better go with Released
+        #self.valueChanged.connect(self.new_value)
+        self.sliderReleased.connect(self.new_value)
 
     def mousePressEvent(self, e): # SO: 52689047
         if e.button() == Qt.LeftButton:
@@ -811,6 +827,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.zoomfitview_action = QtWidgets.QAction('Zoom to &fit view', self)
         self.zoomfitview_action.setShortcuts(['Ctrl+F'])
         self.zoomfitview_action.triggered.connect(self.zoom_fit_view)
+        self.zoomplus_action = QtWidgets.QAction('Zoom plu&s', self)
+        self.zoomplus_action.setShortcuts(['+'])
+        self.zoomplus_action.triggered.connect(self.zoom_plus)
+        self.zoomminus_action = QtWidgets.QAction('Zoom &minus', self)
+        self.zoomminus_action.setShortcuts(['-'])
+        self.zoomminus_action.triggered.connect(self.zoom_minus)
         self.switchlayout_action = QtWidgets.QAction('Switch &Layout', self)
         self.switchlayout_action.setShortcuts(['Ctrl+A'])
         self.switchlayout_action.triggered.connect(self.switch_splitter_layout)
@@ -831,6 +853,8 @@ class MainWindow(QtWidgets.QMainWindow):
         self.viewMenu.addAction(self.docapture_action)
         self.viewMenu.addAction(self.zoomorig_action)
         self.viewMenu.addAction(self.zoomfitview_action)
+        self.viewMenu.addAction(self.zoomplus_action)
+        self.viewMenu.addAction(self.zoomminus_action)
 
     def replicate_ccgoo_main_window(self):
         # main widget
@@ -1172,6 +1196,14 @@ class MainWindow(QtWidgets.QMainWindow):
     def zoom_fit_view(self):
         #~ print("zoom_fit_view")
         self.image_display.fitInView()
+
+    def zoom_plus(self):
+        #~ print("zoom_plus")
+        self.image_display.zoomPlus()
+
+    def zoom_minus(self):
+        #~ print("zoom_minus")
+        self.image_display.zoomMinus()
 
     def set_splitter_layout_style(self):
         if self.current_splitter_style == 0:

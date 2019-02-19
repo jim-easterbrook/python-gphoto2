@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- # must specify, else 2.7 chokes on Unicode in comments
+# -*- coding: utf-8 -*-
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
@@ -48,7 +48,7 @@ import time
 import tzlocal # sudo -H pip install tzlocal # pip2, pip3
 my_timezone = tzlocal.get_localzone()
 
-from PIL import Image, ImageDraw, ImageFont #, ImageChops, ImageStat
+from PIL import Image, ImageDraw, ImageFont
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 from PyQt5.QtCore import Qt, pyqtSignal, QPoint, QRect
@@ -60,7 +60,6 @@ import gphoto2 as gp
 THISSCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(1,THISSCRIPTDIR)
 ccgoo = __import__('camera-config-gui-oo')
-#fg = __import__('focus-gui')
 NOCAMIMG = "cam-conf-no-cam.png"
 APPNAME = "cam-conf-view-gui.py"
 
@@ -89,9 +88,7 @@ def get_camera_model(camera_config):
             camera_config, 'model')
     if OK >= gp.GP_OK:
         camera_model = camera_model.get_value()
-        #print('Camera model:', camera_model)
     else:
-        #print('No camera model info')
         camera_model = ''
     return camera_model
 
@@ -123,9 +120,6 @@ def get_formatted_ts(inunixts=None):
         unixts = time.time()
     else:
         unixts = inunixts
-    # note, for unixts as float:
-    # Python3 produces 1548278272.2560065 (7 decimals), Python2 produces 1548278269.337123 (6 decimals)
-    # so force rounding to 6 decimals:
     unixts = round(unixts,6)
     tzlocalts = tzlocal.get_localzone().localize(datetime.utcfromtimestamp(unixts), is_dst=None).replace(microsecond=0)
     isots = tzlocalts.isoformat(' ')
@@ -181,17 +175,6 @@ def get_camera_config_object(camera_config, inunixts=None):
     retdict['date_taken_on'] = isots
     propcount = PropCount()
     retarray = []
-    # # from camera-config-gui-oo.py
-    # for child in camera_config.get_children():
-    #     tmpdict = OrderedDict()
-    #     tmpdict['ro'] = child.get_readonly()
-    #     tmpdict['label'] = child.get_label()
-    #     tmpdict['name'] = child.get_name()
-    #     tmpdict['type'] = child.get_type()
-    #     if ((tmpdict['type'] == gp.GP_WIDGET_RADIO) or (tmpdict['type'] == gp.GP_WIDGET_MENU)):
-    #         tmpdict['count_choices'] = child.count_choices()
-    #     retarray.append(tmpdict)
-    # retdict['config'] = retarray
     retdict['children'] = []
     get_camera_config_children(camera_config.get_children(), retdict['children'], propcount)
     excstr = "no errors - OK." if (propcount.numexc == 0) else "{} errors - bad (please check if camera mirror is up)!".format(propcount.numexc)
@@ -238,7 +221,7 @@ def stop_capture_view():
     camera = gp.Camera()
     hasCamInited = False
     try:
-        camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
+        camera.init()
         hasCamInited = True
     except Exception as ex:
         lastException = ex
@@ -246,15 +229,11 @@ def stop_capture_view():
     if hasCamInited:
         camera_config = camera.get_config()
         camera_model = get_camera_model(camera_config)
-        # NOTE: for Canon S3 IS, getting: -2 None; and also
-        # `gphoto2 --set-config viewfinder=0`: Error: viewfinder not found in configuration tree.
-        #OK, viewfinder = gp.gp_widget_get_child_by_name( camera_config, 'viewfinder' )
         # https://github.com/gphoto/gphoto2/issues/195
-        # `gphoto2 --set-config capture=0` works to retract the lens, however
         OK, capture = gp.gp_widget_get_child_by_name( camera_config, 'capture' )
         if OK >= gp.GP_OK:
             capture.set_value(0)
-            camera.set_config(camera_config) # must have this, else value is not effectuated!
+            camera.set_config(camera_config)
         print("Stopped capture view (retracted lens/released mirror) on camera: {} ({} {})".format(camera_model, OK, capture))
         sys.exit(0)
     else: # camera not inited
@@ -268,9 +247,6 @@ def do_capture_image(camera):
     capturetarget_cfg = cfg.get_child_by_name('capturetarget')
     capturetarget = capturetarget_cfg.get_value()
     capturetarget_cfg.set_value('Internal RAM')
-    #imageformat_cfg = cfg.get_child_by_name('imageformat')
-    #imageformat = imageformat_cfg.get_value()
-    #imageformat_cfg.set_value('Small Fine JPEG')
     camera.set_config(cfg)
     # do capture
     path = camera.capture(gp.GP_CAPTURE_IMAGE)
@@ -279,11 +255,9 @@ def do_capture_image(camera):
         path.folder, path.name, gp.GP_FILE_TYPE_NORMAL)
     # saving of image implied in current directory:
     camera_file.save(path.name)
-    # file_delete does indeed delete the image from camera!
     camera.file_delete(path.folder, path.name)
     # reset configuration
     capturetarget_cfg.set_value(capturetarget)
-    #imageformat_cfg.set_value(imageformat)
     camera.set_config(cfg)
     return path.name
 
@@ -294,9 +268,9 @@ def get_json_filters(args):
         splitnames = args.include_names_json.split(",")
         for iname in splitnames:
             splitnameeq = iname.split("=") # 1-element array if = not present; 2-element array if present
-            splitnameeq = list(filter(None, splitnameeq)) # remove empty strings from list
+            splitnameeq = list(filter(None, splitnameeq))
             jsonfilters.append(splitnameeq)
-    jsonfilters = list(filter(None, jsonfilters)) # remove empty strings from list
+    jsonfilters = list(filter(None, jsonfilters))
     return jsonfilters
 
 def copy_json_filter_props(inarr, outarr, inpropcount, outpropcount, jsonfilters):
@@ -336,10 +310,8 @@ def copy_json_filter_props(inarr, outarr, inpropcount, outpropcount, jsonfilters
 
 def do_GetSaveCamConfJson(camera, jsonfile, inunixts=None):
     camera_config = camera.get_config() # may print: WARNING: gphoto2: (b'_get_config [config.c:7649]') b"Type of property 'Owner Name' expected: 0x4002 got: 0x0000"
-    #print(camera_config) # <Swig Object of type '_CameraWidget *' at 0x7fac9b6e53e8>
     camconfobj = get_camera_config_object(camera_config, inunixts)
-    with open(jsonfile, 'wb') as f: # SO:14870531
-        # add separators if indent is not none for python2, [Issue 16333: Trailing whitespace in json dump when using indent](https://bugs.python.org/issue16333)
+    with open(jsonfile, 'wb') as f:
         json.dump(camconfobj, codecs.getwriter('utf-8')(f), ensure_ascii=False, indent=2, separators=(',', ': '))
     print("Saved config to {}".format(jsonfile))
 
@@ -353,13 +325,11 @@ def getSaveCamConfJson(args):
     camera = gp.Camera()
     hasCamInited = False
     try:
-        camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
+        camera.init()
         hasCamInited = True
     except Exception as ex:
         lastException = ex
         print("No camera: {} {}; ".format( type(lastException).__name__, lastException.args))
-        #if type(ex) == gp.GPhoto2Error: #gphoto2.GPhoto2Error:
-        #    pass
     if hasCamInited:
         do_GetSaveCamConfJson(camera, jsonfile)
         print("Exiting.")
@@ -401,17 +371,13 @@ def copyFilterCamConfJson(args):
         inpropcount.numro, inpropcount.numrw, inpropcount.numtot, outpropcount.numro, outpropcount.numrw, outpropcount.numtot
     ))
     # save
-    with open(outjsonfile, 'wb') as f: # SO:14870531
-        # add separators if indent is not none for python2, [Issue 16333: Trailing whitespace in json dump when using indent](https://bugs.python.org/issue16333)
+    with open(outjsonfile, 'wb') as f:
         json.dump(retdict, codecs.getwriter('utf-8')(f), ensure_ascii=False, indent=2, separators=(',', ': '))
     print("Saved filtered copy to output file {}".format(outjsonfile))
     sys.exit(0)
 
 def do_LoadSetCamConfJson(camera, injsonfile):
     camera_config = camera.get_config()
-    ## get the camera model
-    #camera_model = get_camera_model(camera_config)
-    #put_camera_capture_preview_mirror(camera, camera_config, camera_model)
     # open and parse injsonfile as object
     with open(injsonfile) as in_data_file:
         indatadict = json.load(in_data_file, object_pairs_hook=OrderedDict)
@@ -456,44 +422,24 @@ def do_LoadSetCamConfJson(camera, injsonfile):
             numappliedprops += 1
             print(" {:3d}: Applying prop {}/{}: '{}' = '{}' ({}))".format(ix+1, numappliedprops, outpropcount.numrw, tprop['name'], tprop['value'], tprop['label']))
             usedlabels.append(tprop['label'])
-            #usednames.append(tprop['name'])
             usednamesfirst.append(tprop['name'])
-            # note, if tprop['name'] or a Python var is directly used, getting:
-            # TypeError: in method 'gp_widget_get_child_by_name', argument 2 of type 'char const *'
-            # "{}".format(tprop['name']) gets around this error
             OK, gpprop = gp.gp_widget_get_child_by_name( camera_config, "{}".format(tprop['name']) )
             if OK >= gp.GP_OK:
-                # note that sometimes TypeError: in method 'CameraWidget_set_value', argument 2 of type 'int'
-                # tprop['value'] can be int, or str in Python 3/unicode in Python 2; when unicode, must be reformatted into string with "{}".format(), else TypeError: in method 'CameraWidget_set_value', argument 2 of type 'char const *'
                 if ( type(tprop['value']).__name__ == "unicode" ):
                     gpprop.set_value( "{}".format(tprop['value']) )
                 else:
                     gpprop.set_value( tprop['value'] )
         passedpropsfirst = ix+1
     print("  applying props: {}.".format(",".join(usednamesfirst)))
-    camera.set_config(camera_config) # must have this, else value is not effectuated!
-    # Note: out here, even if set_config returned, we might still have the old props readonly values
-    #for ix in range(100):
-    #    OK, gpprop = gp.gp_widget_get_child_by_name( camera_config, "exposurecompensation" )
-    #    if OK >= gp.GP_OK:
-    #        print(gpprop.get_readonly())
-    # when actually changing property, the wait_for_event blocking might take longer than the whole timeout (a second), and will print "[2, <Swig Object of type 'CameraFilePath *' at 0x7fbbaf971a40>]"
-    # when not changing property, wait_for_event will exit more quickly (but still wait the whole timeout (a second)), and will print "[1, None]"
-    # however, when changing property with wait_for_event, camera takes a picture, too?! [waiting for variables to update, and wait_for_event causing picture to be taken? · Issue #75 · jim-easterbrook/python-gphoto2 · GitHub](https://github.com/jim-easterbrook/python-gphoto2/issues/75)
-    #print(camera.wait_for_event(1000, ctx)) # or gp.gp_camera_wait_for_event(camera,1000,ctx)
-    #camera_config = camera.get_config() # redoing get_config instead of sleep/wait does not get rid of "Sorry, the property ... is currently read-only."
-    # sleeping for 5 sec seems enough to allow changes between auto and manual shootingmode, without taking a picture... but 1 sec is not; 3 seems enough..
-    # so just do time.sleep for now - 2 sec seems enough
+    camera.set_config(camera_config)
+    # sleeping for 5 sec seems enough to allow changes between auto and manual shootingmode, without taking a picture... but 1 sec is not; 2 seems enough..
     time.sleep(SLEEPWAITCHANGE)
     print("Second pass (of applying cam settings):")
     for ix, tprop in enumerate(flatproparray):
         propnum = passedpropsfirst + ix + 1
         if tprop['ro'] == 1:
             print(" {:3d}: (ignoring read-only prop '{}' ({}))".format(propnum, tprop['name'], tprop['label'] ))
-        # duplicate label has to handle not just equal labels, but also "White Balance" in "WhiteBalance", and "Shooting Mode" in "Canon Shooting Mode"
-        # but it should not confuse "Capture" with "Capture Target"
-        #elif ( (tprop['label'] in '\t'.join(usedlabels)) or (tprop['label'].replace(' ','') in '\t'.join(usedlabels)) ):
-        # so, only look for exact duplicates - rest, if needed, can be blacklisted:
+        # only look for exact duplicates - rest, if needed, can be blacklisted:
         elif ( tprop['label'] in usedlabels ):
             print(" {:3d}: (ignoring duplicate label prop '{}' ({}))".format(propnum, tprop['name'], tprop['label'] ))
         elif ( any([pat.match(tprop['name']) for pat in BLACKLISTPROPSREGEX]) ):
@@ -510,7 +456,7 @@ def do_LoadSetCamConfJson(camera, injsonfile):
                 else:
                     gpprop.set_value( tprop['value'] )
     print("  applying props: {} (+ {}).".format( ",".join(usednames), ",".join(usednamesfirst) ))
-    camera.set_config(camera_config) # must have this, else value is not effectuated!
+    camera.set_config(camera_config)
     print("Applied {} properties from file {} to camera.".format(numappliedprops, injsonfile))
 
 def loadSetCamConfJson(args):
@@ -523,20 +469,16 @@ def loadSetCamConfJson(args):
     ctx = gp.Context()
     hasCamInited = False
     try:
-        #camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
-        # do init with ctx for wait_for_event; see https://github.com/jim-easterbrook/python-gphoto2/issues/29
         camera.init(ctx)
         hasCamInited = True
     except Exception as ex:
         lastException = ex
         print("No camera: {} {}; ".format( type(lastException).__name__, lastException.args))
-        #if type(ex) == gp.GPhoto2Error: #gphoto2.GPhoto2Error:
-        #    pass
     if hasCamInited:
         do_LoadSetCamConfJson(camera, injsonfile)
         print("Exiting.")
         sys.exit(0)
-    else: # camera not inited
+    else:
         print("Sorry, no camera present, cannot execute command; exiting.")
         sys.exit(1)
 
@@ -559,8 +501,8 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         self.setScene(self._scene)
         self.setTransformationAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtWidgets.QGraphicsView.AnchorUnderMouse)
-        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)#Off)
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)#Off)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
         self.setBackgroundBrush(QtGui.QBrush(QtGui.QColor(30, 30, 30)))
         self.setFrameShape(QtWidgets.QFrame.NoFrame)
 
@@ -570,13 +512,10 @@ class PhotoViewer(QtWidgets.QGraphicsView):
     def printUnityFactor(self):
         rect = QtCore.QRectF(self._photo.pixmap().rect())
         unity = self.transform().mapRect(QtCore.QRectF(0, 0, 1, 1))
-        #self.scale(1 / unity.width(), 1 / unity.height())
         viewrect = self.viewport().rect()
         scenerect = self.transform().mapRect(rect)
         factor = min(viewrect.width() / scenerect.width(),
                      viewrect.height() / scenerect.height())
-        # NB: u_w == u_h gives "previous" or "current" _zoomfactor (depending where its called)
-        # NB: vr_w, vr_h remain same after zoom, sr_w, sr_h change (both are pixel sizes)
         print("puf factor {} vr_w {} sr_w {} u_w {} vr_h {} sr_h {} u_h {} ".format(factor, viewrect.width(), scenerect.width(), unity.width(), viewrect.height(), scenerect.height(), unity.height() ))
 
     def fitInView(self, scale=True):
@@ -585,13 +524,11 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             self.setSceneRect(rect)
             if self.hasPhoto():
                 unity = self.transform().mapRect(QtCore.QRectF(0, 0, 1, 1))
-                # here, unity.width() == unity.height(); view is reset to actual in pixels (so: _zoomfactor=1, _zoom=0):
                 self.scale(1 / unity.width(), 1 / unity.height())
                 viewrect = self.viewport().rect()
                 scenerect = self.transform().mapRect(rect)
                 factor = min(viewrect.width() / scenerect.width(),
                              viewrect.height() / scenerect.height())
-                #~ print("fiv factor {} vr_w {} sr_w {} u_w {} vr_h {} sr_h {} u_h {} ".format(factor, viewrect.width(), scenerect.width(), unity.width(), viewrect.height(), scenerect.height(), unity.height() ))
                 # here, view scaled to fit:
                 self._zoomfactor = factor
                 self._zoom = math.log( self._zoomfactor, self.ZOOMFACT )
@@ -599,19 +536,14 @@ class PhotoViewer(QtWidgets.QGraphicsView):
                 self.parent.updateStatusBar()
                 if (self.isMouseOver): # should be true on wheel, regardless
                     self.setDragState()
-            #self._zoom = 0
 
     def setPhoto(self, pixmap=None):
-        #self._zoom = 0
         if pixmap and not pixmap.isNull():
             self._empty = False
-            #self.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
             self._photo.setPixmap(pixmap)
         else:
             self._empty = True
-            #self.setDragMode(QtWidgets.QGraphicsView.NoDrag)
             self._photo.setPixmap(QtGui.QPixmap())
-        #self.fitInView()
 
     def resetZoom(self):
         if self.hasPhoto():
@@ -620,8 +552,7 @@ class PhotoViewer(QtWidgets.QGraphicsView):
             unity = self.transform().mapRect(QtCore.QRectF(0, 0, 1, 1))
             self.scale(1 / unity.width(), 1 / unity.height())
             self.parent.updateStatusBar()
-            #~ self.printUnityFactor()
-            if (self.isMouseOver): # should be true on wheel, regardless
+            if (self.isMouseOver):
                 self.setDragState()
 
     def zoomPlus(self):
@@ -648,23 +579,6 @@ class PhotoViewer(QtWidgets.QGraphicsView):
                 self.zoomPlus()
             else:
                 self.zoomMinus()
-            #if self._zoom > 0:
-            #    self.scale(factor, factor)
-            #elif self._zoom == 0:
-            #    #self.fitInView()
-            #    pass
-            #else:
-            #    self._zoom = 0
-            # note: resetTransform() with scale(_zoomfactor) works - but it also messes up anchor under the mouse
-            #self.resetTransform() #self.resetMatrix() # SO: 39101834, but it causes "AttributeError ... has no attribute 'resetMatrix'" SO:54311832, but as per qt doc, likely resetTransform is same as resetMatrix
-            #self.scale(self._zoomfactor, self._zoomfactor)
-            # so better to go along with scale(factor) here, for smoother browsing: (moved to handlers)
-            #self.scale(factor, factor)
-            #self.parent.updateStatusBar()
-            #~ self.printUnityFactor()
-            # also setdragstate needs to be sent to handlers
-            #if (self.isMouseOver): # should be true on wheel, regardless
-            #    self.setDragState()
 
     def mousePressEvent(self, event):
         if self._photo.isUnderMouse():
@@ -677,7 +591,6 @@ class PhotoViewer(QtWidgets.QGraphicsView):
     def setDragState(self):
         # here we mostly want to take case of the mouse cursor/pointer - and show the hand only when dragging is possible
         canDrag = self.getCanDrag()
-        #~ print("Mouse Entered, {} {} {} {} {} {} {}".format(self.horizontalScrollBar().minimum(), self.horizontalScrollBar().pageStep(), self.horizontalScrollBar().maximum(), self.verticalScrollBar().minimum(), self.verticalScrollBar().pageStep(), self.verticalScrollBar().maximum(), canDrag))
         if (canDrag):
             self.setDragMode(QtWidgets.QGraphicsView.ScrollHandDrag)
         else:
@@ -689,7 +602,6 @@ class PhotoViewer(QtWidgets.QGraphicsView):
         return super(PhotoViewer, self).enterEvent(event)
 
     def leaveEvent(self, event):
-        #print("Mouse Left")
         self.isMouseOver = False
         # no need for setDragState - is autohandled, as we leave
         return super(PhotoViewer, self).enterEvent(event)
@@ -708,15 +620,9 @@ class MyRangeWidget(QtWidgets.QSlider):
         value = self.config.get_value()
         self.setRange(int(lo * self.inc), int(hi * self.inc))
         self.setValue(int(value * self.inc))
-        # signals: valueChanged; sliderPressed; sliderMoved; sliderReleased;
-        # want to react only on single press that changes value - good for VNC control
-        # with valueChanged, reacts on single press - but just pages the slider, doesn't set it at location!
-        # because of this, none of these built-in signals will help.. have to implement mousePressEvent as in SO: 52689047
-        # then valueChanged works fine; but better go with Released
-        #self.valueChanged.connect(self.new_value)
-        self.sliderReleased.connect(self.new_value)
+        self.valueChanged.connect(self.new_value)
 
-    def mousePressEvent(self, e): # SO: 52689047
+    def mousePressEvent(self, e):
         if e.button() == Qt.LeftButton:
             e.accept()
             x = e.pos().x()
@@ -726,7 +632,6 @@ class MyRangeWidget(QtWidgets.QSlider):
             return super().mousePressEvent(self, e)
 
     def new_value(self):
-        #print("MyRangeWidget new_value")
         value = float(self.value()) * self.inc
         self.config.set_value(value)
         self.config_changed()
@@ -750,20 +655,9 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         if self.hasCamInited:
-            # retract lens? might not react here, depending on what the value for capture is, so have to do 1, 0
-            # also, it always sets out of capture on exit, so nevermind
-            #OK, capture = gp.gp_widget_get_child_by_name( self.camera_config, 'capture' )
-            #if OK >= gp.GP_OK:
-            #    capture.set_value(1)
-            #    self.camera.set_config(self.camera_config) # must have this, else value is not effectuated!
-            #    capture.set_value(0)
-            #    self.camera.set_config(self.camera_config) # must have this, else value is not effectuated!
-            #~ self.camera_handler.shut_down() # ->
             self.running = False
             self._reset_config()
             self.camera.exit()
-            #~ self.ch_thread.quit()
-            #~ self.ch_thread.wait()
         self.settings.setValue("geometry", self.saveGeometry())
         self.settings.setValue("windowState", self.saveState())
         return super(MainWindow, self).closeEvent(event)
@@ -863,20 +757,14 @@ class MainWindow(QtWidgets.QMainWindow):
         self.widget = QtWidgets.QWidget()
         self.widget.setLayout(QtWidgets.QGridLayout())
         self.widget.layout().setColumnStretch(0, 1)
-        #self.setCentralWidget(self.widget)
         # 'apply' button
         if self.args.config_apply_btn == 1:
             self.apply_button = QtWidgets.QPushButton('apply changes')
             self.apply_button.setEnabled(False)
             self.apply_button.clicked.connect(self.apply_changes)
             self.widget.layout().addWidget(self.apply_button, 1, 1)
-        # 'cancel' button
-        #quit_button = QtWidgets.QPushButton('cancel')
-        #quit_button.clicked.connect(QtWidgets.qApp.closeAllWindows)
-        #widget.layout().addWidget(quit_button, 1, 2)
 
     def eventFilter(self, source, event):
-        #if (event.type() == QtCore.QEvent.Wheel): # no need anymore
         return super(MainWindow, self).eventFilter(source, event)
 
     def replicate_fg_viewer(self):
@@ -895,7 +783,6 @@ class MainWindow(QtWidgets.QMainWindow):
         zoomstr = "zoom: {:.3f} {:.3f}".format(self.image_display._zoom, self.image_display._zoomfactor)
         def replacer(m):
             retstr = m.group(1).replace(r'0', ' ')+' '*len(m.group(2))
-            #~ print('"{}" "{}" "{}" -> "{}"'.format(m.group(0),m.group(1),m.group(2),retstr))
             return retstr
         zoomstr = patTrailDigSpace.sub(lambda m: replacer(m), zoomstr)
         msgstr += zoomstr
@@ -925,8 +812,6 @@ class MainWindow(QtWidgets.QMainWindow):
                     g = colA[1]*distnorm + colB[1]*(1.0-distnorm)
                     b = colA[2]*distnorm + colB[2]*(1.0-distnorm)
                     nocamimg.putpixel((ix, iy), (int(r), int(g), int(b)) )
-            # SO:2726171 "Per PIL's docs, ImageDraw's default font is a bitmap font, and therefore it cannot be scaled. For scaling, you need to select a true-type font."
-            # SO:24085996 ImageFont: "On Windows, if the given file name does not exist, the loader also looks in Windows fonts directory."
             d = ImageDraw.Draw(nocamimg)
             d.text((20,nocamsizec[1]-4), "No camera (unknown)", fill=(240,240,240))
             nocamimg.save(nocamimgpath)
@@ -948,7 +833,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.do_next = QtCore.QEvent.registerEventType()
         self.running = False
         QtWidgets.QMainWindow.__init__(self)
-        self.settings = QtCore.QSettings("MyCompany", APPNAME) # SO:11352157
+        self.settings = QtCore.QSettings("MyCompany", APPNAME)
         if not self.settings.value("geometry") == None:
             self.restoreGeometry(self.settings.value("geometry"))
         if not self.settings.value("windowState") == None:
@@ -997,10 +882,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.mainwid)
         self.set_splitter(Qt.Horizontal, self.frameview, self.frameconf)
 
-        # defer full initialisation (slow operation) until gui is visible
-        #~ tempmap = QtGui.QPixmap("grad.png")
-        #~ self.new_image(tempmap)
-
         self.camera = gp.Camera()
         self.ctx = gp.Context()
         QtWidgets.QApplication.postEvent(
@@ -1012,9 +893,6 @@ class MainWindow(QtWidgets.QMainWindow):
         event.accept()
         if event.type() == self.do_init:
             QtWidgets.QApplication.setOverrideCursor(Qt.WaitCursor)
-            #print("AO: {} {}".format( self.contentview.frameGeometry().width(), self.contentview.frameGeometry().height() ) ) # 187 258, OK
-            # set initial size
-            #inwfit, inhfit = self.frameview.frameGeometry().width(), self.frameview.frameGeometry().height()
             try:
                 self.initialise()
             finally:
@@ -1027,13 +905,7 @@ class MainWindow(QtWidgets.QMainWindow):
     def _do_continuous(self):
         if not self.running:
             self._reset_config()
-            #self.updateStatusBar() # clear last singleStatusMsg? clears fps, but kills new loaded image line...
             return
-        # if self.camera_model == 'unknown':
-        #     self._do_preview()
-        # else:
-        #     self._do_capture()
-        #~ print("{} in _do_continuous".format(time.time()))
         if self.hasCamInited:
              self._do_preview()
         else:
@@ -1048,8 +920,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.running = False
             self.updateStatusBar() # clear last singleStatusMsg - clears fps upon stop
             return
-        #if not self._set_config(): # or can use self.hasCamInited here
-        #    return
         self.running = True
         self._do_continuous()
 
@@ -1058,12 +928,11 @@ class MainWindow(QtWidgets.QMainWindow):
         self.hasCamInited = False
         self.lastException = None
         try:
-            #self.camera.init() # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
-            self.camera.init(self.ctx) # prints: WARNING: gphoto2: (b'gp_context_error') b'Could not detect any camera' if logging set up
+            self.camera.init(self.ctx)
             self.hasCamInited = True
         except Exception as ex:
             self.lastException = ex
-            if type(ex) == gp.GPhoto2Error: #gphoto2.GPhoto2Error:
+            if type(ex) == gp.GPhoto2Error:
                 nocamimgpath = os.path.join(THISSCRIPTDIR, NOCAMIMG)
                 temppixmap = QtGui.QPixmap(nocamimgpath)
                 self.image_display.setPhoto(temppixmap)
@@ -1078,16 +947,12 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def recreate_section_widget(self):
         if ( hasattr(self, 'configsection') and (self.configsection) ):
-            #print("Removing {}".format(self.configsection))
             self.widget.layout().removeWidget(self.configsection)
         self.configsection = ccgoo.SectionWidget(self.config_changed, self.camera_config)
         self.widget.layout().addWidget(self.configsection, 0, 0, 1, 3)
         self.scrollconf.setWidget(self.widget)
 
     def initialise(self):
-        #~ # get camera config tree
-        #~ self.camera.init()
-        #~ self.camera_config = self.camera.get_config()
         self.CameraHandlerInit()
         if self.hasCamInited:
             # create corresponding tree of tab widgets
@@ -1098,15 +963,7 @@ class MainWindow(QtWidgets.QMainWindow):
         if self.args.config_apply_btn == 1:
             self.apply_button.setEnabled(True)
         else:
-            # NOTE: if I just call self.apply_changes() here, then some things work (e.g. changing 'capture')
-            # but some things (changing 'shootingmode', 'exposurecompensation') cause segmentation fault in QMetaObject::activate via QComboBox::currentIndexChanged
-            # therefore using a one-shot timer instead, to escape the context of the GUI for changing the GUI
-            # also, without timer.stop() in handler, the handler may seem not to do anything?!
-            #import traceback
-            #traceback.print_stack()
-            #self.apply_changes()
             def handler():
-                #print("handler")
                 self.apply_changes()
                 timer.stop()
                 timer.deleteLater()
@@ -1116,37 +973,27 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def reconstruct_config_section(self):
         # assumes first setup already done, so there are existing tabs:
-        #from PyQt5.QtCore import pyqtRemoveInputHook
-        #import pdb
-        #pyqtRemoveInputHook()
-        #pdb.set_trace()
         tabs = self.configsection.children()[1]
         lastindex = tabs.currentIndex()
         # get also the values of self.scrollconf scrollbars
         lastconfhscroll = (self.scrollconf.horizontalScrollBar().value(), self.scrollconf.horizontalScrollBar().minimum(), self.scrollconf.horizontalScrollBar().singleStep(), self.scrollconf.horizontalScrollBar().pageStep(), self.scrollconf.horizontalScrollBar().maximum())
         lastconfvscroll = (self.scrollconf.verticalScrollBar().value(), self.scrollconf.verticalScrollBar().minimum(), self.scrollconf.verticalScrollBar().singleStep(), self.scrollconf.verticalScrollBar().pageStep(), self.scrollconf.verticalScrollBar().maximum())
-        # Pre-reconstruct: hslide (302, 0, 20, 471, 302) .. vslide (0, 0, 20, 520, 772)
-        #print("Pre-reconstruct: hslide {} .. vslide {}".format(lastconfhscroll, lastconfvscroll))
-        self.camera_config = self.camera.get_config() # get the latest state of camera config
-        self.replicate_ccgoo_main_window() # must run first, else it keeps duplicating content - must run, so after reconstruction, scrollbars are correct
-        self.recreate_section_widget() # must run, so UI reflects the latest state
+        # Pre-reconstruct
+        self.camera_config = self.camera.get_config()
+        self.replicate_ccgoo_main_window()
+        self.recreate_section_widget()
         tabs = self.configsection.children()[1]
         tabs.setCurrentIndex(lastindex)
-        #curconfhscroll = (self.scrollconf.horizontalScrollBar().value(), self.scrollconf.horizontalScrollBar().minimum(), self.scrollconf.horizontalScrollBar().singleStep(), self.scrollconf.horizontalScrollBar().pageStep(), self.scrollconf.horizontalScrollBar().maximum())
-        #curconfvscroll = (self.scrollconf.verticalScrollBar().value(), self.scrollconf.verticalScrollBar().minimum(), self.scrollconf.verticalScrollBar().singleStep(), self.scrollconf.verticalScrollBar().pageStep(), self.scrollconf.verticalScrollBar().maximum())
-        # Post-reconstruct: hslide (0, 0, 20, 471, 302) .. vslide (0, 0, 20, 520, 772)
-        #print("Post-reconstruct: hslide {} .. vslide {}".format(curconfhscroll, curconfvscroll))
+        # Post-reconstruct
         self.scrollconf.horizontalScrollBar().setValue(lastconfhscroll[0])
         self.scrollconf.verticalScrollBar().setValue(lastconfvscroll[0])
 
     def apply_changes(self):
         self.camera.set_config(self.camera_config)
-        #QtWidgets.qApp.closeAllWindows()
         # here we'd need to reconstruct, to get the proper config values
         self.reconstruct_config_section()
 
     def load_settings(self):
-        #print("load_settings")
         self.updateStatusBar() # clear last singleStatusMsg
         if self.lastOpenPath is not None:
             startpath, startfile = os.path.split(self.lastOpenPath)
@@ -1164,7 +1011,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.camera_config = self.camera.get_config()
             # avoid GUI context
             def handler():
-                #print("handler")
                 self.apply_changes()
                 timer.stop()
                 timer.deleteLater()
@@ -1176,12 +1022,9 @@ class MainWindow(QtWidgets.QMainWindow):
             self.updateStatusBar()
 
     def save_settings(self):
-        #print("save_settings")
         self.updateStatusBar() # clear last singleStatusMsg
         if self.lastSavePath is not None:
             startpath, startfile = os.path.split(self.lastSavePath)
-        #elif self.lastOpenPath is not None: # not this, else we lose name proposal based on camera model unless save_settings got called first
-        #    startpath, startfile = os.path.split(self.lastOpenPath)
         else: # both None
             startpath = os.getcwd()
             startfile = "{}.json".format( re.sub(r'\s+', '', self.camera_model) )
@@ -1197,19 +1040,15 @@ class MainWindow(QtWidgets.QMainWindow):
             self.updateStatusBar()
 
     def zoom_original(self):
-        #~ print("zoom_original")
         self.image_display.resetZoom()
 
     def zoom_fit_view(self):
-        #~ print("zoom_fit_view")
         self.image_display.fitInView()
 
     def zoom_plus(self):
-        #~ print("zoom_plus")
         self.image_display.zoomPlus()
 
     def zoom_minus(self):
-        #~ print("zoom_minus")
         self.image_display.zoomMinus()
 
     def set_splitter_layout_style(self):
@@ -1223,7 +1062,6 @@ class MainWindow(QtWidgets.QMainWindow):
             self.set_splitter(Qt.Vertical, self.frameconf, self.frameview)
 
     def switch_splitter_layout(self):
-        #~ print("switch_splitter_layout")
         self.current_splitter_style = (self.current_splitter_style + 1) % 4
         self.set_splitter_layout_style()
 
@@ -1238,7 +1076,6 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _do_preview_camnotinit(self):
         # since cam not inited here, just load the cam-conf-no-cam.png/NOCAMIMG
-        #self.updateStatusBar() # clear last singleStatusMsg? nope, makes the fps flicker!
         nocamimgpath = os.path.join(THISSCRIPTDIR, NOCAMIMG)
         image = Image.open(nocamimgpath)
         image.load()
@@ -1247,8 +1084,8 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _capture_image(self):
         startts = time.time()
-        self.running = False # disable loop/repeat preview, else it overwrites the image once loaded! However just changing this, does not change the checked status of the menu item
-        self.repeatpreview_action.setChecked(False) # this in itself does not do triggered.connect(self.continuous), and stop the repeat preview loop; so needed just for the menu item
+        self.running = False
+        self.repeatpreview_action.setChecked(False) # needed just for the menu item
         self.singleStatusMsg = "Capturing image - wait ..."
         self.updateStatusBar() # clear last singleStatusMsg
         imgfilename = do_capture_image(self.camera)
@@ -1284,52 +1121,10 @@ class MainWindow(QtWidgets.QMainWindow):
             tdelta = tstampnow - self.timestamp
             fps = 1.0/tdelta
             self.fps = "(<{} fps)".format(MINFPS) if (fps<MINFPS) else "{:7.2f} fps".format(fps)
-            #self.timestamp = None
             self.timestamp = tstampnow
         else:
             self.timestamp = time.time()
         self.updateStatusBar()
-        # # generate histogram and count clipped pixels
-        # histogram = image.histogram()
-        # q_image = QtGui.QImage(100, 256, QtGui.QImage.Format_RGB888)
-        # q_image.fill(Qt.white)
-        # clipping = []
-        # start = 0
-        # for colour in (0xff0000, 0x00ff00, 0x0000ff):
-        #     stop = start + 256
-        #     band_hist = histogram[start:stop]
-        #     max_value = float(1 + max(band_hist))
-        #     for x in range(len(band_hist)):
-        #         y = float(1 + band_hist[x]) / max_value
-        #         #y = 98.0 * max(0.0, 1.0 + (math.log10(y) / 5.0))
-        #         q_image.setPixel(y,     x, colour)
-        #         q_image.setPixel(y + 1, x, colour)
-        #     #clipping.append(band_hist[-1])
-        #     start = stop
-        # pixmap = QtGui.QPixmap.fromImage(q_image)
-        # self.histogram_display.setPixmap(pixmap)
-        # self.clipping_display.setText(
-        #     ', '.join(map(lambda x: '{:d}'.format(x), clipping)))
-        # # measure focus by summing inter-pixel differences
-        # shifted = ImageChops.offset(image, 1, 0)
-        # diff = ImageChops.difference(image, shifted).crop((1, 0, w, h))
-        # stats = ImageStat.Stat(diff)
-        # h_rms = stats.rms
-        # shifted = ImageChops.offset(image, 0, 1)
-        # diff = ImageChops.difference(image, shifted).crop((0, 1, w, h))
-        # stats = ImageStat.Stat(diff)
-        # rms = stats.rms
-        # for n in range(len(rms)):
-        #     rms[n] += h_rms[n]
-        # # "auto-ranging" of focus measurement
-        # while self.focus_scale < 1.0e12 and (max(rms) * self.focus_scale) < 1.0:
-        #     self.focus_scale *= 10.0
-        #     print('+', self.focus_scale)
-        # while self.focus_scale > 1.0e-12 and (max(rms) * self.focus_scale) > 100.0:
-        #     self.focus_scale /= 10.0
-        #     print('-', self.focus_scale)
-        # self.focus_display.setText(
-        #     ', '.join(map(lambda x: '{:.2f}'.format(x * self.focus_scale), rms)))
 
     def _draw_image(self):
         if not self.q_image:
@@ -1347,7 +1142,6 @@ def main():
 
     # command line argument parser
     parser = argparse.ArgumentParser(description="{} - interact with camera via python-gphoto2. Called without command line arguments, it will start a Qt GUI.".format(APPNAME))
-    #mexg = parser.add_mutually_exclusive_group() # mexg.add_argument
     parser.add_argument('--save-cam-conf-json', default=argparse.SUPPRESS, help='Get and save the camera configuration to .json file, if standalone (together with --load-cam-conf-json, can be used for copying filtered json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty. Overwrites existing files without prompting. Note that if camera is online, but mirror is not raised, process will complete with errors and fewer properties collected in json file (default: suppress)') # "%(default)s"
     parser.add_argument('--load-cam-conf-json', default=argparse.SUPPRESS, help='Load and set the camera configuration from .json file, if standalone (together with --save-cam-conf-json, can be used for copying filtered json files). The string argument is the filename, action is aborted if standalone and no camera online, or if the argument is empty (default: suppress)') # "%(default)s"
     parser.add_argument('--include-names-json', default=argparse.SUPPRESS, help='Comma separated list of property names to be filtered/included. When using --load-cam-conf-json with --save-cam-conf-json, a json copy with flattening of hierarchy (removal of nodes with children and without value) is performed; in that case --include-names-json can be used to include only certain properties in the output. Can also use `ro=0` or `ro=1` as filtering criteria. If empty ignored (default: suppress)') # "%(default)s"
@@ -1355,7 +1149,6 @@ def main():
     parser.add_argument('--stop-capture-view', default='', help='Command - stop capture view (retract lens/release mirror) on the camera, then exit', action='store_const', const=stop_capture_view) # "%(default)s"
     parser.add_argument('--config-apply-btn', type=int, default=0, help='GUI option: 0: do not create apply button, update on change; 1: create apply button, update on its click (default: %(default)s)') # ""
     args = parser.parse_args() # in case of --help, this also prints help and exits before Qt window is raised
-    #~ print(args)
     if (args.start_capture_view): args.start_capture_view()
     elif (args.stop_capture_view): args.stop_capture_view()
     elif (hasattr(args, 'save_cam_conf_json') and not(hasattr(args, 'load_cam_conf_json'))):
@@ -1374,9 +1167,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-# for testing https://stackoverflow.com/questions/40683840/zooming-and-panning-an-image-in-a-qscrollarea:
-# sudo apt install qtbase5-dev # installs: libgles2-mesa-dev libqt5opengl5-dev qt5-qmake qt5-qmake-bin qtbase5-dev qtbase5-dev-tools
-# I have qt5-qmake-bin -> use /usr/lib/qt5/bin/qmake, else qt4 version is used!
 

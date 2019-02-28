@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-18  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -79,6 +79,9 @@ for name in os.listdir('src'):
         vsn = tuple(map(int, match.group(1).split('.')))
         if vsn >= best_match and vsn <= gphoto2_version:
             best_match = vsn
+if best_match == (0, 0, 0):
+    error('ERROR: libgphoto2 version %s is not supported', gphoto2_version_str)
+    best_match = gphoto2_version
 mod_src_dir = os.path.join(
     'src', mod_src_dir + '-gp' + '.'.join(map(str, best_match)))
 

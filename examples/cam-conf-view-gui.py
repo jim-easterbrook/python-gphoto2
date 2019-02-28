@@ -3,7 +3,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-18  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2019  "sdaau"
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

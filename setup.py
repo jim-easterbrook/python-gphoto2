@@ -208,8 +208,13 @@ class build_swig(Command):
         self.announce('swigging gphoto2 versions %s' % str(gp_versions), 2)
         # do -builtin and not -builtin
         swig_bis = [False]
-        swig_version = str(subprocess.check_output(
-            ['swig', '-version'], universal_newlines=True))
+        cmd = ['swig', '-version']
+        try:
+            swig_version = str(subprocess.check_output(
+                cmd, universal_newlines=True))
+        except Exception:
+            error('ERROR: command "%s" failed', ' '.join(cmd))
+            raise
         for line in swig_version.split('\n'):
             if 'Version' in line:
                 swig_version = tuple(map(int, line.split()[-1].split('.')))

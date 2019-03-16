@@ -1,0 +1,33 @@
+import gphoto2 as gp 
+import os
+import sys
+
+def main():
+
+    # Init camera
+    camera = gp.check_result(gp.gp_camera_new())
+    gp.check_result(gp.gp_camera_init(camera))
+    context = gp.Context()
+    
+    image_id = 0
+    timeout = 3 #seconds
+
+    while(True):
+        result,image_file = gp.check_result(gp.gp_camera_wait_for_event(camera,timeout,context))
+        if (result == 2):
+            # Get the image from the camera. Not the SD card
+            camera_file = gp.check_result(gp.gp_camera_file_get(
+                                            camera, 
+                                            image_file.folder, 
+                                            image_file.name,
+                                            gp.GP_FILE_TYPE_NORMAL))
+            # Path where the image is to be saved
+            target_path= os.path.join(os.getcwd(),str(image_id))
+            print(target_path)
+            gp.gp_file_save(camera_file, target_path)
+            image_id+=1
+        # Else, it is waiting for an event to occur
+    return 0
+
+if __name__ == "__main__":
+    sys.exit(main())

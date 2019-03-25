@@ -1,42 +1,62 @@
 #!/usr/bin/env python
 
-import gphoto2 as gp 
-import os
-import sys
+# python-gphoto2 - Python interface to libgphoto2
+# http://github.com/jim-easterbrook/python-gphoto2
+# Copyright (C) 2019  Göktuğ Başaran
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+
 # *******************************************************
-# gp.camera_wait_for_event() function waits for 
+# gp.camera_wait_for_event() function waits for
 # a capture trigger to arrive. When it does, it downloads
-# the image directly from the camera, without using SD 
+# the image directly from the camera, without using SD
 # card
-# 
+#
 # gp_camera_trigger_capture() or Trigger Button on the
 # camera can be used to start capturing.
-# 
+#
 # gp_capture_image_and_download() method takes about 2 seconds
-# to process since it saves the image to SD CARD 
+# to process since it saves the image to SD CARD
 # first then downloads it, which takes a lot of time.
 # *******************************************************
 
-def main():
+from __future__ import print_function
 
+import os
+import sys
+
+import gphoto2 as gp
+
+
+def main():
     # Init camera
     camera = gp.check_result(gp.gp_camera_new())
     gp.check_result(gp.gp_camera_init(camera))
-
-    while(True):
-        result,image_file = gp.check_result(gp.gp_camera_wait_for_event(camera,gp.GP_EVENT_FILE_ADDED))
-        if (result == gp.GP_EVENT_FILE_ADDED):
+    timeout = 3000 # miliseconds
+    while True:
+        event_type, event_data = gp.check_result(
+            gp.gp_camera_wait_for_event(camera, timeout))
+        if event_type == gp.GP_EVENT_FILE_ADDED:
             # Get the image from the camera
             camera_file = gp.check_result(gp.gp_camera_file_get(
-                                            camera, 
-                                            image_file.folder, 
-                                            image_file.name,
-                                            gp.GP_FILE_TYPE_NORMAL))
+                camera, event_data.folder, event_data.name,
+                gp.GP_FILE_TYPE_NORMAL))
             # Path where the image is to be saved
-            target_path= os.path.join(os.getcwd(),image_file.name)
+            target_path= os.path.join(os.getcwd(), event_data.name)
             print("Picture is saved to {}".format(target_path))
-            gp.gp_file_save(camera_file, target_path)
+            gp.check_result(gp.gp_file_save(camera_file, target_path))
     return 0
+
 
 if __name__ == "__main__":
     sys.exit(main())

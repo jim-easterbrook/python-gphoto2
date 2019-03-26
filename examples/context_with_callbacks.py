@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2018  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2019  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -87,7 +87,7 @@ def context_with_callbacks():
 def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
-    gp.check_result(gp.use_python_logging())
+    callback_obj = gp.check_result(gp.use_python_logging())
     with context_with_callbacks() as context:
         camera = gp.Camera()
         camera.init(context)

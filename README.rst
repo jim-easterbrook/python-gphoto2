@@ -323,11 +323,11 @@ You can override this mapping by passing your own to ``use_python_logging()``:
     import logging
     import gphoto2 as gp
     ...
-    gp.use_python_logging(mapping={
+    callback_obj = gp.check_result(gp.use_python_logging(mapping={
         gp.GP_LOG_ERROR   : logging.INFO,
         gp.GP_LOG_DEBUG   : logging.DEBUG,
         gp.GP_LOG_VERBOSE : logging.DEBUG - 3,
-        gp.GP_LOG_DATA    : logging.DEBUG - 6})
+        gp.GP_LOG_DATA    : logging.DEBUG - 6}))
     ...
 
 If you prefer to use your own logging system you can define a logging callback function in Python.
@@ -342,8 +342,8 @@ The callback function is installed with ``gp_log_add_func``:
     def callback(level, domain, string, data=None):
         print('Callback: level =', level, ', domain =', domain, ', string =', string, 'data =', data)
     ...
-    callback_id1 = gp.check_result(gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback))
-    callback_id2 = gp.check_result(gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback, 123))
+    callback_obj1 = gp.check_result(gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback))
+    callback_obj2 = gp.check_result(gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback, 123))
     ...
 
 What to do if you have a problem
@@ -357,6 +357,14 @@ Another reader of the mailing list may have the same camera model and already kn
 
 Notes on some gphoto2 functions
 -------------------------------
+
+gp_log_add_func / use_python_logging
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Since python-gphoto2 version 1.10.0 these functions return a sequence containing an error code and an object storing details of the callback.
+The callback is automatically uninstalled when this object is deleted.
+
+In earlier versions of python-gphoto2 these functions return an integer id that must be passed to ``gp_log_remove_func`` to uninstall the callback.
 
 gp_context_set_idle_func / gp_context_set_progress_funcs / etc.
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -416,7 +424,7 @@ Licence
 
 | python-gphoto2 - Python interface to libgphoto2
 | http://github.com/jim-easterbrook/python-gphoto2
-| Copyright (C) 2014-18  Jim Easterbrook  jim@jim-easterbrook.me.uk
+| Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

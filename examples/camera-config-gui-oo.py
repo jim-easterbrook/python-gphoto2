@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-18  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -256,7 +256,7 @@ class DateWidget(QtWidgets.QDateTimeEdit):
 if __name__ == "__main__":
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
-    gp.check_result(gp.use_python_logging())
+    callback_obj = gp.check_result(gp.use_python_logging())
     app = QtWidgets.QApplication([])
     main = MainWindow()
     main.show()

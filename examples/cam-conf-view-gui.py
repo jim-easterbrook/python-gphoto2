@@ -1138,7 +1138,7 @@ def main():
     # note that: '%(filename)s:%(lineno)d' just prints 'port_log.py:127'
     logging.basicConfig(
         format='%(asctime)s %(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
-    gp.check_result(gp.use_python_logging())
+    callback_obj = gp.check_result(gp.use_python_logging())
 
     # command line argument parser
     parser = argparse.ArgumentParser(description="{} - interact with camera via python-gphoto2. Called without command line arguments, it will start a Qt GUI.".format(APPNAME))

@@ -29,19 +29,35 @@
 %ignore gp_log_data;
 %ignore gp_log_with_source_location;
 
-%{
-// Keep list of Python callback function associated with each id
-typedef struct LogFuncItem {
-  int                id;
-  PyObject           *func;
-  PyObject           *data;
-  struct LogFuncItem *next;
-} LogFuncItem;
+// gp_log_remove_func is called when LogFuncItem is deleted
+%ignore gp_log_remove_func;
 
-static LogFuncItem *func_list = NULL;
+// Object to store details of callback
+%ignore LogFuncItem::id;
+%ignore LogFuncItem::func;
+%ignore LogFuncItem::data;
+%ignore LogFuncItem::next;
+
+%inline %{
+typedef struct LogFuncItem {
+    int      id;
+    PyObject *func;
+    PyObject *data;
+} LogFuncItem;
+%}
+
+// call gp_log_remove_func when LogFuncItem object is deleted
+%extend LogFuncItem {
+    ~LogFuncItem() {
+        if ($self->id >= 0)
+            gp_log_remove_func($self->id);
+        Py_XDECREF($self->func);
+        Py_XDECREF($self->data);
+        free($self);
+    }
+};
 
 // Call Python function from C callback
-%}
 #if GPHOTO2_VERSION < 0x020500
 %{
 static void gp_log_call_python(GPLogLevel level, const char *domain,
@@ -92,79 +108,49 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
 %}
 
 // Use typemaps to replace Python callback & data with gp_log_call_python
-// Allocate an empty LogFuncItem and make data optional
-%typemap(default) void *data (LogFuncItem *_global_new_func) {
-    _global_new_func = malloc(sizeof(LogFuncItem));
-    if (!_global_new_func) {
+%typemap(arginit) GPLogFunc (LogFuncItem *_global_callback) {
+    _global_callback = malloc(sizeof(LogFuncItem));
+    if (!_global_callback) {
         PyErr_SetNone(PyExc_MemoryError);
         SWIG_fail;
     }
-    _global_new_func->id = 0;
-    _global_new_func->func = NULL;
-    _global_new_func->data = NULL;
-    _global_new_func->next = func_list;
-    $1 = _global_new_func;
+    _global_callback->id = GP_ERROR;
+    _global_callback->func = NULL;
+    _global_callback->data = NULL;
 }
-// Store Python callback in LogFuncItem and use gp_log_call_python
-%typemap(in) GPLogFunc func {
+
+%typemap(freearg) GPLogFunc {
+    if (_global_callback)
+        delete_LogFuncItem(_global_callback);
+}
+
+%typemap(in) GPLogFunc {
     if (!PyCallable_Check($input)) {
         SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
     }
-    _global_new_func->func = $input;
+    _global_callback->func = $input;
+    Py_INCREF(_global_callback->func);
     $1 = gp_log_call_python;
 }
-// Store user data (if present) in LogFuncItem
+
+%typemap(argout) GPLogFunc {
+    _global_callback->id = result;
+    $result = SWIG_Python_AppendOutput($result,
+        SWIG_NewPointerObj(_global_callback, SWIGTYPE_p_LogFuncItem, SWIG_POINTER_OWN));
+    _global_callback = NULL;
+}
+
+// make data optional and pass LogFuncItem object to gp_log_add_func
+%typemap(default) void *data {
+    $1 = _global_callback;
+}
+
 %typemap(in) void *data {
-    _global_new_func->data = $input;
-}
-// Add LogFuncItem to func_list if gp_log_add_func succeeded
-%exception gp_log_add_func {
-    $action
-    if (result >= GP_OK) {
-        _global_new_func->id = result;
-        Py_INCREF(_global_new_func->func);
-        if (_global_new_func->data) {
-            Py_INCREF(_global_new_func->data);
-        }
-        func_list = _global_new_func;
-        _global_new_func = NULL;
-    }
-}
-// Deallocate LogFuncItem if gp_log_add_func failed
-%typemap(freearg) void *data {
-    free(_global_new_func);
+    _global_callback->data = $input;
+    Py_INCREF(_global_callback->data);
 }
 
-// Note id when gp_log_remove_func is called
-%typemap(check) int id (int _global_id) {
-    _global_id = $1;
-}
-// Remove LogFuncItem from func_list if gp_log_remove_func succeeded
-%exception gp_log_remove_func {
-    $action
-    if (result >= GP_OK) {
-        LogFuncItem *last = NULL;
-        LogFuncItem *this = func_list;
-        while (this) {
-            if (this->id == _global_id) {
-                Py_DECREF(this->func);
-                if (this->data) {
-                    Py_DECREF(this->data);
-                }
-                if (last) {
-                    last->next = this->next;
-                } else {
-                    func_list = this->next;
-                }
-                free(this);
-                break;
-            }
-            last = this;
-            this = this->next;
-        }
-    }
-}
-
+// define use_python_logging function
 %pythoncode %{
 import logging
 
@@ -179,8 +165,9 @@ def use_python_logging(mapping={}):
     """Install a callback to receive gphoto2 errors and forward them
     to Python's logging system.
 
-    The return value is an id you can use to remove the logging callback
-    with gp_log_remove_func.
+    The return value is a tuple containing an error code and a Python object
+    containing details of the callback. Deleting this object will uninstall the
+    callback.
 
     Parameters
     ----------
@@ -191,7 +178,7 @@ def use_python_logging(mapping={}):
 
     Returns
     -------
-    an id or a gphoto2 error code.
+    an tuple containing an id or error code and a callback reference object.
 
     """
     full_mapping = {

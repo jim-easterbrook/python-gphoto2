@@ -361,7 +361,7 @@ Notes on some gphoto2 functions
 gp_log_add_func / use_python_logging
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Since python-gphoto2 version 1.10.0 these functions return a sequence containing an error code and an object storing details of the callback.
+Since python-gphoto2 version 2.0.0 these functions return a sequence containing an error code and an object storing details of the callback.
 The callback is automatically uninstalled when this object is deleted.
 
 In earlier versions of python-gphoto2 these functions return an integer id that must be passed to ``gp_log_remove_func`` to uninstall the callback.

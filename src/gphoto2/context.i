@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -70,14 +70,15 @@ typedef struct data_type {
 // Add destructor
 %extend data_type {
     ~data_type() {
-        install_func($self->context, NULL, NULL);
-        Py_DECREF($self->func);
-        Py_DECREF($self->data);
+        if ($self->context)
+            install_func($self->context, NULL, NULL);
+        Py_XDECREF($self->func);
+        Py_XDECREF($self->data);
         free($self);
     }
 };
 // Define typemaps
-%typemap(arginit) cb_func_type func (data_type *_global_callbacks) {
+%typemap(arginit) cb_func_type (data_type *_global_callbacks) {
     _global_callbacks = malloc(sizeof(data_type));
     if (!_global_callbacks) {
         PyErr_SetNone(PyExc_MemoryError);
@@ -87,7 +88,11 @@ typedef struct data_type {
     _global_callbacks->func = NULL;
     _global_callbacks->data = NULL;
 }
-%typemap(in) cb_func_type func {
+%typemap(freearg) cb_func_type {
+    if (_global_callbacks)
+        delete_ ## data_type(_global_callbacks);
+}
+%typemap(in) cb_func_type {
     if (!PyCallable_Check($input)) {
         SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
     }
@@ -95,7 +100,7 @@ typedef struct data_type {
     Py_INCREF(_global_callbacks->func);
     $1 = (cb_func_type) cb_wrapper;
 }
-%typemap(argout) cb_func_type func {
+%typemap(argout) cb_func_type {
     $result = SWIG_Python_AppendOutput($result,
         SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_ ## data_type, SWIG_POINTER_OWN));
     _global_callbacks = NULL;
@@ -134,11 +139,12 @@ typedef struct ProgressCallbacks {
 
 %extend ProgressCallbacks {
     ~ProgressCallbacks() {
-        gp_context_set_progress_funcs($self->context, NULL, NULL, NULL, NULL);
-        Py_DECREF($self->func_1);
-        Py_DECREF($self->func_2);
-        Py_DECREF($self->func_3);
-        Py_DECREF($self->data);
+        if ($self->context)
+            gp_context_set_progress_funcs($self->context, NULL, NULL, NULL, NULL);
+        Py_XDECREF($self->func_1);
+        Py_XDECREF($self->func_2);
+        Py_XDECREF($self->func_3);
+        Py_XDECREF($self->data);
         free($self);
     }
 };
@@ -344,7 +350,7 @@ CB_POSTAMBLE
 %}
 
 // Use typemaps to install callbacks
-%typemap(arginit) GPContextProgressStartFunc start_func (ProgressCallbacks *_global_callbacks) {
+%typemap(arginit) GPContextProgressStartFunc (ProgressCallbacks *_global_callbacks) {
     _global_callbacks = malloc(sizeof(ProgressCallbacks));
     if (!_global_callbacks) {
         PyErr_SetNone(PyExc_MemoryError);
@@ -356,8 +362,9 @@ CB_POSTAMBLE
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
 }
-%typemap(freearg) void *data {
-    free(_global_callbacks);
+%typemap(freearg) GPContextProgressStartFunc {
+    if (_global_callbacks)
+        delete_ProgressCallbacks(_global_callbacks);
 }
 
 %typemap(in) void *data {

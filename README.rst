@@ -20,7 +20,7 @@ Dependencies
 *   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.4 or greater
 *   build tools: pkg-config, C compiler & linker
 
-Support for libgphoto2 v2.4 is incomplete and will be withdrawn in a subsequent release of python-gphoto2.
+Support for libgphoto2 v2.4 is incomplete and will be withdrawn in a future release of python-gphoto2.
 
 Note that you need the "development headers" versions of libgphoto2_ and Python.
 In most cases you should use your operating system's package manager to install these.
@@ -32,10 +32,11 @@ Installation and testing
 ------------------------
 
 There are several ways to install python-gphoto2, with varying levels of control over the installation process.
-You can install it with pip_, or by downloading an archive, or by getting the source from GitHub_.
+By far the easiest is to use your operating system's package manager, if you're lucky enough to be using a system that has python-gphoto2 available.
+Note that this may not install the latest version.
 
-Note that you need to install the dependencies_ first, no matter how you install python-gphoto2.
-
+Otherwise you can install it with pip_, or by downloading an archive, or by getting the source from GitHub_.
+Make sure that you install the dependencies_ first.
 The commands below will install python-gphoto2 for your default Python version.
 To install for both Python 2 and Python 3, run the installation process twice with specific commands, i.e. ``pip2`` and ``pip3`` or ``python2`` and ``python3``.
 

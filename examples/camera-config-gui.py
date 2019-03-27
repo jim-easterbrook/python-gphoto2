@@ -77,8 +77,11 @@ class MainWindow(QtWidgets.QMainWindow):
         # create corresponding tree of tab widgets
         self.setWindowTitle(
             gp.check_result(gp.gp_widget_get_label(self.camera_config)))
-        self.centralWidget().layout().addWidget(SectionWidget(
-            self.config_changed, self.camera_config), 0, 0, 1, 3)
+        top_widget = SectionWidget(self.config_changed, self.camera_config)
+        scroll_area = QtWidgets.QScrollArea()
+        scroll_area.setWidget(top_widget)
+        scroll_area.setWidgetResizable(True)
+        self.centralWidget().layout().addWidget(scroll_area, 0, 0, 1, 3)
 
     def config_changed(self):
         self.apply_button.setEnabled(True)

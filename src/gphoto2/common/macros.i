@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -94,7 +94,8 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 }
 %extend name {
   ~name() {
-    free_func($self);
+    int error = free_func($self);
+    if (error < GP_OK) GPHOTO2_ERROR(error)
   }
 };
 %enddef

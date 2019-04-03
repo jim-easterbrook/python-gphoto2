@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-18  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -36,7 +36,7 @@
 %ignore LogFuncItem::id;
 %ignore LogFuncItem::func;
 %ignore LogFuncItem::data;
-%ignore LogFuncItem::next;
+%ignore del_LogFuncItem;
 
 %inline %{
 typedef struct LogFuncItem {
@@ -44,18 +44,20 @@ typedef struct LogFuncItem {
     PyObject *func;
     PyObject *data;
 } LogFuncItem;
-%}
 
 // call gp_log_remove_func when LogFuncItem object is deleted
-%extend LogFuncItem {
-    ~LogFuncItem() {
-        if ($self->id >= 0)
-            gp_log_remove_func($self->id);
-        Py_XDECREF($self->func);
-        Py_XDECREF($self->data);
-        free($self);
-    }
+static int del_LogFuncItem(struct LogFuncItem *this) {
+    int error = GP_OK;
+    if (this->id >= 0)
+        error = gp_log_remove_func(this->id);
+    Py_XDECREF(this->func);
+    Py_XDECREF(this->data);
+    free(this);
+    return error;
 };
+%}
+
+DEFAULT_DTOR(LogFuncItem, del_LogFuncItem);
 
 // Call Python function from C callback
 #if GPHOTO2_VERSION < 0x020500
@@ -121,7 +123,7 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
 
 %typemap(freearg) GPLogFunc {
     if (_global_callback)
-        delete_LogFuncItem(_global_callback);
+        del_LogFuncItem(_global_callback);
 }
 
 %typemap(in) GPLogFunc {

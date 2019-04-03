@@ -60,23 +60,26 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 %ignore data_type::context;
 %ignore data_type::func;
 %ignore data_type::data;
+%ignore del_ ## data_type;
 %inline %{
 typedef struct data_type {
     GPContext   *context;
     PyObject    *func;
     PyObject    *data;
 } data_type;
-%}
+
 // Add destructor
-%extend data_type {
-    ~data_type() {
-        if ($self->context)
-            install_func($self->context, NULL, NULL);
-        Py_XDECREF($self->func);
-        Py_XDECREF($self->data);
-        free($self);
-    }
+static int del_ ## data_type(struct data_type *this) {
+    if (this->context)
+        install_func(this->context, NULL, NULL);
+    Py_XDECREF(this->func);
+    Py_XDECREF(this->data);
+    free(this);
+    return GP_OK;
 };
+%}
+DEFAULT_DTOR(data_type, del_ ## data_type);
+
 // Define typemaps
 %typemap(arginit) cb_func_type (data_type *_global_callbacks) {
     _global_callbacks = malloc(sizeof(data_type));
@@ -90,7 +93,7 @@ typedef struct data_type {
 }
 %typemap(freearg) cb_func_type {
     if (_global_callbacks)
-        delete_ ## data_type(_global_callbacks);
+        del_ ## data_type(_global_callbacks);
 }
 %typemap(in) cb_func_type {
     if (!PyCallable_Check($input)) {
@@ -126,6 +129,7 @@ SINGLE_CALLBACK_FUNCTION(CancelCallback, GPContextCancelFunc,
 %ignore ProgressCallbacks::func_2;
 %ignore ProgressCallbacks::func_3;
 %ignore ProgressCallbacks::data;
+%ignore del_ProgressCallbacks;
 
 %inline %{
 typedef struct ProgressCallbacks {
@@ -135,19 +139,19 @@ typedef struct ProgressCallbacks {
     PyObject    *func_3;
     PyObject    *data;
 } ProgressCallbacks;
-%}
 
-%extend ProgressCallbacks {
-    ~ProgressCallbacks() {
-        if ($self->context)
-            gp_context_set_progress_funcs($self->context, NULL, NULL, NULL, NULL);
-        Py_XDECREF($self->func_1);
-        Py_XDECREF($self->func_2);
-        Py_XDECREF($self->func_3);
-        Py_XDECREF($self->data);
-        free($self);
-    }
+static int del_ProgressCallbacks(struct ProgressCallbacks *this) {
+    if (this->context)
+        gp_context_set_progress_funcs(this->context, NULL, NULL, NULL, NULL);
+    Py_XDECREF(this->func_1);
+    Py_XDECREF(this->func_2);
+    Py_XDECREF(this->func_3);
+    Py_XDECREF(this->data);
+    free(this);
+    return GP_OK;
 };
+%}
+DEFAULT_DTOR(ProgressCallbacks, del_ProgressCallbacks);
 
 // Macros for wrappers around Python callbacks
 %define CB_PREAMBLE
@@ -364,7 +368,7 @@ CB_POSTAMBLE
 }
 %typemap(freearg) GPContextProgressStartFunc {
     if (_global_callbacks)
-        delete_ProgressCallbacks(_global_callbacks);
+        del_ProgressCallbacks(_global_callbacks);
 }
 
 %typemap(in) void *data {

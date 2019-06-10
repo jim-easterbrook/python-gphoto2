@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-18  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -162,11 +162,9 @@ MEMBER_FUNCTION(_Camera, Camera,
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     capture, (CameraCaptureType type, CameraFilePath *path, GPContext *context),
     gp_camera_capture, ($self, type, path, context))
-#if GPHOTO2_VERSION >= 0x020500
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     trigger_capture, (GPContext *context),
     gp_camera_trigger_capture, ($self, context))
-#endif
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     capture_preview, (CameraFile *camera_file, GPContext *context),
     gp_camera_capture_preview, ($self, camera_file, context))
@@ -186,15 +184,9 @@ MEMBER_FUNCTION_THREAD(_Camera, Camera,
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     folder_delete_all, (const char *folder, GPContext *context),
     gp_camera_folder_delete_all, ($self, folder, context))
-#if GPHOTO2_VERSION < 0x020500
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
-    folder_put_file, (const char *folder, CameraFile *file, GPContext *context),
-    gp_camera_folder_put_file, ($self, folder, file, context))
-#else
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     folder_put_file, (const char *folder, const char *filename, CameraFileType type, CameraFile *file, GPContext *context),
     gp_camera_folder_put_file, ($self, folder, filename, type, file, context))
-#endif
 MEMBER_FUNCTION(_Camera, Camera,
     folder_make_dir, (const char *folder, const char *name, GPContext *context),
     gp_camera_folder_make_dir, ($self, folder, name, context))
@@ -210,11 +202,9 @@ MEMBER_FUNCTION(_Camera, Camera,
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     file_get, (const char *folder, const char *file, CameraFileType type, CameraFile *camera_file, GPContext *context),
     gp_camera_file_get, ($self, folder, file, type, camera_file, context))
-#if GPHOTO2_VERSION >= 0x020500
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     file_read, (const char *folder, const char *file, CameraFileType type, uint64_t offset, char *buf, uint64_t *size, GPContext *context),
     gp_camera_file_read, ($self, folder, file, type, offset, buf, size, context))
-#endif
 MEMBER_FUNCTION(_Camera, Camera,
     file_delete, (const char *folder, const char *file, GPContext *context),
     gp_camera_file_delete, ($self, folder, file, context))
@@ -255,9 +245,6 @@ MEMBER_FUNCTION(_Camera, Camera,
 
 // Define enums added during libgphoto2 development
 %{
-#if GPHOTO2_VERSION < 0x020408
-  int GP_EVENT_CAPTURE_COMPLETE = GP_EVENT_FOLDER_ADDED + 1;
-#endif
 #if GPHOTO2_VERSION < 0x020511
   int GP_EVENT_FILE_CHANGED = GP_EVENT_CAPTURE_COMPLETE + 1;
 #endif

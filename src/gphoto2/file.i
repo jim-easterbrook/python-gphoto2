@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -189,11 +189,9 @@ MEMBER_FUNCTION(_CameraFile, CameraFile,
 MEMBER_FUNCTION(_CameraFile, CameraFile,
     adjust_name_for_mime_type, (),
     gp_file_adjust_name_for_mime_type, ($self))
-#if GPHOTO2_VERSION >= 0x020500
 MEMBER_FUNCTION(_CameraFile, CameraFile,
     get_name_by_type, (const char *basename, CameraFileType type, char **newname),
     gp_file_get_name_by_type, ($self, basename, type, newname))
-#endif
 MEMBER_FUNCTION_THREAD(_CameraFile, CameraFile,
     set_data_and_size, (char *data, unsigned long int size),
     gp_file_set_data_and_size, ($self, data, size))

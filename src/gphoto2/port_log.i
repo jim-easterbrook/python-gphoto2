@@ -60,20 +60,9 @@ static int del_LogFuncItem(struct LogFuncItem *this) {
 DEFAULT_DTOR(LogFuncItem, del_LogFuncItem);
 
 // Call Python function from C callback
-#if GPHOTO2_VERSION < 0x020500
-%{
-static void gp_log_call_python(GPLogLevel level, const char *domain,
-                               const char *format, va_list args, void *data) {
-    char str[1024];
-    vsnprintf(str, sizeof(str), format, args);
-%}
-#else
 %{
 static void gp_log_call_python(GPLogLevel level, const char *domain,
                                const char *str, void *data) {
-%}
-#endif
-%{
     if (!Py_IsInitialized()) {
         return;
     }

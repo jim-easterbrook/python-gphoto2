@@ -20,7 +20,7 @@ Dependencies
 *   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.4 or greater
 *   build tools: pkg-config, C compiler & linker
 
-Support for libgphoto2 v2.4 is incomplete and will be withdrawn in a future release of python-gphoto2.
+Support for libgphoto2 v2.4 is incomplete and will be withdrawn in the next release of python-gphoto2, probably named 2.1.0.
 
 Note that you need the "development headers" versions of libgphoto2_ and Python.
 In most cases you should use your operating system's package manager to install these.

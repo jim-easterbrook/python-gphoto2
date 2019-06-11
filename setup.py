@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
 # Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
@@ -170,6 +168,8 @@ class build_doc(Command):
                                          text, re.DOTALL):
                     symbol = match.group(1)
                     value = match.group(2).strip()
+                    if not value:
+                        continue
                     for key, c_type, py_type in member_methods:
                         if symbol.startswith(key):
                             method = symbol.replace(key, '')

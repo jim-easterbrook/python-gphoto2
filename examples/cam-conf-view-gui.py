@@ -679,6 +679,7 @@ class MainWindow(QtWidgets.QMainWindow):
                         self.camera.set_config(self.camera_config)
                         break
             # find the image format config item
+            # camera dependent - 'imageformat' is 'imagequality' on some
             OK, image_format = gp.gp_widget_get_child_by_name(
                 self.camera_config, 'imageformat')
             if OK >= gp.GP_OK:

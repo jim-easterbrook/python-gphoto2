@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2018  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2018-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -54,6 +54,7 @@ def configured_camera():
         capturetarget_cfg = cfg.get_child_by_name('capturetarget')
         capturetarget = capturetarget_cfg.get_value()
         capturetarget_cfg.set_value('Internal RAM')
+        # camera dependent - 'imageformat' is 'imagequality' on some
         imageformat_cfg = cfg.get_child_by_name('imageformat')
         imageformat = imageformat_cfg.get_value()
         imageformat_cfg.set_value('Small Fine JPEG')

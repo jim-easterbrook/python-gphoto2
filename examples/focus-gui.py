@@ -184,6 +184,7 @@ class CameraHandler(QtCore.QObject):
                     self.camera.set_config(self.config)
                     break
         # find the image format config item
+        # camera dependent - 'imageformat' is 'imagequality' on some
         OK, image_format = gp.gp_widget_get_child_by_name(
             self.config, 'imageformat')
         if OK >= gp.GP_OK:

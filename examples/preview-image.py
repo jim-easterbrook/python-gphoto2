@@ -40,6 +40,7 @@ def main():
     # get configuration tree
     config = gp.check_result(gp.gp_camera_get_config(camera))
     # find the image format config item
+    # camera dependent - 'imageformat' is 'imagequality' on some
     OK, image_format = gp.gp_widget_get_child_by_name(config, 'imageformat')
     if OK >= gp.GP_OK:
         # get current setting

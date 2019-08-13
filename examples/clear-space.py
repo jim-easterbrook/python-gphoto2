@@ -32,13 +32,11 @@ gp.error_severity[gp.GP_ERROR] = logging.WARNING
 def list_files(camera, path='/'):
     result = []
     # get files
-    for name, value in gp.check_result(
-            gp.gp_camera_folder_list_files(camera, path)):
+    for name, value in camera.folder_list_files(path):
         result.append(os.path.join(path, name))
     # read folders
     folders = []
-    for name, value in gp.check_result(
-            gp.gp_camera_folder_list_folders(camera, path)):
+    for name, value in camera.folder_list_folders(path):
         folders.append(name)
     # recurse over subfolders
     for name in folders:
@@ -47,12 +45,11 @@ def list_files(camera, path='/'):
 
 def get_file_info(camera, path):
     folder, name = os.path.split(path)
-    return gp.check_result(
-        gp.gp_camera_file_get_info(camera, folder, name))
+    return camera.file_get_info(folder, name)
 
 def delete_file(camera, path):
     folder, name = os.path.split(path)
-    gp.check_result(gp.gp_camera_file_delete(camera, folder, name))
+    camera.file_delete(folder, name)
 
 def main(argv=None):
     if argv is None:
@@ -60,9 +57,9 @@ def main(argv=None):
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     callback_obj = gp.check_result(gp.use_python_logging())
-    camera = gp.check_result(gp.gp_camera_new())
-    gp.check_result(gp.gp_camera_init(camera))
-    storage_info = gp.check_result(gp.gp_camera_get_storageinfo(camera))
+    camera = gp.Camera()
+    camera.init()
+    storage_info = camera.get_storageinfo()
     if len(storage_info) > 1:
         print('Unable to handle camera with multiple storage media')
         return 1
@@ -102,15 +99,14 @@ def main(argv=None):
             print('Delete', path)
             delete_file(camera, path)
             free_space += size[path] // 1000
-        storage_info = gp.check_result(
-            gp.gp_camera_get_storageinfo(camera))
+        storage_info = camera.get_storageinfo()
         si = storage_info[0]
         print('Camera has %.1f%% free space' % (
             100.0 * float(si.freekbytes) / float(si.capacitykbytes)))
         free_space = si.freekbytes
         if free_space >= target:
             break
-    gp.check_result(gp.gp_camera_exit(camera))
+    camera.exit()
     return 0
 
 if __name__ == "__main__":

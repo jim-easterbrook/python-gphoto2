@@ -28,6 +28,8 @@
 # gp_capture_image_and_download() method takes about 2 seconds
 # to process since it saves the image to SD CARD
 # first then downloads it, which takes a lot of time.
+#
+# "object oriented" version of wait-for-event.py
 # *******************************************************
 
 from __future__ import print_function
@@ -40,21 +42,17 @@ import gphoto2 as gp
 
 def main():
     # Init camera
-    camera = gp.check_result(gp.gp_camera_new())
-    gp.check_result(gp.gp_camera_init(camera))
+    camera = gp.Camera()
+    camera.init()
     timeout = 3000 # miliseconds
     while True:
-        event_type, event_data = gp.check_result(
-            gp.gp_camera_wait_for_event(camera, timeout))
+        event_type, event_data = camera.wait_for_event(timeout)
         if event_type == gp.GP_EVENT_FILE_ADDED:
-            # Get the image from the camera
-            camera_file = gp.check_result(gp.gp_camera_file_get(
-                camera, event_data.folder, event_data.name,
-                gp.GP_FILE_TYPE_NORMAL))
-            # Path where the image is to be saved
-            target_path= os.path.join(os.getcwd(), event_data.name)
-            print("Picture is saved to {}".format(target_path))
-            gp.check_result(gp.gp_file_save(camera_file, target_path))
+            cam_file = camera.file_get(
+                event_data.folder, event_data.name, gp.GP_FILE_TYPE_NORMAL)
+            target_path = os.path.join(os.getcwd(), event_data.name)
+            print("Image is being saved to {}".format(target_path))
+            cam_file.save(target_path)
     return 0
 
 

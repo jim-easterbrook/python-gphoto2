@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# "object oriented" version of list-cameras.py
+
 from __future__ import print_function
 
 import logging
@@ -32,12 +34,11 @@ def main():
         # gphoto2 version 2.5+
         cameras = gp.check_result(gp.gp_camera_autodetect())
     else:
-        port_info_list = gp.check_result(gp.gp_port_info_list_new())
-        gp.check_result(gp.gp_port_info_list_load(port_info_list))
-        abilities_list = gp.check_result(gp.gp_abilities_list_new())
-        gp.check_result(gp.gp_abilities_list_load(abilities_list))
-        cameras = gp.check_result(gp.gp_abilities_list_detect(
-            abilities_list, port_info_list))
+        port_info_list = gp.PortInfoList()
+        port_info_list.load()
+        abilities_list = gp.CameraAbilitiesList()
+        abilities_list.load()
+        cameras = abilities_list.detect(port_info_list)
     n = 0
     for name, value in cameras:
         print('camera number', n)

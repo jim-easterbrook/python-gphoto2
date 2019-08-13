@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# "object oriented" version of camera-config-gui.py
+
 from __future__ import print_function
 
 from datetime import datetime
@@ -54,6 +56,7 @@ class MainWindow(QtWidgets.QMainWindow):
         quit_button.clicked.connect(QtWidgets.qApp.closeAllWindows)
         widget.layout().addWidget(quit_button, 1, 2)
         # defer full initialisation (slow operation) until gui is visible
+        self.camera = gp.Camera()
         QtWidgets.QApplication.postEvent(
             self, QtCore.QEvent(self.do_init), Qt.LowEventPriority - 1)
 
@@ -70,13 +73,10 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def initialise(self):
         # get camera config tree
-        self.camera = gp.check_result(gp.gp_camera_new())
-        gp.check_result(gp.gp_camera_init(self.camera))
-        self.camera_config = gp.check_result(
-            gp.gp_camera_get_config(self.camera))
+        self.camera.init()
+        self.camera_config = self.camera.get_config()
         # create corresponding tree of tab widgets
-        self.setWindowTitle(
-            gp.check_result(gp.gp_widget_get_label(self.camera_config)))
+        self.setWindowTitle(self.camera_config.get_label())
         top_widget = SectionWidget(self.config_changed, self.camera_config)
         scroll_area = QtWidgets.QScrollArea()
         scroll_area.setWidget(top_widget)
@@ -87,25 +87,22 @@ class MainWindow(QtWidgets.QMainWindow):
         self.apply_button.setEnabled(True)
 
     def apply_changes(self):
-        gp.check_result(gp.gp_camera_set_config(
-            self.camera, self.camera_config))
+        self.camera.set_config(self.camera_config)
         QtWidgets.qApp.closeAllWindows()
 
 class SectionWidget(QtWidgets.QWidget):
     def __init__(self, config_changed, camera_config, parent=None):
         QtWidgets.QWidget.__init__(self, parent)
         self.setLayout(QtWidgets.QFormLayout())
-        if gp.check_result(gp.gp_widget_get_readonly(camera_config)):
+        if camera_config.get_readonly():
             self.setDisabled(True)
-        child_count = gp.check_result(gp.gp_widget_count_children(camera_config))
+        child_count = camera_config.count_children()
         if child_count < 1:
             return
         tabs = None
-        for child in gp.check_result(gp.gp_widget_get_children(camera_config)):
-            label = gp.check_result(gp.gp_widget_get_label(child))
-            name = gp.check_result(gp.gp_widget_get_name(child))
-            label = '{} ({})'.format(label, name)
-            child_type = gp.check_result(gp.gp_widget_get_type(child))
+        for child in camera_config.get_children():
+            label = '{} ({})'.format(child.get_label(), child.get_name())
+            child_type = child.get_type()
             if child_type == gp.GP_WIDGET_SECTION:
                 if not tabs:
                     tabs = QtWidgets.QTabWidget()
@@ -118,9 +115,7 @@ class SectionWidget(QtWidgets.QWidget):
             elif child_type == gp.GP_WIDGET_TOGGLE:
                 self.layout().addRow(label, ToggleWidget(config_changed, child))
             elif child_type == gp.GP_WIDGET_RADIO:
-                choice_count = gp.check_result(gp.gp_widget_count_choices(
-                    child))
-                if choice_count > 3:
+                if child.count_choices() > 3:
                     widget = MenuWidget(config_changed, child)
                 else:
                     widget = RadioWidget(config_changed, child)
@@ -137,10 +132,10 @@ class TextWidget(QtWidgets.QLineEdit):
         QtWidgets.QLineEdit.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
-        if gp.check_result(gp.gp_widget_get_readonly(config)):
+        if self.config.get_readonly():
             self.setDisabled(True)
-        assert gp.check_result(gp.gp_widget_count_children(config)) == 0
-        value = gp.check_result(gp.gp_widget_get_value(config))
+        assert self.config.count_children() == 0
+        value = self.config.get_value()
         if value:
             if sys.version_info[0] < 3:
                 value = value.decode('utf-8')
@@ -152,7 +147,7 @@ class TextWidget(QtWidgets.QLineEdit):
             value = unicode(self.text()).encode('utf-8')
         else:
             value = str(self.text())
-        gp.check_result(gp.gp_widget_set_value(self.config, value))
+        self.config.set_value(value)
         self.config_changed()
 
 class RangeWidget(QtWidgets.QSlider):
@@ -160,18 +155,18 @@ class RangeWidget(QtWidgets.QSlider):
         QtWidgets.QSlider.__init__(self, Qt.Horizontal, parent)
         self.config_changed = config_changed
         self.config = config
-        if gp.check_result(gp.gp_widget_get_readonly(config)):
+        if self.config.get_readonly():
             self.setDisabled(True)
-        assert gp.check_result(gp.gp_widget_count_children(config)) == 0
-        lo, hi, self.inc = gp.check_result(gp.gp_widget_get_range(config))
-        value = gp.check_result(gp.gp_widget_get_value(config))
+        assert self.config.count_children() == 0
+        lo, hi, self.inc = self.config.get_range()
+        value = self.config.get_value()
         self.setRange(int(lo * self.inc), int(hi * self.inc))
         self.setValue(int(value * self.inc))
         self.sliderReleased.connect(self.new_value)
 
     def new_value(self):
         value = float(self.value()) * self.inc
-        gp.check_result(gp.gp_widget_set_value(self.config, value))
+        self.config.set_value(value)
         self.config_changed()
 
 class ToggleWidget(QtWidgets.QCheckBox):
@@ -179,16 +174,16 @@ class ToggleWidget(QtWidgets.QCheckBox):
         QtWidgets.QCheckBox.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
-        if gp.check_result(gp.gp_widget_get_readonly(config)):
+        if self.config.get_readonly():
             self.setDisabled(True)
-        assert gp.check_result(gp.gp_widget_count_children(config)) == 0
-        value = gp.check_result(gp.gp_widget_get_value(config))
+        assert self.config.count_children() == 0
+        value = self.config.get_value()
         self.setChecked(value != 0)
         self.clicked.connect(self.new_value)
 
     def new_value(self):
         value = self.isChecked()
-        gp.check_result(gp.gp_widget_set_value(self.config, (0, 1)[value]))
+        self.config.set_value((0, 1)[value])
         self.config_changed()
 
 class RadioWidget(QtWidgets.QWidget):
@@ -196,13 +191,13 @@ class RadioWidget(QtWidgets.QWidget):
         QtWidgets.QWidget.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
-        if gp.check_result(gp.gp_widget_get_readonly(config)):
+        if self.config.get_readonly():
             self.setDisabled(True)
-        assert gp.check_result(gp.gp_widget_count_children(config)) == 0
+        assert self.config.count_children() == 0
         self.setLayout(QtWidgets.QHBoxLayout())
-        value = gp.check_result(gp.gp_widget_get_value(config))
+        value = self.config.get_value()
         self.buttons = []
-        for choice in gp.check_result(gp.gp_widget_get_choices(config)):
+        for choice in self.config.get_choices():
             if choice:
                 button = QtWidgets.QRadioButton(choice)
                 self.layout().addWidget(button)
@@ -214,7 +209,7 @@ class RadioWidget(QtWidgets.QWidget):
     def new_value(self):
         for button, choice in self.buttons:
             if button.isChecked():
-                gp.check_result(gp.gp_widget_set_value(self.config, choice))
+                self.config.set_value(choice)
                 self.config_changed()
                 return
 
@@ -223,13 +218,13 @@ class MenuWidget(QtWidgets.QComboBox):
         QtWidgets.QComboBox.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
-        if gp.check_result(gp.gp_widget_get_readonly(config)):
+        if self.config.get_readonly():
             self.setDisabled(True)
-        assert gp.check_result(gp.gp_widget_count_children(config)) == 0
-        value = gp.check_result(gp.gp_widget_get_value(config))
-        choice_count = gp.check_result(gp.gp_widget_count_choices(config))
+        assert self.config.count_children() == 0
+        value = self.config.get_value()
+        choice_count = self.config.count_choices()
         for n in range(choice_count):
-            choice = gp.check_result(gp.gp_widget_get_choice(config, n))
+            choice = self.config.get_choice(n)
             if choice:
                 self.addItem(choice)
                 if choice == value:
@@ -238,7 +233,7 @@ class MenuWidget(QtWidgets.QComboBox):
 
     def new_value(self, value):
         value = str(self.itemText(value))
-        gp.check_result(gp.gp_widget_set_value(self.config, value))
+        self.config.set_value(value)
         self.config_changed()
 
 class DateWidget(QtWidgets.QDateTimeEdit):
@@ -246,10 +241,10 @@ class DateWidget(QtWidgets.QDateTimeEdit):
         QtWidgets.QDateTimeEdit.__init__(self, parent)
         self.config_changed = config_changed
         self.config = config
-        if gp.check_result(gp.gp_widget_get_readonly(config)):
+        if self.config.get_readonly():
             self.setDisabled(True)
-        assert gp.check_result(gp.gp_widget_count_children(config)) == 0
-        value = gp.check_result(gp.gp_widget_get_value(config))
+        assert self.config.count_children() == 0
+        value = self.config.get_value()
         if value:
             self.setDateTime(datetime.fromtimestamp(value))
         self.dateTimeChanged.connect(self.new_value)
@@ -258,7 +253,7 @@ class DateWidget(QtWidgets.QDateTimeEdit):
     def new_value(self, value):
         value = value.toPyDateTime() - datetime.fromtimestamp(0)
         value = int(value.total_seconds())
-        gp.check_result(gp.gp_widget_set_value(self.config, value))
+        self.config.set_value(value)
         self.config_changed()
 
 if __name__ == "__main__":

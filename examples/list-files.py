@@ -17,6 +17,8 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+# "object oriented" version of list-files.py
+
 from __future__ import print_function
 
 from datetime import datetime
@@ -29,13 +31,11 @@ import gphoto2 as gp
 def list_files(camera, path='/'):
     result = []
     # get files
-    for name, value in gp.check_result(
-            gp.gp_camera_folder_list_files(camera, path)):
+    for name, value in camera.folder_list_files(path):
         result.append(os.path.join(path, name))
     # read folders
     folders = []
-    for name, value in gp.check_result(
-            gp.gp_camera_folder_list_folders(camera, path)):
+    for name, value in camera.folder_list_folders(path):
         folders.append(name)
     # recurse over subfolders
     for name in folders:
@@ -44,15 +44,14 @@ def list_files(camera, path='/'):
 
 def get_file_info(camera, path):
     folder, name = os.path.split(path)
-    return gp.check_result(
-        gp.gp_camera_file_get_info(camera, folder, name))
+    return camera.file_get_info(folder, name)
 
 def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     callback_obj = gp.check_result(gp.use_python_logging())
-    camera = gp.check_result(gp.gp_camera_new())
-    gp.check_result(gp.gp_camera_init(camera))
+    camera = gp.Camera()
+    camera.init()
     files = list_files(camera)
     if not files:
         print('No files found')
@@ -71,7 +70,7 @@ def main():
     print('image dimensions:', info.file.width, info.file.height)
     print('image type:', info.file.type)
     print('file mtime:', datetime.fromtimestamp(info.file.mtime).isoformat(' '))
-    gp.check_result(gp.gp_camera_exit(camera))
+    camera.exit()
     return 0
 
 if __name__ == "__main__":

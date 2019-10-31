@@ -1,0 +1,6 @@
+ExifRead==2.1.2
+gphoto2==2.0.0
+Pillow==6.2.1
+PyQt5==5.13.1
+PyQt5-sip==12.7.0
+six==1.12.0

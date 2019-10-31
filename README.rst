@@ -128,7 +128,7 @@ These functions are as similar as possible to their libgphoto2_ equivalents.
 Most of them return an error code which you must check.
 
 Using SWIG_ to generate the Python interfaces automatically means that every function in libgphoto2_ *should* be available to Python.
-The ``pydoc`` command can be used to show the documentation of a function::
+You can show the documentation of a function with the ``pydoc`` command (or ``python -m pydoc`` if you installed gphoto2 with pip inside a virtual environement)::
 
    jim@firefly ~$ pydoc gphoto2.gp_camera_folder_list_files
    Help on built-in function gp_camera_folder_list_files in gphoto2:

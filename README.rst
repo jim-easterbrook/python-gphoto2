@@ -5,6 +5,9 @@ python-gphoto2 is a comprehensive Python interface (or binding) to libgphoto2_.
 It is built using SWIG_ to automatically generate the interface code.
 This gives direct access to nearly all the libgphoto2 functions_, but sometimes in a rather un-Pythonic manner.
 
+Do not attempt to install python-gphoto2 until you have successfully installed all of its dependencies_.
+The installation process compiles and links the bindings with the libgphoto2_ installed on your computer.
+
 Other Python bindings to libgphoto2_ are available:
 piggyphoto_ uses ctypes_ (included in standard Python installations) to interface to the library.
 The gphoto2 source tree includes some `Python bindings`_ which also use ctypes_.
@@ -128,7 +131,7 @@ These functions are as similar as possible to their libgphoto2_ equivalents.
 Most of them return an error code which you must check.
 
 Using SWIG_ to generate the Python interfaces automatically means that every function in libgphoto2_ *should* be available to Python.
-You can show the documentation of a function with the ``pydoc`` command (or ``python -m pydoc`` if you installed gphoto2 with pip inside a virtual environement)::
+You can show the documentation of a function with the ``pydoc`` command (or ``python -m pydoc`` if you installed gphoto2 with pip inside a virtual environment)::
 
    jim@firefly ~$ pydoc gphoto2.gp_camera_folder_list_files
    Help on built-in function gp_camera_folder_list_files in gphoto2:

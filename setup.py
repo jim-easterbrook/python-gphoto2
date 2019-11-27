@@ -33,9 +33,8 @@ cmd = ['pkg-config', '--modversion', 'libgphoto2']
 FNULL = open(os.devnull, 'w')
 try:
     gphoto2_version = subprocess.check_output(
-        cmd, stderr=FNULL, universal_newlines=True).split('.')
-    gphoto2_version = tuple(map(int, gphoto2_version))[:3]
-    gphoto2_version_str = '.'.join(map(str, gphoto2_version))
+        cmd, stderr=FNULL, universal_newlines=True).split('.')[:3]
+    gphoto2_version = tuple(map(int, gphoto2_version))
 except Exception:
     error('ERROR: command "%s" failed', ' '.join(cmd))
     raise
@@ -69,18 +68,9 @@ if 'PYTHON_GPHOTO2_NO_BUILTIN' in os.environ:
 mod_src_dir = 'swig'
 if use_builtin:
     mod_src_dir += '-bi'
-mod_src_dir +='-py' + str(sys.version_info[0])
-best_match = (0, 0, 0)
-for name in os.listdir('src'):
-    match = re.match(mod_src_dir + '-gp(\d+\.\d+\.\d+)', name)
-    if match:
-        vsn = tuple(map(int, match.group(1).split('.')))
-        if vsn >= best_match and vsn <= gphoto2_version:
-            best_match = vsn
-if best_match == (0, 0, 0):
-    best_match = gphoto2_version
-mod_src_dir = os.path.join(
-    'src', mod_src_dir + '-gp' + '.'.join(map(str, best_match)))
+mod_src_dir += '-py' + str(sys.version_info[0])
+mod_src_dir += '-gp' + '.'.join(map(str, gphoto2_version[:2]))
+mod_src_dir = os.path.join('src', mod_src_dir)
 
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-unused-but-set-variable',
@@ -112,12 +102,12 @@ def get_gp_versions():
     # get gphoto2 versions to be swigged
     gp_versions = []
     for name in os.listdir('.'):
-        match = re.match('libgphoto2-(\d+\.\d+\.\d+)', name)
+        match = re.match('libgphoto2-(.*)', name)
         if match:
             gp_versions.append(match.group(1))
     gp_versions.sort()
     if not gp_versions:
-        gp_versions = [gphoto2_version_str]
+        gp_versions = ['.'.join(map(str, gphoto2_version))]
     return gp_versions
 
 # add command to run doxygen and doxy2swig
@@ -238,12 +228,7 @@ class build_swig(Command):
                     output_dir += '-py' + str(py_version)
                     output_dir += '-gp' + gp_version
                     self.mkpath(output_dir)
-                    gp_version_hex = '0x{:02x}{:02x}{:02x}'.format(
-                        *map(int, gp_version.split('.')))
-                    version_opts = [
-                        '-DGPHOTO2_VERSION=' + gp_version_hex,
-                        '-outdir', output_dir,
-                        ]
+                    version_opts = ['-outdir', output_dir]
                     if os.path.isfile(doc_file):
                         version_opts.append(
                             '-DDOC_FILE=' + os.path.basename(doc_file))

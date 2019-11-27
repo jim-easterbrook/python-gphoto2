@@ -134,22 +134,18 @@ MEMBER_FUNCTION(_Camera, Camera,
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     get_config, (CameraWidget **window, GPContext *context),
     gp_camera_get_config, ($self, window, context))
-#if GPHOTO2_VERSION >= 0x02050a
 MEMBER_FUNCTION(_Camera, Camera,
     list_config, (CameraList *list, GPContext *context),
     gp_camera_list_config, ($self, list, context))
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     get_single_config, (const char *name, CameraWidget **widget, GPContext *context),
     gp_camera_get_single_config, ($self, name, widget, context))
-#endif
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     set_config, (CameraWidget *window, GPContext *context),
     gp_camera_set_config, ($self, window, context))
-#if GPHOTO2_VERSION >= 0x02050a
 MEMBER_FUNCTION_THREAD(_Camera, Camera,
     set_single_config, (const char *name, CameraWidget *widget, GPContext *context),
     gp_camera_set_single_config, ($self, name, widget, context))
-#endif
 MEMBER_FUNCTION(_Camera, Camera,
     get_summary, (CameraText *summary, GPContext *context),
     gp_camera_get_summary, ($self, summary, context))
@@ -243,8 +239,21 @@ MEMBER_FUNCTION(_Camera, Camera,
   free(*$1);
 }
 
-// Define enums added during libgphoto2 development
+// Substitute definitions of things added during libgphoto2 development
 %{
+#if GPHOTO2_VERSION < 0x02050a
+int gp_camera_list_config(Camera *camera, CameraList *list, GPContext *context) {
+    return GP_ERROR_NOT_SUPPORTED;
+}
+int gp_camera_get_single_config(Camera *camera, const char *name,
+                                CameraWidget **widget, GPContext *context) {
+    return GP_ERROR_NOT_SUPPORTED;
+}
+int gp_camera_set_single_config(Camera *camera, const char *name,
+                                CameraWidget *widget, GPContext *context) {
+    return GP_ERROR_NOT_SUPPORTED;
+}
+#endif
 #if GPHOTO2_VERSION < 0x020511
   int GP_EVENT_FILE_CHANGED = GP_EVENT_CAPTURE_COMPLETE + 1;
 #endif

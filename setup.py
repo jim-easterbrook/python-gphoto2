@@ -107,7 +107,7 @@ def get_gp_versions():
             gp_versions.append(match.group(1))
     gp_versions.sort()
     if not gp_versions:
-        gp_versions = ['.'.join(map(str, gphoto2_version))]
+        gp_versions = ['.'.join(map(str, gphoto2_version[:2]))]
     return gp_versions
 
 # add command to run doxygen and doxy2swig

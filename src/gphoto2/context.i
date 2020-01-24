@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -404,31 +404,31 @@ CB_POSTAMBLE
 }
 
 // Add member methods to _GPContext
-MEMBER_FUNCTION(_GPContext, Context,
+MEMBER_FUNCTION(_GPContext,
     camera_autodetect, (CameraList *list),
     gp_camera_autodetect, (list, $self))
-VOID_MEMBER_FUNCTION(_GPContext, Context,
+VOID_MEMBER_FUNCTION(_GPContext,
     set_idle_func, (GPContextIdleFunc func, void *data),
     gp_context_set_idle_func, ($self, func, data))
-VOID_MEMBER_FUNCTION(_GPContext, Context,
+VOID_MEMBER_FUNCTION(_GPContext,
     set_error_func, (GPContextErrorFunc func, void *data),
     gp_context_set_error_func, ($self, func, data))
-VOID_MEMBER_FUNCTION(_GPContext, Context,
+VOID_MEMBER_FUNCTION(_GPContext,
     set_message_func, (GPContextMessageFunc func, void *data),
     gp_context_set_message_func, ($self, func, data))
-VOID_MEMBER_FUNCTION(_GPContext, Context,
+VOID_MEMBER_FUNCTION(_GPContext,
     set_question_func, (GPContextQuestionFunc func, void *data),
     gp_context_set_question_func, ($self, func, data))
-VOID_MEMBER_FUNCTION(_GPContext, Context,
+VOID_MEMBER_FUNCTION(_GPContext,
     set_cancel_func, (GPContextCancelFunc func, void *data),
     gp_context_set_cancel_func, ($self, func, data))
-VOID_MEMBER_FUNCTION(_GPContext, Context,
+VOID_MEMBER_FUNCTION(_GPContext,
     set_progress_funcs, (GPContextProgressStartFunc start_func,
                          GPContextProgressUpdateFunc update_func,
                          GPContextProgressStopFunc stop_func,
                          void *data),
     gp_context_set_progress_funcs, ($self, start_func, update_func, stop_func, data))
-VOID_MEMBER_FUNCTION(_GPContext, Context,
+VOID_MEMBER_FUNCTION(_GPContext,
     set_status_func, (GPContextStatusFunc func, void *data),
     gp_context_set_status_func, ($self, func, data))
 

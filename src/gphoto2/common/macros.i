@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -69,7 +69,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 }
 %enddef
 
-%define DEFAULT_CTOR(type, py_type, function)
+%define DEFAULT_CTOR(type, function)
 %exception type {
   $action
   if (PyErr_Occurred() != NULL) SWIG_fail;
@@ -83,7 +83,6 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
     return result;
   }
 };
-//%feature("docstring") function "See also: gphoto2." #py_type
 %enddef
 
 %define DEFAULT_DTOR(name, free_func)
@@ -101,8 +100,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %enddef
 
 // Macros to add member functions to structs
-%define MEMBER_FUNCTION(type, py_type, member, member_args, function, function_args)
-//%feature("docstring") type::member "See also: gphoto2." #function
+%define MEMBER_FUNCTION(type, member, member_args, function, function_args)
 %exception type::member {
   $action
   if (PyErr_Occurred() != NULL) SWIG_fail;
@@ -113,11 +111,9 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
     if (error < GP_OK) GPHOTO2_ERROR(error)
   }
 };
-//%feature("docstring") function "See also: gphoto2." #py_type "." #member
 %enddef
 
-%define MEMBER_FUNCTION_THREAD(type, py_type, member, member_args, function, function_args)
-//%feature("docstring") type::member "See also: gphoto2." #function
+%define MEMBER_FUNCTION_THREAD(type, member, member_args, function, function_args)
 %exception type::member {
   $action
   if (PyErr_Occurred() != NULL) SWIG_fail;
@@ -130,10 +126,9 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
     if (error < GP_OK) GPHOTO2_ERROR(error)
   }
 };
-//%feature("docstring") function "See also: gphoto2." #py_type "." #member
 %enddef
 
-%define INT_MEMBER_FUNCTION(type, py_type, member, member_args, function, function_args)
+%define INT_MEMBER_FUNCTION(type, member, member_args, function, function_args)
 %{
 int (*type ## _ ## member)() = function;
 int (*struct ## _ ## type ## _ ## member)() = function;
@@ -146,25 +141,21 @@ int (*struct ## _ ## type ## _ ## member)() = function;
   }
 }
 %extend type {
-//%feature("docstring") "See also: gphoto2." #function
   int member member_args;
 };
-//%feature("docstring") function "See also: gphoto2." #py_type "." #member
 %enddef
 
-%define LEN_MEMBER_FUNCTION(type, py_type, function)
+%define LEN_MEMBER_FUNCTION(type, function)
 #if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "sq_length", functype="lenfunc") type::__len__;
 #endif
-INT_MEMBER_FUNCTION(type, py_type, __len__, (), function, ())
+INT_MEMBER_FUNCTION(type, __len__, (), function, ())
 %enddef
 
-%define VOID_MEMBER_FUNCTION(type, py_type, member, member_args, function, function_args)
-//%feature("docstring") type::member "See also: gphoto2." #function
+%define VOID_MEMBER_FUNCTION(type, member, member_args, function, function_args)
 %extend type {
   void member member_args {
     function function_args;
   }
 };
-//%feature("docstring") function "See also: gphoto2." #py_type "." #member
 %enddef

@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -101,107 +101,107 @@ CALLOC_ARGOUT(CameraFilePath *path)
 }
 
 // Add default constructor and destructor to _Camera
-DEFAULT_CTOR(_Camera, Camera, gp_camera_new)
+DEFAULT_CTOR(_Camera, gp_camera_new)
 DEFAULT_DTOR(_Camera, gp_camera_unref)
 %ignore gp_camera_ref;
 %ignore gp_camera_unref;
 
 // Add member methods to _Camera
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     set_abilities, (CameraAbilities abilities),
     gp_camera_set_abilities, ($self, abilities))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     get_abilities, (CameraAbilities *abilities),
     gp_camera_get_abilities, ($self, abilities))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     set_port_info, (GPPortInfo info),
     gp_camera_set_port_info, ($self, info))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     get_port_info, (GPPortInfo *info),
     gp_camera_get_port_info, ($self, info))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     set_port_speed, (int speed),
     gp_camera_set_port_speed, ($self, speed))
-INT_MEMBER_FUNCTION(_Camera, Camera,
+INT_MEMBER_FUNCTION(_Camera,
     get_port_speed, (),
     gp_camera_get_port_speed, ($self))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     init, (GPContext *context),
     gp_camera_init, ($self, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     exit, (GPContext *context),
     gp_camera_exit, ($self, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     get_config, (CameraWidget **window, GPContext *context),
     gp_camera_get_config, ($self, window, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     list_config, (CameraList *list, GPContext *context),
     gp_camera_list_config, ($self, list, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     get_single_config, (const char *name, CameraWidget **widget, GPContext *context),
     gp_camera_get_single_config, ($self, name, widget, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     set_config, (CameraWidget *window, GPContext *context),
     gp_camera_set_config, ($self, window, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     set_single_config, (const char *name, CameraWidget *widget, GPContext *context),
     gp_camera_set_single_config, ($self, name, widget, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     get_summary, (CameraText *summary, GPContext *context),
     gp_camera_get_summary, ($self, summary, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     get_manual, (CameraText *manual, GPContext *context),
     gp_camera_get_manual, ($self, manual, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     get_about, (CameraText *about, GPContext *context),
     gp_camera_get_about, ($self, about, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     capture, (CameraCaptureType type, CameraFilePath *path, GPContext *context),
     gp_camera_capture, ($self, type, path, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     trigger_capture, (GPContext *context),
     gp_camera_trigger_capture, ($self, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     capture_preview, (CameraFile *camera_file, GPContext *context),
     gp_camera_capture_preview, ($self, camera_file, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     wait_for_event,
     (int timeout, CameraEventType *eventtype, void **eventdata, GPContext *context),
     gp_camera_wait_for_event, ($self, timeout, eventtype, eventdata, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     get_storageinfo, (CameraStorageInformation **sifs, int *nrofsifs, GPContext *context),
     gp_camera_get_storageinfo, ($self, sifs, nrofsifs, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     folder_list_files, (const char *folder, CameraList *list, GPContext *context),
     gp_camera_folder_list_files, ($self, folder, list, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     folder_list_folders, (const char *folder, CameraList *list, GPContext *context),
     gp_camera_folder_list_folders, ($self, folder, list, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     folder_delete_all, (const char *folder, GPContext *context),
     gp_camera_folder_delete_all, ($self, folder, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     folder_put_file, (const char *folder, const char *filename, CameraFileType type, CameraFile *file, GPContext *context),
     gp_camera_folder_put_file, ($self, folder, filename, type, file, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     folder_make_dir, (const char *folder, const char *name, GPContext *context),
     gp_camera_folder_make_dir, ($self, folder, name, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     folder_remove_dir, (const char *folder, const char *name, GPContext *context),
     gp_camera_folder_remove_dir, ($self, folder, name, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     file_get_info, (const char *folder, const char *file, CameraFileInfo *info, GPContext *context),
     gp_camera_file_get_info, ($self, folder, file, info, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     file_set_info, (const char *folder, const char *file, CameraFileInfo info, GPContext *context),
     gp_camera_file_set_info, ($self, folder, file, info, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     file_get, (const char *folder, const char *file, CameraFileType type, CameraFile *camera_file, GPContext *context),
     gp_camera_file_get, ($self, folder, file, type, camera_file, context))
-MEMBER_FUNCTION_THREAD(_Camera, Camera,
+MEMBER_FUNCTION_THREAD(_Camera,
     file_read, (const char *folder, const char *file, CameraFileType type, uint64_t offset, char *buf, uint64_t *size, GPContext *context),
     gp_camera_file_read, ($self, folder, file, type, offset, buf, size, context))
-MEMBER_FUNCTION(_Camera, Camera,
+MEMBER_FUNCTION(_Camera,
     file_delete, (const char *folder, const char *file, GPContext *context),
     gp_camera_file_delete, ($self, folder, file, context))
 

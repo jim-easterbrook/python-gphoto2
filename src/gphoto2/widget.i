@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -359,97 +359,97 @@ static int widget_dtor(CameraWidget *widget) {
 %}
 
 // Add member methods to _CameraWidget
-INT_MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+INT_MEMBER_FUNCTION(_CameraWidget,
     count_children, (),
     gp_widget_count_children, ($self))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_child, (int child_number, CameraWidget **child),
     gp_widget_get_child, ($self, child_number, child))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_children, (CameraWidgetChildIter* iter),
     gp_widget_get_children, ($self, iter))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_child_by_label, (const char *label, CameraWidget **child),
     gp_widget_get_child_by_label, ($self, label, child))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_child_by_id, (int id, CameraWidget **child),
     gp_widget_get_child_by_id, ($self, id, child))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_child_by_name, (const char *name, CameraWidget **child),
     gp_widget_get_child_by_name, ($self, name, child))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_root, (CameraWidget **root),
     gp_widget_get_root, ($self, root))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_parent, (CameraWidget **parent),
     gp_widget_get_parent, ($self, parent))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     set_value, (const char *value),
     gp_widget_set_value, ($self, value))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     set_value, (const float *value),
     gp_widget_set_value, ($self, value))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     set_value, (const int *value),
     gp_widget_set_value, ($self, value))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_value, (char **value),
     gp_widget_get_value, ($self, value))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_value, (float *value),
     gp_widget_get_value, ($self, value))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_value, (int *value),
     gp_widget_get_value, ($self, value))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     set_name, (const char *name),
     gp_widget_set_name, ($self, name))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_name, (const char **name),
     gp_widget_get_name, ($self, name))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     set_info, (const char *info),
     gp_widget_set_info, ($self, info))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_info, (const char **info),
     gp_widget_get_info, ($self, info))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_id, (int *id),
     gp_widget_get_id, ($self, id))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_type, (CameraWidgetType *type),
     gp_widget_get_type, ($self, type))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_label, (const char **label),
     gp_widget_get_label, ($self, label))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     set_range, (float min, float max, float increment),
     gp_widget_set_range, ($self, min, max, increment))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_range, (float *min, float *max, float *increment),
     gp_widget_get_range, ($self, min, max, increment))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     add_choice, (const char *choice),
     gp_widget_add_choice, ($self, choice))
-INT_MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+INT_MEMBER_FUNCTION(_CameraWidget,
     count_choices, (),
     gp_widget_count_choices, ($self))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_choices, (CameraWidgetChoiceIter* iter),
     gp_widget_get_choices, ($self, iter))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_choice, (int choice_number, const char **choice),
     gp_widget_get_choice, ($self, choice_number, choice))
-INT_MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+INT_MEMBER_FUNCTION(_CameraWidget,
     changed, (),
     gp_widget_changed, ($self))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     set_changed, (int changed),
     gp_widget_set_changed, ($self, changed))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     set_readonly, (int readonly),
     gp_widget_set_readonly, ($self, readonly))
-MEMBER_FUNCTION(_CameraWidget, CameraWidget,
+MEMBER_FUNCTION(_CameraWidget,
     get_readonly, (int *readonly),
     gp_widget_get_readonly, ($self, readonly))
 

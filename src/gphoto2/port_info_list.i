@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ PLAIN_ARGOUT(GPPortInfoList **)
 %apply int *OUTPUT { GPPortType * };
 
 // Make GPPortInfoList more like a Python list
-LEN_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList, gp_port_info_list_count)
+LEN_MEMBER_FUNCTION(_GPPortInfoList, gp_port_info_list_count)
 #if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "sq_item",   functype="ssizeargfunc") _GPPortInfoList::__getitem__;
 #endif
@@ -70,33 +70,33 @@ LEN_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList, gp_port_info_list_count)
 
 // Add member methods to _GPPortInfo
 struct _GPPortInfo {};
-MEMBER_FUNCTION(_GPPortInfo, GPPortInfo,
+MEMBER_FUNCTION(_GPPortInfo,
     get_name, (char **name),
     gp_port_info_get_name, ($self, name))
-MEMBER_FUNCTION(_GPPortInfo, GPPortInfo,
+MEMBER_FUNCTION(_GPPortInfo,
     get_path, (char **path),
     gp_port_info_get_path, ($self, path))
-MEMBER_FUNCTION(_GPPortInfo, GPPortInfo,
+MEMBER_FUNCTION(_GPPortInfo,
     get_type, (GPPortType *type),
     gp_port_info_get_type, ($self, type))
 
 // Add member methods to _GPPortInfoList
-MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
+MEMBER_FUNCTION(_GPPortInfoList,
     append, (GPPortInfo info),
     gp_port_info_list_append, ($self, info))
-MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
+MEMBER_FUNCTION(_GPPortInfoList,
     load, (),
     gp_port_info_list_load, ($self))
-INT_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
+INT_MEMBER_FUNCTION(_GPPortInfoList,
     count, (),
     gp_port_info_list_count, ($self))
-INT_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
+INT_MEMBER_FUNCTION(_GPPortInfoList,
     lookup_path, (const char *path),
     gp_port_info_list_lookup_path, ($self, path))
-INT_MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
+INT_MEMBER_FUNCTION(_GPPortInfoList,
     lookup_name, (const char *name),
     gp_port_info_list_lookup_name, ($self, name))
-MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
+MEMBER_FUNCTION(_GPPortInfoList,
     get_info, (const int n, GPPortInfo *info),
     gp_port_info_list_get_info, ($self, n, info))
 
@@ -113,7 +113,7 @@ MEMBER_FUNCTION(_GPPortInfoList, PortInfoList,
 
 // Add default constructor and destructor to _GPPortInfoList
 struct _GPPortInfoList {};
-DEFAULT_CTOR(_GPPortInfoList, PortInfoList, gp_port_info_list_new)
+DEFAULT_CTOR(_GPPortInfoList, gp_port_info_list_new)
 DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
 %ignore _GPPortInfoList;
 

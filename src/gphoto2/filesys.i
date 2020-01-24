@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-17  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -52,7 +52,7 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
 // Add default constructor and destructor to _CameraFilesystem
 struct _CameraFilesystem {};
-DEFAULT_CTOR(_CameraFilesystem, CameraFilesystem, gp_filesystem_new)
+DEFAULT_CTOR(_CameraFilesystem, gp_filesystem_new)
 DEFAULT_DTOR(_CameraFilesystem, gp_filesystem_free)
 %ignore _CameraFilesystem;
 

@@ -19,11 +19,9 @@ The gphoto2 source tree includes some `Python bindings`_ which also use ctypes_.
 Dependencies
 ------------
 
-*   Python: http://python.org/ version 2.6 or greater (including Python 3)
-*   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.4 or greater
+*   Python: http://python.org/ version 2.7 or greater (including Python 3)
+*   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.5.0 or greater
 *   build tools: pkg-config, C compiler & linker
-
-Support for libgphoto2 v2.4 is incomplete and will be withdrawn in the next release of python-gphoto2, probably named 2.1.0.
 
 Note that you need the "development headers" versions of libgphoto2_ and Python.
 In most cases you should use your operating system's package manager to install these.
@@ -59,8 +57,8 @@ Install a downloaded archive
 Visit PyPI_ and download one of the zip or tar.gz files, then extract it and change to the new directory.
 For example::
 
-    tar xzf gphoto2-1.7.1.tar.gz
-    cd gphoto2-1.7.1
+    tar xzf gphoto2-2.1.0.tar.gz
+    cd gphoto2-2.1.0
 
 Python's distutils_ are used to build and install python-gphoto2::
 
@@ -388,6 +386,18 @@ See the ``copy-data.py`` example for typical usage.
 
 In earlier versions of python-gphoto2 these functions returned a ``str`` (Python 2) or ``bytes`` (Python 3) object containing a copy of the data in the ``CameraFile`` object.
 
+gp_file_set_data_and_size / CameraFile.set_data_and_size
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Since python-gphoto2 version 2.1.0 these functions accept any `bytes-like object`_.
+In earlier versions of python-gphoto2 these functions required a string and its length, and didn't work correctly anyway.
+
+gp_file_append / CameraFile.append
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Since python-gphoto2 version 2.1.0 these functions accept any `bytes-like object`_.
+In earlier versions of python-gphoto2 these functions required a string and its length.
+
 gp_camera_file_read / Camera.file_read
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -428,7 +438,7 @@ Licence
 
 | python-gphoto2 - Python interface to libgphoto2
 | http://github.com/jim-easterbrook/python-gphoto2
-| Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
+| Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -446,6 +456,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 .. _API documentation: http://www.gphoto.org/doc/api/
 .. _buffer protocol:   https://docs.python.org/2/c-api/buffer.html
 .. _bytearray:         https://docs.python.org/2/library/functions.html#bytearray
+.. _bytes-like object: https://docs.python.org/3/glossary.html#term-bytes-like-object
 .. _cffi:              http://cffi.readthedocs.org/
 .. _ctypes:            https://docs.python.org/2/library/ctypes.html
 .. _distutils:         https://docs.python.org/2/library/distutils.html

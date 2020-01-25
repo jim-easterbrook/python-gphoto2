@@ -164,6 +164,50 @@ static PyTypeObject FileDataType = {
   $result = SWIG_Python_AppendOutput($result, file_data);
 }
 
+// gp_file_set_data_and_size() requires data allocated by malloc which it will free later
+%typemap(in, numinputs=1) (char * data, unsigned long int size) {
+  Py_buffer view;
+  if (PyObject_CheckBuffer($input) != 1) {
+    PyErr_SetString(
+      PyExc_TypeError,
+      "in method '$symname', argument $argnum does not support the buffer interface");
+    SWIG_fail;
+  }
+  if (PyObject_GetBuffer($input, &view, PyBUF_SIMPLE) != 0) {
+    PyErr_SetString(
+      PyExc_TypeError,
+      "in method '$symname', argument $argnum does not export a simple buffer");
+    SWIG_fail;
+  }
+  $1 = malloc(view.len);
+  memcpy($1, view.buf, view.len);
+  $2 = view.len;
+  PyBuffer_Release(&view);
+}
+%typemap(freearg) (char * data, unsigned long int size) {
+  if ($1 && PyErr_Occurred()) free($1);
+}
+
+// gp_file_append() takes any readable buffer
+%typemap(in, numinputs=1) (const char * data, unsigned long int size) {
+  Py_buffer view;
+  if (PyObject_CheckBuffer($input) != 1) {
+    PyErr_SetString(
+      PyExc_TypeError,
+      "in method '$symname', argument $argnum does not support the buffer interface");
+    SWIG_fail;
+  }
+  if (PyObject_GetBuffer($input, &view, PyBUF_SIMPLE) != 0) {
+    PyErr_SetString(
+      PyExc_TypeError,
+      "in method '$symname', argument $argnum does not export a simple buffer");
+    SWIG_fail;
+  }
+  $1 = view.buf;
+  $2 = view.len;
+  PyBuffer_Release(&view);
+}
+
 // Add member methods to _CameraFile
 MEMBER_FUNCTION(_CameraFile,
     set_name, (const char *name),

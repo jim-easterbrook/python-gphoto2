@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -144,9 +144,16 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
 // define use_python_logging function
 %pythoncode %{
 import logging
+import sys
 
 def _gphoto2_logger_cb(level, domain, msg, data):
     log_func, mapping = data
+    if sys.version_info[0] >= 3:
+        # decode bytes to str
+        if domain:
+            domain = domain.decode(errors='replace')
+        if msg:
+            msg = msg.decode(errors='replace')
     if level in mapping:
         log_func(mapping[level], '(%s) %s', domain, msg)
     else:
@@ -169,7 +176,7 @@ def use_python_logging(mapping={}):
 
     Returns
     -------
-    an tuple containing an id or error code and a callback reference object.
+    a tuple containing an id or error code and a callback reference object.
 
     """
     full_mapping = {

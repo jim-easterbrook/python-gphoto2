@@ -453,44 +453,6 @@ MEMBER_FUNCTION(_CameraWidget,
     get_readonly, (int *readonly),
     gp_widget_get_readonly, ($self, readonly))
 
-// Add type specific gp_widget_get_value methods
-%feature("docstring") gp_widget_get_value_text "Deprecated"
-%feature("docstring") gp_widget_get_value_int "Deprecated"
-%feature("docstring") gp_widget_get_value_float "Deprecated"
-
-%inline %{
-static int gp_widget_get_value_text(CameraWidget *widget, char **value) {
-  return gp_widget_get_value(widget, value);
-  };
-
-static int gp_widget_get_value_int(CameraWidget *widget, int *value) {
-  return gp_widget_get_value(widget, value);
-  };
-
-static int gp_widget_get_value_float(CameraWidget *widget, float *value) {
-  return gp_widget_get_value(widget, value);
-  };
-%}
-
-// Add type specific gp_widget_set_value methods
-%feature("docstring") gp_widget_set_value_text "Deprecated"
-%feature("docstring") gp_widget_set_value_int "Deprecated"
-%feature("docstring") gp_widget_set_value_float "Deprecated"
-
-%inline %{
-static int gp_widget_set_value_text(CameraWidget *widget, const char *value) {
-  return gp_widget_set_value(widget, value);
-  };
-
-static int gp_widget_set_value_int(CameraWidget *widget, const int value) {
-  return gp_widget_set_value(widget, &value);
-  };
-
-static int gp_widget_set_value_float(CameraWidget *widget, const float value) {
-  return gp_widget_set_value(widget, &value);
-  };
-%}
-
 // Ignore some functions
 %ignore gp_widget_new;
 %ignore gp_widget_free;

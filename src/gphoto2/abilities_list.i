@@ -21,15 +21,14 @@
 
 %rename(CameraAbilitiesList) _CameraAbilitiesList;
 
+// Make docstring parameter types more Pythonic
+%typemap(doc) CameraAbilities "$1_name: gphoto2.$1_type"
+%typemap(doc) CameraAbilitiesList * "$1_name: gphoto2.$*1_type"
+
 #ifndef SWIGIMPORTED
 
-// Make docstring parameter types more Pythonic
-%typemap(doc) CameraAbilitiesList * "$1_name: $*1_type"
-
 // Many functions accept NULL context value
-%typemap(default) (GPContext *) {
-  $1 = NULL;
-}
+DEFAULT_CONTEXT
 
 // gp_abilities_list_get_abilities() returns a pointer in an output parameter
 CALLOC_ARGOUT(CameraAbilities *abilities)

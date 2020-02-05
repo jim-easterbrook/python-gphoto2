@@ -19,6 +19,9 @@
 
 %include "common/preamble.i"
 
+// Make docstring parameter types more Pythonic
+%typemap(doc) enum GPLogLevel "$1_name: $1_type (gphoto2.GP_LOG_ERROR etc.)"
+
 #ifndef SWIGIMPORTED
 
 // SWIG can't wrap functions with var args
@@ -109,12 +112,10 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
     _global_callback->func = NULL;
     _global_callback->data = NULL;
 }
-
 %typemap(freearg) GPLogFunc {
     if (_global_callback)
         del_LogFuncItem(_global_callback);
 }
-
 %typemap(in) GPLogFunc {
     if (!PyCallable_Check($input)) {
         SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
@@ -123,23 +124,23 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
     Py_INCREF(_global_callback->func);
     $1 = gp_log_call_python;
 }
-
 %typemap(argout) GPLogFunc {
     _global_callback->id = result;
     $result = SWIG_Python_AppendOutput($result,
         SWIG_NewPointerObj(_global_callback, SWIGTYPE_p_LogFuncItem, SWIG_POINTER_OWN));
     _global_callback = NULL;
 }
+%typemap(doc) GPLogFunc "$1_name: callable function";
 
 // make data optional and pass LogFuncItem object to gp_log_add_func
 %typemap(default) void *data {
     $1 = _global_callback;
 }
-
 %typemap(in) void *data {
     _global_callback->data = $input;
     Py_INCREF(_global_callback->data);
 }
+%typemap(doc) void *data "$1_name: object (default=None)";
 
 // define use_python_logging function
 %pythoncode %{
@@ -164,8 +165,8 @@ def use_python_logging(mapping={}):
     to Python's logging system.
 
     The return value is a tuple containing an error code and a Python object
-    containing details of the callback. Deleting this object will uninstall the
-    callback.
+    containing details of the callback. Deleting this object will uninstall
+    the callback.
 
     Parameters
     ----------

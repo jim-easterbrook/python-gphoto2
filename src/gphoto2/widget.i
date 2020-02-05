@@ -70,10 +70,10 @@ Beware of changes in the libgphoto2 definitions though.
     $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
 }
 
-#ifndef SWIGIMPORTED
-
 // Make docstring parameter types more Pythonic
-%typemap(doc) (CameraWidget *) "$1_name: $*1_type"
+%typemap(doc) (CameraWidget *) "$1_name: gphoto2.$*1_type"
+
+#ifndef SWIGIMPORTED
 
 %apply int *OUTPUT { CameraWidgetType * };
 %apply int *OUTPUT { int * };
@@ -322,7 +322,7 @@ a gphoto2 error code and a Python iterator.
 
 See also gphoto2.CameraWidget.get_choices"
 
-%feature("docstring") _CameraWidget::get_choices "Gets all the choice values of a CameraWidget. The return value is a a
+%feature("docstring") _CameraWidget::get_choices "Gets all the choice values of a CameraWidget. The return value is a
 Python iterator which can be used to get each choice in sequence.
 
 Returns

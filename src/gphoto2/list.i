@@ -21,10 +21,10 @@
 
 %rename(CameraList) _CameraList;
 
-#ifndef SWIGIMPORTED
-
 // Make docstring parameter types more Pythonic
-%typemap(doc) CameraList * "$1_name: $*1_type"
+%typemap(doc) CameraList * "$1_name: gphoto2.$*1_type"
+
+#ifndef SWIGIMPORTED
 
 // gp_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraList **)

@@ -26,6 +26,12 @@
 // gp_file_get_mtime() returns a pointer in output params
 typedef long int time_t;
 %apply time_t *OUTPUT { time_t * };
+%typemap(doc) time_t "$1_name: int"
+
+// Make docstring parameter types more Pythonic
+%typemap(doc) CameraFile * "$1_name: gphoto2.$*1_type"
+%typemap(doc) CameraFileHandler * "$1_name: gphoto2.$*1_type"
+%typemap(doc) enum CameraFileType "$1_name: $1_type (gphoto2.GP_FILE_TYPE_PREVIEW etc.)"
 
 #ifndef SWIGIMPORTED
 
@@ -35,10 +41,6 @@ typedef long int time_t;
 %thread gp_file_get_data_and_size;
 %thread gp_file_save;
 %thread gp_file_set_data_and_size;
-
-// Make docstring parameter types more Pythonic
-%typemap(doc) CameraFile * "$1_name: $*1_type"
-%typemap(doc) CameraFileHandler * "$1_name: $*1_type"
 
 // gp_file_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFile **)
@@ -187,6 +189,7 @@ static PyTypeObject FileDataType = {
 %typemap(freearg) (char * data, unsigned long int size) {
   if ($1 && PyErr_Occurred()) free($1);
 }
+%typemap(doc) char * data, unsigned long int size "$1_name: readable buffer (e.g. bytes)"
 
 // gp_file_append() takes any readable buffer
 %typemap(in, numinputs=1) (const char * data, unsigned long int size) {
@@ -207,6 +210,7 @@ static PyTypeObject FileDataType = {
   $2 = view.len;
   PyBuffer_Release(&view);
 }
+%typemap(doc) const char * data, unsigned long int size "$1_name: readable buffer (e.g. bytes)"
 
 // Add member methods to _CameraFile
 MEMBER_FUNCTION(_CameraFile,

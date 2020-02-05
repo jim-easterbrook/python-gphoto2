@@ -159,3 +159,11 @@ INT_MEMBER_FUNCTION(type, __len__, (), function, ())
   }
 };
 %enddef
+
+%define DEFAULT_CONTEXT
+// For functions that accept NULL context value
+%typemap(default) (GPContext *) {
+  $1 = NULL;
+}
+%typemap(doc) GPContext * "$1_name: gphoto2.Context (default=None)";
+%enddef

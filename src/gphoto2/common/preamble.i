@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2017  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2017-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -44,10 +44,12 @@
 // Include doxygen documentation
 #if defined(DOC_FILE)
 %include DOC_FILE
-%feature("autodoc", "1");
-#else
-%feature("autodoc", "2");
 #endif
+%feature("autodoc", "2");
+
+// Improve documentation of some parameter types
+%typemap(doc) char const * "$1_name: str"
+%typemap(doc) uint64_t "$1_name: int"
 
 // Convert all char ** parameters to string return value
 %typemap(in, numinputs=0) char ** (char *temp) {

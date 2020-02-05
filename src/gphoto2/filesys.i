@@ -22,18 +22,17 @@
 // gp_camera_file_get_info() etc. return a pointer in an output parameter
 CALLOC_ARGOUT(CameraFileInfo *info)
 
+// Make docstring parameter types more Pythonic
+%typemap(doc) CameraFileInfo "$1_name: gphoto2.$1_type"
+%typemap(doc) CameraFilesystem * "$1_name: gphoto2.$*1_type"
+
 #ifndef SWIGIMPORTED
 
 // image dimensions use uint32_t and storage info uses uint64_t
 %include "stdint.i"
 
-// Make docstring parameter types more Pythonic
-%typemap(doc) CameraFilesystem * "$1_name: $*1_type"
-
 // Many functions accept NULL context value
-%typemap(default) (GPContext *) {
-  $1 = NULL;
-}
+DEFAULT_CONTEXT
 
 // gp_filesystem_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFilesystem **)

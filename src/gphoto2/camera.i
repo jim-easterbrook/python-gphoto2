@@ -24,6 +24,10 @@
 
 %rename(Camera) _Camera;
 
+// Make docstring parameter types more Pythonic
+%typemap(doc) Camera * "$1_name: gphoto2.$*1_type"
+%typemap(doc) enum CameraCaptureType "$1_name: $1_type (gphoto2.GP_CAPTURE_IMAGE etc.)"
+
 #ifndef SWIGIMPORTED
 
 // Allow other Python threads to continue during some function calls
@@ -44,13 +48,8 @@
 %thread gp_camera_file_get_info;
 %thread gp_camera_file_read;
 
-// Make docstring parameter types more Pythonic
-%typemap(doc) (Camera *) "$1_name: $*1_type"
-
 // Many functions accept NULL context value
-%typemap(default) (GPContext *) {
-  $1 = NULL;
-}
+DEFAULT_CONTEXT
 
 // gp_camera_get_abilities() returns a pointer in an output parameter
 CALLOC_ARGOUT(CameraAbilities *abilities)
@@ -76,7 +75,7 @@ int gp_camera_capture_preview(Camera *camera, CameraFile *camera_file, GPContext
 CALLOC_ARGOUT(CameraFilePath *path)
 
 // gp_camera_file_read() fills a user-supplied buffer
-%typemap(doc) (char * buf, uint64_t * size) "$1_name: writable buffer"
+%typemap(doc) (char * buf, uint64_t * size) "$1_name: writable buffer (e.g. memoryview)"
 %typemap(in, numinputs=1) (char * buf, uint64_t * size) (uint64_t temp) {
   Py_buffer view;
   if (PyObject_CheckBuffer($input) != 1) {

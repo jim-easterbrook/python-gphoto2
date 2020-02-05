@@ -30,10 +30,11 @@
     $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfo, 0));
 }
 
-#ifndef SWIGIMPORTED
-
 // Make docstring parameter types more Pythonic
-%typemap(doc) GPPortInfoList * "$1_name: PortInfoList";
+%typemap(doc) GPPortInfo "$1_name: gphoto2.$1_type";
+%typemap(doc) GPPortInfoList * "$1_name: gphoto2.$*1_type";
+
+#ifndef SWIGIMPORTED
 
 // gp_port_info_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(GPPortInfoList **)

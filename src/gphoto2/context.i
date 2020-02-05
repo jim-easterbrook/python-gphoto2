@@ -24,7 +24,7 @@
 #ifndef SWIGIMPORTED
 
 // Make docstring parameter types more Pythonic
-%typemap(doc) GPContext * "$1_name: Context";
+%typemap(doc) GPContext * "$1_name: gphoto2.$*1_type";
 
 // gp_camera_autodetect() returns a pointer in an output parameter
 NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
@@ -97,6 +97,7 @@ DEFAULT_DTOR(data_type, del_ ## data_type);
         SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_ ## data_type, SWIG_POINTER_OWN));
     _global_callbacks = NULL;
 }
+%typemap(doc) cb_func_type "$1_name: callable function"
 %enddef // SINGLE_CALLBACK_FUNCTION
 
 SINGLE_CALLBACK_FUNCTION(IdleCallback, GPContextIdleFunc,
@@ -365,6 +366,7 @@ CB_POSTAMBLE
     Py_INCREF(_global_callbacks->data);
     $1 = _global_callbacks;
 }
+%typemap(doc) void *data "$1_name: object"
 
 %typemap(check) GPContext *context {
     _global_callbacks->context = $1;
@@ -378,6 +380,7 @@ CB_POSTAMBLE
     Py_INCREF(_global_callbacks->func_1);
     $1 = (GPContextProgressStartFunc) py_progress_start;
 }
+%typemap(doc) GPContextProgressStartFunc "$1_name: callable function"
 
 %typemap(in) GPContextProgressUpdateFunc {
     if (!PyCallable_Check($input)) {
@@ -387,6 +390,7 @@ CB_POSTAMBLE
     Py_INCREF(_global_callbacks->func_2);
     $1 = (GPContextProgressUpdateFunc) py_progress_update;
 }
+%typemap(doc) GPContextProgressUpdateFunc "$1_name: callable function"
 
 %typemap(in) GPContextProgressStopFunc {
     if (!PyCallable_Check($input)) {
@@ -396,6 +400,7 @@ CB_POSTAMBLE
     Py_INCREF(_global_callbacks->func_3);
     $1 = (GPContextProgressStopFunc) py_progress_stop;
 }
+%typemap(doc) GPContextProgressStopFunc "$1_name: callable function"
 
 %typemap(argout) GPContextProgressStartFunc {
     $result = SWIG_Python_AppendOutput($result,

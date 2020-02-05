@@ -111,6 +111,35 @@ def get_gp_versions():
     return gp_versions
 
 # add command to run doxygen and doxy2swig
+member_methods = (
+    ('gp_abilities_list_', '_CameraAbilitiesList', 'CameraAbilitiesList'),
+    ('gp_camera_',         '_Camera',              'Camera'),
+    ('gp_context_',        '_GPContext',           'Context'),
+    ('gp_file_',           '_CameraFile',          'CameraFile'),
+    ('gp_list_',           '_CameraList',          'CameraList'),
+    ('gp_port_info_list_', '_GPPortInfoList',      'PortInfoList'),
+    ('gp_port_info_',      '_GPPortInfo',          'PortInfo'),
+    ('gp_widget_',         '_CameraWidget',        'CameraWidget'),
+    )
+
+def add_member_doc(symbol, value):
+    if symbol == 'gp_camera_autodetect':
+        return '%feature("docstring") {} "{}"\n\n'.format(symbol, value)
+    for key, c_type, py_type in member_methods:
+        if symbol.startswith(key):
+            method = symbol.replace(key, '')
+            if method == 'new':
+                return ('%feature("docstring") {} "{}\n\n' +
+                        'See also gphoto2.{}"\n\n').format(
+                            symbol, value, py_type)
+            return ('%feature("docstring") {} "{}\n\n' +
+                    'See also gphoto2.{}.{}"\n\n' +
+                    '%feature("docstring") {}::{} "{}\n\n' +
+                    'See also gphoto2.{}"\n\n').format(
+                        symbol, value, py_type, method,
+                        c_type, method, value, symbol)
+    return '%feature("docstring") {} "{}"\n\n'.format(symbol, value)
+
 class build_doc(Command):
     description = 'run doxygen to generate documentation'
     user_options = []
@@ -143,15 +172,6 @@ class build_doc(Command):
                           quiet = True)
             p.generate()
             text = ''.join(p.pieces)
-            member_methods = (
-                ('gp_abilities_list_', '_CameraAbilitiesList', 'CameraAbilitiesList'),
-                ('gp_camera_',         '_Camera',              'Camera'),
-                ('gp_file_',           '_CameraFile',          'CameraFile'),
-                ('gp_list_',           '_CameraList',          'CameraList'),
-                ('gp_port_info_list_', '_GPPortInfoList',      'PortInfoList'),
-                ('gp_port_info_',      '_GPPortInfo',          'PortInfo'),
-                ('gp_widget_',         '_CameraWidget',        'CameraWidget'),
-                )
             with open(os.path.join('src', 'gphoto2', 'common',
                                    'doc-' + gp_version + '.i'), 'w') as of:
                 for match in re.finditer('%feature\("docstring"\) (\w+) \"(.+?)\";',
@@ -160,19 +180,7 @@ class build_doc(Command):
                     value = match.group(2).strip()
                     if not value:
                         continue
-                    for key, c_type, py_type in member_methods:
-                        if symbol.startswith(key):
-                            method = symbol.replace(key, '')
-                            of.write(('%feature("docstring") {} "{}\n\n' +
-                                      'See also gphoto2.{}.{}"\n\n').format(
-                                          symbol, value, py_type, method))
-                            of.write(('%feature("docstring") {}::{} "{}\n\n' +
-                                      'See also gphoto2.{}"\n\n').format(
-                                          c_type, method, value, symbol))
-                            break
-                    else:
-                        of.write('%feature("docstring") {} "{}"\n\n'.format(
-                            symbol, value))
+                    of.write(add_member_doc(symbol, value))
 
 cmdclass['build_doc'] = build_doc
 

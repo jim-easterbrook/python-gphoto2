@@ -42,36 +42,39 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 %ignore gp_context_status;
 %ignore gp_context_unref;
 
-// Macro for the six single callback function variants
-%define SINGLE_CALLBACK_FUNCTION(data_type, cb_func_type, install_func, cb_wrapper)
-
-// Define the struct
-%ignore data_type::context;
-%ignore data_type::func;
-%ignore data_type::data;
-%ignore del_ ## data_type;
+// Struct to store callback details
+%ignore CallbackDetails::context;
+%ignore CallbackDetails::func;
+%ignore CallbackDetails::data;
+%ignore CallbackDetails::remove;
+%ignore del_CallbackDetails;
 %inline %{
-typedef struct data_type {
+typedef void (*RemoveFunc) (GPContext *context, void *func, void *data);
+typedef struct CallbackDetails {
     GPContext   *context;
     PyObject    *func;
     PyObject    *data;
-} data_type;
+    RemoveFunc  remove;
+} CallbackDetails;
 
 // Add destructor
-static int del_ ## data_type(struct data_type *this) {
+static int del_CallbackDetails(struct CallbackDetails *this) {
     if (this->context)
-        install_func(this->context, NULL, NULL);
+        this->remove(this->context, NULL, NULL);
     Py_XDECREF(this->func);
     Py_XDECREF(this->data);
     free(this);
     return GP_OK;
 };
 %}
-DEFAULT_DTOR(data_type, del_ ## data_type);
+DEFAULT_DTOR(CallbackDetails, del_CallbackDetails);
+
+// Macro for the six single callback function variants
+%define SINGLE_CALLBACK_FUNCTION(cb_func_type, install_func, cb_wrapper)
 
 // Define typemaps
-%typemap(arginit) cb_func_type (data_type *_global_callbacks) {
-    _global_callbacks = malloc(sizeof(data_type));
+%typemap(arginit) cb_func_type (CallbackDetails *_global_callbacks) {
+    _global_callbacks = malloc(sizeof(CallbackDetails));
     if (!_global_callbacks) {
         PyErr_SetNone(PyExc_MemoryError);
         SWIG_fail;
@@ -79,10 +82,11 @@ DEFAULT_DTOR(data_type, del_ ## data_type);
     _global_callbacks->context = NULL;
     _global_callbacks->func = NULL;
     _global_callbacks->data = NULL;
+    _global_callbacks->remove = (RemoveFunc) install_func;
 }
 %typemap(freearg) cb_func_type {
     if (_global_callbacks)
-        del_ ## data_type(_global_callbacks);
+        del_CallbackDetails(_global_callbacks);
 }
 %typemap(in) cb_func_type {
     if (!PyCallable_Check($input)) {
@@ -94,23 +98,23 @@ DEFAULT_DTOR(data_type, del_ ## data_type);
 }
 %typemap(argout) cb_func_type {
     $result = SWIG_Python_AppendOutput($result,
-        SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_ ## data_type, SWIG_POINTER_OWN));
+        SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
     _global_callbacks = NULL;
 }
 %typemap(doc) cb_func_type "$1_name: callable function"
 %enddef // SINGLE_CALLBACK_FUNCTION
 
-SINGLE_CALLBACK_FUNCTION(IdleCallback, GPContextIdleFunc,
+SINGLE_CALLBACK_FUNCTION(GPContextIdleFunc,
                          gp_context_set_idle_func, wrap_idle_func)
-SINGLE_CALLBACK_FUNCTION(ErrorCallback, GPContextErrorFunc,
+SINGLE_CALLBACK_FUNCTION(GPContextErrorFunc,
                          gp_context_set_error_func, wrap_error_func)
-SINGLE_CALLBACK_FUNCTION(StatusCallback, GPContextStatusFunc,
+SINGLE_CALLBACK_FUNCTION(GPContextStatusFunc,
                          gp_context_set_status_func, wrap_status_func)
-SINGLE_CALLBACK_FUNCTION(MessageCallback, GPContextMessageFunc,
+SINGLE_CALLBACK_FUNCTION(GPContextMessageFunc,
                          gp_context_set_message_func, wrap_message_func)
-SINGLE_CALLBACK_FUNCTION(QuestionCallback, GPContextQuestionFunc,
+SINGLE_CALLBACK_FUNCTION(GPContextQuestionFunc,
                          gp_context_set_question_func, wrap_question_func)
-SINGLE_CALLBACK_FUNCTION(CancelCallback, GPContextCancelFunc,
+SINGLE_CALLBACK_FUNCTION(GPContextCancelFunc,
                          gp_context_set_cancel_func, wrap_cancel_func)
 
 // Progress callbacks are more complicated
@@ -149,20 +153,31 @@ DEFAULT_DTOR(ProgressCallbacks, del_ProgressCallbacks);
     PyGILState_STATE gstate = PyGILState_Ensure();
     PyObject *result = NULL;
     PyObject *arglist = NULL;
+    PyObject *function = NULL;
     PyObject *self = NULL;
     PyObject *py_context = SWIG_NewPointerObj(SWIG_as_voidptr(context), SWIGTYPE_p__GPContext, 0);
 %}
 %enddef
 
+%define CB_CALLFUNC
+%{
+    if (arglist == NULL) {
+        PyErr_Print();
+        goto fail;
+    }
+    result = PyObject_CallObject(function, arglist);
+    Py_DECREF(arglist);
+    if (result == NULL) {
+        PyErr_Print();
+        goto fail;
+    }
+%}
+%enddef
+
 %define CB_POSTAMBLE
 %{
-        Py_DECREF(arglist);
-        if (result == NULL) {
-            PyErr_Print();
-        } else {
-            Py_DECREF(result);
-        }
-    }
+    Py_DECREF(result);
+fail:
     PyGILState_Release(gstate);
 %}
 %enddef
@@ -170,95 +185,85 @@ DEFAULT_DTOR(ProgressCallbacks, del_ProgressCallbacks);
 %{
 // Call Python callbacks from C callbacks
 static void wrap_idle_func(GPContext *context, void *data) {
-    IdleCallback *this = data;
+    CallbackDetails *this = data;
 %}
 CB_PREAMBLE
 %{
+    function = this->func;
     arglist = Py_BuildValue("(OO)", py_context, this->data);
-    if (arglist == NULL) {
-        PyErr_Print();
-    } else {
-        result = PyObject_CallObject(this->func, arglist);
 %}
+CB_CALLFUNC
 CB_POSTAMBLE
 %{
 };
 
 static void wrap_error_func(GPContext *context, const char *text, void *data) {
-    ErrorCallback *this = data;
+    CallbackDetails *this = data;
 %}
 CB_PREAMBLE
 %{
+    function = this->func;
 #if PY_VERSION_HEX >= 0x03000000
     arglist = Py_BuildValue("(OyO)", py_context, text, this->data);
 #else
     arglist = Py_BuildValue("(OsO)", py_context, text, this->data);
 #endif
-    if (arglist == NULL) {
-        PyErr_Print();
-    } else {
-        result = PyObject_CallObject(this->func, arglist);
 %}
+CB_CALLFUNC
 CB_POSTAMBLE
 %{
 };
 
 static void wrap_status_func(GPContext *context, const char *text, void *data) {
-    StatusCallback *this = data;
+    CallbackDetails *this = data;
 %}
 CB_PREAMBLE
 %{
+    function = this->func;
 #if PY_VERSION_HEX >= 0x03000000
     arglist = Py_BuildValue("(OyO)", py_context, text, this->data);
 #else
     arglist = Py_BuildValue("(OsO)", py_context, text, this->data);
 #endif
-    if (arglist == NULL) {
-        PyErr_Print();
-    } else {
-        result = PyObject_CallObject(this->func, arglist);
 %}
+CB_CALLFUNC
 CB_POSTAMBLE
 %{
 };
 
 static void wrap_message_func(GPContext *context, const char *text, void *data) {
-    MessageCallback *this = data;
+    CallbackDetails *this = data;
 %}
 CB_PREAMBLE
 %{
+    function = this->func;
 #if PY_VERSION_HEX >= 0x03000000
     arglist = Py_BuildValue("(OyO)", py_context, text, this->data);
 #else
     arglist = Py_BuildValue("(OsO)", py_context, text, this->data);
 #endif
-    if (arglist == NULL) {
-        PyErr_Print();
-    } else {
-        result = PyObject_CallObject(this->func, arglist);
 %}
+CB_CALLFUNC
 CB_POSTAMBLE
 %{
 };
 
 static GPContextFeedback wrap_question_func(GPContext *context, const char *text, void *data) {
-    QuestionCallback *this = data;
+    CallbackDetails *this = data;
     GPContextFeedback c_result = GP_CONTEXT_FEEDBACK_OK;
 %}
 CB_PREAMBLE
 %{
+    function = this->func;
 #if PY_VERSION_HEX >= 0x03000000
     arglist = Py_BuildValue("(OyO)", py_context, text, this->data);
 #else
     arglist = Py_BuildValue("(OsO)", py_context, text, this->data);
 #endif
-    if (arglist == NULL) {
-        PyErr_Print();
-    } else {
-        result = PyObject_CallObject(this->func, arglist);
-        if (result) {
-            c_result = PyInt_AsLong(result);
-        }
+%}
+CB_CALLFUNC
+%{
+    c_result = PyInt_AsLong(result);
 %}
 CB_POSTAMBLE
 %{
@@ -266,19 +271,17 @@ CB_POSTAMBLE
 };
 
 static GPContextFeedback wrap_cancel_func(GPContext *context, void *data) {
-    CancelCallback *this = data;
+    CallbackDetails *this = data;
     GPContextFeedback c_result = GP_CONTEXT_FEEDBACK_OK;
 %}
 CB_PREAMBLE
 %{
+    function = this->func;
     arglist = Py_BuildValue("(OO)", py_context, this->data);
-    if (arglist == NULL) {
-        PyErr_Print();
-    } else {
-        result = PyObject_CallObject(this->func, arglist);
-        if (result) {
-            c_result = PyInt_AsLong(result);
-        }
+%}
+CB_CALLFUNC
+%{
+    c_result = PyInt_AsLong(result);
 %}
 CB_POSTAMBLE
 %{
@@ -291,20 +294,19 @@ static int py_progress_start(GPContext *context, float target, const char *text,
 %}
 CB_PREAMBLE
 %{
+    function = this->func_1;
 #if PY_VERSION_HEX >= 0x03000000
     arglist = Py_BuildValue("(OfyO)", py_context, target, text, this->data);
 #else
     arglist = Py_BuildValue("(OfsO)", py_context, target, text, this->data);
 #endif
-    if (arglist == NULL) {
+%}
+CB_CALLFUNC
+%{
+    c_result = PyInt_AsLong(result);
+    if ((c_result == -1) && PyErr_Occurred()) {
         PyErr_Print();
-    } else {
-        result = PyObject_CallObject(this->func_1, arglist);
-        if (result) {
-            c_result = PyInt_AsLong(result);
-            if ((c_result == -1) && PyErr_Occurred())
-                PyErr_Print();
-        }
+    }
 %}
 CB_POSTAMBLE
 %{
@@ -316,12 +318,10 @@ static void py_progress_update(GPContext *context, unsigned int id, float curren
 %}
 CB_PREAMBLE
 %{
+    function = this->func_2;
     arglist = Py_BuildValue("(OifO)", py_context, id, current, this->data);
-    if (arglist == NULL) {
-        PyErr_Print();
-    } else {
-        result = PyObject_CallObject(this->func_2, arglist);
 %}
+CB_CALLFUNC
 CB_POSTAMBLE
 %{
 };
@@ -331,12 +331,10 @@ static void py_progress_stop(GPContext *context, unsigned int id, void *data) {
 %}
 CB_PREAMBLE
 %{
+    function = this->func_3;
     arglist = Py_BuildValue("(OiO)", py_context, id, this->data);
-    if (arglist == NULL) {
-        PyErr_Print();
-    } else {
-        result = PyObject_CallObject(this->func_3, arglist);
 %}
+CB_CALLFUNC
 CB_POSTAMBLE
 %{
 };

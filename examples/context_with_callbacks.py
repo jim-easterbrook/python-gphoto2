@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2019  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2019-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@ import sys
 import gphoto2 as gp
 
 # Callback functions. These should have the function signatures shown
-# (with an extra 'self' if they're part of a class).
+# (with an extra 'self' if they're class methods).
 
 def cb_idle(context, data):
     print('cb_idle', data)
@@ -81,8 +81,27 @@ def context_with_callbacks():
     finally:
         del callbacks
 
+def list_files(camera, context, path='/'):
+    result = []
+    # get files
+    for name, value in camera.folder_list_files(path, context):
+        result.append(os.path.join(path, name))
+    # read folders
+    folders = []
+    for name, value in camera.folder_list_folders(path, context):
+        folders.append(name)
+    # recurse over subfolders
+    for name in folders:
+        result.extend(list_files(camera, context, os.path.join(path, name)))
+    return result
+
 # Perform a few simple operations on a camera after setting up
 # callbacks.
+
+# I don't get many callbacks with my Canon cameras, just progress update
+# and 'cancel' during camera.init while the drivers are loaded, and
+# 'cancel' when listing the files. Maybe other camera drivers make more
+# use of them.
 
 def main():
     logging.basicConfig(
@@ -90,9 +109,14 @@ def main():
     callback_obj = gp.check_result(gp.use_python_logging())
     with context_with_callbacks() as context:
         camera = gp.Camera()
+        print('camera.init')
         camera.init(context)
+        print('camera.get_summary')
         text = camera.get_summary(context)
+        print('camera.get_config')
         config = camera.get_config(context)
+        print('list_files')
+        files = list_files(camera, context)
         camera.exit(context)
     return 0
 

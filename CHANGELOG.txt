@@ -18,6 +18,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 Changes in 2.2.0:
   1/ COMPATIBILITY CHANGE: Removed Context.camera_autodetect method.
   2/ COMPATIBILITY CHANGE: Removed deprecated widget get/set functions.
+  3/ Python3 log messages are now str instead of bytes.
+  4/ Documentation improvements.
 
 Changes in 2.1.0:
   1/ COMPATIBILITY CHANGE: gp_file_set_data_and_size and gp_file_append now

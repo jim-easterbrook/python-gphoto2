@@ -26,6 +26,9 @@
 // Make docstring parameter types more Pythonic
 %typemap(doc) GPContext * "$1_name: gphoto2.$*1_type";
 
+// gp_camera_autodetect() returns a pointer in an output parameter
+NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
+
 // Ignore "backend" functions
 %ignore gp_context_cancel;
 %ignore gp_context_error;
@@ -404,6 +407,9 @@ CB_POSTAMBLE
 }
 
 // Add member methods to _GPContext
+MEMBER_FUNCTION(_GPContext,
+    camera_autodetect, (CameraList *list),
+    gp_camera_autodetect, (list, $self))
 VOID_MEMBER_FUNCTION(_GPContext,
     set_idle_func, (GPContextIdleFunc func, void *data),
     gp_context_set_idle_func, ($self, func, data))

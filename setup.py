@@ -26,7 +26,7 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '2.2.0'
+version = '2.2.1'
 
 # get gphoto2 library config
 cmd = ['pkg-config', '--modversion', 'libgphoto2']

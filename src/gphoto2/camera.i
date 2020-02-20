@@ -107,6 +107,9 @@ DEFAULT_DTOR(_Camera, gp_camera_unref)
 
 // Add member methods to _Camera
 MEMBER_FUNCTION(_Camera,
+    static void, autodetect, (CameraList *list, GPContext *context),
+    gp_camera_autodetect, (list, context), )
+MEMBER_FUNCTION(_Camera,
     void, set_abilities, (CameraAbilities abilities),
     gp_camera_set_abilities, ($self, abilities), )
 MEMBER_FUNCTION(_Camera,

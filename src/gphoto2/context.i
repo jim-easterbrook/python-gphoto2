@@ -407,9 +407,17 @@ CB_POSTAMBLE
 }
 
 // Add member methods to _GPContext
-MEMBER_FUNCTION(_GPContext,
-    camera_autodetect, (CameraList *list),
-    gp_camera_autodetect, (list, $self))
+%exception _GPContext::camera_autodetect {
+  fprintf(stderr, "python-gphoto2 deprecation warning: Context.camera_autodetect\n");
+  $action
+  if (PyErr_Occurred() != NULL) SWIG_fail;
+}
+%extend _GPContext {
+  void camera_autodetect(CameraList *list) {
+    int error = gp_camera_autodetect(list, $self);
+    if (error < GP_OK) GPHOTO2_ERROR(error)
+  }
+};
 VOID_MEMBER_FUNCTION(_GPContext,
     set_idle_func, (GPContextIdleFunc func, void *data),
     gp_context_set_idle_func, ($self, func, data))

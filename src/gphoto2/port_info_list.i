@@ -72,34 +72,34 @@ LEN_MEMBER_FUNCTION(_GPPortInfoList, gp_port_info_list_count)
 // Add member methods to _GPPortInfo
 struct _GPPortInfo {};
 MEMBER_FUNCTION(_GPPortInfo,
-    get_name, (char **name),
-    gp_port_info_get_name, ($self, name))
+    void, get_name, (char **name),
+    gp_port_info_get_name, ($self, name), )
 MEMBER_FUNCTION(_GPPortInfo,
-    get_path, (char **path),
-    gp_port_info_get_path, ($self, path))
+    void, get_path, (char **path),
+    gp_port_info_get_path, ($self, path), )
 MEMBER_FUNCTION(_GPPortInfo,
-    get_type, (GPPortType *type),
-    gp_port_info_get_type, ($self, type))
+    void, get_type, (GPPortType *type),
+    gp_port_info_get_type, ($self, type), )
 
 // Add member methods to _GPPortInfoList
 MEMBER_FUNCTION(_GPPortInfoList,
-    append, (GPPortInfo info),
-    gp_port_info_list_append, ($self, info))
+    void, append, (GPPortInfo info),
+    gp_port_info_list_append, ($self, info), )
 MEMBER_FUNCTION(_GPPortInfoList,
-    load, (),
-    gp_port_info_list_load, ($self))
-INT_MEMBER_FUNCTION(_GPPortInfoList,
-    count, (),
-    gp_port_info_list_count, ($self))
-INT_MEMBER_FUNCTION(_GPPortInfoList,
-    lookup_path, (const char *path),
-    gp_port_info_list_lookup_path, ($self, path))
-INT_MEMBER_FUNCTION(_GPPortInfoList,
-    lookup_name, (const char *name),
-    gp_port_info_list_lookup_name, ($self, name))
+    void, load, (),
+    gp_port_info_list_load, ($self), )
 MEMBER_FUNCTION(_GPPortInfoList,
-    get_info, (const int n, GPPortInfo *info),
-    gp_port_info_list_get_info, ($self, n, info))
+    int, count, (),
+    gp_port_info_list_count, ($self), )
+MEMBER_FUNCTION(_GPPortInfoList,
+    int, lookup_path, (const char *path),
+    gp_port_info_list_lookup_path, ($self, path), )
+MEMBER_FUNCTION(_GPPortInfoList,
+    int, lookup_name, (const char *name),
+    gp_port_info_list_lookup_name, ($self, name), )
+MEMBER_FUNCTION(_GPPortInfoList,
+    void, get_info, (const int n, GPPortInfo *info),
+    gp_port_info_list_get_info, ($self, n, info), )
 
 // Don't wrap internal functions
 %ignore gp_port_info_new;

@@ -100,48 +100,26 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %enddef
 
 // Macros to add member functions to structs
-%define MEMBER_FUNCTION(type, member, member_args, function, function_args)
+%define MEMBER_FUNCTION(type, member_rtn, member, member_args,
+                        function, function_args, thread_allow)
 %exception type::member {
   $action
-  if (PyErr_Occurred() != NULL) SWIG_fail;
+  if (PyErr_Occurred()) SWIG_fail;
 }
 %extend type {
-  void member member_args {
-    int error = function function_args;
-    if (error < GP_OK) GPHOTO2_ERROR(error)
-  }
-};
-%enddef
-
-%define MEMBER_FUNCTION_THREAD(type, member, member_args, function, function_args)
-%exception type::member {
-  $action
-  if (PyErr_Occurred() != NULL) SWIG_fail;
-}
-%extend type {
-  void member member_args {
+  member_rtn member member_args {
+#if #thread_allow != ""
     SWIG_PYTHON_THREAD_BEGIN_ALLOW;
-    int error = function function_args;
+#endif
+    int result = function function_args;
+#if #thread_allow != ""
     SWIG_PYTHON_THREAD_END_ALLOW;
-    if (error < GP_OK) GPHOTO2_ERROR(error)
+#endif
+    if (result < GP_OK) GPHOTO2_ERROR(result)
+#if #member_rtn == "int"
+    return result;
+#endif
   }
-};
-%enddef
-
-%define INT_MEMBER_FUNCTION(type, member, member_args, function, function_args)
-%{
-int (*type ## _ ## member)() = function;
-int (*struct ## _ ## type ## _ ## member)() = function;
-%}
-%exception type::member {
-  $action
-  if (result < GP_OK) {
-    GPHOTO2_ERROR(result)
-    goto fail;
-  }
-}
-%extend type {
-  int member member_args;
 };
 %enddef
 
@@ -149,7 +127,7 @@ int (*struct ## _ ## type ## _ ## member)() = function;
 #if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "sq_length", functype="lenfunc") type::__len__;
 #endif
-INT_MEMBER_FUNCTION(type, __len__, (), function, ())
+MEMBER_FUNCTION(type, int, __len__, (), function, ($self), )
 %enddef
 
 %define VOID_MEMBER_FUNCTION(type, member, member_args, function, function_args)

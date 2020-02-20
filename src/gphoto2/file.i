@@ -214,50 +214,50 @@ static PyTypeObject FileDataType = {
 
 // Add member methods to _CameraFile
 MEMBER_FUNCTION(_CameraFile,
-    set_name, (const char *name),
-    gp_file_set_name, ($self, name))
+    void, set_name, (const char *name),
+    gp_file_set_name, ($self, name), )
 MEMBER_FUNCTION(_CameraFile,
-    get_name, (const char **name),
-    gp_file_get_name, ($self, name))
+    void, get_name, (const char **name),
+    gp_file_get_name, ($self, name), )
 MEMBER_FUNCTION(_CameraFile,
-    set_mime_type, (const char *mime_type),
-    gp_file_set_mime_type, ($self, mime_type))
+    void, set_mime_type, (const char *mime_type),
+    gp_file_set_mime_type, ($self, mime_type), )
 MEMBER_FUNCTION(_CameraFile,
-    get_mime_type, (const char **mime_type),
-    gp_file_get_mime_type, ($self, mime_type))
+    void, get_mime_type, (const char **mime_type),
+    gp_file_get_mime_type, ($self, mime_type), )
 MEMBER_FUNCTION(_CameraFile,
-    set_mtime, (time_t mtime),
-    gp_file_set_mtime, ($self, mtime))
+    void, set_mtime, (time_t mtime),
+    gp_file_set_mtime, ($self, mtime), )
 MEMBER_FUNCTION(_CameraFile,
-    get_mtime, (time_t *mtime),
-    gp_file_get_mtime, ($self, mtime))
+    void, get_mtime, (time_t *mtime),
+    gp_file_get_mtime, ($self, mtime), )
 MEMBER_FUNCTION(_CameraFile,
-    detect_mime_type, (),
-    gp_file_detect_mime_type, ($self))
+    void, detect_mime_type, (),
+    gp_file_detect_mime_type, ($self), )
 MEMBER_FUNCTION(_CameraFile,
-    adjust_name_for_mime_type, (),
-    gp_file_adjust_name_for_mime_type, ($self))
+    void, adjust_name_for_mime_type, (),
+    gp_file_adjust_name_for_mime_type, ($self), )
 MEMBER_FUNCTION(_CameraFile,
-    get_name_by_type, (const char *basename, CameraFileType type, char **newname),
-    gp_file_get_name_by_type, ($self, basename, type, newname))
-MEMBER_FUNCTION_THREAD(_CameraFile,
-    set_data_and_size, (char *data, unsigned long int size),
-    gp_file_set_data_and_size, ($self, data, size))
-MEMBER_FUNCTION_THREAD(_CameraFile,
-    get_data_and_size, (const char **data, unsigned long int *size),
-    gp_file_get_data_and_size, ($self, data, size))
-MEMBER_FUNCTION_THREAD(_CameraFile,
-    save, (const char *filename),
-    gp_file_save, ($self, filename))
+    void, get_name_by_type, (const char *basename, CameraFileType type, char **newname),
+    gp_file_get_name_by_type, ($self, basename, type, newname), )
 MEMBER_FUNCTION(_CameraFile,
-    clean, (),
-    gp_file_clean, ($self))
-MEMBER_FUNCTION_THREAD(_CameraFile,
-    copy, (CameraFile *source),
-    gp_file_copy, ($self, source))
-MEMBER_FUNCTION_THREAD(_CameraFile,
-    append, (const char *data, unsigned long int size),
-    gp_file_append, ($self, data, size))
+    void, set_data_and_size, (char *data, unsigned long int size),
+    gp_file_set_data_and_size, ($self, data, size), 1)
+MEMBER_FUNCTION(_CameraFile,
+    void, get_data_and_size, (const char **data, unsigned long int *size),
+    gp_file_get_data_and_size, ($self, data, size), 1)
+MEMBER_FUNCTION(_CameraFile,
+    void, save, (const char *filename),
+    gp_file_save, ($self, filename), 1)
+MEMBER_FUNCTION(_CameraFile,
+    void, clean, (),
+    gp_file_clean, ($self), )
+MEMBER_FUNCTION(_CameraFile,
+    void, copy, (CameraFile *source),
+    gp_file_copy, ($self, source), 1)
+MEMBER_FUNCTION(_CameraFile,
+    void, append, (const char *data, unsigned long int size),
+    gp_file_append, ($self, data, size), 1)
 
 // These structures are private
 %ignore _CameraFileHandler;

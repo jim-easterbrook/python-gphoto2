@@ -123,8 +123,6 @@ member_methods = (
     )
 
 def add_member_doc(symbol, value):
-    if symbol == 'gp_camera_autodetect':
-        return '%feature("docstring") {} "{}"\n\n'.format(symbol, value)
     for key, c_type, py_type in member_methods:
         if symbol.startswith(key):
             method = symbol.replace(key, '')

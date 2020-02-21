@@ -147,20 +147,34 @@ static int del_ProgressCallbacks(struct ProgressCallbacks *this) {
 %}
 DEFAULT_DTOR(ProgressCallbacks, del_ProgressCallbacks);
 
-// Macros for wrappers around Python callbacks
-%define CB_PREAMBLE
+// Macro for wrappers around Python callbacks
+%define CB_CALLFUNC(rtn_type, cb_name, cb_args,
+                    this_type, py3_arglist, py2_arglist, function)
 %{
+static rtn_type cb_name cb_args {
     PyGILState_STATE gstate = PyGILState_Ensure();
+    this_type *this = data;
     PyObject *result = NULL;
     PyObject *arglist = NULL;
-    PyObject *function = NULL;
     PyObject *self = NULL;
-    PyObject *py_context = SWIG_NewPointerObj(SWIG_as_voidptr(context), SWIGTYPE_p__GPContext, 0);
 %}
-%enddef
-
-%define CB_CALLFUNC
+#if #rtn_type == "int"
 %{
+    rtn_type c_result = 0;
+%}
+#elif #rtn_type == "GPContextFeedback"
+%{
+    rtn_type c_result = GP_CONTEXT_FEEDBACK_OK;
+%}
+#endif
+%{
+    PyObject *py_context = SWIG_NewPointerObj(
+        SWIG_as_voidptr(context), SWIGTYPE_p__GPContext, 0);
+#if PY_VERSION_HEX >= 0x03000000
+    arglist = Py_BuildValue py3_arglist;
+#else
+    arglist = Py_BuildValue py2_arglist;
+#endif
     if (arglist == NULL) {
         PyErr_Print();
         goto fail;
@@ -172,174 +186,83 @@ DEFAULT_DTOR(ProgressCallbacks, del_ProgressCallbacks);
         goto fail;
     }
 %}
-%enddef
-
-%define CB_POSTAMBLE
+#if #rtn_type != "void"
+%{
+    c_result = PyInt_AsLong(result);
+%}
+#endif
 %{
     Py_DECREF(result);
 fail:
     PyGILState_Release(gstate);
 %}
-%enddef
-
-%{
-// Call Python callbacks from C callbacks
-static void wrap_idle_func(GPContext *context, void *data) {
-    CallbackDetails *this = data;
-%}
-CB_PREAMBLE
-%{
-    function = this->func;
-    arglist = Py_BuildValue("(OO)", py_context, this->data);
-%}
-CB_CALLFUNC
-CB_POSTAMBLE
-%{
-};
-
-static void wrap_error_func(GPContext *context, const char *text, void *data) {
-    CallbackDetails *this = data;
-%}
-CB_PREAMBLE
-%{
-    function = this->func;
-#if PY_VERSION_HEX >= 0x03000000
-    arglist = Py_BuildValue("(OyO)", py_context, text, this->data);
-#else
-    arglist = Py_BuildValue("(OsO)", py_context, text, this->data);
-#endif
-%}
-CB_CALLFUNC
-CB_POSTAMBLE
-%{
-};
-
-static void wrap_status_func(GPContext *context, const char *text, void *data) {
-    CallbackDetails *this = data;
-%}
-CB_PREAMBLE
-%{
-    function = this->func;
-#if PY_VERSION_HEX >= 0x03000000
-    arglist = Py_BuildValue("(OyO)", py_context, text, this->data);
-#else
-    arglist = Py_BuildValue("(OsO)", py_context, text, this->data);
-#endif
-%}
-CB_CALLFUNC
-CB_POSTAMBLE
-%{
-};
-
-static void wrap_message_func(GPContext *context, const char *text, void *data) {
-    CallbackDetails *this = data;
-%}
-CB_PREAMBLE
-%{
-    function = this->func;
-#if PY_VERSION_HEX >= 0x03000000
-    arglist = Py_BuildValue("(OyO)", py_context, text, this->data);
-#else
-    arglist = Py_BuildValue("(OsO)", py_context, text, this->data);
-#endif
-%}
-CB_CALLFUNC
-CB_POSTAMBLE
-%{
-};
-
-static GPContextFeedback wrap_question_func(GPContext *context, const char *text, void *data) {
-    CallbackDetails *this = data;
-    GPContextFeedback c_result = GP_CONTEXT_FEEDBACK_OK;
-%}
-CB_PREAMBLE
-%{
-    function = this->func;
-#if PY_VERSION_HEX >= 0x03000000
-    arglist = Py_BuildValue("(OyO)", py_context, text, this->data);
-#else
-    arglist = Py_BuildValue("(OsO)", py_context, text, this->data);
-#endif
-%}
-CB_CALLFUNC
-%{
-    c_result = PyInt_AsLong(result);
-%}
-CB_POSTAMBLE
+#if #rtn_type != "void"
 %{
     return c_result;
-};
-
-static GPContextFeedback wrap_cancel_func(GPContext *context, void *data) {
-    CallbackDetails *this = data;
-    GPContextFeedback c_result = GP_CONTEXT_FEEDBACK_OK;
 %}
-CB_PREAMBLE
-%{
-    function = this->func;
-    arglist = Py_BuildValue("(OO)", py_context, this->data);
-%}
-CB_CALLFUNC
-%{
-    c_result = PyInt_AsLong(result);
-%}
-CB_POSTAMBLE
-%{
-    return c_result;
-};
-
-static int py_progress_start(GPContext *context, float target, const char *text, void *data) {
-    ProgressCallbacks *this = data;
-    int c_result = 0;
-%}
-CB_PREAMBLE
-%{
-    function = this->func_1;
-#if PY_VERSION_HEX >= 0x03000000
-    arglist = Py_BuildValue("(OfyO)", py_context, target, text, this->data);
-#else
-    arglist = Py_BuildValue("(OfsO)", py_context, target, text, this->data);
 #endif
-%}
-CB_CALLFUNC
-%{
-    c_result = PyInt_AsLong(result);
-    if ((c_result == -1) && PyErr_Occurred()) {
-        PyErr_Print();
-    }
-%}
-CB_POSTAMBLE
-%{
-    return c_result;
-};
-
-static void py_progress_update(GPContext *context, unsigned int id, float current, void *data) {
-    ProgressCallbacks *this = data;
-%}
-CB_PREAMBLE
-%{
-    function = this->func_2;
-    arglist = Py_BuildValue("(OifO)", py_context, id, current, this->data);
-%}
-CB_CALLFUNC
-CB_POSTAMBLE
 %{
 };
+%}
+%enddef // CB_CALLFUNC
 
-static void py_progress_stop(GPContext *context, unsigned int id, void *data) {
-    ProgressCallbacks *this = data;
-%}
-CB_PREAMBLE
-%{
-    function = this->func_3;
-    arglist = Py_BuildValue("(OiO)", py_context, id, this->data);
-%}
-CB_CALLFUNC
-CB_POSTAMBLE
-%{
-};
+// Define wrapper functions to call Python callbacks from C callbacks
+CB_CALLFUNC(void, wrap_idle_func, (GPContext *context, void *data),
+            CallbackDetails,
+            ("(OO)", py_context, this->data),
+            ("(OO)", py_context, this->data),
+            this->func)
 
-%}
+CB_CALLFUNC(void, wrap_error_func, (GPContext *context, const char *text, void *data),
+            CallbackDetails,
+            ("(OyO)", py_context, text, this->data),
+            ("(OsO)", py_context, text, this->data),
+            this->func)
+
+CB_CALLFUNC(void, wrap_status_func, (GPContext *context, const char *text, void *data),
+            CallbackDetails,
+            ("(OyO)", py_context, text, this->data),
+            ("(OsO)", py_context, text, this->data),
+            this->func)
+
+CB_CALLFUNC(void, wrap_message_func, (GPContext *context, const char *text, void *data),
+            CallbackDetails,
+            ("(OyO)", py_context, text, this->data),
+            ("(OsO)", py_context, text, this->data),
+            this->func)
+
+CB_CALLFUNC(GPContextFeedback, wrap_question_func,
+            (GPContext *context, const char *text, void *data),
+            CallbackDetails,
+            ("(OyO)", py_context, text, this->data),
+            ("(OsO)", py_context, text, this->data),
+            this->func)
+
+CB_CALLFUNC(GPContextFeedback, wrap_cancel_func, (GPContext *context, void *data),
+            CallbackDetails,
+            ("(OO)", py_context, this->data),
+            ("(OO)", py_context, this->data),
+            this->func)
+
+CB_CALLFUNC(int, py_progress_start,
+            (GPContext *context, float target, const char *text, void *data),
+            ProgressCallbacks,
+            ("(OfyO)", py_context, target, text, this->data),
+            ("(OfsO)", py_context, target, text, this->data),
+            this->func_1)
+
+CB_CALLFUNC(void, py_progress_update,
+            (GPContext *context, unsigned int id, float current, void *data),
+            ProgressCallbacks,
+            ("(OifO)", py_context, id, current, this->data),
+            ("(OifO)", py_context, id, current, this->data),
+            this->func_2)
+
+CB_CALLFUNC(void, py_progress_stop, (GPContext *context, unsigned int id, void *data),
+            ProgressCallbacks,
+            ("(OiO)", py_context, id, this->data),
+            ("(OiO)", py_context, id, this->data),
+            this->func_3)
 
 // Use typemaps to install callbacks
 %typemap(arginit) GPContextProgressStartFunc (ProgressCallbacks *_global_callbacks) {

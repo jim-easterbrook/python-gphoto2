@@ -42,6 +42,62 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 %ignore gp_context_status;
 %ignore gp_context_unref;
 
+// Structs to store callback details
+%ignore CallbackDetails::context;
+%ignore CallbackDetails::func;
+%ignore CallbackDetails::data;
+%ignore CallbackDetails::remove;
+%ignore del_CallbackDetails;
+
+%ignore ProgressCallbacks::context;
+%ignore ProgressCallbacks::func_1;
+%ignore ProgressCallbacks::func_2;
+%ignore ProgressCallbacks::func_3;
+%ignore ProgressCallbacks::data;
+%ignore del_ProgressCallbacks;
+
+%inline %{
+typedef void (*RemoveFunc) (GPContext *context, void *func, void *data);
+
+typedef struct CallbackDetails {
+    GPContext   *context;
+    PyObject    *func;
+    PyObject    *data;
+    RemoveFunc  remove;
+} CallbackDetails;
+
+typedef struct ProgressCallbacks {
+    GPContext   *context;
+    PyObject    *func_1;
+    PyObject    *func_2;
+    PyObject    *func_3;
+    PyObject    *data;
+} ProgressCallbacks;
+
+// Destructors
+static int del_CallbackDetails(struct CallbackDetails *this) {
+    if (this->context)
+        this->remove(this->context, NULL, NULL);
+    Py_XDECREF(this->func);
+    Py_XDECREF(this->data);
+    free(this);
+    return GP_OK;
+};
+
+static int del_ProgressCallbacks(struct ProgressCallbacks *this) {
+    if (this->context)
+        gp_context_set_progress_funcs(this->context, NULL, NULL, NULL, NULL);
+    Py_XDECREF(this->func_1);
+    Py_XDECREF(this->func_2);
+    Py_XDECREF(this->func_3);
+    Py_XDECREF(this->data);
+    free(this);
+    return GP_OK;
+};
+%}
+DEFAULT_DTOR(CallbackDetails, del_CallbackDetails);
+DEFAULT_DTOR(ProgressCallbacks, del_ProgressCallbacks);
+
 // Define wrapper functions to call Python callbacks from C callbacks
 %define CB_WRAPPER(rtn_type, cb_name, cb_args,
                    this_type, py3_arglist, py2_arglist, function)
@@ -157,63 +213,6 @@ CB_WRAPPER(void, py_progress_stop, (GPContext *context, unsigned int id, void *d
            ("(OiO)", py_context, id, this->data),
            ("(OiO)", py_context, id, this->data),
            this->func_3)
-
-// Structs to store callback details
-%ignore CallbackDetails::context;
-%ignore CallbackDetails::func;
-%ignore CallbackDetails::data;
-%ignore CallbackDetails::remove;
-%ignore del_CallbackDetails;
-
-%ignore ProgressCallbacks::context;
-%ignore ProgressCallbacks::func_1;
-%ignore ProgressCallbacks::func_2;
-%ignore ProgressCallbacks::func_3;
-%ignore ProgressCallbacks::data;
-%ignore del_ProgressCallbacks;
-
-%inline %{
-typedef void (*RemoveFunc) (GPContext *context, void *func, void *data);
-
-typedef struct CallbackDetails {
-    GPContext   *context;
-    PyObject    *func;
-    PyObject    *data;
-    RemoveFunc  remove;
-} CallbackDetails;
-
-typedef struct ProgressCallbacks {
-    GPContext   *context;
-    PyObject    *func_1;
-    PyObject    *func_2;
-    PyObject    *func_3;
-    PyObject    *data;
-} ProgressCallbacks;
-
-// Destructors
-static int del_CallbackDetails(struct CallbackDetails *this) {
-    if (this->context)
-        this->remove(this->context, NULL, NULL);
-    Py_XDECREF(this->func);
-    Py_XDECREF(this->data);
-    free(this);
-    return GP_OK;
-};
-
-static int del_ProgressCallbacks(struct ProgressCallbacks *this) {
-    if (this->context)
-        gp_context_set_progress_funcs(this->context, NULL, NULL, NULL, NULL);
-    Py_XDECREF(this->func_1);
-    Py_XDECREF(this->func_2);
-    Py_XDECREF(this->func_3);
-    Py_XDECREF(this->data);
-    free(this);
-    return GP_OK;
-};
-%}
-
-DEFAULT_DTOR(CallbackDetails, del_CallbackDetails);
-DEFAULT_DTOR(ProgressCallbacks, del_ProgressCallbacks);
 
 // Typemaps for all callback setting functions
 %typemap(in) void *data {

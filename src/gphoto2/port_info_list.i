@@ -101,6 +101,13 @@ MEMBER_FUNCTION(_GPPortInfoList,
     void, get_info, (const int n, GPPortInfo *info),
     gp_port_info_list_get_info, ($self, n, info), )
 
+// Substitute definitions of things added during libgphoto2 development
+%{
+#if GPHOTO2_VERSION < 0x020518
+  int GP_PORT_IP = GP_PORT_USB_SCSI + 1;
+#endif
+%}
+
 // Don't wrap internal functions
 %ignore gp_port_info_new;
 %ignore gp_port_info_set_name;

@@ -49,44 +49,29 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 %ignore CallbackDetails::remove;
 %ignore del_CallbackDetails;
 
-%ignore ProgressCallbacks::context;
-%ignore ProgressCallbacks::func_1;
-%ignore ProgressCallbacks::func_2;
-%ignore ProgressCallbacks::func_3;
-%ignore ProgressCallbacks::data;
-%ignore del_ProgressCallbacks;
-
 %inline %{
 typedef void (*RemoveFunc) (GPContext *context, void *func, void *data);
 
 typedef struct CallbackDetails {
     GPContext   *context;
-    PyObject    *func;
-    PyObject    *data;
-    RemoveFunc  remove;
-} CallbackDetails;
-
-typedef struct ProgressCallbacks {
-    GPContext   *context;
     PyObject    *func_1;
     PyObject    *func_2;
     PyObject    *func_3;
     PyObject    *data;
-} ProgressCallbacks;
+    RemoveFunc  remove;
+} CallbackDetails;
 
-// Destructors
+// Function to remove progress callbacks, compatible with RemoveFunc
+static void unset_progress_funcs(GPContext *context,
+                                 GPContextProgressStartFunc start_func,
+                                 void *data) {
+    gp_context_set_progress_funcs(context, NULL, NULL, NULL, NULL);
+};
+
+// Destructor
 static int del_CallbackDetails(struct CallbackDetails *this) {
     if (this->context)
         this->remove(this->context, NULL, NULL);
-    Py_XDECREF(this->func);
-    Py_XDECREF(this->data);
-    free(this);
-    return GP_OK;
-};
-
-static int del_ProgressCallbacks(struct ProgressCallbacks *this) {
-    if (this->context)
-        gp_context_set_progress_funcs(this->context, NULL, NULL, NULL, NULL);
     Py_XDECREF(this->func_1);
     Py_XDECREF(this->func_2);
     Py_XDECREF(this->func_3);
@@ -96,15 +81,13 @@ static int del_ProgressCallbacks(struct ProgressCallbacks *this) {
 };
 %}
 DEFAULT_DTOR(CallbackDetails, del_CallbackDetails);
-DEFAULT_DTOR(ProgressCallbacks, del_ProgressCallbacks);
 
 // Define wrapper functions to call Python callbacks from C callbacks
-%define CB_WRAPPER(rtn_type, cb_name, cb_args,
-                   this_type, py3_arglist, py2_arglist, function)
+%define CB_WRAPPER(rtn_type, cb_name, cb_args, py3_arglist, py2_arglist, function)
 %{
 static rtn_type cb_name cb_args {
     PyGILState_STATE gstate = PyGILState_Ensure();
-    this_type *this = data;
+    CallbackDetails *this = data;
     PyObject *result = NULL;
     PyObject *arglist = NULL;
     PyObject *self = NULL;
@@ -158,58 +141,49 @@ fail:
 %enddef // CB_WRAPPER
 
 CB_WRAPPER(void, wrap_idle_func, (GPContext *context, void *data),
-           CallbackDetails,
            ("(OO)", py_context, this->data),
            ("(OO)", py_context, this->data),
-           this->func)
+           this->func_1)
 
 CB_WRAPPER(void, wrap_error_func, (GPContext *context, const char *text, void *data),
-           CallbackDetails,
            ("(OyO)", py_context, text, this->data),
            ("(OsO)", py_context, text, this->data),
-           this->func)
+           this->func_1)
 
 CB_WRAPPER(void, wrap_status_func, (GPContext *context, const char *text, void *data),
-           CallbackDetails,
            ("(OyO)", py_context, text, this->data),
            ("(OsO)", py_context, text, this->data),
-           this->func)
+           this->func_1)
 
 CB_WRAPPER(void, wrap_message_func, (GPContext *context, const char *text, void *data),
-           CallbackDetails,
            ("(OyO)", py_context, text, this->data),
            ("(OsO)", py_context, text, this->data),
-           this->func)
+           this->func_1)
 
 CB_WRAPPER(GPContextFeedback, wrap_question_func,
            (GPContext *context, const char *text, void *data),
-           CallbackDetails,
            ("(OyO)", py_context, text, this->data),
            ("(OsO)", py_context, text, this->data),
-           this->func)
+           this->func_1)
 
 CB_WRAPPER(GPContextFeedback, wrap_cancel_func, (GPContext *context, void *data),
-           CallbackDetails,
            ("(OO)", py_context, this->data),
            ("(OO)", py_context, this->data),
-           this->func)
+           this->func_1)
 
 CB_WRAPPER(int, py_progress_start,
            (GPContext *context, float target, const char *text, void *data),
-           ProgressCallbacks,
            ("(OfyO)", py_context, target, text, this->data),
            ("(OfsO)", py_context, target, text, this->data),
            this->func_1)
 
 CB_WRAPPER(void, py_progress_update,
            (GPContext *context, unsigned int id, float current, void *data),
-           ProgressCallbacks,
            ("(OifO)", py_context, id, current, this->data),
            ("(OifO)", py_context, id, current, this->data),
            this->func_2)
 
 CB_WRAPPER(void, py_progress_stop, (GPContext *context, unsigned int id, void *data),
-           ProgressCallbacks,
            ("(OiO)", py_context, id, this->data),
            ("(OiO)", py_context, id, this->data),
            this->func_3)
@@ -227,7 +201,7 @@ CB_WRAPPER(void, py_progress_stop, (GPContext *context, unsigned int id, void *d
 }
 
 // Macro to define typemaps for the six single callback function variants
-%define SINGLE_CALLBACK_FUNCTION(cb_func_type, install_func, cb_wrapper)
+%define SINGLE_CALLBACK_FUNCTION(cb_func_type, remove_func, cb_wrapper)
 
 %typemap(arginit) cb_func_type (CallbackDetails *_global_callbacks) {
     _global_callbacks = malloc(sizeof(CallbackDetails));
@@ -236,9 +210,11 @@ CB_WRAPPER(void, py_progress_stop, (GPContext *context, unsigned int id, void *d
         SWIG_fail;
     }
     _global_callbacks->context = NULL;
-    _global_callbacks->func = NULL;
+    _global_callbacks->func_1 = NULL;
+    _global_callbacks->func_2 = NULL;
+    _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) install_func;
+    _global_callbacks->remove = (RemoveFunc) remove_func;
 }
 %typemap(freearg) cb_func_type {
     if (_global_callbacks)
@@ -248,8 +224,8 @@ CB_WRAPPER(void, py_progress_stop, (GPContext *context, unsigned int id, void *d
     if (!PyCallable_Check($input)) {
         SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
     }
-    _global_callbacks->func = $input;
-    Py_INCREF(_global_callbacks->func);
+    _global_callbacks->func_1 = $input;
+    Py_INCREF(_global_callbacks->func_1);
     $1 = (cb_func_type) cb_wrapper;
 }
 %typemap(doc) cb_func_type "$1_name: callable function"
@@ -276,33 +252,11 @@ SINGLE_CALLBACK_FUNCTION(GPContextCancelFunc,
                          gp_context_set_cancel_func, wrap_cancel_func)
 
 // Progress callbacks are more complicated
-%typemap(arginit) GPContextProgressStartFunc (ProgressCallbacks *_global_callbacks) {
-    _global_callbacks = malloc(sizeof(ProgressCallbacks));
-    if (!_global_callbacks) {
-        PyErr_SetNone(PyExc_MemoryError);
-        SWIG_fail;
-    }
-    _global_callbacks->context = NULL;
-    _global_callbacks->func_1 = NULL;
-    _global_callbacks->func_2 = NULL;
-    _global_callbacks->func_3 = NULL;
-    _global_callbacks->data = NULL;
-}
-%typemap(freearg) GPContextProgressStartFunc {
-    if (_global_callbacks)
-        del_ProgressCallbacks(_global_callbacks);
-}
+// Use macro for first function
+SINGLE_CALLBACK_FUNCTION(GPContextProgressStartFunc,
+                         unset_progress_funcs, py_progress_start)
 
-%typemap(in) GPContextProgressStartFunc {
-    if (!PyCallable_Check($input)) {
-        SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
-    }
-    _global_callbacks->func_1 = $input;
-    Py_INCREF(_global_callbacks->func_1);
-    $1 = (GPContextProgressStartFunc) py_progress_start;
-}
-%typemap(doc) GPContextProgressStartFunc "$1_name: callable function"
-
+// Use typemaps for other two functions
 %typemap(in) GPContextProgressUpdateFunc {
     if (!PyCallable_Check($input)) {
         SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
@@ -322,12 +276,6 @@ SINGLE_CALLBACK_FUNCTION(GPContextCancelFunc,
     $1 = (GPContextProgressStopFunc) py_progress_stop;
 }
 %typemap(doc) GPContextProgressStopFunc "$1_name: callable function"
-
-%typemap(argout) GPContextProgressStartFunc {
-    $result = SWIG_Python_AppendOutput($result,
-        SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_ProgressCallbacks, SWIG_POINTER_OWN));
-    _global_callbacks = NULL;
-}
 
 // Add member methods to _GPContext
 %exception _GPContext::camera_autodetect {

@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,10 +32,10 @@ def main():
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     callback_obj = gp.check_result(gp.use_python_logging())
     # open camera connection
-    camera = gp.check_result(gp.gp_camera_new())
-    gp.check_result(gp.gp_camera_init(camera))
+    camera = gp.Camera()
+    camera.init()
     # get configuration tree
-    config = gp.check_result(gp.gp_camera_get_config(camera))
+    config = camera.get_config()
     # find the date/time setting config item and get it
     # name varies with camera driver
     #   Canon EOS350d - 'datetime'
@@ -45,14 +45,11 @@ def main():
         now = datetime.now()
         OK, datetime_config = gp.gp_widget_get_child_by_name(config, name)
         if OK >= gp.GP_OK:
-            widget_type = gp.check_result(gp.gp_widget_get_type(datetime_config))
+            widget_type = datetime_config.get_type()
+            raw_value = datetime_config.get_value()
             if widget_type == gp.GP_WIDGET_DATE:
-                raw_value = gp.check_result(
-                    gp.gp_widget_get_value(datetime_config))
                 camera_time = datetime.fromtimestamp(raw_value)
             else:
-                raw_value = gp.check_result(
-                    gp.gp_widget_get_value(datetime_config))
                 if fmt:
                     camera_time = datetime.strptime(raw_value, fmt)
                 else:
@@ -72,7 +69,7 @@ def main():
     else:
         print('Unknown date/time config item')
     # clean up
-    gp.check_result(gp.gp_camera_exit(camera))
+    camera.exit()
     return 0
 
 if __name__ == "__main__":

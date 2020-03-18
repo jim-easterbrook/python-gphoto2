@@ -279,7 +279,8 @@ SINGLE_CALLBACK_FUNCTION(GPContextProgressStartFunc,
 
 // Add member methods to _GPContext
 %exception _GPContext::camera_autodetect {
-  fprintf(stderr, "python-gphoto2 deprecation warning: Context.camera_autodetect\n");
+  if (PyErr_WarnEx(PyExc_DeprecationWarning,
+      "Camera.autodetect replaces Context().camera_autodetect", 1) < 0) SWIG_fail;
   $action
   if (PyErr_Occurred() != NULL) SWIG_fail;
 }

@@ -15,6 +15,12 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 2.2.2:
+  1/ Added Camera.autodetect alternative to gp_camera_autodetect.
+  2/ Added some deprecation warnings. Use 'python -Wd' to see them when running
+     software under development.
+  3/ Added gphoto2_version.py example program.
+
 Changes in 2.2.1:
   1/ Reinstated Context.camera_autodetect method removed in 2.2.0.
 

@@ -20,7 +20,7 @@
 
 # another camera config gui, with load/save settings to file, and live view
 # started: sdaau 2019, on with python3-gphoto2 and `sudo -H pip2 install gphoto2`, Ubuntu 18.04
-# uses camera-config-gui-oo.py, and code from focus-gui.py, time_lapse.py
+# uses camera-config-gui.py, and code from focus-gui.py, time_lapse.py
 
 """
 NOTE that properties are reported by the camera, depending on the camera state! On Canon S3 IS:
@@ -59,7 +59,7 @@ import gphoto2 as gp
 
 THISSCRIPTDIR = os.path.dirname(os.path.realpath(__file__))
 sys.path.insert(1,THISSCRIPTDIR)
-ccgoo = __import__('camera-config-gui-oo')
+ccgoo = __import__('camera-config-gui')
 NOCAMIMG = "cam-conf-no-cam.png"
 APPNAME = "cam-conf-view-gui.py"
 

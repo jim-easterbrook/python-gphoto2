@@ -160,8 +160,9 @@ class RangeWidget(QtWidgets.QSlider):
         assert self.config.count_children() == 0
         lo, hi, self.inc = self.config.get_range()
         value = self.config.get_value()
-        self.setRange(int(lo * self.inc), int(hi * self.inc))
-        self.setValue(int(value * self.inc))
+        self.setRange(max(int(lo / self.inc), -0x80000000),
+                      min(int(hi / self.inc),  0x7fffffff))
+        self.setValue(max(min(int(value / self.inc), 0x7fffffff), -0x80000000))
         self.sliderReleased.connect(self.new_value)
 
     def new_value(self):

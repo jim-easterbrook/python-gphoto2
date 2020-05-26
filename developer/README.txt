@@ -37,6 +37,7 @@ Differences found so far:
 2.5.22 No change
 2.5.23 Add GP_MIME_CR3 constant
 2.5.24 Add GP_PORT_IP enum
+2.5.25 No change
 
 Documentation
 -------------

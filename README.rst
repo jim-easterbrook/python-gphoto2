@@ -27,7 +27,7 @@ Note that you need the "development headers" versions of libgphoto2_ and Python.
 In most cases you should use your operating system's package manager to install these.
 The package names depend on the operating system.
 Look for ``libgphoto2-dev`` or ``libgphoto2-devel`` or something similar.
-If you install libgphoto2 from source (e.g. to get a newer version) then you probably should not install the ``dev`` package as well.
+If you install libgphoto2 from source (e.g. to get a newer version) then you probably don't need the ``dev`` package, but make sure that the ``pkg-config --cflags --libs libgphoto2`` command shows where you've installed your build.
 
 Installation and testing
 ------------------------

@@ -91,6 +91,7 @@ if os.path.isdir(mod_src_dir):
             sources = [os.path.join(mod_src_dir, file_name)],
             libraries = libraries,
             library_dirs = library_dirs,
+            runtime_library_dirs = library_dirs,
             include_dirs = include_dirs,
             extra_compile_args = extra_compile_args,
             ))

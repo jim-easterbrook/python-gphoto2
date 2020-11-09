@@ -15,6 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 2.2.4:
+  1/ Built with SWIG version 4.0.2 to provide Python 3.8 compatibility.
+
 Changes in 2.2.3:
   1/ Minor improvement in setup.py script.
   2/ Minor improvements in example scripts.

@@ -27,6 +27,7 @@ import gphoto2 as gp
 def main():
     print('python:', sys.version)
     print('libgphoto2:', gp.gp_library_version(gp.GP_VERSION_VERBOSE))
+    print('libgphoto2_port:', gp.gp_port_library_version(gp.GP_VERSION_VERBOSE))
     print('python-gphoto2:', gp.__version__)
     return 0
 

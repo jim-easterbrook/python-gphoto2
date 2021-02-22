@@ -39,6 +39,7 @@ Differences found so far:
 2.5.24 Add GP_PORT_IP enum
 2.5.25 No change
 2.5.26 No change
+2.5.27 No change
 
 Documentation
 -------------

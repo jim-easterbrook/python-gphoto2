@@ -6,6 +6,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-python@v2
+      - run: sudo apt-get install libgphoto2
       - run: pip install bandit black codespell flake8 isort mypy pytest pyupgrade safety
       - run: bandit -r . || true
       - run: black --check . || true

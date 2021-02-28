@@ -76,7 +76,7 @@ class PseudoFile(object):
         elif whence == 1:
             self._ptr += offset
         else:
-            self._ptr = self._size - ptr
+            self._ptr = self._size - self.ptr
 
     def tell(self):
         return self._ptr

@@ -16,8 +16,8 @@ jobs:
       - run: shopt -s globstar && pyupgrade --py36-plus **/*.py || true
       - run: pip install -r requirements.txt || true
       - run: mypy --ignore-missing-imports . || true
-      - run: python setup.py build
-      - run: sudo python setup.py install
+      # - run: python setup.py build  # fails like jim-easterbrook/python-gphoto2#78
+      # - run: sudo python setup.py install
       - run: pytest . || true
       - run: pytest --doctest-modules . || true
       - run: safety check

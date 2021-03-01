@@ -144,7 +144,7 @@ class TextWidget(QtWidgets.QLineEdit):
 
     def new_value(self):
         if sys.version_info[0] < 3:
-            value = unicode(self.text()).encode('utf-8')
+            value = unicode(self.text()).encode('utf-8')  # noqa: F821
         else:
             value = str(self.text())
         self.config.set_value(value)

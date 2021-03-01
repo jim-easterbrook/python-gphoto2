@@ -43,7 +43,7 @@ def main():
     if six.PY3:
         choice = input('Please input number of chosen camera: ')
     else:
-        choice = raw_input('Please input number of chosen camera: ')
+        choice = raw_input('Please input number of chosen camera: ')  # noqa: F821
     try:
         choice = int(choice)
     except ValueError:

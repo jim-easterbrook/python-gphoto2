@@ -1,0 +1,30 @@
+name: lint_python
+on: [pull_request, push]
+jobs:
+  lint_python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+      - run: sudo apt-get install -y libgirepository1.0-dev libgphoto2-dev swig
+      - run: pip install bandit black codespell flake8 isort mypy pytest pyupgrade safety
+      - run: bandit -r . || true
+      - run: black --check . || true
+      - run: codespell --quiet-level=2
+      - run: flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+      - run: isort --check-only --profile black . || true
+      - run: shopt -s globstar && pyupgrade --py36-plus **/*.py || true
+      - run: pip install -r requirements.txt || true
+      - run: mypy --ignore-missing-imports . || true
+      - run: python setup.py build_swig
+      - run: PYTHON_GPHOTO2_BUILTIN=1 python setup.py build
+      - run: rm -rf build
+      - run: PYTHON_GPHOTO2_NO_BUILTIN=1 python setup.py build
+      - run: rm -rf build
+      - run: PYTHON_GPHOTO2_BUILTIN=1 CC=clang python setup.py build
+      - run: rm -rf build
+      - run: PYTHON_GPHOTO2_NO_BUILTIN=1 CC=clang python setup.py build
+      - run: pip install exifread Pillow PyGObject PyQt5 tzlocal
+      - run: pytest . || true
+      - run: pytest --doctest-modules . || true
+      - run: safety check

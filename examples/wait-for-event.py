@@ -44,7 +44,7 @@ def main():
     # Init camera
     camera = gp.Camera()
     camera.init()
-    timeout = 3000 # miliseconds
+    timeout = 3000  # milliseconds
     while True:
         event_type, event_data = camera.wait_for_event(timeout)
         if event_type == gp.GP_EVENT_FILE_ADDED:

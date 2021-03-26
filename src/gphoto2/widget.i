@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 %module(package="gphoto2") widget
 
 %include "common/preamble.i"
+%include <attribute.i>
 
 %rename(CameraWidget) _CameraWidget;
 
@@ -198,6 +199,45 @@ int gp_widget_get_value(CameraWidget *widget, int *value);
 
 // Ignore original void* version
 %ignore gp_widget_get_value(CameraWidget *widget, void *value);
+
+// Add a 'value' attribute to CameraWidget
+%attribute(_CameraWidget, PyObject*, value, value_get);
+%ignore _CameraWidget_value_get;
+
+%{
+// Undefine %attribute macro's version of _CameraWidget_value_get
+#undef _CameraWidget_value_get
+
+// Define our own _CameraWidget_value_get function
+static PyObject* _CameraWidget_value_get(CameraWidget *widget) {
+  int error;
+  CameraWidgetType type;
+  union {
+    int int_val;
+    float flt_val;
+    char* str_val;
+  } value;
+  value.str_val = NULL;
+  error = gp_widget_get_value(widget, &value);
+  if (error < GP_OK) goto fail;
+  error = gp_widget_get_type(widget, &type);
+  if (error < GP_OK) goto fail;
+  switch (type) {
+    case GP_WIDGET_DATE:
+    case GP_WIDGET_TOGGLE:
+      return SWIG_From_int(value.int_val);
+    case GP_WIDGET_RANGE:
+      return SWIG_From_float(value.flt_val);
+    default:
+      if (value.str_val) return PyString_FromString(value.str_val);
+      Py_INCREF(Py_None);
+      return Py_None;
+  }
+fail:
+  PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+  return NULL;
+}
+%}
 
 // function to allow python iter() to be called with python object
 #if defined(SWIGPYTHON_BUILTIN)

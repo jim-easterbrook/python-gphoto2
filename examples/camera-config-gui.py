@@ -76,7 +76,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.camera.init()
         self.camera_config = self.camera.get_config()
         # create corresponding tree of tab widgets
-        self.setWindowTitle(self.camera_config.get_label())
+        self.setWindowTitle(self.camera_config.label)
         top_widget = SectionWidget(self.config_changed, self.camera_config)
         scroll_area = QtWidgets.QScrollArea()
         scroll_area.setWidget(top_widget)
@@ -101,7 +101,7 @@ class SectionWidget(QtWidgets.QWidget):
             return
         tabs = None
         for child in camera_config.get_children():
-            label = '{} ({})'.format(child.get_label(), child.name)
+            label = '{} ({})'.format(child.label, child.name)
             child_type = child.get_type()
             if child_type == gp.GP_WIDGET_SECTION:
                 if not tabs:

@@ -203,58 +203,6 @@ int gp_widget_get_value(CameraWidget *widget, int *value);
 // Turn on default exception handling
 DEFAULT_EXCEPTION
 
-// Add a 'name' attribute to CameraWidget
-%attribute(_CameraWidget, const char*, name, name_get);
-%{
-// Undefine %attribute macro's version of _CameraWidget_name_get
-#undef _CameraWidget_name_get
-
-// Define our own _CameraWidget_name_get function
-static const char* _CameraWidget_name_get(CameraWidget *widget) {
-  const char* name;
-  int error = gp_widget_get_name(widget, &name);
-  if (error < GP_OK) PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-  return name;
-}
-%}
-
-// Add a 'value' attribute to CameraWidget
-%attribute(_CameraWidget, PyObject*, value, value_get);
-%{
-// Undefine %attribute macro's version of _CameraWidget_value_get
-#undef _CameraWidget_value_get
-
-// Define our own _CameraWidget_value_get function
-static PyObject* _CameraWidget_value_get(CameraWidget *widget) {
-  int error;
-  CameraWidgetType type;
-  union {
-    int int_val;
-    float flt_val;
-    char* str_val;
-  } value;
-  value.str_val = NULL;
-  error = gp_widget_get_value(widget, &value);
-  if (error < GP_OK) goto fail;
-  error = gp_widget_get_type(widget, &type);
-  if (error < GP_OK) goto fail;
-  switch (type) {
-    case GP_WIDGET_DATE:
-    case GP_WIDGET_TOGGLE:
-      return SWIG_From_int(value.int_val);
-    case GP_WIDGET_RANGE:
-      return SWIG_From_float(value.flt_val);
-    default:
-      if (value.str_val) return PyString_FromString(value.str_val);
-      Py_INCREF(Py_None);
-      return Py_None;
-  }
-fail:
-  PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-  return NULL;
-}
-%}
-
 // function to allow python iter() to be called with python object
 #if defined(SWIGPYTHON_BUILTIN)
 %ignore make_iterator;
@@ -508,6 +456,66 @@ MEMBER_FUNCTION(_CameraWidget,
 MEMBER_FUNCTION(_CameraWidget,
     void, get_readonly, (int *readonly),
     gp_widget_get_readonly, ($self, readonly), )
+
+// Define a macro to add read-only attribute
+%define ATTRIBUTE(_Class, Class, AttributeType, AttributeName, GetMethod)
+%attribute(_Class, AttributeType, AttributeName, AttributeName ## _ ## get);
+%{
+// Undefine %attribute macro's version of getter function
+#undef _Class ## _ ## AttributeName ## _ ## get
+
+// Define our own getter function
+static AttributeType _Class ## _ ## AttributeName ## _ ## get(Class *self) {
+  AttributeType result = NULL;
+  int error = GetMethod(self, &result);
+  if (error < GP_OK) PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+  return result;
+}
+%}
+%enddef
+
+// Add a 'name' attribute to CameraWidget
+ATTRIBUTE(_CameraWidget, CameraWidget, const char*, name, gp_widget_get_name);
+
+// Add a 'label' attribute to CameraWidget
+ATTRIBUTE(_CameraWidget, CameraWidget, const char*, label, gp_widget_get_label);
+
+// Add a 'value' attribute to CameraWidget
+%{
+// Return PyObject containing appropriate gp_widget_get_value result type
+static int gp_widget_get_value_py(CameraWidget *widget, PyObject** value) {
+  int error;
+  CameraWidgetType type;
+  union {
+    int int_val;
+    float flt_val;
+    char* str_val;
+  } result;
+  result.str_val = NULL;
+  error = gp_widget_get_value(widget, &result);
+  if (error < GP_OK) return error;
+  error = gp_widget_get_type(widget, &type);
+  if (error < GP_OK) return error;
+  switch (type) {
+    case GP_WIDGET_DATE:
+    case GP_WIDGET_TOGGLE:
+      *value = SWIG_From_int(result.int_val);
+      return GP_OK;
+    case GP_WIDGET_RANGE:
+      *value = SWIG_From_float(result.flt_val);
+      return GP_OK;
+    default:
+      if (result.str_val) {
+        *value = PyString_FromString(result.str_val);
+      } else {
+        Py_INCREF(Py_None);
+        *value = Py_None;
+      }
+  }
+  return GP_OK;
+}
+%}
+ATTRIBUTE(_CameraWidget, CameraWidget, PyObject*, value, gp_widget_get_value_py);
 
 // Ignore some functions
 %ignore gp_widget_new;

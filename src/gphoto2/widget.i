@@ -200,10 +200,29 @@ int gp_widget_get_value(CameraWidget *widget, int *value);
 // Ignore original void* version
 %ignore gp_widget_get_value(CameraWidget *widget, void *value);
 
+// Turn on default exception handling
+%exception {
+  $action
+  if (PyErr_Occurred()) SWIG_fail;
+}
+
+// Add a 'name' attribute to CameraWidget
+%attribute(_CameraWidget, const char*, name, name_get);
+%{
+// Undefine %attribute macro's version of _CameraWidget_name_get
+#undef _CameraWidget_name_get
+
+// Define our own _CameraWidget_name_get function
+static const char* _CameraWidget_name_get(CameraWidget *widget) {
+  const char* name;
+  int error = gp_widget_get_name(widget, &name);
+  if (error < GP_OK) PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+  return name;
+}
+%}
+
 // Add a 'value' attribute to CameraWidget
 %attribute(_CameraWidget, PyObject*, value, value_get);
-%ignore _CameraWidget_value_get;
-
 %{
 // Undefine %attribute macro's version of _CameraWidget_value_get
 #undef _CameraWidget_value_get
@@ -281,10 +300,6 @@ typedef struct iter_type {
 
 CALLOC_ARGOUT(iter_type*)
 
-%exception iter_type::__next__ {
-  $action
-  if (PyErr_Occurred() != NULL) SWIG_fail;
-}
 %extend iter_type {
   result_type* __next__() {
     result_type* result;
@@ -333,6 +348,7 @@ a Python iterator.
 
 See also gphoto2.gp_widget_get_children"
 
+%noexception gp_widget_get_children;
 %inline %{
 int gp_widget_get_children(CameraWidget* widget, CameraWidgetChildIter* iter) {
   iter->parent = widget;
@@ -371,6 +387,7 @@ a Python iterator.
 
 See also gphoto2.gp_widget_get_choices"
 
+%noexception gp_widget_get_choices;
 %inline %{
 int gp_widget_get_choices(CameraWidget* widget, CameraWidgetChoiceIter* iter) {
   iter->parent = widget;
@@ -498,6 +515,9 @@ MEMBER_FUNCTION(_CameraWidget,
 %ignore gp_widget_free;
 %ignore gp_widget_ref;
 %ignore gp_widget_unref;
+
+// Turn off default exception handling
+%noexception;
 
 #endif //ifndef SWIGIMPORTED
 

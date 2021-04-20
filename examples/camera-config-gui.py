@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -101,7 +101,7 @@ class SectionWidget(QtWidgets.QWidget):
             return
         tabs = None
         for child in camera_config.get_children():
-            label = '{} ({})'.format(child.get_label(), child.get_name())
+            label = '{} ({})'.format(child.get_label(), child.name)
             child_type = child.get_type()
             if child_type == gp.GP_WIDGET_SECTION:
                 if not tabs:
@@ -135,7 +135,7 @@ class TextWidget(QtWidgets.QLineEdit):
         if self.config.get_readonly():
             self.setDisabled(True)
         assert self.config.count_children() == 0
-        value = self.config.get_value()
+        value = self.config.value
         if value:
             if sys.version_info[0] < 3:
                 value = value.decode('utf-8')
@@ -159,7 +159,7 @@ class RangeWidget(QtWidgets.QSlider):
             self.setDisabled(True)
         assert self.config.count_children() == 0
         lo, hi, self.inc = self.config.get_range()
-        value = self.config.get_value()
+        value = self.config.value
         self.setRange(max(int(lo / self.inc), -0x80000000),
                       min(int(hi / self.inc),  0x7fffffff))
         self.setValue(max(min(int(value / self.inc), 0x7fffffff), -0x80000000))
@@ -178,7 +178,7 @@ class ToggleWidget(QtWidgets.QCheckBox):
         if self.config.get_readonly():
             self.setDisabled(True)
         assert self.config.count_children() == 0
-        value = self.config.get_value()
+        value = self.config.value
         self.setChecked(value != 0)
         self.clicked.connect(self.new_value)
 
@@ -196,7 +196,7 @@ class RadioWidget(QtWidgets.QWidget):
             self.setDisabled(True)
         assert self.config.count_children() == 0
         self.setLayout(QtWidgets.QHBoxLayout())
-        value = self.config.get_value()
+        value = self.config.value
         self.buttons = []
         for choice in self.config.get_choices():
             if choice:
@@ -222,7 +222,7 @@ class MenuWidget(QtWidgets.QComboBox):
         if self.config.get_readonly():
             self.setDisabled(True)
         assert self.config.count_children() == 0
-        value = self.config.get_value()
+        value = self.config.value
         choice_count = self.config.count_choices()
         for n in range(choice_count):
             choice = self.config.get_choice(n)
@@ -245,7 +245,7 @@ class DateWidget(QtWidgets.QDateTimeEdit):
         if self.config.get_readonly():
             self.setDisabled(True)
         assert self.config.count_children() == 0
-        value = self.config.get_value()
+        value = self.config.value
         if value:
             self.setDateTime(datetime.fromtimestamp(value))
         self.dateTimeChanged.connect(self.new_value)

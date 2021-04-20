@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -48,6 +48,9 @@
 %thread gp_camera_file_get_info;
 %thread gp_camera_file_read;
 
+// Turn on default exception handling
+DEFAULT_EXCEPTION
+
 // Many functions accept NULL context value
 DEFAULT_CONTEXT
 
@@ -68,6 +71,7 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 // gp_camera_capture_preview() & gp_camera_file_get() return a pointer
 NEW_ARGOUT(CameraFile *camera_file, gp_file_new, gp_file_unref)
 // Redefine signature as gp_camera_folder_put_file() also uses *file
+%noexception gp_camera_capture_preview;
 int gp_camera_capture_preview(Camera *camera, CameraFile *camera_file, GPContext *context);
 %ignore gp_camera_capture_preview;
 
@@ -287,6 +291,9 @@ int gp_camera_set_single_config(Camera *camera, const char *name,
       free(*$2);
   }
 }
+
+// Turn off default exception handling
+%noexception;
 
 // Add __str__ method to CameraText
 #if defined(SWIGPYTHON_BUILTIN)

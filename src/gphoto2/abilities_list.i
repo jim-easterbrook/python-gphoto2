@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -27,6 +27,9 @@
 
 #ifndef SWIGIMPORTED
 
+// Turn on default exception handling
+DEFAULT_EXCEPTION
+
 // Many functions accept NULL context value
 DEFAULT_CONTEXT
 
@@ -43,7 +46,6 @@ PLAIN_ARGOUT(CameraAbilitiesList **)
 struct _CameraAbilitiesList {};
 DEFAULT_CTOR(_CameraAbilitiesList, gp_abilities_list_new)
 DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
-%ignore _CameraAbilitiesList;
 %ignore gp_abilities_list_free;
 
 // Make CameraAbilitiesList more like a Python list
@@ -112,6 +114,9 @@ MEMBER_FUNCTION(_CameraAbilitiesList,
 
 // Structures are read only
 %immutable;
+
+// Turn off default exception handling
+%noexception;
 
 #endif //ifndef SWIGIMPORTED
 

@@ -201,10 +201,7 @@ int gp_widget_get_value(CameraWidget *widget, int *value);
 %ignore gp_widget_get_value(CameraWidget *widget, void *value);
 
 // Turn on default exception handling
-%exception {
-  $action
-  if (PyErr_Occurred()) SWIG_fail;
-}
+DEFAULT_EXCEPTION
 
 // Add a 'name' attribute to CameraWidget
 %attribute(_CameraWidget, const char*, name, name_get);
@@ -414,6 +411,8 @@ static int widget_dtor(CameraWidget *widget) {
   }
 }
 %}
+struct _CameraWidget {};
+DEFAULT_DTOR(_CameraWidget, widget_dtor)
 
 // Add member methods to _CameraWidget
 MEMBER_FUNCTION(_CameraWidget,
@@ -520,9 +519,5 @@ MEMBER_FUNCTION(_CameraWidget,
 %noexception;
 
 #endif //ifndef SWIGIMPORTED
-
-struct _CameraWidget {};
-DEFAULT_DTOR(_CameraWidget, widget_dtor)
-%ignore _CameraWidget;
 
 %include "gphoto2/gphoto2-widget.h"

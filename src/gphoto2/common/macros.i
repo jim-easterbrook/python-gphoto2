@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -14,6 +14,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+%define DEFAULT_EXCEPTION
+%exception {
+  $action
+  if (PyErr_Occurred()) SWIG_fail;
+}
+%enddef
 
 %define GPHOTO2_ERROR(error)
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
@@ -70,10 +77,6 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %enddef
 
 %define DEFAULT_CTOR(type, function)
-%exception type {
-  $action
-  if (PyErr_Occurred() != NULL) SWIG_fail;
-}
 %extend type {
   type() {
     struct type *result;
@@ -87,10 +90,6 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 
 %define DEFAULT_DTOR(name, free_func)
 %delobject free_func;
-%exception ~name {
-  $action
-  if (PyErr_Occurred() != NULL) SWIG_fail;
-}
 %extend name {
   ~name() {
     int error = free_func($self);
@@ -102,10 +101,6 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 // Macros to add member functions to structs
 %define MEMBER_FUNCTION(type, member_rtn, member, member_args,
                         function, function_args, thread_allow)
-%exception type::member {
-  $action
-  if (PyErr_Occurred()) SWIG_fail;
-}
 %extend type {
   member_rtn member member_args {
 #if #thread_allow != ""

@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,14 +26,23 @@
 
 #ifndef SWIGIMPORTED
 
+// Turn on default exception handling
+DEFAULT_EXCEPTION
+
 // gp_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraList **)
+
+// Add constructor and destructor to _CameraList
+struct _CameraList {};
+DEFAULT_CTOR(_CameraList, gp_list_new)
+DEFAULT_DTOR(_CameraList, gp_list_unref)
 
 // Make CameraList more like a Python list
 LEN_MEMBER_FUNCTION(_CameraList, gp_list_count)
 #if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "sq_item",   functype="ssizeargfunc") _CameraList::__getitem__;
 #endif
+%noexception _CameraList::__getitem__;
 %extend _CameraList {
   PyObject *__getitem__(int idx) {
     int error = 0;
@@ -110,12 +119,9 @@ MEMBER_FUNCTION(_CameraList,
 %ignore gp_list_ref;
 %ignore gp_list_unref;
 
-#endif //ifndef SWIGIMPORTED
+// Turn off default exception handling
+%noexception;
 
-// Add constructor and destructor to _CameraList
-struct _CameraList {};
-DEFAULT_CTOR(_CameraList, gp_list_new)
-DEFAULT_DTOR(_CameraList, gp_list_unref)
-%ignore _CameraList;
+#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-list.h"

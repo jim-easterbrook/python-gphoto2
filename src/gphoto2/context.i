@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -277,6 +277,19 @@ SINGLE_CALLBACK_FUNCTION(GPContextProgressStartFunc,
 }
 %typemap(doc) GPContextProgressStopFunc "$1_name: callable function"
 
+// Add default constructor and destructor to _GPContext
+struct _GPContext {};
+%extend _GPContext {
+  _GPContext() {
+    return gp_context_new();
+  }
+  ~_GPContext() {
+    gp_context_unref($self);
+  }
+};
+%newobject gp_context_new;
+%delobject gp_context_unref;
+
 // Add member methods to _GPContext
 %exception _GPContext::camera_autodetect {
   if (PyErr_WarnEx(PyExc_DeprecationWarning,
@@ -316,19 +329,5 @@ VOID_MEMBER_FUNCTION(_GPContext,
     gp_context_set_status_func, ($self, func, data))
 
 #endif //ifndef SWIGIMPORTED
-
-// Add default constructor and destructor
-struct _GPContext {};
-%extend _GPContext {
-  _GPContext() {
-    return gp_context_new();
-  }
-  ~_GPContext() {
-    gp_context_unref($self);
-  }
-};
-%ignore _GPContext;
-%newobject gp_context_new;
-%delobject gp_context_unref;
 
 %include "gphoto2/gphoto2-context.h"

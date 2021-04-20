@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -23,6 +23,9 @@
 %typemap(doc) enum GPLogLevel "$1_name: $1_type (gphoto2.GP_LOG_ERROR etc.)"
 
 #ifndef SWIGIMPORTED
+
+// Turn on default exception handling
+DEFAULT_EXCEPTION
 
 // SWIG can't wrap functions with var args
 %ignore gp_logv;
@@ -193,6 +196,9 @@ def use_python_logging(mapping={}):
             break
     return gp_log_add_func(level, _gphoto2_logger_cb, (log_func, full_mapping))
 %}
+
+// Turn off default exception handling
+%noexception;
 
 #endif //ifndef SWIGIMPORTED
 

@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -42,12 +42,16 @@ typedef long int time_t;
 %thread gp_file_save;
 %thread gp_file_set_data_and_size;
 
+// Turn on default exception handling
+DEFAULT_EXCEPTION
+
 // gp_file_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFile **)
 
 // make gp_file_open() create a new CameraFile
 NEW_ARGOUT(CameraFile *camera_file, gp_file_new, gp_file_unref)
 // Redefine signature as many other functions also use *file
+%noexception gp_file_open;
 int gp_file_open(CameraFile *camera_file, const char *filename);
 %ignore gp_file_open;
 
@@ -212,6 +216,11 @@ static PyTypeObject FileDataType = {
 }
 %typemap(doc) const char * data, unsigned long int size "$1_name: readable buffer (e.g. bytes)"
 
+// Add default constructor and destructor to _CameraFile
+struct _CameraFile {};
+DEFAULT_CTOR(_CameraFile, gp_file_new)
+DEFAULT_DTOR(_CameraFile, gp_file_unref)
+
 // Add member methods to _CameraFile
 MEMBER_FUNCTION(_CameraFile,
     void, set_name, (const char *name),
@@ -268,12 +277,9 @@ MEMBER_FUNCTION(_CameraFile,
 %ignore gp_file_ref;
 %ignore gp_file_unref;
 
-#endif //ifndef SWIGIMPORTED
+// Turn off default exception handling
+%noexception;
 
-// Add default constructor and destructor to _CameraFile
-struct _CameraFile {};
-DEFAULT_CTOR(_CameraFile, gp_file_new)
-DEFAULT_DTOR(_CameraFile, gp_file_unref)
-%ignore _CameraFile;
+#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-file.h"

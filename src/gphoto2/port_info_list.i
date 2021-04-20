@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -35,6 +35,9 @@
 %typemap(doc) GPPortInfoList * "$1_name: gphoto2.$*1_type";
 
 #ifndef SWIGIMPORTED
+
+// Turn on default exception handling
+DEFAULT_EXCEPTION
 
 // gp_port_info_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(GPPortInfoList **)
@@ -81,6 +84,11 @@ MEMBER_FUNCTION(_GPPortInfo,
     void, get_type, (GPPortType *type),
     gp_port_info_get_type, ($self, type), )
 
+// Add default constructor and destructor to _GPPortInfoList
+struct _GPPortInfoList {};
+DEFAULT_CTOR(_GPPortInfoList, gp_port_info_list_new)
+DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
+
 // Add member methods to _GPPortInfoList
 MEMBER_FUNCTION(_GPPortInfoList,
     void, append, (GPPortInfo info),
@@ -117,12 +125,9 @@ MEMBER_FUNCTION(_GPPortInfoList,
 %ignore gp_port_info_set_library_filename;
 %ignore gp_port_info_list_free;
 
-#endif //ifndef SWIGIMPORTED
+// Turn off default exception handling
+%noexception;
 
-// Add default constructor and destructor to _GPPortInfoList
-struct _GPPortInfoList {};
-DEFAULT_CTOR(_GPPortInfoList, gp_port_info_list_new)
-DEFAULT_DTOR(_GPPortInfoList, gp_port_info_list_free)
-%ignore _GPPortInfoList;
+#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-port-info-list.h"

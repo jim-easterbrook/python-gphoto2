@@ -80,69 +80,6 @@ Beware of changes in the libgphoto2 definitions though.
 %apply int *OUTPUT { int * };
 %apply float *OUTPUT { float * };
 
-// gp_widget_set_value uses float* and int* as input values
-%apply float *INPUT {const float *value}
-%apply int   *INPUT {const int   *value}
-%typemap(argout) const float *value {}
-%typemap(argout) const int   *value {}
-
-// Use typechecks to select gp_widget_set_value according to widget type
-%typecheck(SWIG_TYPECHECK_STRING) (CameraWidget *widget, const char *value),
-                                  (struct _CameraWidget *self, char const *value)  {
-    CameraWidget     *widget;
-    CameraWidgetType type;
-    int              error;
-
-    $1 = 0;
-    error = SWIG_ConvertPtr($input, (void **)&widget, SWIGTYPE_p__CameraWidget, 0);
-    if (SWIG_IsOK(error)) {
-        error = gp_widget_get_type(widget, &type);
-        if (error >= GP_OK) {
-            $1 = ((type == GP_WIDGET_MENU) || (type == GP_WIDGET_TEXT) || (type == GP_WIDGET_RADIO)) ? 1 : 0;
-        }
-    }
-}
-
-%typecheck(SWIG_TYPECHECK_FLOAT) (CameraWidget *widget, const float *value),
-                                 (struct _CameraWidget *self, float const *value) {
-    CameraWidget     *widget;
-    CameraWidgetType type;
-    int              error;
-
-    $1 = 0;
-    error = SWIG_ConvertPtr($input, (void **)&widget, SWIGTYPE_p__CameraWidget, 0);
-    if (SWIG_IsOK(error)) {
-        error = gp_widget_get_type(widget, &type);
-        if (error >= GP_OK) {
-            $1 = (type == GP_WIDGET_RANGE) ? 1 : 0;
-        }
-    }
-}
-
-%typecheck(SWIG_TYPECHECK_INTEGER) (CameraWidget *widget, const int *value),
-                                   (struct _CameraWidget *self, int const *value)  {
-    CameraWidget     *widget;
-    CameraWidgetType type;
-    int              error;
-
-    $1 = 0;
-    error = SWIG_ConvertPtr($input, (void **)&widget, SWIGTYPE_p__CameraWidget, 0);
-    if (SWIG_IsOK(error)) {
-        error = gp_widget_get_type(widget, &type);
-        if (error >= GP_OK) {
-            $1 = ((type == GP_WIDGET_DATE) || (type == GP_WIDGET_TOGGLE)) ? 1 : 0;
-        }
-    }
-}
-
-// Create overloaded gp_widget_set_value
-int gp_widget_set_value(CameraWidget *widget, const char *value);
-int gp_widget_set_value(CameraWidget *widget, const float *value);
-int gp_widget_set_value(CameraWidget *widget, const int *value);
-
-// Ignore original void* version
-%ignore gp_widget_set_value(CameraWidget *widget, const void *value);
-
 // Use typemaps to convert result of gp_widget_get_value
 %{
 typedef union {
@@ -151,12 +88,12 @@ typedef union {
     char* str_val;
 } VoidValue;
 %}
-%typemap(in, numinputs=0) (void *value) (VoidValue temp) {
+%typemap(in, numinputs=0) (void *value_out) (VoidValue temp) {
   temp.str_val = NULL;
   $1 = &temp;
 }
-%typemap(argout) (CameraWidget *widget, void *value),
-                 (struct _CameraWidget *self, void *value) {
+%typemap(argout) (CameraWidget *widget, void *value_out),
+                 (struct _CameraWidget *self, void *value_out) {
   CameraWidgetType type;
   PyObject* py_value = NULL;
   VoidValue* value = (VoidValue*) $2;
@@ -182,6 +119,58 @@ typedef union {
       }
   }
   $result = SWIG_Python_AppendOutput($result, py_value);
+}
+
+// Redefine signature of gp_widget_get_value to select correct typemaps
+int gp_widget_get_value(CameraWidget *widget, void *value_out);
+%ignore gp_widget_get_value;
+
+// Use typemaps to convert input to gp_widget_set_value
+%typemap(in) (const void *value) (VoidValue _global_value,
+                                  PyObject* _global_pyvalue,
+                                  int _global_alloc = 0) {
+  _global_pyvalue = $input;
+}
+%typemap(check) (CameraWidget *widget, const void *value),
+                (struct _CameraWidget *self, const void *value) {
+  // Contrary to SWIG documentation, this typemap does input conversion and typechecking
+  CameraWidgetType type;
+  int error = gp_widget_get_type($1, &type);
+  if (error < GP_OK) {
+    GPHOTO2_ERROR(error);
+    SWIG_fail;
+  }
+  switch (type) {
+    case GP_WIDGET_DATE:
+    case GP_WIDGET_TOGGLE:
+      error = SWIG_AsVal_int(_global_pyvalue, &_global_value.int_val);
+      if (!SWIG_IsOK(error)) {
+        SWIG_exception_fail(SWIG_ArgError(error),
+                            "in method '$symname', argument '$2_name' of type 'int'");
+      }
+      $2 = &_global_value;
+      break;
+    case GP_WIDGET_RANGE:
+      error = SWIG_AsVal_float(_global_pyvalue, &_global_value.flt_val);
+      if (!SWIG_IsOK(error)) {
+        SWIG_exception_fail(SWIG_ArgError(error),
+                            "in method '$symname', argument '$2_name' of type 'float'");
+      }
+      $2 = &_global_value;
+      break;
+    default:
+      error = SWIG_AsCharPtrAndSize(_global_pyvalue, &_global_value.str_val, NULL, &_global_alloc);
+      if (!SWIG_IsOK(error)) {
+        SWIG_exception_fail(SWIG_ArgError(error),
+                            "in method '$symname', argument '$2_name' of type 'str'");
+      }
+      // Note this is not the same pointer as &_global_value as used above
+      $2 = _global_value.str_val;
+      break;
+  }
+}
+%typemap(freearg) (const void *value) {
+  if (_global_alloc == SWIG_NEWOBJ) free(_global_value.str_val);
 }
 
 // Turn on default exception handling
@@ -372,17 +361,11 @@ MEMBER_FUNCTION(_CameraWidget,
     void, get_parent, (CameraWidget **parent),
     gp_widget_get_parent, ($self, parent), )
 MEMBER_FUNCTION(_CameraWidget,
-    void, set_value, (const char *value),
+    void, set_value, (const void *value),
     gp_widget_set_value, ($self, value), )
 MEMBER_FUNCTION(_CameraWidget,
-    void, set_value, (const float *value),
-    gp_widget_set_value, ($self, value), )
-MEMBER_FUNCTION(_CameraWidget,
-    void, set_value, (const int *value),
-    gp_widget_set_value, ($self, value), )
-MEMBER_FUNCTION(_CameraWidget,
-    void, get_value, (void *value),
-    gp_widget_get_value, ($self, value), )
+    void, get_value, (void *value_out),
+    gp_widget_get_value, ($self, value_out), )
 MEMBER_FUNCTION(_CameraWidget,
     void, set_name, (const char *name),
     gp_widget_set_name, ($self, name), )

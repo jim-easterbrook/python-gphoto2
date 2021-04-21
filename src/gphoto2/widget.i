@@ -119,6 +119,7 @@ typedef union {
   }
   $result = SWIG_Python_AppendOutput($result, py_value);
 }
+%typemap(doc) (void *) "$1_name: int/float/str"
 
 // Redefine signature of gp_widget_get_value to select correct typemaps
 int gp_widget_get_value(CameraWidget *widget, void *value_out);

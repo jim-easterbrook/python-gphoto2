@@ -126,48 +126,42 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
 %ignore gp_widget_get_value;
 
 // Use typemaps to convert input to gp_widget_set_value
-%typemap(in) (const void *value) (VoidValue _global_value,
-                                  PyObject* _global_pyvalue,
-                                  int _global_alloc = 0) {
-  _global_pyvalue = $input;
-}
-%typemap(check) (CameraWidget *widget, const void *value),
-                (struct _CameraWidget *self, const void *value) {
-  // Contrary to SWIG documentation, this typemap does input conversion and typechecking
-  CameraWidgetType type;
-  int error = gp_widget_get_type($1, &type);
-  if (error < GP_OK) {
-    GPHOTO2_ERROR(error);
+%typemap(in, noblock=1) const void *value
+    (VoidValue value, int alloc = 0, int res = 0, CameraWidgetType type) {
+  // Camera widget is stored in arg1 as it's definitely the first argument to gp_widget_set_value
+  res = gp_widget_get_type(arg1, &type);
+  if (res < GP_OK) {
+    GPHOTO2_ERROR(res);
     SWIG_fail;
   }
   switch (type) {
     case GP_WIDGET_DATE:
     case GP_WIDGET_TOGGLE:
-      error = SWIG_AsVal_int(_global_pyvalue, &_global_value.int_val);
-      if (!SWIG_IsOK(error)) {
-        %argument_fail(error, int, $symname, 2);
+      res = SWIG_AsVal_int($input, &value.int_val);
+      if (!SWIG_IsOK(res)) {
+        %argument_fail(res, int, $symname, 2);
       }
-      $2 = &_global_value;
+      $1 = &value.int_val;
       break;
     case GP_WIDGET_RANGE:
-      error = SWIG_AsVal_float(_global_pyvalue, &_global_value.flt_val);
-      if (!SWIG_IsOK(error)) {
-        %argument_fail(error, float, $symname, 2);
+      res = SWIG_AsVal_float($input, &value.flt_val);
+      if (!SWIG_IsOK(res)) {
+        %argument_fail(res, float, $symname, 2);
       }
-      $2 = &_global_value;
+      $1 = &value.flt_val;
       break;
     default:
-      error = SWIG_AsCharPtrAndSize(_global_pyvalue, &_global_value.str_val, NULL, &_global_alloc);
-      if (!SWIG_IsOK(error)) {
-        %argument_fail(error, str, $symname, 2);
+      res = SWIG_AsCharPtrAndSize($input, &value.str_val, NULL, &alloc);
+      if (!SWIG_IsOK(res)) {
+        %argument_fail(res, str, $symname, 2);
       }
-      // Note this is not the same pointer as &_global_value as used above
-      $2 = _global_value.str_val;
+      // Note this is a pointer set by SWIG_AsCharPtrAndSize, not the address of value
+      $1 = value.str_val;
       break;
   }
 }
-%typemap(freearg) (const void *value) {
-  if (_global_alloc == SWIG_NEWOBJ) free(_global_value.str_val);
+%typemap(freearg) const void *value {
+  if (alloc$argnum == SWIG_NEWOBJ) free($1);
 }
 
 // Turn on default exception handling

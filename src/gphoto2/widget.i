@@ -145,24 +145,21 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
     case GP_WIDGET_TOGGLE:
       error = SWIG_AsVal_int(_global_pyvalue, &_global_value.int_val);
       if (!SWIG_IsOK(error)) {
-        SWIG_exception_fail(SWIG_ArgError(error),
-                            "in method '$symname', argument '$2_name' of type 'int'");
+        %argument_fail(error, int, $symname, 2);
       }
       $2 = &_global_value;
       break;
     case GP_WIDGET_RANGE:
       error = SWIG_AsVal_float(_global_pyvalue, &_global_value.flt_val);
       if (!SWIG_IsOK(error)) {
-        SWIG_exception_fail(SWIG_ArgError(error),
-                            "in method '$symname', argument '$2_name' of type 'float'");
+        %argument_fail(error, float, $symname, 2);
       }
       $2 = &_global_value;
       break;
     default:
       error = SWIG_AsCharPtrAndSize(_global_pyvalue, &_global_value.str_val, NULL, &_global_alloc);
       if (!SWIG_IsOK(error)) {
-        SWIG_exception_fail(SWIG_ArgError(error),
-                            "in method '$symname', argument '$2_name' of type 'str'");
+        %argument_fail(error, str, $symname, 2);
       }
       // Note this is not the same pointer as &_global_value as used above
       $2 = _global_value.str_val;

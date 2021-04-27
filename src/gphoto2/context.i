@@ -222,7 +222,7 @@ CB_WRAPPER(void, py_progress_stop, (GPContext *context, unsigned int id, void *d
 }
 %typemap(in) cb_func_type {
     if (!PyCallable_Check($input)) {
-        SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
+        %argument_fail(SWIG_TypeError, callable, $symname, $argnum);
     }
     _global_callbacks->func_1 = $input;
     Py_INCREF(_global_callbacks->func_1);
@@ -259,7 +259,7 @@ SINGLE_CALLBACK_FUNCTION(GPContextProgressStartFunc,
 // Use typemaps for other two functions
 %typemap(in) GPContextProgressUpdateFunc {
     if (!PyCallable_Check($input)) {
-        SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
+        %argument_fail(SWIG_TypeError, callable, $symname, $argnum);
     }
     _global_callbacks->func_2 = $input;
     Py_INCREF(_global_callbacks->func_2);
@@ -269,7 +269,7 @@ SINGLE_CALLBACK_FUNCTION(GPContextProgressStartFunc,
 
 %typemap(in) GPContextProgressStopFunc {
     if (!PyCallable_Check($input)) {
-        SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
+        %argument_fail(SWIG_TypeError, callable, $symname, $argnum);
     }
     _global_callbacks->func_3 = $input;
     Py_INCREF(_global_callbacks->func_3);

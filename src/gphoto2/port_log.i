@@ -121,7 +121,7 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
 }
 %typemap(in) GPLogFunc {
     if (!PyCallable_Check($input)) {
-        SWIG_exception_fail(SWIG_TypeError, "in method '" "$symname" "', argument " "$argnum" " is not callable");
+        %argument_fail(SWIG_TypeError, callable, $symname, $argnum);
     }
     _global_callback->func = $input;
     Py_INCREF(_global_callback->func);

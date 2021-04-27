@@ -145,14 +145,14 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
     case GP_WIDGET_TOGGLE:
       res = SWIG_AsVal_int($input, &value.int_val);
       if (!SWIG_IsOK(res)) {
-        %argument_fail(res, int, $symname, 2);
+        %argument_fail(res, int, $symname, $argnum);
       }
       $1 = &value.int_val;
       break;
     case GP_WIDGET_RANGE:
       res = SWIG_AsVal_float($input, &value.flt_val);
       if (!SWIG_IsOK(res)) {
-        %argument_fail(res, float, $symname, 2);
+        %argument_fail(res, float, $symname, $argnum);
       }
       $1 = &value.flt_val;
       break;
@@ -161,7 +161,7 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
     case GP_WIDGET_RADIO:
       res = SWIG_AsCharPtrAndSize($input, &value.str_val, NULL, &alloc);
       if (!SWIG_IsOK(res)) {
-        %argument_fail(res, str, $symname, 2);
+        %argument_fail(res, str, $symname, $argnum);
       }
       // Note this is a pointer set by SWIG_AsCharPtrAndSize, not the address of value
       $1 = value.str_val;

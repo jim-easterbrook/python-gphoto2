@@ -109,13 +109,19 @@ typedef union {
     case GP_WIDGET_RANGE:
       py_value = SWIG_From_float(value->flt_val);
       break;
-    default:
+    case GP_WIDGET_MENU:
+    case GP_WIDGET_TEXT:
+    case GP_WIDGET_RADIO:
       if (value->str_val) {
         py_value = PyString_FromString(value->str_val);
       } else {
         Py_INCREF(Py_None);
         py_value = Py_None;
       }
+      break;
+    default:
+      PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
+      SWIG_fail;
   }
   $result = SWIG_Python_AppendOutput($result, py_value);
 }
@@ -150,7 +156,9 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
       }
       $1 = &value.flt_val;
       break;
-    default:
+    case GP_WIDGET_MENU:
+    case GP_WIDGET_TEXT:
+    case GP_WIDGET_RADIO:
       res = SWIG_AsCharPtrAndSize($input, &value.str_val, NULL, &alloc);
       if (!SWIG_IsOK(res)) {
         %argument_fail(res, str, $symname, 2);
@@ -158,6 +166,9 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
       // Note this is a pointer set by SWIG_AsCharPtrAndSize, not the address of value
       $1 = value.str_val;
       break;
+    default:
+      PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
+      SWIG_fail;
   }
 }
 %typemap(freearg) const void *value {

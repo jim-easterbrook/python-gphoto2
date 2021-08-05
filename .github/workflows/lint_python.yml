@@ -16,7 +16,7 @@ jobs:
       - run: shopt -s globstar && pyupgrade --py36-plus **/*.py || true
       - run: pip install -r requirements.txt || true
       - run: mypy --ignore-missing-imports . || true
-      - run: python setup.py build_swig
+      - run: python developer/build_swig.py
       - run: PYTHON_GPHOTO2_BUILTIN=1 python setup.py build
       - run: rm -rf build
       - run: PYTHON_GPHOTO2_NO_BUILTIN=1 python setup.py build

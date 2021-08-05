@@ -92,25 +92,12 @@ FileData_set(FileData *self, CameraFile *file, void *buf, Py_ssize_t len)
 }
 
 static PyBufferProcs FileData_BufferProcs = {
-#if PY_VERSION_HEX < 0x03000000
-    (readbufferproc) 0,                       /* bf_getreadbuffer */
-    (writebufferproc) 0,                      /* bf_getwritebuffer */
-    (segcountproc) 0,                         /* bf_getsegcount */
-    (charbufferproc) 0,                       /* bf_getcharbuffer */
-#endif
-#if PY_VERSION_HEX >= 0x02060000
     (getbufferproc)FileData_getbuffer,        /* bf_getbuffer */
     (releasebufferproc) 0,                    /* bf_releasebuffer */
-#endif
 };
 
 static PyTypeObject FileDataType = {
-#if PY_VERSION_HEX >= 0x03000000
     PyVarObject_HEAD_INIT(NULL, 0)
-#else
-    PyObject_HEAD_INIT(NULL)
-    0,                                        /* ob_size */
-#endif
     "gphoto2.FileData",                       /*tp_name*/
     sizeof(FileData),                         /*tp_basicsize*/
     0,                                        /*tp_itemsize*/
@@ -118,11 +105,7 @@ static PyTypeObject FileDataType = {
     0,                                        /*tp_print*/
     0,                                        /*tp_getattr*/
     0,                                        /*tp_setattr*/
-#if PY_VERSION_HEX >= 0x03000000
     0,                                        /*tp_compare */
-#else
-    (cmpfunc) 0,                              /*tp_compare */
-#endif
     0,                                        /*tp_repr*/
     0,                                        /*tp_as_number*/
     0,                                        /*tp_as_sequence*/
@@ -133,11 +116,7 @@ static PyTypeObject FileDataType = {
     0,                                        /*tp_getattro*/
     0,                                        /*tp_setattro*/
     &FileData_BufferProcs,                    /*tp_as_buffer*/
-#if PY_VERSION_HEX >= 0x03000000
     Py_TPFLAGS_DEFAULT,                       /*tp_flags*/
-#else
-    Py_TPFLAGS_DEFAULT | Py_TPFLAGS_HAVE_NEWBUFFER, /*tp_flags*/
-#endif
     "gphoto2 CameraFile data buffer",         /* tp_doc */
 };
 %}

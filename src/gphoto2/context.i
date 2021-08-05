@@ -104,11 +104,7 @@ static rtn_type cb_name cb_args {
 %{
     PyObject *py_context = SWIG_NewPointerObj(
         SWIG_as_voidptr(context), SWIGTYPE_p__GPContext, 0);
-#if PY_VERSION_HEX >= 0x03000000
     arglist = Py_BuildValue py3_arglist;
-#else
-    arglist = Py_BuildValue py2_arglist;
-#endif
     if (arglist == NULL) {
         PyErr_Print();
         goto fail;

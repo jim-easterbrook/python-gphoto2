@@ -1,4 +1,4 @@
-python-gphoto2 v\ 2.2.5
+python-gphoto2 v\ 2.3.0
 =======================
 
 python-gphoto2 is a comprehensive Python interface (or binding) to libgphoto2_.
@@ -19,7 +19,7 @@ The gphoto2 source tree includes some `Python bindings`_ which also use ctypes_.
 Dependencies
 ------------
 
-*   Python: http://python.org/ version 2.7 or greater (including Python 3)
+*   Python: http://python.org/ version 3.5 or greater
 *   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.5.0 or greater
 *   build tools: pkg-config, C compiler & linker
 
@@ -39,7 +39,7 @@ Note that this may not install the latest version.
 Otherwise you can install it with pip_, or by downloading an archive, or by getting the source from GitHub_.
 Make sure that you install the dependencies_ first.
 The commands below will install python-gphoto2 for your default Python version.
-To install for both Python 2 and Python 3, run the installation process twice with specific commands, i.e. ``pip2`` and ``pip3`` or ``python2`` and ``python3``.
+If your default version is still Python 2 then use the ``pip3`` and ``python3`` commands to install for Python 3.
 
 Install with pip_
 ^^^^^^^^^^^^^^^^^
@@ -386,11 +386,11 @@ gp_file_get_data_and_size / CameraFile.get_data_and_size
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Since python-gphoto2 version 1.2.0 these functions return a ``FileData`` object that supports the `buffer protocol`_.
-The data can be made accessible to Python (2.7 and 3.x) by using a memoryview_ object.
+The data can be made accessible to Python by using a memoryview_ object.
 This allows the data to be used without copying.
 See the ``copy-data.py`` example for typical usage.
 
-In earlier versions of python-gphoto2 these functions returned a ``str`` (Python 2) or ``bytes`` (Python 3) object containing a copy of the data in the ``CameraFile`` object.
+In earlier versions of python-gphoto2 these functions returned a ``bytes`` object containing a copy of the data in the ``CameraFile`` object.
 
 gp_file_set_data_and_size / CameraFile.set_data_and_size
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

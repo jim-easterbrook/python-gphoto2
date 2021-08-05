@@ -16,8 +16,6 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import defaultdict
-from distutils.cmd import Command
-from distutils.command.upload import upload as _upload
 from distutils.core import setup, Extension
 from distutils.log import error
 import os
@@ -95,32 +93,7 @@ if os.path.isdir(mod_src_dir):
             extra_compile_args = extra_compile_args,
             ))
 
-cmdclass = {}
 command_options = {}
-
-# modify upload class to add appropriate git tag
-# requires GitPython - 'sudo pip install gitpython --pre'
-try:
-    import git
-    class upload(_upload):
-        def run(self):
-            message = 'v' + version + '\n\n'
-            with open('CHANGELOG.txt') as cl:
-                while not cl.readline().startswith('Changes'):
-                    pass
-                while True:
-                    line = cl.readline().strip()
-                    if not line:
-                        break
-                    message += line + '\n'
-            repo = git.Repo()
-            tag = repo.create_tag('v' + version, message=message)
-            remote = repo.remotes.origin
-            remote.push(tags=True)
-            return _upload.run(self)
-    cmdclass['upload'] = upload
-except ImportError:
-    pass
 
 # set options for building distributions
 command_options['sdist'] = {
@@ -158,7 +131,6 @@ setup(name = 'gphoto2',
           ],
       platforms = ['POSIX', 'MacOS'],
       license = 'GNU GPL',
-      cmdclass = cmdclass,
       command_options = command_options,
       ext_package = 'gphoto2',
       ext_modules = ext_modules,

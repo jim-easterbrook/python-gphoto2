@@ -45,3 +45,8 @@ Documentation
 -------------
 
 The libgphoto2 source includes documentation in "doxygen" format. If you install doxygen and doxy2swig (https://github.com/m7thon/doxy2swig) this documentation can be included in the python interfaces. Clone the doxy2swig GitHub repos to your working directory, then run 'python3 developer/build_doc.py' before running 'python3 developer/build_swig.py'.
+
+Releases
+--------
+
+After uploading a new release to PyPI a GitHub tag and corresponding message can be created by running 'python3 developer/tag_release.py'. Only then should the python-gphoto2 version number be incremented.

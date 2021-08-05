@@ -21,7 +21,6 @@ from distutils.command.upload import upload as _upload
 from distutils.core import setup, Extension
 from distutils.log import error
 import os
-import re
 import subprocess
 import sys
 
@@ -98,90 +97,6 @@ if os.path.isdir(mod_src_dir):
 
 cmdclass = {}
 command_options = {}
-
-def get_gp_versions():
-    # get gphoto2 versions to be swigged
-    gp_versions = []
-    for name in os.listdir('.'):
-        match = re.match('libgphoto2-(.*)', name)
-        if match:
-            gp_versions.append(match.group(1))
-    gp_versions.sort()
-    if not gp_versions:
-        gp_versions = ['.'.join(map(str, gphoto2_version[:2]))]
-    return gp_versions
-
-# add command to run doxygen and doxy2swig
-member_methods = (
-    ('gp_abilities_list_', '_CameraAbilitiesList', 'CameraAbilitiesList'),
-    ('gp_camera_',         '_Camera',              'Camera'),
-    ('gp_context_',        '_GPContext',           'Context'),
-    ('gp_file_',           '_CameraFile',          'CameraFile'),
-    ('gp_list_',           '_CameraList',          'CameraList'),
-    ('gp_port_info_list_', '_GPPortInfoList',      'PortInfoList'),
-    ('gp_port_info_',      '_GPPortInfo',          'PortInfo'),
-    ('gp_widget_',         '_CameraWidget',        'CameraWidget'),
-    )
-
-def add_member_doc(symbol, value):
-    for key, c_type, py_type in member_methods:
-        if symbol.startswith(key):
-            method = symbol.replace(key, '')
-            if method == 'new':
-                return ('%feature("docstring") {} "{}\n\n' +
-                        'See also gphoto2.{}"\n\n').format(
-                            symbol, value, py_type)
-            return ('%feature("docstring") {} "{}\n\n' +
-                    'See also gphoto2.{}.{}"\n\n' +
-                    '%feature("docstring") {}::{} "{}\n\n' +
-                    'See also gphoto2.{}"\n\n').format(
-                        symbol, value, py_type, method,
-                        c_type, method, value, symbol)
-    return '%feature("docstring") {} "{}"\n\n'.format(symbol, value)
-
-class build_doc(Command):
-    description = 'run doxygen to generate documentation'
-    user_options = []
-
-    def initialize_options(self):
-        pass
-
-    def finalize_options(self):
-        pass
-
-    def run(self):
-        gp_versions = get_gp_versions()
-        self.announce('making docs for gphoto2 versions %s' % str(gp_versions), 2)
-        sys.path.append('doxy2swig')
-        from doxy2swig import Doxy2SWIG
-        for gp_version in gp_versions:
-            src_dir = 'libgphoto2-' + gp_version
-            os.chdir(src_dir)
-            self.spawn(['doxygen', '../developer/Doxyfile'])
-            os.chdir('..')
-            index_file = os.path.join(src_dir, 'doc', 'xml', 'index.xml')
-            self.announce('Doxy2SWIG ' + index_file, 2)
-            p = Doxy2SWIG(index_file,
-                          with_function_signature = False,
-                          with_type_info = False,
-                          with_constructor_list = False,
-                          with_attribute_list = False,
-                          with_overloaded_functions = False,
-                          textwidth = 72,
-                          quiet = True)
-            p.generate()
-            text = ''.join(p.pieces)
-            with open(os.path.join('src', 'gphoto2', 'common',
-                                   'doc-' + gp_version + '.i'), 'w') as of:
-                for match in re.finditer('%feature\("docstring"\) (\w+) \"(.+?)\";',
-                                         text, re.DOTALL):
-                    symbol = match.group(1)
-                    value = match.group(2).strip()
-                    if not value:
-                        continue
-                    of.write(add_member_doc(symbol, value))
-
-cmdclass['build_doc'] = build_doc
 
 # modify upload class to add appropriate git tag
 # requires GitPython - 'sudo pip install gitpython --pre'

@@ -44,4 +44,4 @@ Differences found so far:
 Documentation
 -------------
 
-The libgphoto2 source includes documentation in "doxygen" format. If you install doxygen and doxy2swig (https://github.com/m7thon/doxy2swig) this documentation can be included in the python interfaces. Clone the doxy2swig GitHub repos to your working directory, then run 'python3 setup.py build_doc' before running 'python3 setup.py build_swig'.
+The libgphoto2 source includes documentation in "doxygen" format. If you install doxygen and doxy2swig (https://github.com/m7thon/doxy2swig) this documentation can be included in the python interfaces. Clone the doxy2swig GitHub repos to your working directory, then run 'python3 developer/build_doc.py' before running 'python3 developer/build_swig.py'.

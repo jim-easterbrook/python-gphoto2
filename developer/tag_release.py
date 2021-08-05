@@ -15,8 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from datetime import date
-import re
+import os
 import sys
 
 # requires GitPython - 'sudo pip install gitpython'

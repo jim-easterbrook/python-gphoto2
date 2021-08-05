@@ -1,5 +1,5 @@
-python-gphoto2 v\ |Version|
-===========================
+python-gphoto2 v\ 2.2.5
+=======================
 
 python-gphoto2 is a comprehensive Python interface (or binding) to libgphoto2_.
 It is built using SWIG_ to automatically generate the interface code.
@@ -458,9 +458,6 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/.
-
-.. |Version| replace::
-   .. include:: VERSION.txt
 
 .. _API documentation: http://www.gphoto.org/doc/api/
 .. _buffer protocol:   https://docs.python.org/2/c-api/buffer.html

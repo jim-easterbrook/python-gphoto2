@@ -5,7 +5,7 @@ The python interfaces can be built with any version of libgphoto2, but functions
 
 The solution is to include definitions of new functions in the interface to replace the proper versions when building for an older version of libgphoto2. See the camera.i interface file for an example.
 
-When running 'python3 setup.py build_swig' interfaces will be built for each version of libgphoto2 found in your python-gphoto2 working directory. When a new version of libgphoto2 is issued you should download it from https://sourceforge.net/projects/gphoto/files/libgphoto/ and run build_swig. The Python3 script developer/compare_versions.py can be used to test if the swig generated files for two libgphoto2 versions differ.
+When running 'python developer/build_swig.py' interfaces will be built for each version of libgphoto2 found in your python-gphoto2 working directory. When a new version of libgphoto2 is issued you should download it from https://sourceforge.net/projects/gphoto/files/libgphoto/ and run build_swig.py. The Python3 script developer/compare_versions.py can be used to test if the swig generated files for two libgphoto2 versions differ.
 
 Once the interface source files have been modified to allow for anything added in the new version then it can be renamed (e.g. 2.5.23 -> 2.5) to become the new "master" version.
 

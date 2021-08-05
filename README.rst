@@ -76,9 +76,10 @@ To install the current development version, use git_ to "clone" the GitHub_ repo
     git clone https://github.com/jim-easterbrook/python-gphoto2.git
     cd python-gphoto2
 
-As before, Python's distutils_ are used to build and install python-gphoto2, but now you have to run SWIG_ first to generate the files to be compiled::
+As before, Python's distutils_ are used to build and install python-gphoto2, but now you have to run SWIG_ first to generate the files to be compiled.
+The ``developer`` directory includes a script to run SWIG::
 
-    python setup.py build_swig
+    python developer/build_swig.py
     python setup.py build
     sudo python setup.py install
 
@@ -426,17 +427,17 @@ These are then compiled to build the Python interface to libgphoto2_.
 The files downloaded from PyPI_ include the SWIG_ generated files, but you may wish to regenerate them by running SWIG_ again (e.g. to test a new version of SWIG_ or of libgphoto2_).
 You will also need to run SWIG_ if you have downloaded the python-gphoto2 sources from GitHub_ instead of using PyPI_.
 
-The file ``setup.py`` defines an extra command to run SWIG_.
+The ``developer`` directory includes a script to run SWIG_.
 It has no user options::
 
-    python setup.py build_swig
+    python developer/build_swig.py
 
 By default this builds the interface for the version of libgphoto2_ installed on your computer.
-The interface files are created in directories with names like ``src/swig-bi-py3-gp2.5.0``.
-This naming scheme allows for different versions of Python and libgphoto2_, and use (or not) of the `SWIG -builtin`_ flag.
+The interface files are created in directories with names like ``src/swig-bi-gp2.5``.
+This naming scheme allows for different versions of libgphoto2_, and use (or not) of the `SWIG -builtin`_ flag.
 The appropriate version is chosen when the interface is built.
 
-To build interfaces for multiple versions of libgphoto2_ (e.g. v2.5.10 as well as v2.5.0) you need to put those versions' source files in your working directory and then run ``setup.py build_swig`` again.
+To build interfaces for multiple versions of libgphoto2_ (e.g. v2.5.10 as well as v2.5.0) you need to put those versions' source files in your working directory and then run ``python developer/build_swig.py`` again.
 More information about this is in the file ``developer/README.txt``.
 
 Licence

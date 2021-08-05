@@ -26,7 +26,8 @@ import subprocess
 import sys
 
 # python-gphoto2 version
-version = '2.2.5'
+with open('VERSION.txt') as txt:
+    version = txt.read().strip()
 
 # get gphoto2 library config
 cmd = ['pkg-config', '--modversion', 'libgphoto2']
@@ -357,6 +358,6 @@ setup(name = 'gphoto2',
       data_files = [
           ('share/python-gphoto2/examples', examples),
           ('share/python-gphoto2', [
-              'CHANGELOG.txt', 'LICENSE.txt', 'README.rst']),
+              'CHANGELOG.txt', 'LICENSE.txt', 'README.rst', 'VERSION.txt']),
           ],
       )

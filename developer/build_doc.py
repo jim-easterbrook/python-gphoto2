@@ -62,8 +62,6 @@ def main(argv=None):
         if match:
             gp_versions.append(match.group(1))
     gp_versions.sort()
-    if not gp_versions:
-        gp_versions = ['.'.join(map(str, gphoto2_version[:2]))]
     print('making docs for gphoto2 versions', str(gp_versions))
     for gp_version in gp_versions:
         src_dir = os.path.join(root, 'libgphoto2-' + gp_version)

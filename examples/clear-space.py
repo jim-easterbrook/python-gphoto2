@@ -104,7 +104,7 @@ def main(argv=None):
         print('Camera has %.1f%% free space' % (
             100.0 * float(si.freekbytes) / float(si.capacitykbytes)))
         free_space = si.freekbytes
-        if free_space >= target:
+        if free_space >= target or len(files) == 0:
             break
     camera.exit()
     return 0

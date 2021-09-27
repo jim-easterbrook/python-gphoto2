@@ -6,3 +6,5 @@ MANIFEST
 src/gphoto2/common/doc-*
 src/info.txt
 src/swig-*
+gphoto2.egg-info
+*.whl

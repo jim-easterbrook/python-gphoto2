@@ -16,8 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from collections import defaultdict
-from distutils.core import setup, Extension
-from distutils.log import error
+from setuptools import setup, Extension
 import os
 import subprocess
 import sys
@@ -34,8 +33,7 @@ try:
         cmd, stderr=FNULL, universal_newlines=True).split('.')[:3]
     gphoto2_version = tuple(map(int, gphoto2_version))
 except Exception:
-    error('ERROR: command "%s" failed', ' '.join(cmd))
-    raise
+    raise RuntimeError('ERROR: command "%s" failed' % ' '.join(cmd))
 gphoto2_flags = defaultdict(list)
 for flag in subprocess.check_output(
         ['pkg-config', '--cflags', '--libs', 'libgphoto2'],
@@ -134,11 +132,9 @@ setup(name = 'gphoto2',
       command_options = command_options,
       ext_package = 'gphoto2',
       ext_modules = ext_modules,
-      packages = ['gphoto2'],
-      package_dir = {'gphoto2' : mod_src_dir},
-      data_files = [
-          ('share/python-gphoto2/examples', examples),
-          ('share/python-gphoto2', [
-              'CHANGELOG.txt', 'LICENSE.txt', 'README.rst']),
-          ],
+      packages = ['gphoto2', 'gphoto2.examples'],
+      package_dir = {'gphoto2': mod_src_dir,
+                     'gphoto2.examples': 'examples'},
+      package_data = {'gphoto2.examples': ['*']},
+      zip_safe = False,
       )

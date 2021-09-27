@@ -64,59 +64,39 @@ def main(argv=None):
     if not gp_versions:
         gp_versions = ['.'.join(map(str, gphoto2_version[:2]))]
     print('swigging gphoto2 versions', str(gp_versions))
-    # do -builtin and not -builtin
-    swig_bis = [False]
-    cmd = ['swig', '-version']
-    try:
-        swig_version = str(
-            subprocess.check_output(cmd, universal_newlines=True))
-    except Exception:
-        print('ERROR: command "{}" failed'.format(' '.join(cmd)))
-        raise
-    for line in swig_version.split('\n'):
-        if 'Version' in line:
-            swig_version = tuple(map(int, line.split()[-1].split('.')))
-            if swig_version != (2, 0, 11):
-                swig_bis.append(True)
-            break
-    for use_builtin in swig_bis:
-        # make options list
-        swig_opts = ['-python', '-py3', '-nodefaultctor', '-O',
-                     '-Wextra', '-Werror']
-        if use_builtin:
-            swig_opts += ['-builtin', '-nofastunpack']
-        # do each gphoto2 version
-        for gp_version in gp_versions:
-            doc_file = os.path.join(
-                root, 'src', 'gphoto2', 'common', 'doc-' + gp_version + '.i')
-            output_dir = os.path.join(root, 'src', 'swig')
-            if use_builtin:
-                output_dir += '-bi'
-            output_dir += '-gp' + gp_version
-            os.makedirs(output_dir, exist_ok=True)
-            version_opts = ['-outdir', output_dir]
-            if os.path.isfile(doc_file):
-                version_opts.append(
-                    '-DDOC_FILE=' + os.path.basename(doc_file))
-            inc_dir = os.path.join(root, 'libgphoto2-' + gp_version)
-            if os.path.isdir(inc_dir):
-                version_opts.append('-I' + inc_dir)
-                version_opts.append(
-                    '-I' + os.path.join(inc_dir, 'libgphoto2_port'))
-            else:
-                version_opts += gphoto2_include
-            # do each swig module
-            for ext_name in ext_names:
-                cmd = ['swig'] + swig_opts + version_opts + ['-o']
-                cmd += [os.path.join(root, output_dir, ext_name + '_wrap.c')]
-                cmd += [os.path.join(root, 'src', 'gphoto2', ext_name + '.i')]
-                print(' '.join(cmd))
-                subprocess.check_output(cmd)
-            # create init module
-            init_file = os.path.join(root, output_dir, '__init__.py')
-            with open(init_file, 'w') as im:
-                im.write('__version__ = "{}"\n\n'.format(version))
-                im.write('''
+    # make options list
+    swig_opts = ['-python', '-py3', '-nodefaultctor', '-O',
+                 '-Wextra', '-Werror', '-builtin', '-nofastunpack']
+    # do each gphoto2 version
+    for gp_version in gp_versions:
+        doc_file = os.path.join(
+            root, 'src', 'gphoto2', 'common', 'doc-' + gp_version + '.i')
+        output_dir = os.path.join(root, 'src', 'swig')
+        output_dir += '-gp' + gp_version
+        os.makedirs(output_dir, exist_ok=True)
+        version_opts = ['-outdir', output_dir]
+        if os.path.isfile(doc_file):
+            version_opts.append(
+                '-DDOC_FILE=' + os.path.basename(doc_file))
+        inc_dir = os.path.join(root, 'libgphoto2-' + gp_version)
+        if os.path.isdir(inc_dir):
+            version_opts.append('-I' + inc_dir)
+            version_opts.append(
+                '-I' + os.path.join(inc_dir, 'libgphoto2_port'))
+        else:
+            version_opts += gphoto2_include
+        # do each swig module
+        for ext_name in ext_names:
+            cmd = ['swig'] + swig_opts + version_opts + ['-o']
+            cmd += [os.path.join(root, output_dir, ext_name + '_wrap.c')]
+            cmd += [os.path.join(root, 'src', 'gphoto2', ext_name + '.i')]
+            print(' '.join(cmd))
+            subprocess.check_output(cmd)
+        # create init module
+        init_file = os.path.join(root, output_dir, '__init__.py')
+        with open(init_file, 'w') as im:
+            im.write('__version__ = "{}"\n\n'.format(version))
+            im.write('''
 class GPhoto2Error(Exception):
     """Exception raised by gphoto2 library errors
 
@@ -131,15 +111,11 @@ class GPhoto2Error(Exception):
         self.string = string
 
 ''')
-                for name in ext_names:
-                    im.write('from gphoto2.{} import *\n'.format(name))
-                im.write('''
+            for name in ext_names:
+                im.write('from gphoto2.{} import *\n'.format(name))
+            im.write('''
 __all__ = dir()
 ''')
-    # store SWIG version
-    info_file = os.path.join(root, 'src', 'info.txt')
-    with open(info_file, 'w') as info:
-        info.write('swig_version = {}\n'.format(repr(swig_version)))
     return 0
 
 

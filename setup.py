@@ -48,22 +48,7 @@ for n in range(len(gphoto2_include)):
 
 # create extension modules list
 ext_modules = []
-info_file = os.path.join('src', 'info.txt')
-if os.path.exists(info_file):
-    with open(info_file) as src:
-        code = compile(src.read(), info_file, 'exec')
-        exec(code, globals(), locals())
-else:
-    swig_version = (0, 0, 0)
-use_builtin = (swig_version != (2, 0, 11) and
-               (swig_version >= (3, 0, 8) or sys.version_info < (3, 5)))
-if 'PYTHON_GPHOTO2_BUILTIN' in os.environ:
-    use_builtin = True
-if 'PYTHON_GPHOTO2_NO_BUILTIN' in os.environ:
-    use_builtin = False
 mod_src_dir = 'swig'
-if use_builtin:
-    mod_src_dir += '-bi'
 mod_src_dir += '-gp' + '.'.join(map(str, gphoto2_version[:2]))
 mod_src_dir = os.path.join('src', mod_src_dir)
 

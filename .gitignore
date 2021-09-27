@@ -2,7 +2,6 @@ build
 dist
 doxy2swig
 libgphoto2-*
-MANIFEST
 src/gphoto2/common/doc-*
 src/info.txt
 src/swig-*

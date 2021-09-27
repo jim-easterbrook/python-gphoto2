@@ -46,10 +46,23 @@ for n in range(len(gphoto2_include)):
     if gphoto2_include[n].endswith('/gphoto2'):
         gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
 
+# get list of available swigged versions
+swigged_versions = []
+for name in os.listdir('src'):
+    if not name.startswith('swig-gp'):
+        continue
+    swigged_version = name.replace('swig-gp','').split('.')
+    swigged_versions.append(tuple(map(int, swigged_version)))
+swigged_versions.sort()
+
+# choose best match from swigged versions
+while len(swigged_versions) > 1 and swigged_versions[0] < gphoto2_version:
+    swigged_versions = swigged_versions[1:]
+swigged_version = swigged_versions[0]
+
 # create extension modules list
 ext_modules = []
-mod_src_dir = 'swig'
-mod_src_dir += '-gp' + '.'.join(map(str, gphoto2_version[:2]))
+mod_src_dir = 'swig-gp' + '.'.join(map(str, swigged_version))
 mod_src_dir = os.path.join('src', mod_src_dir)
 
 extra_compile_args = [
@@ -82,10 +95,6 @@ command_options = {}
 command_options['sdist'] = {
     'formats' : ('setup.py', 'gztar'),
     }
-
-# list example scripts
-examples = [os.path.join('examples', x)
-            for x in os.listdir('examples') if os.path.splitext(x)[1] == '.py']
 
 with open('README.rst') as ldf:
     long_description = ldf.read()

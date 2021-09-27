@@ -26,8 +26,8 @@ def main():
     if len(sys.argv) != 3:
         print('Two arguments required')
         return 1
-    root_1 = os.path.join('src', 'swig-bi-py3-gp' + sys.argv[1])
-    root_2 = os.path.join('src', 'swig-bi-py3-gp' + sys.argv[2])
+    root_1 = os.path.join('src', 'swig-gp' + sys.argv[1])
+    root_2 = os.path.join('src', 'swig-gp' + sys.argv[2])
     print('Comparing {} and {}'.format(root_1, root_2))
     for root, dirs, files in os.walk(root_1):
         for name in files:

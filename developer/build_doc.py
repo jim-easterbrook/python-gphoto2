@@ -20,10 +20,7 @@ import re
 import subprocess
 import sys
 
-# get root dir
-root = os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0])))
-
-sys.path.append(os.path.join(root, 'doxy2swig'))
+sys.path.append('doxy2swig')
 from doxy2swig import Doxy2SWIG
 
 
@@ -55,40 +52,37 @@ def add_member_doc(symbol, value):
     return '%feature("docstring") {} "{}"\n\n'.format(symbol, value)
 
 def main(argv=None):
-    # get gphoto2 versions to be swigged
-    gp_versions = []
-    for name in os.listdir(root):
-        match = re.match('libgphoto2-(.*)', name)
-        if match:
-            gp_versions.append(match.group(1))
-    gp_versions.sort()
-    print('making docs for gphoto2 versions', str(gp_versions))
-    for gp_version in gp_versions:
-        src_dir = os.path.join(root, 'libgphoto2-' + gp_version)
-        os.chdir(src_dir)
-        subprocess.check_output(['doxygen', '../developer/Doxyfile'])
-        os.chdir(root)
-        index_file = os.path.join(src_dir, 'doc', 'xml', 'index.xml')
-        print('Doxy2SWIG ' + index_file, 2)
-        p = Doxy2SWIG(index_file,
-                      with_function_signature = False,
-                      with_type_info = False,
-                      with_constructor_list = False,
-                      with_attribute_list = False,
-                      with_overloaded_functions = False,
-                      textwidth = 72,
-                      quiet = True)
-        p.generate()
-        text = ''.join(p.pieces)
-        with open(os.path.join(root, 'src', 'gphoto2', 'common',
-                               'doc-' + gp_version + '.i'), 'w') as of:
-            for match in re.finditer('%feature\("docstring"\) (\w+) \"(.+?)\";',
-                                     text, re.DOTALL):
-                symbol = match.group(1)
-                value = match.group(2).strip()
-                if not value:
-                    continue
-                of.write(add_member_doc(symbol, value))
+    # get gphoto2 version to be processed
+    if len(sys.argv) != 2:
+        print('Usage: %s version' % sys.argv[0])
+        return 1
+    gp_version = sys.argv[1]
+    src_dir = os.path.join('libgphoto2-' + gp_version)
+    os.chdir(src_dir)
+    print('doxygen', src_dir)
+    subprocess.check_output(['doxygen', '../developer/Doxyfile'])
+    os.chdir('..')
+    index_file = os.path.join(src_dir, 'doc', 'xml', 'index.xml')
+    print('Doxy2SWIG ' + index_file)
+    p = Doxy2SWIG(index_file,
+                  with_function_signature = False,
+                  with_type_info = False,
+                  with_constructor_list = False,
+                  with_attribute_list = False,
+                  with_overloaded_functions = False,
+                  textwidth = 72,
+                  quiet = True)
+    p.generate()
+    text = ''.join(p.pieces)
+    with open(os.path.join('src', 'gphoto2', 'common',
+                           'doc-' + gp_version + '.i'), 'w') as of:
+        for match in re.finditer('%feature\("docstring"\) (\w+) \"(.+?)\";',
+                                 text, re.DOTALL):
+            symbol = match.group(1)
+            value = match.group(2).strip()
+            if not value:
+                continue
+            of.write(add_member_doc(symbol, value))
     return 0
 
 if __name__ == "__main__":

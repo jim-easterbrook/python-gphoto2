@@ -5,9 +5,11 @@ The python interfaces can be built with any version of libgphoto2, but functions
 
 The solution is to include definitions of new functions in the interface to replace the proper versions when building for an older version of libgphoto2. See the camera.i interface file for an example.
 
-When running 'python developer/build_swig.py' interfaces will be built for each version of libgphoto2 found in your python-gphoto2 working directory. When a new version of libgphoto2 is issued you should download it from https://sourceforge.net/projects/gphoto/files/libgphoto/ and run build_swig.py. The Python3 script developer/compare_versions.py can be used to test if the swig generated files for two libgphoto2 versions differ.
+The 'python developer/build_swig.py' requires one parameter: the version to be swigged. This can be 'system' or a number triplet, e.g. '2.5.27'. When 'system' is specified, the installed libgphoto2 is used. When a version number is given the source files for that version must be in your python-gphoto2 working directory, e.g. 'libgphoto2-2.5.27'.
 
-Once the interface source files have been modified to allow for anything added in the new version then it can be renamed (e.g. 2.5.23 -> 2.5) to become the new "master" version.
+When a new version of libgphoto2 is issued you should download it from https://sourceforge.net/projects/gphoto/files/libgphoto/ and run build_swig.py. The Python3 script developer/compare_versions.py can be used to test if the swig generated files for two libgphoto2 versions differ.
+
+If the only differences are the addition of some constants, then no changes to the SWIG sources are required. Other differences may require more work to accommodate. Once this is done the older version can usually be discarded.
 
 Differences found so far:
 
@@ -44,7 +46,7 @@ Differences found so far:
 Documentation
 -------------
 
-The libgphoto2 source includes documentation in "doxygen" format. If you install doxygen and doxy2swig (https://github.com/m7thon/doxy2swig) this documentation can be included in the python interfaces. Clone the doxy2swig GitHub repos to your working directory, then run 'python3 developer/build_doc.py' before running 'python3 developer/build_swig.py'.
+The libgphoto2 source includes documentation in "doxygen" format. If you install doxygen and doxy2swig (https://github.com/m7thon/doxy2swig) this documentation can be included in the python interfaces. Clone the doxy2swig GitHub repos to your working directory, then run 'python3 developer/build_doc.py version' before running 'python3 developer/build_swig.py version'.
 
 Releases
 --------

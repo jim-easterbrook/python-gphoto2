@@ -23,10 +23,8 @@ import sys
 
 
 def main(argv=None):
-    # get root dir
-    root = os.path.dirname(os.path.dirname(os.path.abspath(sys.argv[0])))
     # get python-gphoto2 version
-    with open(os.path.join(root, 'README.rst')) as rst:
+    with open('README.rst') as rst:
         version = rst.readline().split()[-1]
     # get gphoto2 library config
     cmd = ['pkg-config', '--modversion', 'libgphoto2']
@@ -50,13 +48,13 @@ def main(argv=None):
         if gphoto2_include[n].endswith('/gphoto2'):
             gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
     # get list of modules (Python) and extensions (SWIG)
-    file_names = os.listdir(os.path.join(root, 'src', 'gphoto2'))
+    file_names = os.listdir(os.path.join('src', 'gphoto2'))
     file_names.sort()
     file_names = [os.path.splitext(x) for x in file_names]
     ext_names = [x[0] for x in file_names if x[1] == '.i']
     # get gphoto2 versions to be swigged
     gp_versions = []
-    for name in os.listdir(root):
+    for name in os.listdir('.'):
         match = re.match('libgphoto2-(.*)', name)
         if match:
             gp_versions.append(match.group(1))
@@ -70,15 +68,15 @@ def main(argv=None):
     # do each gphoto2 version
     for gp_version in gp_versions:
         doc_file = os.path.join(
-            root, 'src', 'gphoto2', 'common', 'doc-' + gp_version + '.i')
-        output_dir = os.path.join(root, 'src', 'swig')
+            'src', 'gphoto2', 'common', 'doc-' + gp_version + '.i')
+        output_dir = os.path.join('src', 'swig')
         output_dir += '-gp' + gp_version
         os.makedirs(output_dir, exist_ok=True)
         version_opts = ['-outdir', output_dir]
         if os.path.isfile(doc_file):
             version_opts.append(
                 '-DDOC_FILE=' + os.path.basename(doc_file))
-        inc_dir = os.path.join(root, 'libgphoto2-' + gp_version)
+        inc_dir = os.path.join('libgphoto2-' + gp_version)
         if os.path.isdir(inc_dir):
             version_opts.append('-I' + inc_dir)
             version_opts.append(
@@ -88,12 +86,12 @@ def main(argv=None):
         # do each swig module
         for ext_name in ext_names:
             cmd = ['swig'] + swig_opts + version_opts + ['-o']
-            cmd += [os.path.join(root, output_dir, ext_name + '_wrap.c')]
-            cmd += [os.path.join(root, 'src', 'gphoto2', ext_name + '.i')]
+            cmd += [os.path.join(output_dir, ext_name + '_wrap.c')]
+            cmd += [os.path.join('src', 'gphoto2', ext_name + '.i')]
             print(' '.join(cmd))
             subprocess.check_output(cmd)
         # create init module
-        init_file = os.path.join(root, output_dir, '__init__.py')
+        init_file = os.path.join(output_dir, '__init__.py')
         with open(init_file, 'w') as im:
             im.write('__version__ = "{}"\n\n'.format(version))
             im.write('''

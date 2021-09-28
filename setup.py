@@ -25,26 +25,72 @@ import sys
 with open('README.rst') as rst:
     version = rst.readline().split()[-1]
 
-# get gphoto2 library config
-cmd = ['pkg-config', '--modversion', 'libgphoto2']
-FNULL = open(os.devnull, 'w')
-try:
-    gphoto2_version = subprocess.check_output(
-        cmd, stderr=FNULL, universal_newlines=True).split('.')[:3]
-    gphoto2_version = tuple(map(int, gphoto2_version))
-except Exception:
-    raise RuntimeError('ERROR: command "%s" failed' % ' '.join(cmd))
-gphoto2_flags = defaultdict(list)
-for flag in subprocess.check_output(
-        ['pkg-config', '--cflags', '--libs', 'libgphoto2'],
-        universal_newlines=True).split():
-    gphoto2_flags[flag[:2]].append(flag)
-gphoto2_include  = gphoto2_flags['-I']
-gphoto2_libs     = gphoto2_flags['-l']
-gphoto2_lib_dirs = gphoto2_flags['-L']
-for n in range(len(gphoto2_include)):
-    if gphoto2_include[n].endswith('/gphoto2'):
-        gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
+packages = ['gphoto2', 'gphoto2.examples']
+package_dir = {'gphoto2.examples': 'examples'}
+package_data = {'gphoto2.examples': ['*']}
+
+if 'GPHOTO2_VERSION' in os.environ:
+    # using a local build of libgphoto2
+    gphoto2_version_str = os.environ['GPHOTO2_VERSION']
+    print('Using local libgphoto2 v{}'.format(gphoto2_version_str))
+    gphoto2_dir = os.path.join(
+        'libgphoto2-' + gphoto2_version_str, 'local_install')
+    inc_dir, lib_dir = None, None
+    for name in os.listdir(gphoto2_dir):
+        if name == 'include':
+            inc_dir = os.path.join(gphoto2_dir, name)
+        elif name.startswith('lib'):
+            lib_dir = os.path.join(gphoto2_dir, name)
+    if not inc_dir:
+        raise RuntimeError('Include directory not found')
+    if not lib_dir:
+        raise RuntimeError('Library directory not found')
+    packages.append('gphoto2.libs')
+    package_dir['gphoto2.libs'] = lib_dir
+    package_data['gphoto2.libs'] = []
+    # choose the libx.so.n versions of all the .so files and links
+    for name in os.listdir(lib_dir):
+        if '.so.' in name and len(name.split('.')) == 3:
+            package_data['gphoto2.libs'].append(name)
+    # get cam libs and io libs
+    packages.append('gphoto2.camlibs')
+    package_dir['gphoto2.camlibs'] = os.path.join(
+        lib_dir, 'libgphoto2', gphoto2_version_str)
+    package_data['gphoto2.camlibs'] = ['*.so']
+    iolibs = os.listdir(os.path.join(lib_dir, 'libgphoto2_port'))
+    iolibs.sort()
+    packages.append('gphoto2.iolibs')
+    package_dir['gphoto2.iolibs'] = os.path.join(
+        lib_dir, 'libgphoto2_port', iolibs[-1])
+    package_data['gphoto2.iolibs'] = ['*.so']
+    # module compile options
+    libraries = ['gphoto2', 'gphoto2_port', 'm']
+    library_dirs = [lib_dir]
+    include_dirs = [inc_dir]
+    extra_link_args = ['-Wl,-rpath,$ORIGIN/libs']
+else:
+    # using system installed libgphoto2
+    cmd = ['pkg-config', '--modversion', 'libgphoto2']
+    FNULL = open(os.devnull, 'w')
+    try:
+        gphoto2_version_str = subprocess.check_output(
+            cmd, stderr=FNULL, universal_newlines=True).strip()
+    except Exception:
+        raise RuntimeError('ERROR: command "%s" failed' % ' '.join(cmd))
+    print('Using installed libgphoto2 v{}'.format(gphoto2_version_str))
+    gphoto2_flags = defaultdict(list)
+    for flag in subprocess.check_output(
+            ['pkg-config', '--cflags', '--libs', 'libgphoto2'],
+            universal_newlines=True).split():
+        gphoto2_flags[flag[:2]].append(flag)
+    gphoto2_include  = gphoto2_flags['-I']
+    for n in range(len(gphoto2_include)):
+        if gphoto2_include[n].endswith('/gphoto2'):
+            gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
+    libraries = [x.replace('-l', '') for x in gphoto2_flags['-l']]
+    library_dirs = [x.replace('-L', '') for x in gphoto2_flags['-L']]
+    include_dirs = [x.replace('-I', '') for x in gphoto2_include]
+    extra_link_args = []
 
 # get list of available swigged versions
 swigged_versions = []
@@ -56,6 +102,7 @@ for name in os.listdir('src'):
 swigged_versions.sort()
 
 # choose best match from swigged versions
+gphoto2_version = tuple(map(int, gphoto2_version_str.split('.')))
 while len(swigged_versions) > 1 and swigged_versions[0] < gphoto2_version:
     swigged_versions = swigged_versions[1:]
 swigged_version = swigged_versions[0]
@@ -64,6 +111,7 @@ swigged_version = swigged_versions[0]
 ext_modules = []
 mod_src_dir = 'swig-gp' + '.'.join(map(str, swigged_version))
 mod_src_dir = os.path.join('src', mod_src_dir)
+package_dir['gphoto2'] = mod_src_dir
 
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-unused-but-set-variable',
@@ -71,23 +119,20 @@ extra_compile_args = [
     '-DGPHOTO2_VERSION=' + '0x{:02x}{:02x}{:02x}'.format(*gphoto2_version)]
 if 'PYTHON_GPHOTO2_STRICT' in os.environ:
     extra_compile_args.append('-Werror')
-libraries = [x.replace('-l', '') for x in gphoto2_libs]
-library_dirs = [x.replace('-L', '') for x in gphoto2_lib_dirs]
-include_dirs = [x.replace('-I', '') for x in gphoto2_include]
-if os.path.isdir(mod_src_dir):
-    for file_name in os.listdir(mod_src_dir):
-        if file_name[-7:] != '_wrap.c':
-            continue
-        ext_name = file_name[:-7]
-        ext_modules.append(Extension(
-            '_' + ext_name,
-            sources = [os.path.join(mod_src_dir, file_name)],
-            libraries = libraries,
-            library_dirs = library_dirs,
-            runtime_library_dirs = library_dirs,
-            include_dirs = include_dirs,
-            extra_compile_args = extra_compile_args,
-            ))
+for file_name in os.listdir(mod_src_dir):
+    if file_name[-7:] != '_wrap.c':
+        continue
+    ext_name = file_name[:-7]
+    ext_modules.append(Extension(
+        '_' + ext_name,
+        sources = [os.path.join(mod_src_dir, file_name)],
+        libraries = libraries,
+        library_dirs = library_dirs,
+        runtime_library_dirs = library_dirs,
+        include_dirs = include_dirs,
+        extra_compile_args = extra_compile_args,
+        extra_link_args = extra_link_args,
+        ))
 
 command_options = {}
 
@@ -126,9 +171,8 @@ setup(name = 'gphoto2',
       command_options = command_options,
       ext_package = 'gphoto2',
       ext_modules = ext_modules,
-      packages = ['gphoto2', 'gphoto2.examples'],
-      package_dir = {'gphoto2': mod_src_dir,
-                     'gphoto2.examples': 'examples'},
-      package_data = {'gphoto2.examples': ['*']},
+      packages = packages,
+      package_dir = package_dir,
+      package_data = package_data,
       zip_safe = False,
       )

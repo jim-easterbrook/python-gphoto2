@@ -91,6 +91,16 @@ def main(argv=None):
     with open(init_file, 'w') as im:
         im.write('__version__ = "{}"\n\n'.format(version))
         im.write('''
+import os
+
+_dir = os.path.dirname(__file__)
+_camlibs = os.path.join(_dir, 'camlibs')
+if os.path.isdir(_camlibs):
+    os.environ['CAMLIBS'] = _camlibs
+_iolibs = os.path.join(_dir, 'iolibs')
+if os.path.isdir(_iolibs):
+    os.environ['IOLIBS'] = _iolibs
+
 class GPhoto2Error(Exception):
     """Exception raised by gphoto2 library errors
 

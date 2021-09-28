@@ -1,0 +1,44 @@
+name: Build manylinux binary wheels
+on: workflow_dispatch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+
+      - name: Check out Doxy2Swig
+        uses: actions/checkout@v2
+        with:
+          repository: m7thon/doxy2swig
+          path: doxy2swig
+
+      - name: Download libgphoto2
+        run: wget -nv https://github.com/gphoto/libgphoto2/releases/download/v2.5.27/libgphoto2-2.5.27.tar.xz
+
+      - name: Extract libgphoto2
+        run: tar xf libgphoto2-2.5.27.tar.xz
+
+      - name: Build wheels
+        uses: pypa/cibuildwheel@v2.1.1
+        env:
+          CIBW_ARCHS: auto64
+          CIBW_SKIP: pp37-manylinux_x86_64
+          CIBW_ENVIRONMENT: GPHOTO2_VERSION=2.5.27
+          CIBW_BEFORE_ALL: >
+            yum install -y libusb-devel libexif-devel libjpeg-turbo-devel \
+              gd-devel doxygen &&
+            cd libgphoto2-2.5.27 &&
+            ./configure --prefix=$PWD/local_install --disable-internal-docs &&
+            make &&
+            make install &&
+            cd .. &&
+            python developer/build_doc.py 2.5.27 &&
+            python developer/build_swig.py 2.5.27
+
+      - name: Store results
+        uses: actions/upload-artifact@v2
+        with:
+          name: manylinux-wheels
+          path: wheelhouse/*.whl

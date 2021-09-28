@@ -43,13 +43,14 @@ def main(argv=None):
         gphoto2_version = '.'.join(gphoto2_version.split('.')[:3])
         gphoto2_include = subprocess.check_output(
                 ['pkg-config', '--cflags-only-I', 'libgphoto2'],
-                universal_newlines=True).strip()
-        if gphoto2_include.endswith('/gphoto2'):
-            gphoto2_include = gphoto2_include[:-len('/gphoto2')]
+                universal_newlines=True).strip().split()
+        for n in range(len(gphoto2_include)):
+            if gphoto2_include[n].endswith('/gphoto2'):
+                gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
     else:
         gphoto2_version = sys.argv[1]
-        gphoto2_include = '-I' + os.path.join(
-            'libgphoto2-' + gphoto2_version, 'local_install', 'include')
+        gphoto2_include = ['-I' + os.path.join(
+            'libgphoto2-' + gphoto2_version, 'local_install', 'include')]
     # get list of modules (Python) and extensions (SWIG)
     file_names = os.listdir(os.path.join('src', 'gphoto2'))
     file_names.sort()
@@ -67,7 +68,7 @@ def main(argv=None):
     if os.path.isfile(doc_file):
         version_opts.append(
             '-DDOC_FILE=' + os.path.basename(doc_file))
-    version_opts.append(gphoto2_include)
+    version_opts += gphoto2_include
     # do each swig module
     for ext_name in ext_names:
         cmd = ['swig'] + swig_opts + version_opts + ['-o']

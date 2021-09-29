@@ -27,7 +27,7 @@
 }
 %typemap(argout) GPPortInfo * {
   $result = SWIG_Python_AppendOutput(
-    $result, SWIG_NewPointerObj(*$1, SWIGTYPE_p__GPPortInfo, 0));
+    $result, SWIG_NewPointerObj(*$1, $descriptor(_GPPortInfo*), 0));
 }
 
 // Make docstring parameter types more Pythonic

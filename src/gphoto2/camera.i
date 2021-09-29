@@ -235,7 +235,7 @@ MEMBER_FUNCTION(_Camera,
     }
     memcpy(new_sif, &(*$1)[n], sizeof(CameraStorageInformation));
     PyList_SetItem(out_list, n,
-        SWIG_NewPointerObj(new_sif, SWIGTYPE_p__CameraStorageInformation, SWIG_POINTER_OWN));
+        SWIG_NewPointerObj(new_sif, $descriptor(CameraStorageInformation*), SWIG_POINTER_OWN));
   }
   $result = SWIG_Python_AppendOutput($result, out_list);
 }
@@ -278,7 +278,7 @@ int gp_camera_set_single_config(Camera *camera, const char *name,
   if (*$1 == GP_EVENT_FILE_ADDED || *$1 == GP_EVENT_FOLDER_ADDED
                                  || *$1 == GP_EVENT_FILE_CHANGED) {
     $result = SWIG_Python_AppendOutput(
-      $result, SWIG_NewPointerObj(*$2, SWIGTYPE_p_CameraFilePath, SWIG_POINTER_OWN));
+      $result, SWIG_NewPointerObj(*$2, $descriptor(CameraFilePath*), SWIG_POINTER_OWN));
   }
   else if (*$1 == GP_EVENT_UNKNOWN && *$2 != NULL) {
     $result = SWIG_Python_AppendOutput($result, PyString_FromString(*$2));

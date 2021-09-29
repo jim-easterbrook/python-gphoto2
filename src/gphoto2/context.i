@@ -228,7 +228,7 @@ CB_WRAPPER(void, py_progress_stop, (GPContext *context, unsigned int id, void *d
 
 %typemap(argout) cb_func_type {
     $result = SWIG_Python_AppendOutput($result,
-        SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+        SWIG_NewPointerObj(_global_callbacks, $descriptor(CallbackDetails*), SWIG_POINTER_OWN));
     _global_callbacks = NULL;
 }
 

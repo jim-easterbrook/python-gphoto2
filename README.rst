@@ -26,6 +26,15 @@ If this fails it is most likely because none of the available wheels is compatib
 In this case you *must* install the dependencies listed below before installing python-gphoto2.
 The installation process compiles and links the bindings with the libgphoto2_ installed on your computer.
 
+Raspberry Pi
+^^^^^^^^^^^^
+
+Binary wheels for the Raspberry Pi are available from piwheels_.
+You still need to install some system packages to use these::
+
+    sudo apt install libexif12 libgphoto2-6 libgphoto2-port12 libltdl7
+    sudo pip3 install gphoto2
+
 Dependencies
 ------------
 
@@ -52,11 +61,12 @@ Make sure that you install the dependencies_ first.
 Install with pip_
 ^^^^^^^^^^^^^^^^^
 
-The easiest installation method is to use the pip_ command::
+The easiest installation method is to use the pip_ command.
+Note the use of ``--no-binary`` to prevent installation from a binary wheel::
 
-    sudo pip3 install -v gphoto2
+    sudo pip3 install -v gphoto2 --no-binary :all:
 
-Note that this may take longer than you expect as the package's modules are compiled during installation.
+This installation may take longer than you expect as the package's modules are compiled during installation.
 The ``-v`` option increases pip_'s verbosity so you can see that it's doing something.
 
 Install a downloaded archive
@@ -492,6 +502,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
    http://sourceforge.net/p/gphoto/code/HEAD/tree/trunk/bindings/libgphoto2-python/
 .. _piggyphoto:        https://github.com/alexdu/piggyphoto
 .. _pip:               https://pip.pypa.io/
+.. _piwheels:          https://www.piwheels.org/project/gphoto2/
 .. _PyPI:              https://pypi.python.org/pypi/gphoto2/
 .. _setuptools:        https://pypi.org/project/setuptools/
 .. _SWIG:              http://swig.org/

@@ -1,4 +1,4 @@
-python-gphoto2 v\ 2.3.0
+python-gphoto2 v\ 2.3.1
 =======================
 
 python-gphoto2 is a comprehensive Python interface (or binding) to libgphoto2_.
@@ -42,11 +42,11 @@ Dependencies
 *   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.5.0 or greater
 *   build tools: pkg-config, C compiler & linker
 
-Note that you need the "development headers" versions of libgphoto2_ and Python.
 In most cases you should use your operating system's package manager to install these.
-The package names depend on the operating system.
+Note that you need the "development headers" for libgphoto2_ and Python.
+On some systems these are included in the base package, but on others they need to be installed separately.
 Look for ``libgphoto2-dev`` or ``libgphoto2-devel`` or something similar.
-If you install libgphoto2 from source (e.g. to get a newer version) then you probably don't need the ``dev`` package, but make sure that the ``pkg-config --cflags --libs libgphoto2`` command shows where you've installed your build.
+Test your installation with the command ``pkg-config --cflags --libs libgphoto2 python3``.
 
 Installation (source)
 ---------------------

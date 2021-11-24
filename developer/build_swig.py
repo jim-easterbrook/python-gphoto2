@@ -18,6 +18,7 @@
 from collections import defaultdict
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -56,6 +57,7 @@ def main(argv=None):
     file_names.sort()
     file_names = [os.path.splitext(x) for x in file_names]
     ext_names = [x[0] for x in file_names if x[1] == '.i']
+    py_names = [x[0] + x[1] for x in file_names if x[1] == '.py']
     # make options list
     swig_opts = ['-python', '-py3', '-nodefaultctor', '-O',
                  '-Wextra', '-Werror', '-builtin', '-nofastunpack']
@@ -76,6 +78,9 @@ def main(argv=None):
         cmd += [os.path.join('src', 'gphoto2', ext_name + '.i')]
         print(' '.join(cmd))
         subprocess.check_output(cmd)
+    # copy python modules
+    for py_name in py_names:
+        shutil.copy2(os.path.join('src', 'gphoto2', py_name), output_dir)
     # create init module
     init_file = os.path.join(output_dir, '__init__.py')
     with open(init_file, 'w') as im:

@@ -1,4 +1,4 @@
-python-gphoto2 v\ 2.3.0
+python-gphoto2 v\ 2.3.1
 =======================
 
 python-gphoto2 is a comprehensive Python interface (or binding) to libgphoto2_.
@@ -106,12 +106,18 @@ See "`running SWIG`_" below for more detail.
 Testing
 -------
 
-.. note:: If you installed from PyPI_ the example files are in the installed gphoto2 package, e.g. ``/usr/lib64/python3.6/site-packages/gphoto2/examples/``.
-   Otherwise they are in the ``examples`` sub-directory of your source directory.
+Since version 2.3.1 you can test your installation of python-gphoto2 by running it with the ``python3 -m gphoto2`` command::
 
+    python3 -m gphoto2
+    python-gphoto2 version: 2.3.1
+    libgphoto2 version: ['2.5.27', 'standard camlibs (SKIPPING docupen)', 'gcc', 'ltdl', 'EXIF']
+    libgphoto2_port version: ['0.12.0', 'iolibs: disk ptpip serial usb1 usbdiskdirect usbscsi vusb', 'gcc', 'ltdl', 'EXIF', 'USB', 'serial without locking']
+    python-gphoto2 examples: /usr/lib64/python3.6/site-packages/gphoto2/examples
+
+This shows the python-gphoto2 and libgphoto2 version numbers, and where the example programs have been installed.
 Connect a digital camera to your computer, switch it on, and try one of the example programs::
 
-    python3 examples/camera-summary.py
+    python3 /usr/lib64/python3.6/site-packages/gphoto2/examples/camera-summary.py
 
 If this works then you're ready to start using python-gphoto2.
 

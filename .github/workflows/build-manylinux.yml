@@ -42,3 +42,27 @@ jobs:
         with:
           name: manylinux-wheels
           path: wheelhouse/*.whl
+
+  test:
+    needs: build
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+    steps:
+      - name: Fetch wheel files
+        uses: actions/download-artifact@v2
+        with:
+          name: manylinux-wheels
+
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: 'x64'
+
+      - name: Install wheel
+        run: pip3 install --disable-pip-version-check --no-index --find-links=. gphoto2
+
+      - name: Test installation
+        run: python3 -m gphoto2

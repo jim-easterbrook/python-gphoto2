@@ -19,46 +19,47 @@
 
 # "object oriented" version of camera-summary.py
 
-from __future__ import print_function
-
 import logging
-import six
 import sys
 
 import gphoto2 as gp
 
 def main():
+    if len(sys.argv) > 2:
+        print('Usage: {} [port_address]'.format(sys.argv[0]))
+        return 1
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     callback_obj = gp.check_result(gp.use_python_logging())
-    # make a list of all available cameras
-    camera_list = list(gp.Camera.autodetect())
-    if not camera_list:
-        print('No camera detected')
-        return 1
-    camera_list.sort(key=lambda x: x[0])
-    # ask user to choose one
-    for index, (name, addr) in enumerate(camera_list):
-        print('{:d}:  {:s}  {:s}'.format(index, addr, name))
-    if six.PY3:
-        choice = input('Please input number of chosen camera: ')
+    if len(sys.argv) > 1:
+        # if user has given an address open it directly
+        addr = sys.argv[1]
     else:
-        choice = raw_input('Please input number of chosen camera: ')  # noqa: F821
-    try:
-        choice = int(choice)
-    except ValueError:
-        print('Integer values only!')
-        return 2
-    if choice < 0 or choice >= len(camera_list):
-        print('Number out of range')
-        return 3
-    # initialise chosen camera
-    name, addr = camera_list[choice]
-    camera = gp.Camera()
+        # make a list of all available cameras
+        camera_list = list(gp.Camera.autodetect())
+        if not camera_list:
+            print('No camera detected')
+            return 1
+        camera_list.sort(key=lambda x: x[0])
+        # ask user to choose one
+        for index, (name, addr) in enumerate(camera_list):
+            print('{:d}:  {:s}  {:s}'.format(index, addr, name))
+        choice = input('Please input number of chosen camera: ')
+        try:
+            choice = int(choice)
+        except ValueError:
+            print('Integer values only!')
+            return 2
+        if choice < 0 or choice >= len(camera_list):
+            print('Number out of range')
+            return 3
+        # use chosen camera
+        addr = camera_list[choice][1]
     # search ports for camera port name
     port_info_list = gp.PortInfoList()
     port_info_list.load()
     idx = port_info_list.lookup_path(addr)
+    camera = gp.Camera()
     camera.set_port_info(port_info_list[idx])
     camera.init()
     text = camera.get_summary()

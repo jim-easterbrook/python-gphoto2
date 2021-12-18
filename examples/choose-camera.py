@@ -55,13 +55,22 @@ def main():
             return 3
         # use chosen camera
         addr = camera_list[choice][1]
-    # search ports for camera port name
+    # get port info and camera abilities
     port_info_list = gp.PortInfoList()
     port_info_list.load()
-    idx = port_info_list.lookup_path(addr)
+    abilities_list = gp.CameraAbilitiesList()
+    abilities_list.load()
+    camera_list = abilities_list.detect(port_info_list)
+    if len(camera_list) < 1:
+        print('No camera detected')
+        return 4
+    # choose camera
     camera = gp.Camera()
+    idx = port_info_list.lookup_path(addr)
     camera.set_port_info(port_info_list[idx])
-    camera.init()
+    idx = abilities_list.lookup_model(camera_list[0][0])
+    camera.set_abilities(abilities_list[idx])
+    # do something with camera
     text = camera.get_summary()
     print('Summary')
     print('=======')

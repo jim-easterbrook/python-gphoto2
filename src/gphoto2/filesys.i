@@ -46,6 +46,8 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 // Ignore some functions
 %ignore gp_filesystem_get_storageinfo;
 %ignore gp_filesystem_free;
+%ignore gp_filesystem_set_file_noop;
+%ignore gp_filesystem_set_info_dirty;
 
 // Structures are read only
 %immutable;

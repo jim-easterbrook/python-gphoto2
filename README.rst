@@ -16,7 +16,7 @@ The gphoto2 source tree includes some `Python bindings`_ which also use ctypes_.
 Installation (binary wheel)
 ---------------------------
 
-Since python-gphoto2 version 2.3.0 "binary wheels" are provided for many Linux computers.
+Since python-gphoto2 version 2.3.1 "binary wheels" are provided for many Linux and MacOS computers.
 These include a recent version of the libgphoto2_ libraries, and pre-built Python interface modules, which makes installation quick and easy.
 Use pip_'s ``--only-binary`` option to install one of these wheels::
 

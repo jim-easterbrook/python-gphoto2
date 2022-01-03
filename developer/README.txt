@@ -5,7 +5,7 @@ The python interfaces can be built with any version of libgphoto2, but functions
 
 The solution is to include definitions of new functions in the interface to replace the proper versions when building for an older version of libgphoto2. See the camera.i interface file for an example.
 
-The 'python developer/build_swig.py' requires one parameter: the version to be swigged. This can be 'system' or a number triplet, e.g. '2.5.27'. When 'system' is specified, the installed libgphoto2 is used. When a version number is given the source files for that version must be in your python-gphoto2 working directory, e.g. 'libgphoto2-2.5.27'.
+The 'python developer/build_swig.py' requires one parameter: the version to be swigged. This can be 'system' or a number triplet, e.g. '2.5.28'. When 'system' is specified, the installed libgphoto2 is used. When a version number is given the source files for that version must be in your python-gphoto2 working directory, e.g. 'libgphoto2-2.5.28'.
 
 Using local libgphoto2
 ----------------------
@@ -20,10 +20,10 @@ Note the use of --prefix=$PWD/local_install to create a local copy, rather than 
 
 Now you can build and install a wheel that includes your local copy of the libgphoto2 libs:
 
-    GPHOTO2_VERSION=2.5.27 pip wheel . -v
+    GPHOTO2_VERSION=2.5.28 pip wheel . -v
     sudo pip install gphoto2-*.whl
 
-The GPHOTO2_VERSION environment variable tells setup.py to use the files in libgphoto2-2.5.27/local_install.
+The GPHOTO2_VERSION environment variable tells setup.py to use the files in libgphoto2-2.5.28/local_install.
 
 Tracking libgphoto2 releases
 ----------------------------
@@ -63,6 +63,7 @@ Differences found so far:
 2.5.25 No change
 2.5.26 No change
 2.5.27 No change
+2.5.28 Add gp_filesystem_set_info_dirty
 
 Documentation
 -------------

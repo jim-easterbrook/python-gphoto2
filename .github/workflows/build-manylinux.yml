@@ -15,27 +15,27 @@ jobs:
           path: doxy2swig
 
       - name: Download libgphoto2
-        run: wget -nv https://github.com/gphoto/libgphoto2/releases/download/v2.5.27/libgphoto2-2.5.27.tar.xz
+        run: wget -nv https://github.com/gphoto/libgphoto2/releases/download/v2.5.28/libgphoto2-2.5.28.tar.xz
 
       - name: Extract libgphoto2
-        run: tar xf libgphoto2-2.5.27.tar.xz
+        run: tar xf libgphoto2-2.5.28.tar.xz
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.1.1
         env:
           CIBW_ARCHS: auto64
           CIBW_SKIP: pp37-manylinux_x86_64
-          CIBW_ENVIRONMENT: GPHOTO2_VERSION=2.5.27
+          CIBW_ENVIRONMENT: GPHOTO2_VERSION=2.5.28
           CIBW_BEFORE_ALL: >
             yum install -y libusb-devel libexif-devel libjpeg-turbo-devel \
               gd-devel doxygen &&
-            cd libgphoto2-2.5.27 &&
+            cd libgphoto2-2.5.28 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs &&
             make &&
             make install &&
             cd .. &&
-            python developer/build_doc.py 2.5.27 &&
-            python developer/build_swig.py 2.5.27
+            python developer/build_doc.py 2.5.28 &&
+            python developer/build_swig.py 2.5.28
 
       - name: Store results
         uses: actions/upload-artifact@v2

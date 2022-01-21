@@ -30,7 +30,8 @@ jobs:
             yum install -y libusb-devel libexif-devel libjpeg-turbo-devel \
               gd-devel doxygen &&
             cd libgphoto2-2.5.28 &&
-            ./configure --prefix=$PWD/local_install --disable-internal-docs &&
+            ./configure --prefix=$PWD/local_install --disable-internal-docs \
+              CFLAGS="-std=gnu99 -g -O2" &&
             make &&
             make install &&
             cd .. &&

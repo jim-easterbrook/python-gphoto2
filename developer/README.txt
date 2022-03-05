@@ -64,6 +64,7 @@ Differences found so far:
 2.5.26 No change
 2.5.27 No change
 2.5.28 Add gp_filesystem_set_info_dirty
+2.5.29 No change
 
 Documentation
 -------------

@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -85,6 +85,15 @@ LEN_MEMBER_FUNCTION(_CameraAbilitiesList, gp_abilities_list_count)
     value++;
   }
 }
+
+// Substitute definitions of things added during libgphoto2 development
+%inline %{
+#if GPHOTO2_VERSION < 0x02051d01
+int gp_init_localedir(const char *localedir) {
+    return GP_ERROR_NOT_SUPPORTED;
+}
+#endif
+%}
 
 // Add member methods to _CameraAbilitiesList
 MEMBER_FUNCTION(_CameraAbilitiesList,

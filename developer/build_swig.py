@@ -36,12 +36,11 @@ def main(argv=None):
         cmd = ['pkg-config', '--modversion', 'libgphoto2']
         FNULL = open(os.devnull, 'w')
         try:
-            gphoto2_version = subprocess.check_output(
+            gphoto2_version_str = subprocess.check_output(
                 cmd, stderr=FNULL, universal_newlines=True).strip()
         except Exception:
             print('ERROR: command "{}" failed'.format(' '.join(cmd)))
             raise
-        gphoto2_version = '.'.join(gphoto2_version.split('.')[:3])
         gphoto2_include = subprocess.check_output(
                 ['pkg-config', '--cflags-only-I', 'libgphoto2'],
                 universal_newlines=True).strip().split()
@@ -49,9 +48,10 @@ def main(argv=None):
             if gphoto2_include[n].endswith('/gphoto2'):
                 gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
     else:
-        gphoto2_version = sys.argv[1]
+        gphoto2_version_str = sys.argv[1]
         gphoto2_include = ['-I' + os.path.join(
-            'libgphoto2-' + gphoto2_version, 'local_install', 'include')]
+            'libgphoto2-' + gphoto2_version_str, 'local_install', 'include')]
+    gphoto2_version = tuple(map(int, gphoto2_version_str.split('.')))
     # get list of modules (Python) and extensions (SWIG)
     file_names = os.listdir(os.path.join('src', 'gphoto2'))
     file_names.sort()
@@ -62,9 +62,9 @@ def main(argv=None):
     swig_opts = ['-python', '-py3', '-nodefaultctor', '-O',
                  '-Wextra', '-Werror', '-builtin', '-nofastunpack']
     doc_file = os.path.join(
-        'src', 'gphoto2', 'common', 'doc-' + gphoto2_version + '.i')
+        'src', 'gphoto2', 'common', 'doc-' + gphoto2_version_str + '.i')
     output_dir = os.path.join('src', 'swig')
-    output_dir += '-gp' + gphoto2_version
+    output_dir += '-gp' + gphoto2_version_str
     os.makedirs(output_dir, exist_ok=True)
     version_opts = ['-outdir', output_dir]
     if os.path.isfile(doc_file):
@@ -112,11 +112,14 @@ class GPhoto2Error(Exception):
 ''')
         for name in ext_names:
             im.write('from gphoto2.{} import *\n'.format(name))
-        im.write('''
+        if gphoto2_version >= (2, 5, 29, 1):
+            im.write('''
 _locale = os.path.join(_dir, 'locale')
 if os.path.isdir(_locale):
     gphoto2.abilities_list.gp_init_localedir(_locale)
+''')
 
+        im.write('''
 __all__ = dir()
 ''')
     return 0

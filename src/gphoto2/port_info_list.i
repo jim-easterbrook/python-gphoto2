@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -111,7 +111,7 @@ MEMBER_FUNCTION(_GPPortInfoList,
 
 // Substitute definitions of things added during libgphoto2 development
 %{
-#if GPHOTO2_VERSION < 0x020518
+#if GPHOTO2_VERSION < 0x02051800
   int GP_PORT_IP = GP_PORT_USB_SCSI + 1;
 #endif
 %}

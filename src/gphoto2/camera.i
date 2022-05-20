@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -247,7 +247,7 @@ MEMBER_FUNCTION(_Camera,
 
 // Substitute definitions of things added during libgphoto2 development
 %{
-#if GPHOTO2_VERSION < 0x02050a
+#if GPHOTO2_VERSION < 0x02050a00
 int gp_camera_list_config(Camera *camera, CameraList *list, GPContext *context) {
     return GP_ERROR_NOT_SUPPORTED;
 }
@@ -260,7 +260,7 @@ int gp_camera_set_single_config(Camera *camera, const char *name,
     return GP_ERROR_NOT_SUPPORTED;
 }
 #endif
-#if GPHOTO2_VERSION < 0x020511
+#if GPHOTO2_VERSION < 0x02051100
   int GP_EVENT_FILE_CHANGED = GP_EVENT_CAPTURE_COMPLETE + 1;
 #endif
 %}

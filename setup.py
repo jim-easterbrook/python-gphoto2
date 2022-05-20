@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -116,7 +116,8 @@ package_dir['gphoto2'] = mod_src_dir
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-unused-but-set-variable',
     '-Wno-unused-label', '-Wno-strict-prototypes',
-    '-DGPHOTO2_VERSION=' + '0x{:02x}{:02x}{:02x}'.format(*gphoto2_version)]
+    '-DGPHOTO2_VERSION=' + '0x{:02x}{:02x}{:02x}{:02x}'.format(
+        *gphoto2_version, 0, 0)]
 if 'PYTHON_GPHOTO2_STRICT' in os.environ:
     extra_compile_args.append('-Werror')
 for file_name in os.listdir(mod_src_dir):

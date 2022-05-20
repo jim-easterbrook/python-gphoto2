@@ -35,14 +35,14 @@ if 'GPHOTO2_VERSION' in os.environ:
     print('Using local libgphoto2 v{}'.format(gphoto2_version_str))
     gphoto2_dir = os.path.join(
         'libgphoto2-' + gphoto2_version_str, 'local_install')
-    inc_dir, lib_dir = None, None
-    for name in os.listdir(gphoto2_dir):
-        if name == 'include':
-            inc_dir = os.path.join(gphoto2_dir, name)
-        elif name.startswith('lib'):
-            lib_dir = os.path.join(gphoto2_dir, name)
-    if not inc_dir:
+    inc_dir = os.path.join(gphoto2_dir, 'include')
+    if not os.path.isdir(inc_dir):
         raise RuntimeError('Include directory not found')
+    lib_dir = None
+    for name in os.listdir(gphoto2_dir):
+        if name.startswith('lib'):
+            lib_dir = os.path.join(gphoto2_dir, name)
+            break
     if not lib_dir:
         raise RuntimeError('Library directory not found')
     packages.append('gphoto2.libs')
@@ -63,6 +63,12 @@ if 'GPHOTO2_VERSION' in os.environ:
     package_dir['gphoto2.iolibs'] = os.path.join(
         lib_dir, 'libgphoto2_port', iolibs[-1])
     package_data['gphoto2.iolibs'] = ['*.so']
+    # add localisation files
+    locale_dir = os.path.join(gphoto2_dir, 'share', 'locale')
+    if os.path.isdir(locale_dir):
+        packages.append('gphoto2.locale')
+        package_dir['gphoto2.locale'] = locale_dir
+        package_data['gphoto2.locale'] = ['*/LC_MESSAGES/libgphoto2*.mo']
     # module compile options
     libraries = ['gphoto2', 'gphoto2_port', 'm']
     library_dirs = [lib_dir]

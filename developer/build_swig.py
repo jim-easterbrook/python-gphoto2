@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2021  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2021-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -113,6 +113,10 @@ class GPhoto2Error(Exception):
         for name in ext_names:
             im.write('from gphoto2.{} import *\n'.format(name))
         im.write('''
+_locale = os.path.join(_dir, 'locale')
+if os.path.isdir(_locale):
+    gphoto2.abilities_list.gp_init_localedir(_locale)
+
 __all__ = dir()
 ''')
     return 0

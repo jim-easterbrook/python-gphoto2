@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2018  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2018-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,14 +19,14 @@
 
 # print events as they are received from a camera
 
-from __future__ import print_function
-
+import locale
 import sys
 from datetime import datetime
 
 import gphoto2 as gp
 
 def main():
+    locale.setlocale(locale.LC_ALL, '')
     # create event name lookup table (not essential but helps readability)
     ev_name = {}
     for name in ('GP_EVENT_UNKNOWN', 'GP_EVENT_TIMEOUT', 'GP_EVENT_FILE_ADDED',

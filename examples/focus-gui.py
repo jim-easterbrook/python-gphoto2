@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2015-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2015-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -34,9 +34,8 @@ The histogram and clipping count are useful when setting exposure.
 
 """
 
-from __future__ import print_function
-
 import io
+import locale
 import logging
 import math
 import sys
@@ -365,6 +364,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 if __name__ == "__main__":
+    locale.setlocale(locale.LC_ALL, '')
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     callback_obj = gp.check_result(gp.use_python_logging())

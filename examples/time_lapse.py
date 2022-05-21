@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2018-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2018-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -24,9 +24,8 @@ with another camera.
 
 """
 
-from __future__ import print_function
-
 from contextlib import contextmanager
+import locale
 import os
 import subprocess
 import sys
@@ -81,6 +80,7 @@ def empty_event_queue(camera):
 
 
 def main():
+    locale.setlocale(locale.LC_ALL, '')
     if not os.path.exists(WORK_DIR):
         os.makedirs(WORK_DIR)
     template = os.path.join(WORK_DIR, 'frame%04d.jpg')

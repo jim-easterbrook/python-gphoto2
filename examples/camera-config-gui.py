@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-19  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,9 +19,8 @@
 
 # "object oriented" version of camera-config-gui.py
 
-from __future__ import print_function
-
 from datetime import datetime
+import locale
 import logging
 import sys
 
@@ -258,6 +257,7 @@ class DateWidget(QtWidgets.QDateTimeEdit):
         self.config_changed()
 
 if __name__ == "__main__":
+    locale.setlocale(locale.LC_ALL, '')
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     callback_obj = gp.check_result(gp.use_python_logging())

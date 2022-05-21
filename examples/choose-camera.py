@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -19,12 +19,14 @@
 
 # "object oriented" version of camera-summary.py
 
+import locale
 import logging
 import sys
 
 import gphoto2 as gp
 
 def main():
+    locale.setlocale(locale.LC_ALL, '')
     if len(sys.argv) > 2:
         print('Usage: {} [port_address]'.format(sys.argv[0]))
         return 1

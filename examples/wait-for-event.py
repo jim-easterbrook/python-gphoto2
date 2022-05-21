@@ -32,8 +32,7 @@
 # "object oriented" version of wait-for-event.py
 # *******************************************************
 
-from __future__ import print_function
-
+import locale
 import os
 import sys
 
@@ -41,6 +40,7 @@ import gphoto2 as gp
 
 
 def main():
+    locale.setlocale(locale.LC_ALL, '')
     # Init camera
     camera = gp.Camera()
     camera.init()

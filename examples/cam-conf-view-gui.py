@@ -33,9 +33,8 @@ NOTE: if doing live view on Canon, while capture=0, then still an image is retur
 NOTE: Switching from viewing full res image capture, to lower resolution live view preview, and vice versa, should automatically fit the view. But if the view gets "lost": in that case, hit Ctrl-F for fit to view once, then can do Ctrl-Z for original scale (or mouse wheel to zoom in/out the preview).
 """
 
-from __future__ import print_function
-
 import io
+import locale
 import logging
 import math
 import sys, os
@@ -1135,6 +1134,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
 
 def main():
+    locale.setlocale(locale.LC_ALL, '')
     # set up logging
     # note that: '%(filename)s:%(lineno)d' just prints 'port_log.py:127'
     logging.basicConfig(

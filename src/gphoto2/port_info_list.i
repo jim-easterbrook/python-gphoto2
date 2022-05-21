@@ -111,6 +111,11 @@ MEMBER_FUNCTION(_GPPortInfoList,
 
 // Substitute definitions of things added during libgphoto2 development
 %{
+#if GPHOTO2_VERSION < 0x02051d01
+int gp_port_init_localedir(const char *localedir) {
+    return GP_ERROR_NOT_SUPPORTED;
+}
+#endif
 #if GPHOTO2_VERSION < 0x02051800
   int GP_PORT_IP = GP_PORT_USB_SCSI + 1;
 #endif

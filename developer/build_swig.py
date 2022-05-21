@@ -112,14 +112,11 @@ class GPhoto2Error(Exception):
 ''')
         for name in ext_names:
             im.write('from gphoto2.{} import *\n'.format(name))
-        if gphoto2_version >= (2, 5, 29, 1):
-            im.write('''
+        im.write('''
 _locale = os.path.join(_dir, 'locale')
 if os.path.isdir(_locale):
     gphoto2.abilities_list.gp_init_localedir(_locale)
-''')
 
-        im.write('''
 __all__ = dir()
 ''')
     return 0

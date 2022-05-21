@@ -261,7 +261,7 @@ int gp_camera_set_single_config(Camera *camera, const char *name,
 }
 #endif
 #if GPHOTO2_VERSION < 0x02051100
-  int GP_EVENT_FILE_CHANGED = GP_EVENT_CAPTURE_COMPLETE + 1;
+  unsigned int GP_EVENT_FILE_CHANGED = GP_EVENT_CAPTURE_COMPLETE + 1;
 #endif
 %}
 

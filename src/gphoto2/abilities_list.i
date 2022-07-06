@@ -88,7 +88,7 @@ LEN_MEMBER_FUNCTION(_CameraAbilitiesList, gp_abilities_list_count)
 
 // Substitute definitions of things added during libgphoto2 development
 %{
-#if GPHOTO2_VERSION < 0x02051d01
+#if GPHOTO2_VERSION < 0x02051e00
 int gp_init_localedir(const char *localedir) {
     return GP_ERROR_NOT_SUPPORTED;
 }

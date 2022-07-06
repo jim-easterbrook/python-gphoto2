@@ -15,6 +15,10 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 2.3.4:
+  1/ Update libgphoto2 to v2.5.30.
+  2/ Include localisation files in Python package.
+
 Changes in 2.3.3:
   1/ Update libgphoto2 to v2.5.29.
 

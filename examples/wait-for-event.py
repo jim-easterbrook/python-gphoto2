@@ -17,20 +17,24 @@
 # You should have received a copy of the GNU General Public License
 
 # *******************************************************
-# gp.camera_wait_for_event() function waits for
-# a capture trigger to arrive. When it does, it downloads
+# camera.wait_for_event() function waits for a capture trigger
+# to arrive and returns the folder and name of the new file.
+# When it does, camera.file_get() is used to download
 # the image directly from the camera, without using SD
 # card
 #
-# gp_camera_trigger_capture() or Trigger Button on the
+# camera.trigger_capture() or Trigger Button on the
 # camera can be used to start capturing.
 #
 # gp_capture_image_and_download() method takes about 2 seconds
 # to process since it saves the image to SD CARD
 # first then downloads it, which takes a lot of time.
-#
-# "object oriented" version of wait-for-event.py
 # *******************************************************
+
+# Additional comment by Jim Easterbrook: My cameras save to SD card or
+# RAM according to the capture target setting. Use of
+# camera.wait_for_event() or camera.capture() makes no difference to
+# where the image is saved.
 
 import locale
 import os

@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -121,11 +121,12 @@ package_dir['gphoto2'] = mod_src_dir
 
 extra_compile_args = [
     '-O3', '-Wno-unused-variable', '-Wno-unused-but-set-variable',
-    '-Wno-unused-label', '-Wno-strict-prototypes',
-    '-DGPHOTO2_VERSION=' + '0x{:02x}{:02x}{:02x}{:02x}'.format(
-        *gphoto2_version, 0, 0)]
+    '-Wno-unused-label', '-Wno-strict-prototypes']
 if 'PYTHON_GPHOTO2_STRICT' in os.environ:
     extra_compile_args.append('-Werror')
+define_macros = [('GPHOTO2_VERSION',
+                  '0x{:02x}{:02x}{:02x}{:02x}'.format(*gphoto2_version, 0, 0)),
+                 ('SWIG_TYPE_TABLE', 'gphoto2')]
 for file_name in os.listdir(mod_src_dir):
     if file_name[-7:] != '_wrap.c':
         continue
@@ -138,6 +139,7 @@ for file_name in os.listdir(mod_src_dir):
         runtime_library_dirs = library_dirs,
         include_dirs = include_dirs,
         extra_compile_args = extra_compile_args,
+        define_macros = define_macros,
         extra_link_args = extra_link_args,
         ))
 

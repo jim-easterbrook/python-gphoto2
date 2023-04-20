@@ -58,9 +58,24 @@ def main(argv=None):
     file_names = [os.path.splitext(x) for x in file_names]
     ext_names = [x[0] for x in file_names if x[1] == '.i']
     py_names = [x[0] + x[1] for x in file_names if x[1] == '.py']
+    # get SWIG version
+    cmd = ['swig', '-version']
+    try:
+        swig_version = str(subprocess.Popen(
+            cmd, stdout=subprocess.PIPE,
+            universal_newlines=True).communicate()[0])
+    except Exception:
+        print('ERROR: command "%s" failed' % ' '.join(cmd))
+        raise
+    for line in swig_version.splitlines():
+        if 'Version' in line:
+            swig_version = tuple(map(int, line.split()[-1].split('.')))
+            break
     # make options list
-    swig_opts = ['-python', '-py3', '-nodefaultctor', '-O',
+    swig_opts = ['-python', '-nodefaultctor', '-O',
                  '-Wextra', '-Werror', '-builtin', '-nofastunpack']
+    if swig_version < (4, 1, 0):
+        swig_opts.append('-py3')
     doc_file = os.path.join('src', 'gphoto2', 'common', 'doc.i')
     output_dir = os.path.join('src', 'swig')
     output_dir += '-gp' + gphoto2_version_str

@@ -97,7 +97,7 @@ To install the current development version, use git_ to "clone" the GitHub_ repo
 As before, Python's setuptools_ are used to build and install python-gphoto2, but now you have to run SWIG_ first to generate the files to be compiled.
 The ``developer`` directory includes a script to run SWIG::
 
-    python3 developer/build_swig.py system
+    python3 developer/build_swig.py
     pip3 wheel . -v
     pip3 install gphoto2-*.whl --user
 
@@ -452,19 +452,19 @@ The files downloaded from PyPI_ include the SWIG_ generated files, but you may w
 You will also need to run SWIG_ if you have downloaded the python-gphoto2 sources from GitHub_ instead of using PyPI_.
 
 The ``developer`` directory includes a script to run SWIG_.
-It requires one parameter: the version to be swigged.
-This can be ``system`` or a number triplet, e.g. ``2.5.27``::
+It has one optional parameter: the installation prefix of the version to be swigged.
+Omitting the parameter uses the system installation::
 
-    python3 developer/build_swig.py system
+    python3 developer/build_swig.py
 
 This builds the interface for the version of libgphoto2_ installed on your computer.
 The interface files are created in directories with names like ``src/swig-gp2.5.18``.
 This naming scheme allows for different versions of libgphoto2_.
 The most appropriate version is chosen when the interface is built.
 
-To build interfaces for multiple versions of libgphoto2_ (e.g. v2.5.10 as well as v2.5.0) you need to put those versions' source files in your working directory and then run ``python developer/build_swig.py`` again, specifying the version::
+To build interfaces for multiple versions of libgphoto2_ (e.g. v2.5.10 as well as v2.5.0) you need to create local installations of those versions and then run ``python developer/build_swig.py`` again, specifying the installation directory, e.g.::
 
-    python3 developer/build_swig.py 2.5.10
+    python3 developer/build_swig.py libgphoto2-2.5.10/local_install
 
 More information about this is in the file ``developer/README.txt``.
 
@@ -473,7 +473,7 @@ Licence
 
 | python-gphoto2 - Python interface to libgphoto2
 | http://github.com/jim-easterbrook/python-gphoto2
-| Copyright (C) 2014-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
+| Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2021-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2021-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,43 +15,43 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-from collections import defaultdict
 import os
-import re
 import shutil
 import subprocess
 import sys
 
 
 def main(argv=None):
-    # get version to SWIG
-    if len(sys.argv) != 2:
-        print('Usage: %s version | "system"' % sys.argv[0])
+    # system or local libexiv2?
+    if len(sys.argv) > 2:
+        print('Usage: %s [prefix]' % sys.argv[0])
         return 1
+    if len(sys.argv) > 1:
+        for root, dirs, files in os.walk(sys.argv[1]):
+            if 'libgphoto2.pc' in files:
+                os.environ['PKG_CONFIG_PATH'] = root
+                break
+        else:
+            print('No package config file found')
+            return 2
     # get python-gphoto2 version
     with open('README.rst') as rst:
         version = rst.readline().split()[-1]
     # get libgphoto2 version to be swigged
-    if sys.argv[1] == 'system':
-        cmd = ['pkg-config', '--modversion', 'libgphoto2']
-        FNULL = open(os.devnull, 'w')
-        try:
-            gphoto2_version_str = subprocess.check_output(
-                cmd, stderr=FNULL, universal_newlines=True).strip()
-        except Exception:
-            print('ERROR: command "{}" failed'.format(' '.join(cmd)))
-            raise
-        gphoto2_include = subprocess.check_output(
-                ['pkg-config', '--cflags-only-I', 'libgphoto2'],
-                universal_newlines=True).strip().split()
-        for n in range(len(gphoto2_include)):
-            if gphoto2_include[n].endswith('/gphoto2'):
-                gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
-    else:
-        gphoto2_version_str = sys.argv[1]
-        gphoto2_include = ['-I' + os.path.join(
-            'libgphoto2-' + gphoto2_version_str, 'local_install', 'include')]
-    gphoto2_version = tuple(map(int, gphoto2_version_str.split('.')))
+    cmd = ['pkg-config', '--modversion', 'libgphoto2']
+    FNULL = open(os.devnull, 'w')
+    try:
+        gphoto2_version_str = subprocess.check_output(
+            cmd, stderr=FNULL, universal_newlines=True).strip()
+    except Exception:
+        print('ERROR: command "{}" failed'.format(' '.join(cmd)))
+        raise
+    gphoto2_include = subprocess.check_output(
+            ['pkg-config', '--cflags-only-I', 'libgphoto2'],
+            universal_newlines=True).strip().split()
+    for n in range(len(gphoto2_include)):
+        if gphoto2_include[n].endswith('/gphoto2'):
+            gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
     # get list of modules (Python) and extensions (SWIG)
     file_names = os.listdir(os.path.join('src', 'gphoto2'))
     file_names.sort()

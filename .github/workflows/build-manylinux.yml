@@ -22,7 +22,7 @@ jobs:
       - name: Extract libgphoto2
         run: |
           mkdir libgphoto2
-          tar xf libgphoto2.tar.xz
+          tar xf libgphoto2.tar.xz \
             --directory libgphoto2 --strip-components=1
 
       - name: Build wheels
@@ -72,7 +72,7 @@ jobs:
           architecture: 'x64'
 
       - name: Install wheel
-        run: pip3 install --disable-pip-version-check --no-index
+        run: pip3 install --disable-pip-version-check --no-index \
           --find-links=. gphoto2
 
       - name: Test installation

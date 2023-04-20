@@ -6,64 +6,74 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Check out Doxy2Swig
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: m7thon/doxy2swig
           path: doxy2swig
 
       - name: Download libgphoto2
-        run: wget -nv https://github.com/gphoto/libgphoto2/releases/download/v2.5.30/libgphoto2-2.5.30.tar.xz
+        run: wget -nv \
+          https://github.com/gphoto/libgphoto2/releases/download/v2.5.30/libgphoto2-2.5.30.tar.xz \
+          -O libgphoto2.tar.xz
 
       - name: Extract libgphoto2
-        run: tar xf libgphoto2-2.5.30.tar.xz
+        run: |
+          mkdir libgphoto2
+          tar xf libgphoto2.tar.xz \
+            --directory libgphoto2 --strip-components=1
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.1.1
+        uses: pypa/cibuildwheel@v2.12.3
         env:
           CIBW_ARCHS: auto64
-          CIBW_SKIP: pp37-manylinux_x86_64
-          CIBW_ENVIRONMENT: GPHOTO2_VERSION=2.5.30
+          CIBW_BUILD: cp*-manylinux_x86_64
+          CIBW_ENVIRONMENT: GPHOTO2_ROOT=libgphoto2/local_install
           CIBW_BEFORE_ALL: >
             yum install -y libusb-devel libexif-devel libjpeg-turbo-devel \
               gd-devel doxygen &&
-            cd libgphoto2-2.5.30 &&
+            cd libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs \
               CFLAGS="-std=gnu99 -g -O2" &&
             make &&
             make install &&
             cd .. &&
-            python developer/build_doc.py 2.5.30 &&
-            python developer/build_swig.py 2.5.30
+            python developer/build_doc.py libgphoto2 &&
+            python developer/build_swig.py libgphoto2/local_install
 
       - name: Store results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: manylinux-wheels
           path: wheelhouse/*.whl
 
   test:
     needs: build
-    runs-on: ubuntu-18.04
     strategy:
       matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        os: [ubuntu-latest]
+        include:
+          - python-version: '3.6'
+            os: ubuntu-20.04
+    runs-on: ${{ matrix.os }}
     steps:
       - name: Fetch wheel files
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: manylinux-wheels
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           architecture: 'x64'
 
       - name: Install wheel
-        run: pip3 install --disable-pip-version-check --no-index --find-links=. gphoto2
+        run: pip3 install --disable-pip-version-check --no-index \
+          --find-links=. gphoto2
 
       - name: Test installation
         run: python3 -m gphoto2

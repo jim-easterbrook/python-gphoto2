@@ -3,66 +3,72 @@ on: workflow_dispatch
 
 jobs:
   build:
-    runs-on: macos-10.15
+    runs-on: macos-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Check out Doxy2Swig
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           repository: m7thon/doxy2swig
           path: doxy2swig
 
       - name: Download libgphoto2
-        run: wget -nv https://github.com/gphoto/libgphoto2/releases/download/v2.5.30/libgphoto2-2.5.30.tar.xz
+        run: wget -nv \
+          https://github.com/gphoto/libgphoto2/releases/download/v2.5.30/libgphoto2-2.5.30.tar.xz \
+          -O libgphoto2.tar.xz
 
       - name: Extract libgphoto2
-        run: tar xf libgphoto2-2.5.30.tar.xz
+        run: |
+          mkdir libgphoto2
+          tar xf libgphoto2.tar.xz \
+            --directory libgphoto2 --strip-components=1
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.1.1
+        uses: pypa/cibuildwheel@v2.12.3
         env:
-          CIBW_ARCHS: auto64
-          CIBW_SKIP: pp37-macosx_x86_64
-          CIBW_ENVIRONMENT: GPHOTO2_VERSION=2.5.30
+          CIBW_ARCHS: x86_64
+          CIBW_SKIP: pp3?-*
+          CIBW_ENVIRONMENT: GPHOTO2_ROOT=libgphoto2/local_install
           CIBW_BEFORE_ALL: >
             brew install libexif jpeg-turbo doxygen &&
-            cd libgphoto2-2.5.30 &&
+            cd libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs \
                 CFLAGS="-D_DARWIN_C_SOURCE" &&
             make &&
             make install &&
             cd .. &&
-            python3 developer/build_doc.py 2.5.30 &&
-            python3 developer/build_swig.py 2.5.30
+            python3 developer/build_doc.py libgphoto2 &&
+            python3 developer/build_swig.py libgphoto2/local_install
 
       - name: Store results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: macos-wheels
           path: wheelhouse/*.whl
 
   test:
     needs: build
-    runs-on: macos-10.15
+    runs-on: macos-latest
     strategy:
       matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10']
+        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11']
     steps:
       - name: Fetch wheel files
-        uses: actions/download-artifact@v2
+        uses: actions/download-artifact@v3
         with:
           name: macos-wheels
 
       - name: Setup Python
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
           architecture: 'x64'
 
       - name: Install wheel
-        run: pip3 install --disable-pip-version-check --no-index --find-links=. gphoto2
+        run: pip3 install --disable-pip-version-check --no-index \
+          --find-links=. gphoto2
 
       - name: Test installation
         run: python3 -m gphoto2

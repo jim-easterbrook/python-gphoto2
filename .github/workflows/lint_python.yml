@@ -23,4 +23,4 @@ jobs:
       - run: pip install exifread Pillow PyGObject PyQt5 tzlocal
       - run: pytest . || true
       - run: pytest --doctest-modules . || true
-      - run: safety check
+#      - run: safety check

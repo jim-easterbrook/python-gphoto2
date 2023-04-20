@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2021  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2021-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,16 +52,17 @@ def add_member_doc(symbol, value):
     return '%feature("docstring") {} "{}"\n\n'.format(symbol, value)
 
 def main(argv=None):
-    # get gphoto2 version to be processed
+    # get gphoto2 source to be processed
     if len(sys.argv) != 2:
-        print('Usage: %s version' % sys.argv[0])
+        print('Usage: %s source_dir' % sys.argv[0])
         return 1
-    gp_version = sys.argv[1]
-    src_dir = os.path.join('libgphoto2-' + gp_version)
+    src_dir = sys.argv[1]
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     os.chdir(src_dir)
     print('doxygen', src_dir)
-    subprocess.check_output(['doxygen', '../developer/Doxyfile'])
-    os.chdir('..')
+    subprocess.check_output(
+        ['doxygen', os.path.join(root_dir, 'developer', 'Doxyfile')])
+    os.chdir(root_dir)
     index_file = os.path.join(src_dir, 'doc', 'xml', 'index.xml')
     print('Doxy2SWIG ' + index_file)
     p = Doxy2SWIG(index_file,
@@ -74,8 +75,7 @@ def main(argv=None):
                   quiet = True)
     p.generate()
     text = ''.join(p.pieces)
-    with open(os.path.join('src', 'gphoto2', 'common',
-                           'doc-' + gp_version + '.i'), 'w') as of:
+    with open(os.path.join('src', 'gphoto2', 'common', 'doc.i'), 'w') as of:
         for match in re.finditer('%feature\("docstring"\) (\w+) \"(.+?)\";',
                                  text, re.DOTALL):
             symbol = match.group(1)

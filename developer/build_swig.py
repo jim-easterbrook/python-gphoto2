@@ -61,8 +61,7 @@ def main(argv=None):
     # make options list
     swig_opts = ['-python', '-py3', '-nodefaultctor', '-O',
                  '-Wextra', '-Werror', '-builtin', '-nofastunpack']
-    doc_file = os.path.join(
-        'src', 'gphoto2', 'common', 'doc-' + gphoto2_version_str + '.i')
+    doc_file = os.path.join('src', 'gphoto2', 'common', 'doc.i')
     output_dir = os.path.join('src', 'swig')
     output_dir += '-gp' + gphoto2_version_str
     os.makedirs(output_dir, exist_ok=True)

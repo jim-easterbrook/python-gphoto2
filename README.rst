@@ -466,7 +466,7 @@ To build interfaces for multiple versions of libgphoto2_ (e.g. v2.5.10 as well a
 
     python3 developer/build_swig.py libgphoto2-2.5.10/local_install
 
-More information about this is in the file ``developer/README.txt``.
+More information about this is in the file `<developer/README.rst>`_.
 
 Licence
 -------

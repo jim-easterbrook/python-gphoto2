@@ -72,7 +72,7 @@ jobs:
           architecture: 'x64'
 
       - name: Install wheel
-        run: pip3 install --disable-pip-version-check --no-index \
+        run: pip3 install --disable-pip-version-check --no-index
           --find-links=. gphoto2
 
       - name: Test installation

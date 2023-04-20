@@ -15,14 +15,14 @@ jobs:
           path: doxy2swig
 
       - name: Download libgphoto2
-        run: wget -nv \
-          https://github.com/gphoto/libgphoto2/releases/download/v2.5.30/libgphoto2-2.5.30.tar.xz \
+        run: wget -nv
+          https://github.com/gphoto/libgphoto2/releases/download/v2.5.30/libgphoto2-2.5.30.tar.xz
           -O libgphoto2.tar.xz
 
       - name: Extract libgphoto2
         run: |
           mkdir libgphoto2
-          tar xf libgphoto2.tar.xz \
+          tar xf libgphoto2.tar.xz
             --directory libgphoto2 --strip-components=1
 
       - name: Build wheels
@@ -67,7 +67,7 @@ jobs:
           architecture: 'x64'
 
       - name: Install wheel
-        run: pip3 install --disable-pip-version-check --no-index \
+        run: pip3 install --disable-pip-version-check --no-index
           --find-links=. gphoto2
 
       - name: Test installation

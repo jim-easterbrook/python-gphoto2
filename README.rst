@@ -1,4 +1,4 @@
-python-gphoto2 v\ 2.3.4
+python-gphoto2 v\ 2.3.5
 =======================
 
 python-gphoto2 is a comprehensive Python interface (or binding) to libgphoto2_.
@@ -20,7 +20,7 @@ Since python-gphoto2 version 2.3.1 "binary wheels" are provided for many Linux a
 These include a recent version of the libgphoto2_ libraries, and pre-built Python interface modules, which makes installation quick and easy.
 Use pip_'s ``--only-binary`` option to install one of these wheels::
 
-    sudo pip3 install gphoto2 --only-binary :all:
+    pip3 install gphoto2 --user --only-binary :all:
 
 If this fails it is most likely because none of the available wheels is compatible with your computer.
 In this case you *must* install the dependencies listed below before installing python-gphoto2.
@@ -33,7 +33,7 @@ Binary wheels for the Raspberry Pi are available from piwheels_.
 You still need to install some system packages to use these::
 
     sudo apt install libexif12 libgphoto2-6 libgphoto2-port12 libltdl7
-    sudo pip3 install gphoto2
+    pip3 install gphoto2 --user
 
 Dependencies
 ------------
@@ -64,7 +64,7 @@ Install with pip_
 The easiest installation method is to use the pip_ command.
 Note the use of ``--no-binary`` to prevent installation from a binary wheel::
 
-    sudo pip3 install -v gphoto2 --no-binary :all:
+    pip3 install -v gphoto2 --user --no-binary :all:
 
 This installation may take longer than you expect as the package's modules are compiled during installation.
 The ``-v`` option increases pip_'s verbosity so you can see that it's doing something.
@@ -81,7 +81,7 @@ For example::
 Python's setuptools_ are used to build and install python-gphoto2::
 
     pip3 wheel . -v
-    sudo pip3 install gphoto2-*.whl
+    pip3 install gphoto2-*.whl --user
 
 Install from GitHub_ (SWIG_ required)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -99,7 +99,7 @@ The ``developer`` directory includes a script to run SWIG::
 
     python3 developer/build_swig.py system
     pip3 wheel . -v
-    sudo pip3 install gphoto2-*.whl
+    pip3 install gphoto2-*.whl --user
 
 See "`running SWIG`_" below for more detail.
 
@@ -127,13 +127,13 @@ Reinstalling
 If you update or move your installation of libgphoto2_ the Python gphoto2 package may fail to import one of the libgphoto2 shared object files.
 If this happens you need to rebuild and reinstall the Python gphoto2 package::
 
-    sudo pip3 install -v -U --force-reinstall gphoto2
+    pip3 install --user -v -U --force-reinstall gphoto2
 
 if you installed with pip_, or ::
 
     rm -rf build
     pip3 wheel . -v
-    sudo pip3 install --force-reinstall gphoto2-*.whl
+    pip3 install --user --force-reinstall gphoto2-*.whl
 
 if you installed from source.
 

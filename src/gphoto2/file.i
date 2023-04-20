@@ -243,14 +243,12 @@ MEMBER_FUNCTION(_CameraFile,
 MEMBER_FUNCTION(_CameraFile,
     void, copy, (CameraFile *source),
     gp_file_copy, ($self, source), 1)
-MEMBER_FUNCTION(_CameraFile,
-    void, append, (const char *data, unsigned long int size),
-    gp_file_append, ($self, data, size), 1)
 
 // These structures are private
 %ignore _CameraFileHandler;
 
 // These functions are internal
+%ignore gp_file_append;
 %ignore gp_file_slurp;
 %ignore gp_file_free;
 %ignore gp_file_ref;

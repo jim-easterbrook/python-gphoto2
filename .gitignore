@@ -1,9 +1,7 @@
 build
 dist
 doxy2swig
-libgphoto2-*
-src/gphoto2/common/doc-*
-src/info.txt
+src/gphoto2/common/doc.i
 src/swig-*
 gphoto2.egg-info
 *.whl

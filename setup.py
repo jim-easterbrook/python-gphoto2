@@ -28,23 +28,21 @@ with open('README.rst') as rst:
 packages = ['gphoto2', 'gphoto2.examples']
 package_dir = {'gphoto2.examples': 'examples'}
 package_data = {'gphoto2.examples': ['*']}
+extra_link_args = []
 
-if 'GPHOTO2_VERSION' in os.environ:
+if 'GPHOTO2_ROOT' in os.environ:
     # using a local build of libgphoto2
-    gphoto2_version_str = os.environ['GPHOTO2_VERSION']
-    print('Using local libgphoto2 v{}'.format(gphoto2_version_str))
-    gphoto2_dir = os.path.join(
-        'libgphoto2-' + gphoto2_version_str, 'local_install')
-    inc_dir = os.path.join(gphoto2_dir, 'include')
-    if not os.path.isdir(inc_dir):
-        raise RuntimeError('Include directory not found')
-    lib_dir = None
-    for name in os.listdir(gphoto2_dir):
-        if name.startswith('lib'):
-            lib_dir = os.path.join(gphoto2_dir, name)
+    gphoto2_dir = os.environ['GPHOTO2_ROOT']
+    print('Using libgphoto2 from {}'.format(gphoto2_dir))
+    for root, dirs, files in os.walk(gphoto2_dir):
+        if 'libgphoto2.pc' in files:
+            os.environ['PKG_CONFIG_PATH'] = root
             break
-    if not lib_dir:
-        raise RuntimeError('Library directory not found')
+    else:
+        raise RuntimeError('No package config file found')
+    lib_dir = subprocess.check_output(
+        ['pkg-config', '--variable=libdir', 'libgphoto2'],
+        universal_newlines=True).strip()
     packages.append('gphoto2.libs')
     package_dir['gphoto2.libs'] = lib_dir
     package_data['gphoto2.libs'] = []
@@ -54,49 +52,48 @@ if 'GPHOTO2_VERSION' in os.environ:
             package_data['gphoto2.libs'].append(name)
     # get cam libs and io libs
     packages.append('gphoto2.camlibs')
-    package_dir['gphoto2.camlibs'] = os.path.join(
-        lib_dir, 'libgphoto2', gphoto2_version_str)
+    package_dir['gphoto2.camlibs'] = subprocess.check_output(
+        ['pkg-config', '--variable=driverdir', 'libgphoto2'],
+        universal_newlines=True).strip()
     package_data['gphoto2.camlibs'] = ['*.so']
-    iolibs = os.listdir(os.path.join(lib_dir, 'libgphoto2_port'))
-    iolibs.sort()
     packages.append('gphoto2.iolibs')
-    package_dir['gphoto2.iolibs'] = os.path.join(
-        lib_dir, 'libgphoto2_port', iolibs[-1])
+    package_dir['gphoto2.iolibs'] = subprocess.check_output(
+        ['pkg-config', '--variable=driverdir', 'libgphoto2_port'],
+        universal_newlines=True).strip()
     package_data['gphoto2.iolibs'] = ['*.so']
     # add localisation files
-    locale_dir = os.path.join(gphoto2_dir, 'share', 'locale')
+    prefix = subprocess.check_output(
+        ['pkg-config', '--variable=prefix', 'libgphoto2'],
+        universal_newlines=True).strip()
+    locale_dir = os.path.join(prefix, 'share', 'locale')
     if os.path.isdir(locale_dir):
         packages.append('gphoto2.locale')
         package_dir['gphoto2.locale'] = locale_dir
         package_data['gphoto2.locale'] = ['*/LC_MESSAGES/libgphoto2*.mo']
     # module compile options
-    libraries = ['gphoto2', 'gphoto2_port', 'm']
-    library_dirs = [lib_dir]
-    include_dirs = [inc_dir]
     extra_link_args = ['-Wl,-rpath,$ORIGIN/libs']
-else:
-    # using system installed libgphoto2
-    cmd = ['pkg-config', '--modversion', 'libgphoto2']
-    FNULL = open(os.devnull, 'w')
-    try:
-        gphoto2_version_str = subprocess.check_output(
-            cmd, stderr=FNULL, universal_newlines=True).strip()
-    except Exception:
-        raise RuntimeError('ERROR: command "%s" failed' % ' '.join(cmd))
-    print('Using installed libgphoto2 v{}'.format(gphoto2_version_str))
-    gphoto2_flags = defaultdict(list)
-    for flag in subprocess.check_output(
-            ['pkg-config', '--cflags', '--libs', 'libgphoto2'],
-            universal_newlines=True).split():
-        gphoto2_flags[flag[:2]].append(flag)
-    gphoto2_include  = gphoto2_flags['-I']
-    for n in range(len(gphoto2_include)):
-        if gphoto2_include[n].endswith('/gphoto2'):
-            gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
-    libraries = [x.replace('-l', '') for x in gphoto2_flags['-l']]
-    library_dirs = [x.replace('-L', '') for x in gphoto2_flags['-L']]
-    include_dirs = [x.replace('-I', '') for x in gphoto2_include]
-    extra_link_args = []
+
+cmd = ['pkg-config', '--modversion', 'libgphoto2']
+FNULL = open(os.devnull, 'w')
+try:
+    gphoto2_version_str = subprocess.check_output(
+        cmd, stderr=FNULL, universal_newlines=True).strip()
+except Exception:
+    raise RuntimeError('ERROR: command "%s" failed' % ' '.join(cmd))
+print('Using libgphoto2 v{}'.format(gphoto2_version_str))
+# get libgphoto2 config
+gphoto2_flags = defaultdict(list)
+for flag in subprocess.check_output(
+        ['pkg-config', '--cflags', '--libs', 'libgphoto2'],
+        universal_newlines=True).split():
+    gphoto2_flags[flag[:2]].append(flag)
+gphoto2_include  = gphoto2_flags['-I']
+for n in range(len(gphoto2_include)):
+    if gphoto2_include[n].endswith('/gphoto2'):
+        gphoto2_include[n] = gphoto2_include[n][:-len('/gphoto2')]
+libraries = [x.replace('-l', '') for x in gphoto2_flags['-l']]
+library_dirs = [x.replace('-L', '') for x in gphoto2_flags['-L']]
+include_dirs = [x.replace('-I', '') for x in gphoto2_include]
 
 # get list of available swigged versions
 swigged_versions = []

@@ -22,10 +22,10 @@ Note the use of ``--prefix=$PWD/local_install`` to create a local copy, rather t
 
 Now you can build and install a wheel that includes your local copy of the libgphoto2 libs::
 
-    GPHOTO2_VERSION=2.5.28 pip wheel . -v
+    GPHOTO2_ROOT=libgphoto2-2.5.28/local_install pip wheel . -v
     pip install gphoto2-*.whl --user
 
-The ``GPHOTO2_VERSION`` environment variable tells setup.py to use the files in libgphoto2-2.5.28/local_install.
+The ``GPHOTO2_ROOT`` environment variable tells setup.py to use the files in libgphoto2-2.5.28/local_install.
 
 Tracking libgphoto2 releases
 ----------------------------

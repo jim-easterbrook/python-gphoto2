@@ -33,7 +33,7 @@ jobs:
           CIBW_ENVIRONMENT: GPHOTO2_ROOT=libgphoto2/local_install
           CIBW_BEFORE_ALL: >
             yum install -y libusb-devel libexif-devel libjpeg-turbo-devel \
-              gd-devel doxygen &&
+              gd-devel doxygen libcurl-devel &&
             cd libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs \
               CFLAGS="-std=gnu99 -g -O2" &&

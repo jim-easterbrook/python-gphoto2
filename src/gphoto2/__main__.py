@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2021  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2021-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -23,9 +23,10 @@ import gphoto2 as gp
 
 def main():
     print('python-gphoto2 version:', gp.__version__)
-    print('libgphoto2 version:', gp.gp_library_version(gp.GP_VERSION_SHORT))
+    print('libgphoto2 version:',
+          ', '.join(gp.gp_library_version(gp.GP_VERSION_SHORT)))
     print('libgphoto2_port version:',
-          gp.gp_port_library_version(gp.GP_VERSION_SHORT))
+          ', '.join(gp.gp_port_library_version(gp.GP_VERSION_SHORT)))
     print('python-gphoto2 examples:',
           os.path.join(os.path.dirname(__file__), 'examples'))
 

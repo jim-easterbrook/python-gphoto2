@@ -126,9 +126,9 @@ To use this local installation of libgphoto2 with python-gphoto2 you set the ``G
 Running SWIG
 ------------
 
-Most users should not need to use SWIG to install python-gphoto2, unless you need to test a new version of SWIG or modify the Python gphoto2 interface.
+Most users should not need to use SWIG_ to install python-gphoto2, unless you need to test a new version of SWIG or modify the Python gphoto2 interface.
 
-SWIG (http://swig.org/) should be installable via your operating system's package manager.
+SWIG should be installable via your operating system's package manager.
 Note that this may be an older version of SWIG than the one used to generate the files on PyPI_.
 
 You can download the python-gphoto2 source files from the GitHub releases_ page or you can use git_ to "clone" the GitHub_ repository::

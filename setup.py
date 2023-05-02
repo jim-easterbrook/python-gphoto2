@@ -33,6 +33,9 @@ extra_link_args = []
 if 'GPHOTO2_ROOT' in os.environ:
     # using a local build of libgphoto2
     gphoto2_dir = os.environ['GPHOTO2_ROOT']
+    gphoto2_dir = os.path.expanduser(gphoto2_dir)
+    if not os.path.isabs(gphoto2_dir):
+        raise RuntimeError('GPHOTO2_ROOT is not an absolute path')
     print('Using libgphoto2 from {}'.format(gphoto2_dir))
     for root, dirs, files in os.walk(gphoto2_dir):
         if 'libgphoto2.pc' in files:

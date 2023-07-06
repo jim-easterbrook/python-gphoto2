@@ -78,7 +78,7 @@ def main(argv=None):
         swig_opts.append('-py3')
     doc_file = os.path.join('src', 'gphoto2', 'common', 'doc.i')
     output_dir = os.path.join('src', 'swig')
-    output_dir += '-gp' + gphoto2_version_str
+    output_dir += '-gp' + gphoto2_version_str.replace('.', '_')
     os.makedirs(output_dir, exist_ok=True)
     version_opts = ['-outdir', output_dir]
     if os.path.isfile(doc_file):

@@ -17,13 +17,10 @@
 
 from collections import defaultdict
 from setuptools import setup, Extension
+from setuptools import __version__ as setuptools_version
 import os
 import subprocess
 import sys
-
-# python-gphoto2 version
-with open('README.rst') as rst:
-    version = rst.readline().split()[-1]
 
 packages = ['gphoto2', 'gphoto2.examples']
 package_dir = {'gphoto2.examples': 'examples'}
@@ -103,7 +100,7 @@ swigged_versions = []
 for name in os.listdir('src'):
     if not name.startswith('swig-gp'):
         continue
-    swigged_version = name.replace('swig-gp','').split('.')
+    swigged_version = name.replace('swig-gp', '').split('_')
     swigged_versions.append(tuple(map(int, swigged_version)))
 swigged_versions.sort()
 
@@ -115,7 +112,7 @@ swigged_version = swigged_versions[0]
 
 # create extension modules list
 ext_modules = []
-mod_src_dir = 'swig-gp' + '.'.join(map(str, swigged_version))
+mod_src_dir = 'swig-gp' + '_'.join(map(str, swigged_version))
 mod_src_dir = os.path.join('src', mod_src_dir)
 package_dir['gphoto2'] = mod_src_dir
 
@@ -143,45 +140,36 @@ for file_name in os.listdir(mod_src_dir):
         extra_link_args = extra_link_args,
         ))
 
-command_options = {}
-
-# set options for building distributions
-command_options['sdist'] = {
-    'formats' : ('setup.py', 'gztar'),
+setup_kwds = {
+    'ext_package': 'gphoto2',
+    'ext_modules': ext_modules,
+    'packages': packages,
+    'package_dir': package_dir,
+    'package_data': package_data,
     }
 
-with open('README.rst') as ldf:
-    long_description = ldf.read()
+if tuple(map(int, setuptools_version.split('.'))) < (61, 0):
+    # get metadata from pyproject.toml
+    import toml
+    metadata = toml.load('pyproject.toml')
 
-setup(name = 'gphoto2',
-      version = version,
-      description = 'Python interface to libgphoto2',
-      long_description = long_description,
-      author = 'Jim Easterbrook',
-      author_email = 'jim@jim-easterbrook.me.uk',
-      url = 'https://github.com/jim-easterbrook/python-gphoto2',
-      classifiers = [
-          'Development Status :: 5 - Production/Stable',
-          'Intended Audience :: Developers',
-          'License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)',
-          'Operating System :: MacOS',
-          'Operating System :: MacOS :: MacOS X',
-          'Operating System :: POSIX',
-          'Operating System :: POSIX :: BSD :: FreeBSD',
-          'Operating System :: POSIX :: BSD :: NetBSD',
-          'Operating System :: POSIX :: Linux',
-          'Programming Language :: Python :: 3',
-          'Topic :: Multimedia',
-          'Topic :: Multimedia :: Graphics',
-          'Topic :: Multimedia :: Graphics :: Capture',
-          ],
-      platforms = ['POSIX', 'MacOS'],
-      license = 'GNU GPL',
-      command_options = command_options,
-      ext_package = 'gphoto2',
-      ext_modules = ext_modules,
-      packages = packages,
-      package_dir = package_dir,
-      package_data = package_data,
-      zip_safe = False,
-      )
+    with open(metadata['project']['readme']) as ldf:
+        long_description = ldf.read()
+        # python-gphoto2 version
+        version = long_description.split('\n')[0].split()[-1]
+
+    setup_kwds.update(
+        name = metadata['project']['name'],
+        version = version,
+        description = metadata['project']['description'],
+        long_description = long_description,
+        author = metadata['project']['authors'][0]['name'],
+        author_email = metadata['project']['authors'][0]['email'],
+        url = metadata['project']['urls']['homepage'],
+        classifiers = metadata['project']['classifiers'],
+        platforms = metadata['tool']['setuptools']['platforms'],
+        license = metadata['project']['license']['text'],
+        zip_safe = metadata['tool']['setuptools']['zip-safe'],
+        )
+
+setup(**setup_kwds)

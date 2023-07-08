@@ -21,9 +21,9 @@ jobs:
 
       - name: Extract libgphoto2
         run: |
-          mkdir libgphoto2
+          mkdir ${{ github.workspace }}/libgphoto2
           tar xf libgphoto2.tar.xz \
-            --directory libgphoto2 --strip-components=1
+            --directory ${{ github.workspace }}/libgphoto2 --strip-components=1
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.12.3
@@ -33,14 +33,14 @@ jobs:
           CIBW_ENVIRONMENT: GPHOTO2_ROOT=${{ github.workspace }}/libgphoto2/local_install
           CIBW_BEFORE_ALL: >
             brew install libexif jpeg-turbo doxygen &&
-            cd libgphoto2 &&
+            pushd ${{ github.workspace }}/libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs \
                 CFLAGS="-D_DARWIN_C_SOURCE" &&
             make &&
             make install &&
-            cd .. &&
-            python3 developer/build_doc.py libgphoto2 &&
-            python3 developer/build_swig.py libgphoto2/local_install
+            popd &&
+            python3 developer/build_doc.py ${{ github.workspace }}/libgphoto2 &&
+            python3 developer/build_swig.py ${{ github.workspace }}/libgphoto2/local_install
 
       - name: Store results
         uses: actions/upload-artifact@v3

@@ -8,12 +8,6 @@ jobs:
       - name: Check out repository code
         uses: actions/checkout@v3
 
-      - name: Check out Doxy2Swig
-        uses: actions/checkout@v3
-        with:
-          repository: m7thon/doxy2swig
-          path: doxy2swig
-
       - name: Download libgphoto2
         run: wget -nv
           https://github.com/gphoto/libgphoto2/releases/download/v2.5.30/libgphoto2-2.5.30.tar.xz
@@ -32,15 +26,13 @@ jobs:
           CIBW_SKIP: pp3?-*
           CIBW_ENVIRONMENT: GPHOTO2_ROOT=$PWD/libgphoto2/local_install
           CIBW_BEFORE_ALL: >
-            brew install libexif jpeg-turbo doxygen &&
+            brew install libexif jpeg-turbo &&
             pushd $PWD/libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs \
                 CFLAGS="-D_DARWIN_C_SOURCE" &&
             make &&
             make install &&
-            popd &&
-            python3 developer/build_doc.py $PWD/libgphoto2 &&
-            python3 developer/build_swig.py $PWD/libgphoto2/local_install
+            popd
 
       - name: Store results
         uses: actions/upload-artifact@v3

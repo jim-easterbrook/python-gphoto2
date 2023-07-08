@@ -1,0 +1,43 @@
+__version__ = "2.3.5"
+
+
+import os
+
+_dir = os.path.dirname(__file__)
+_camlibs = os.path.join(_dir, 'camlibs')
+if os.path.isdir(_camlibs):
+    os.environ['CAMLIBS'] = _camlibs
+_iolibs = os.path.join(_dir, 'iolibs')
+if os.path.isdir(_iolibs):
+    os.environ['IOLIBS'] = _iolibs
+
+class GPhoto2Error(Exception):
+    """Exception raised by gphoto2 library errors
+
+    Attributes:
+        code   (int): the gphoto2 error code
+        string (str): corresponding error message
+    """
+    def __init__(self, code):
+        string = gp_result_as_string(code)
+        Exception.__init__(self, '[%d] %s' % (code, string))
+        self.code = code
+        self.string = string
+
+from gphoto2.abilities_list import *
+from gphoto2.camera import *
+from gphoto2.context import *
+from gphoto2.file import *
+from gphoto2.filesys import *
+from gphoto2.list import *
+from gphoto2.port_info_list import *
+from gphoto2.port_log import *
+from gphoto2.result import *
+from gphoto2.version import *
+from gphoto2.widget import *
+
+_locale = os.path.join(_dir, 'locale')
+if os.path.isdir(_locale):
+    gphoto2.abilities_list.gp_init_localedir(_locale)
+
+__all__ = dir()

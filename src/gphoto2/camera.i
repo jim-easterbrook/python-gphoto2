@@ -247,22 +247,6 @@ MEMBER_FUNCTION(_Camera,
 
 // Substitute definitions of things added during libgphoto2 development
 %{
-#if GPHOTO2_VERSION < 0x02050a00
-static int gp_camera_list_config(
-        Camera *camera, CameraList *list, GPContext *context) {
-    return GP_ERROR_NOT_SUPPORTED;
-}
-static int gp_camera_get_single_config(
-        Camera *camera, const char *name, CameraWidget **widget,
-        GPContext *context) {
-    return GP_ERROR_NOT_SUPPORTED;
-}
-static int gp_camera_set_single_config(
-        Camera *camera, const char *name, CameraWidget *widget,
-        GPContext *context) {
-    return GP_ERROR_NOT_SUPPORTED;
-}
-#endif
 #if GPHOTO2_VERSION < 0x02051100
   unsigned int GP_EVENT_FILE_CHANGED = GP_EVENT_CAPTURE_COMPLETE + 1;
 #endif

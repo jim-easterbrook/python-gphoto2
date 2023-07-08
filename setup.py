@@ -114,6 +114,8 @@ swigged_versions.sort()
 
 # choose best match from swigged versions
 gphoto2_version = tuple(map(int, gphoto2_version_str.split('.')))
+if gphoto2_version < (2, 5, 10):
+    raise RuntimeError('libgphoto2 version 2.5.10 or later is required')
 while len(swigged_versions) > 1 and swigged_versions[0] < gphoto2_version:
     swigged_versions = swigged_versions[1:]
 swigged_version = swigged_versions[0]

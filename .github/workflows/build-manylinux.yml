@@ -30,7 +30,7 @@ jobs:
         env:
           CIBW_ARCHS: auto64
           CIBW_BUILD: cp*-manylinux_x86_64
-          CIBW_ENVIRONMENT: GPHOTO2_ROOT=libgphoto2/local_install
+          CIBW_ENVIRONMENT: GPHOTO2_ROOT=${{ github.workspace }}/libgphoto2/local_install
           CIBW_BEFORE_ALL: >
             yum install -y libusb-devel libexif-devel libjpeg-turbo-devel \
               gd-devel doxygen libcurl-devel libxml2-devel &&

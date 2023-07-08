@@ -30,7 +30,7 @@ jobs:
         env:
           CIBW_ARCHS: x86_64
           CIBW_SKIP: pp3?-*
-          CIBW_ENVIRONMENT: GPHOTO2_ROOT=libgphoto2/local_install
+          CIBW_ENVIRONMENT: GPHOTO2_ROOT=${{ github.workspace }}/libgphoto2/local_install
           CIBW_BEFORE_ALL: >
             brew install libexif jpeg-turbo doxygen &&
             cd libgphoto2 &&

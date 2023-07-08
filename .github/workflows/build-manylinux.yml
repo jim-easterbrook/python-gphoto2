@@ -21,27 +21,27 @@ jobs:
 
       - name: Extract libgphoto2
         run: |
-          mkdir ${{ github.workspace }}/libgphoto2
+          mkdir $HOME/libgphoto2
           tar xf libgphoto2.tar.xz \
-            --directory ${{ github.workspace }}/libgphoto2 --strip-components=1
+            --directory $HOME/libgphoto2 --strip-components=1
 
       - name: Build wheels
         uses: pypa/cibuildwheel@v2.12.3
         env:
           CIBW_ARCHS: auto64
           CIBW_BUILD: cp*-manylinux_x86_64
-          CIBW_ENVIRONMENT: GPHOTO2_ROOT=${{ github.workspace }}/libgphoto2/local_install
+          CIBW_ENVIRONMENT: GPHOTO2_ROOT=$HOME/libgphoto2/local_install
           CIBW_BEFORE_ALL: >
             yum install -y libusb-devel libexif-devel libjpeg-turbo-devel \
               gd-devel doxygen libcurl-devel libxml2-devel &&
-            pushd ${{ github.workspace }}/libgphoto2 &&
+            pushd $HOME/libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs \
               CFLAGS="-std=gnu99 -g -O2" &&
             make &&
             make install &&
             popd &&
-            python developer/build_doc.py ${{ github.workspace }}/libgphoto2 &&
-            python developer/build_swig.py ${{ github.workspace }}/libgphoto2/local_install
+            python developer/build_doc.py $HOME/libgphoto2 &&
+            python developer/build_swig.py $HOME/libgphoto2/local_install
 
       - name: Store results
         uses: actions/upload-artifact@v3

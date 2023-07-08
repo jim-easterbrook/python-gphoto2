@@ -49,8 +49,8 @@ See the piwheels site for more information.
 Dependencies
 ------------
 
-*   Python: http://python.org/ version 3.5 or greater
-*   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.5.0 or greater
+*   Python: http://python.org/ version 3.6 or greater
+*   libgphoto2: http://www.gphoto.org/proj/libgphoto2/ version 2.5.10 or greater
 *   build tools: `pkg-config`_, C compiler & linker
 
 In most cases you should use your operating system's package manager to install these.
@@ -146,13 +146,13 @@ Omitting the parameter uses the system installation::
     $ python3 developer/build_swig.py
 
 This builds the interface for the version of libgphoto2_ installed on your computer.
-The interface files are created in directories with names like ``src/swig-gp2.5.18``.
+The interface files are created in directories with names like ``src/swig-gp2_5_18``.
 This naming scheme allows for different versions of libgphoto2_.
 The most appropriate version is chosen when the interface is built.
 
 As before, pip_ is used to build and install python-gphoto2::
 
-    $ GPHOTO2_ROOT=$HOME/.local pip3 install gphoto2 --user --no-binary :all:
+    $ GPHOTO2_ROOT=$HOME/.local pip3 install --user -v .
 
 Documentation
 -------------

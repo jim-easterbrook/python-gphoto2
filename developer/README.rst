@@ -1,7 +1,7 @@
 Notes for developers
 ====================
 
-The python interfaces can be built with any version of libgphoto2, but functions only present in later versions will not be accessible from python unless the interface is built with that later version. However, using this later version interface with an earlier version of libgphoto2 would normally result in undefined reference errors.
+The python interfaces can be built with any recent version of libgphoto2, but functions only present in later versions will not be accessible from python unless the interface is built with that later version. However, using this later version interface with an earlier version of libgphoto2 would normally result in undefined reference errors.
 
 The solution is to include definitions of new functions in the interface to replace the proper versions when building for an older version of libgphoto2. See the camera.i interface file for an example.
 
@@ -20,12 +20,12 @@ To build python-gphoto2 with a different version of libgphoto2 than the one inst
 
 Note the use of ``--prefix=$PWD/local_install`` to create a local copy, rather than a system installation.
 
-Now you can build and install a wheel that includes your local copy of the libgphoto2 libs::
+Now you can build and install a package that includes your local copy of the libgphoto2 libs::
 
-    GPHOTO2_ROOT=libgphoto2-2.5.28/local_install pip wheel . -v
-    pip install gphoto2-*.whl --user
+    GPHOTO2_ROOT=$PWD/libgphoto2-2.5.28/local_install pip install --user . -v
 
 The ``GPHOTO2_ROOT`` environment variable tells setup.py to use the files in libgphoto2-2.5.28/local_install.
+This value needs to be an absolute path.
 
 Tracking libgphoto2 releases
 ----------------------------

@@ -103,10 +103,10 @@ def main(argv=None):
 import os
 
 _dir = os.path.dirname(__file__)
-_camlibs = os.path.join(_dir, 'camlibs')
+_camlibs = os.path.join(_dir, 'libgphoto2', 'camlibs')
 if os.path.isdir(_camlibs):
     os.environ['CAMLIBS'] = _camlibs
-_iolibs = os.path.join(_dir, 'iolibs')
+_iolibs = os.path.join(_dir, 'libgphoto2', 'iolibs')
 if os.path.isdir(_iolibs):
     os.environ['IOLIBS'] = _iolibs
 
@@ -127,7 +127,7 @@ class GPhoto2Error(Exception):
         for name in ext_names:
             im.write('from gphoto2.{} import *\n'.format(name))
         im.write('''
-_locale = os.path.join(_dir, 'locale')
+_locale = os.path.join(_dir, 'libgphoto2', 'locale')
 if os.path.isdir(_locale):
     gphoto2.abilities_list.gp_init_localedir(_locale)
 

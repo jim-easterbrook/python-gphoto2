@@ -45,41 +45,44 @@ if 'GPHOTO2_ROOT' in os.environ:
     lib_dir = subprocess.check_output(
         ['pkg-config', '--variable=libdir', 'libgphoto2'],
         universal_newlines=True).strip()
-    packages.append('gphoto2.libs')
-    package_dir['gphoto2.libs'] = os.path.relpath(lib_dir)
-    package_data['gphoto2.libs'] = []
+    packages.append('gphoto2.libgphoto2')
+    package_dir['gphoto2.libgphoto2'] = os.path.relpath(lib_dir)
+    package_data['gphoto2.libgphoto2'] = []
     # choose the libx.so.n versions of all the .so files and links
     for name in os.listdir(lib_dir):
         if (name.startswith('libgphoto') and '.so.' in name
                 and len(name.split('.')) == 3):
-            package_data['gphoto2.libs'].append(name)
+            package_data['gphoto2.libgphoto2'].append(name)
     # get cam libs
-    packages.append('gphoto2.camlibs')
+    packages.append('gphoto2.libgphoto2.camlibs')
     lib_dir = subprocess.check_output(
         ['pkg-config', '--variable=driverdir', 'libgphoto2'],
         universal_newlines=True).strip()
-    package_dir['gphoto2.camlibs'] = os.path.relpath(lib_dir)
-    package_data['gphoto2.camlibs'] = ['*.so']
+    package_dir['gphoto2.libgphoto2.camlibs'] = os.path.relpath(lib_dir)
+    package_data['gphoto2.libgphoto2.camlibs'] = ['*.so']
     # get io libs
-    packages.append('gphoto2.iolibs')
+    packages.append('gphoto2.libgphoto2.iolibs')
     lib_dir = subprocess.check_output(
         ['pkg-config', '--variable=driverdir', 'libgphoto2_port'],
         universal_newlines=True).strip()
-    package_dir['gphoto2.iolibs'] = os.path.relpath(lib_dir)
-    package_data['gphoto2.iolibs'] = ['*.so']
+    package_dir['gphoto2.libgphoto2.iolibs'] = os.path.relpath(lib_dir)
+    package_data['gphoto2.libgphoto2.iolibs'] = ['*.so']
     # get localisation files
     prefix = subprocess.check_output(
         ['pkg-config', '--variable=prefix', 'libgphoto2'],
         universal_newlines=True).strip()
     locale_dir = os.path.join(prefix, 'share', 'locale')
     if os.path.isdir(locale_dir):
-        packages.append('gphoto2.locale')
-        package_dir['gphoto2.locale'] = os.path.relpath(locale_dir)
-        package_data['gphoto2.locale'] = ['*/LC_MESSAGES/libgphoto2*.mo']
+        packages.append('gphoto2.libgphoto2.locale')
+        package_dir['gphoto2.libgphoto2.locale'] = os.path.relpath(locale_dir)
+        package_data['gphoto2.libgphoto2.locale'] = [
+            '*/LC_MESSAGES/libgphoto2*.mo']
         for name in os.listdir(locale_dir):
-            packages.append('gphoto2.locale.' + name + '.LC_MESSAGES')
+            packages.append(
+                'gphoto2.libgphoto2.locale.' + name + '.LC_MESSAGES')
     # module compile options
-    extra_link_args = ['-Wl,--disable-new-dtags', '-Wl,-rpath,$ORIGIN/libs']
+    extra_link_args = ['-Wl,--disable-new-dtags',
+                       '-Wl,-rpath,$ORIGIN/libgphoto2']
 
 cmd = ['pkg-config', '--modversion', 'libgphoto2']
 FNULL = open(os.devnull, 'w')

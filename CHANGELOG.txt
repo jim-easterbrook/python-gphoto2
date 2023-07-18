@@ -15,6 +15,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+Changes in 2.3.6:
+  1/ Use libusb1 instead of libusb0 in Linux binary wheels.
+
 Changes in 2.3.5:
   1/ Add Python 3.11 binary wheels.
   2/ Drop support for libgphoto2 before version v2.5.10

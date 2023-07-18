@@ -26,7 +26,7 @@ jobs:
           CIBW_BUILD: cp*-manylinux_x86_64
           CIBW_ENVIRONMENT: GPHOTO2_ROOT=$PWD/libgphoto2/local_install
           CIBW_BEFORE_ALL: >
-            yum install -y libusb-devel libexif-devel libjpeg-turbo-devel \
+            yum install -y libusbx-devel libexif-devel libjpeg-turbo-devel \
               gd-devel libcurl-devel libxml2-devel &&
             pushd $PWD/libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs \

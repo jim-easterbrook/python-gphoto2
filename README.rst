@@ -1,4 +1,4 @@
-python-gphoto2 v\ 2.3.5
+python-gphoto2 v\ 2.3.6
 =======================
 
 python-gphoto2 is a comprehensive Python interface (or binding) to libgphoto2_.

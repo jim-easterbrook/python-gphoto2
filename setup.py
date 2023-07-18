@@ -79,7 +79,7 @@ if 'GPHOTO2_ROOT' in os.environ:
         for name in os.listdir(locale_dir):
             packages.append('gphoto2.locale.' + name + '.LC_MESSAGES')
     # module compile options
-    extra_link_args = ['-Wl,-rpath,$ORIGIN/libs']
+    extra_link_args = ['-Wl,--disable-new-dtags', '-Wl,-rpath,$ORIGIN/libs']
 
 cmd = ['pkg-config', '--modversion', 'libgphoto2']
 FNULL = open(os.devnull, 'w')
@@ -143,7 +143,6 @@ for file_name in os.listdir(mod_src_dir):
         sources = [os.path.join(mod_src_dir, file_name)],
         libraries = libraries,
         library_dirs = library_dirs,
-        runtime_library_dirs = library_dirs,
         include_dirs = include_dirs,
         extra_compile_args = extra_compile_args,
         define_macros = define_macros,

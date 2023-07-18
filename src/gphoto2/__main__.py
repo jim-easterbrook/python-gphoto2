@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import argparse
 import os
 import sys
 
@@ -22,11 +23,16 @@ import gphoto2 as gp
 
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-v', '--verbosity', help='increase output verbosity',
+                        action='store_true')
+    args = parser.parse_args()
     print('python-gphoto2 version:', gp.__version__)
+    verbosity = (gp.GP_VERSION_SHORT, gp.GP_VERSION_VERBOSE)[args.verbosity]
     print('libgphoto2 version:',
-          ', '.join(gp.gp_library_version(gp.GP_VERSION_SHORT)))
+          ', '.join(gp.gp_library_version(verbosity)))
     print('libgphoto2_port version:',
-          ', '.join(gp.gp_port_library_version(gp.GP_VERSION_SHORT)))
+          ', '.join(gp.gp_port_library_version(verbosity)))
     print('python-gphoto2 examples:',
           os.path.join(os.path.dirname(__file__), 'examples'))
 

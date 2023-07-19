@@ -24,6 +24,10 @@ import gphoto2 as gp
 
 
 class TestAutoDetect(unittest.TestCase):
+    def setUp(self):
+        # switch to virtual camera from normal drivers
+        os.environ['IOLIBS'] = os.environ['IOLIBS'].replace('iolibs', 'vusb')
+
     def test_autodetect(self):
         cameras = gp.Camera.autodetect()
         self.assertIsInstance(cameras, gp.CameraList)
@@ -34,6 +38,8 @@ class TestAutoDetect(unittest.TestCase):
 
 class TestVirtualCamera(unittest.TestCase):
     def setUp(self):
+        # switch to virtual camera from normal drivers
+        os.environ['IOLIBS'] = os.environ['IOLIBS'].replace('iolibs', 'vusb')
         self.camera = gp.Camera()
         self.camera.init()
 

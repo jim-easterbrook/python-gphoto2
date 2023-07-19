@@ -30,7 +30,7 @@ jobs:
               gd-devel libcurl-devel libxml2-devel libtool-ltdl-devel &&
             pushd $PWD/libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs \
-              CFLAGS="-std=gnu99 -g -O2" &&
+              --enable-vusb CFLAGS="-std=gnu99 -g -O2" &&
             make &&
             make install &&
             popd

@@ -29,7 +29,7 @@ jobs:
             brew install libexif jpeg-turbo &&
             pushd $PWD/libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs \
-                CFLAGS="-D_DARWIN_C_SOURCE" &&
+                --enable-vusb CFLAGS="-D_DARWIN_C_SOURCE" &&
             make &&
             make install &&
             popd

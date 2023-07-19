@@ -2,5 +2,6 @@ build
 dist
 doxy2swig
 src/gphoto2/common/doc.i
+tests/__pycache__/
 gphoto2.egg-info
 *.whl

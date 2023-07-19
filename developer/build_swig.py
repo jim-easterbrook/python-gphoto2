@@ -106,7 +106,10 @@ _dir = os.path.dirname(__file__)
 _camlibs = os.path.join(_dir, 'libgphoto2', 'camlibs')
 if os.path.isdir(_camlibs):
     os.environ['CAMLIBS'] = _camlibs
-_iolibs = os.path.join(_dir, 'libgphoto2', 'iolibs')
+if 'VCAMERADIR' in os.environ:
+    _iolibs = os.path.join(_dir, 'libgphoto2', 'vusb')
+else:
+    _iolibs = os.path.join(_dir, 'libgphoto2', 'iolibs')
 if os.path.isdir(_iolibs):
     os.environ['IOLIBS'] = _iolibs
 

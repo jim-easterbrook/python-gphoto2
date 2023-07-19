@@ -66,7 +66,14 @@ if 'GPHOTO2_ROOT' in os.environ:
         ['pkg-config', '--variable=driverdir', 'libgphoto2_port'],
         universal_newlines=True).strip()
     package_dir['gphoto2.libgphoto2.iolibs'] = os.path.relpath(lib_dir)
-    package_data['gphoto2.libgphoto2.iolibs'] = ['*.so']
+    package_data['gphoto2.libgphoto2.iolibs'] = []
+    for name in os.listdir(lib_dir):
+        if name == 'vusb.so':
+            packages.append('gphoto2.libgphoto2.vusb')
+            package_dir['gphoto2.libgphoto2.vusb'] = os.path.relpath(lib_dir)
+            package_data['gphoto2.libgphoto2.vusb'] = [name]
+        elif name.endswith('.so'):
+            package_data['gphoto2.libgphoto2.iolibs'].append(name)
     # get localisation files
     prefix = subprocess.check_output(
         ['pkg-config', '--variable=prefix', 'libgphoto2'],

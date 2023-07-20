@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -20,6 +20,18 @@
 %include "common/preamble.i"
 
 %rename(CameraWidget) _CameraWidget;
+
+// Deprecate some functions intended for camera drivers
+DEPRECATED(gp_widget_add_choice)
+DEPRECATED(_CameraWidget::add_choice)
+DEPRECATED(gp_widget_set_info)
+DEPRECATED(_CameraWidget::set_info)
+DEPRECATED(gp_widget_set_name)
+DEPRECATED(_CameraWidget::set_name)
+DEPRECATED(gp_widget_set_range)
+DEPRECATED(_CameraWidget::set_range)
+DEPRECATED(gp_widget_set_readonly)
+DEPRECATED(_CameraWidget::set_readonly)
 
 /* These are the only wrapped functions that return a CameraWidget:
 gp_widget_get_child(..., CameraWidget **child)

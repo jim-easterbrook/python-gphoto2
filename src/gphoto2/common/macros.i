@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -17,6 +17,17 @@
 
 %define DEFAULT_EXCEPTION
 %exception {
+  $action
+  if (PyErr_Occurred()) SWIG_fail;
+}
+%enddef
+
+%define DEPRECATED(func_name)
+%feature("docstring") func_name
+  "This function is deprecated and will be removed in a future release."
+%exception func_name {
+  if (PyErr_WarnEx(PyExc_DeprecationWarning, #func_name ## " is deprecated and"
+    " will be removed in a future release", 1) < 0) SWIG_fail;
   $action
   if (PyErr_Occurred()) SWIG_fail;
 }

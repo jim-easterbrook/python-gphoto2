@@ -3850,14 +3850,14 @@ SWIGINTERN struct _CameraFilesystem *new__CameraFilesystem(void){
     struct _CameraFilesystem *result;
     int error = gp_filesystem_new(&result);
     if (error < 0)
-      /*@SWIG:src/gphoto2/common/macros.i,25,GPHOTO2_ERROR@*/
+      /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
     return result;
   }
 SWIGINTERN void delete__CameraFilesystem(struct _CameraFilesystem *self){
     int error = gp_filesystem_free(self);
-    if (error < 0) /*@SWIG:src/gphoto2/common/macros.i,25,GPHOTO2_ERROR@*/
+    if (error < 0) /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
   }
@@ -5690,7 +5690,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_list_files(PyObject *self, PyObject *ar
     int error = gp_list_new(&arg3);
     if (error < 0) {
       arg3 = NULL;
-      /*@SWIG:src/gphoto2/common/macros.i,25,GPHOTO2_ERROR@*/
+      /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
       PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
       /*@SWIG@*/
       SWIG_fail;
@@ -5765,7 +5765,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_list_folders(PyObject *self, PyObject *
     int error = gp_list_new(&arg3);
     if (error < 0) {
       arg3 = NULL;
-      /*@SWIG:src/gphoto2/common/macros.i,25,GPHOTO2_ERROR@*/
+      /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
       PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
       /*@SWIG@*/
       SWIG_fail;

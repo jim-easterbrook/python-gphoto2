@@ -3857,7 +3857,7 @@ static int del_LogFuncItem(struct LogFuncItem *this) {
 
 SWIGINTERN void delete_LogFuncItem(struct LogFuncItem *self){
     int error = del_LogFuncItem(self);
-    if (error < 0) /*@SWIG:src/gphoto2/common/macros.i,25,GPHOTO2_ERROR@*/
+    if (error < 0) /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
   }

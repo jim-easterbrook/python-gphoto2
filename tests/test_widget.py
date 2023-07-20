@@ -34,7 +34,19 @@ class TestWidget(unittest.TestCase):
     def tearDown(self):
         self.camera.exit()
 
-    def test_widgets(self):
+    def test_single_config(self):
+        widget = self.camera.get_single_config('thumbsize')
+        self.assertEqual(widget.get_type(), gp.GP_WIDGET_RADIO)
+        self.assertEqual(widget.count_choices(), 2)
+        choices = list(widget.get_choices())
+        self.assertEqual(widget.get_choice(0), choices[0])
+        self.assertEqual(widget.get_choice(1), choices[1])
+        widget.set_value(choices[1])
+        self.assertEqual(widget.get_value(), choices[1])
+        self.assertEqual(widget.changed(), 1)
+        self.camera.set_single_config('thumbsize', widget)
+
+    def test_config_tree(self):
         # test almost every gphoto2.CameraWidget method
         # untested: get_range() & set_range() as no GP_WIDGET_RANGE widget
         config = self.camera.get_config()

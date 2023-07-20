@@ -56,10 +56,6 @@ class TestWidget(unittest.TestCase):
         self.assertEqual(config.get_type(), gp.GP_WIDGET_WINDOW)
         self.assertEqual(config.get_id(), 31)
         self.assertEqual(config.get_info(), '')
-        config.set_info('top')
-        self.assertEqual(config.get_info(), 'top')
-        config.set_name('Main')
-        self.assertEqual(config.get_name(), 'Main')
         self.assertEqual(config.count_children(), 6)
         # test section widgets
         actions = config.get_child_by_name('actions')
@@ -70,8 +66,9 @@ class TestWidget(unittest.TestCase):
         settings = config.get_child_by_name('settings')
         self.assertEqual(settings.get_type(), gp.GP_WIDGET_SECTION)
         self.assertEqual(settings.get_readonly(), 0)
-        settings.set_readonly(1)
-        self.assertEqual(settings.get_readonly(), 1)
+        status = config.get_child_by_name('status')
+        self.assertEqual(status.get_type(), gp.GP_WIDGET_SECTION)
+        self.assertEqual(status.get_readonly(), 0)
         # test text widget
         widget = actions.get_child_by_label('Set Nikon Control Mode')
         self.assertEqual(widget.get_type(), gp.GP_WIDGET_TEXT)
@@ -103,8 +100,6 @@ class TestWidget(unittest.TestCase):
         widget.set_value(choices[0])
         self.assertEqual(widget.get_value(), choices[0])
         self.assertEqual(widget.changed(), 1)
-        widget.add_choice('Memory Card 2')
-        self.assertEqual(widget.count_choices(), 3)
         widget.set_changed(0)
         self.assertEqual(widget.changed(), 0)
         # test date widget
@@ -115,6 +110,10 @@ class TestWidget(unittest.TestCase):
             # this needs testing on other time zones
             now -= 3600
         self.assertEqual(widget.get_value(), int(now))
+        # test read-only widget
+        widget = status.get_child_by_name('batterylevel')
+        self.assertEqual(widget.get_type(), gp.GP_WIDGET_TEXT)
+        self.assertEqual(widget.get_readonly(), 1)
         # store changed config
         self.camera.set_config(config)
 

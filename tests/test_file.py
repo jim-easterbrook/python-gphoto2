@@ -17,49 +17,57 @@
 
 import os
 import tempfile
-import time
 import unittest
-
-os.environ['VCAMERADIR'] = os.path.join(os.path.dirname(__file__), 'vcamera')
 
 import gphoto2 as gp
 
 
 class TestFile(unittest.TestCase):
-    def setUp(self):
-        # switch to virtual camera from normal drivers
-        os.environ['IOLIBS'] = os.environ['IOLIBS'].replace('iolibs', 'vusb')
-        camera = gp.Camera()
-        camera.init()
-        path = camera.capture(gp.GP_CAPTURE_IMAGE)
-        self.file = camera.file_get(
-            path.folder, path.name, gp.GP_FILE_TYPE_NORMAL)
-        camera.file_delete(path.folder, path.name)
-        camera.exit()
-
     def test_file(self):
-        data = memoryview(self.file.get_data_and_size())
-        self.assertEqual(data[:10], b'\xff\xd8\xff\xe0\x00\x10JFIF')
-        self.assertEqual(len(data), 7082)
-        self.assertEqual(self.file.get_mime_type(), 'image/jpeg')
+        # create CameraFile from data
         test_file = os.path.join(
-            os.environ['VCAMERADIR'], 'copyright-free-image.jpg')
-        file_time = os.path.getmtime(test_file)
-        if time.localtime(file_time).tm_isdst == 1:
-            # this needs testing on other time zones
-            file_time -= 3600
-        self.assertEqual(self.file.get_mtime(), int(file_time))
-        name = self.file.get_name()
-        self.assertEqual(name, 'GPH_0099.JPG')
-        self.assertEqual(self.file.get_name_by_type(name, gp.GP_FILE_TYPE_RAW),
-                         'raw_GPH_0099.jpg')
-        self.assertEqual(self.file.get_mime_type(), 'image/jpeg')
+            os.path.dirname(__file__), 'vcamera', 'copyright-free-image.jpg')
+        with open(test_file, 'rb') as f:
+            src_data = f.read()
+        self.assertEqual(len(src_data), os.path.getsize(test_file))
+        self.assertEqual(src_data[:10], b'\xff\xd8\xff\xe0\x00\x10JFIF')
+        cam_file = gp.CameraFile()
+        cam_file.set_data_and_size(src_data)
+        # get mime type from data
+        cam_file.detect_mime_type()
+        # check detected mime type
+        self.assertEqual(cam_file.get_mime_type(), 'image/jpeg')
+        # set mime type anyway
+        cam_file.set_mime_type('image/jpeg')
+        file_time = int(os.path.getmtime(test_file))
+        cam_file.set_mtime(file_time)
+        file_name = 'cam_file.jpg'
+        cam_file.set_name(file_name)
+        # read data from CameraFile
+        self.assertEqual(memoryview(cam_file.get_data_and_size()), src_data)
+        self.assertEqual(cam_file.get_mime_type(), 'image/jpeg')
+        self.assertEqual(cam_file.get_mtime(), file_time)
+        self.assertEqual(cam_file.get_name(), file_name)
+        self.assertEqual(
+            cam_file.get_name_by_type(file_name, gp.GP_FILE_TYPE_RAW),
+            'raw_' + file_name)
+        self.assertEqual(cam_file.detect_mime_type(), None)
+        # copy file
+        file_copy = gp.CameraFile()
+        file_copy.copy(cam_file)
+        self.assertEqual(memoryview(file_copy.get_data_and_size()), src_data)
+        # save CameraFile to computer
         with tempfile.TemporaryDirectory() as tmp_dir:
-            temp_file = os.path.join(tmp_dir, name)
-            self.file.save(temp_file)
-            self.assertEqual(os.path.getsize(temp_file), 7082)
+            temp_file = os.path.join(tmp_dir, file_name)
+            cam_file.save(temp_file)
+            self.assertEqual(os.path.getsize(temp_file), len(src_data))
             with open(temp_file, 'rb') as f:
-                self.assertEqual(f.read(), data)
+                self.assertEqual(f.read(), src_data)
+            self.assertEqual(int(os.path.getmtime(temp_file)), file_time)
+        # wipe file data
+        cam_file.clean()
+        self.assertEqual(memoryview(cam_file.get_data_and_size()), b'')
+        self.assertEqual(cam_file.get_name(), '')
 
 
 if __name__ == "__main__":

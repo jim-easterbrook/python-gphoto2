@@ -4034,7 +4034,7 @@ static PyTypeObject FileDataType = {
     "gphoto2 CameraFile data buffer",         /* tp_doc */
 };
 
-SWIGINTERN struct _CameraFile *new__CameraFile(void){
+SWIGINTERN struct _CameraFile *new__CameraFile__SWIG_0(void){
     struct _CameraFile *result;
     int error = gp_file_new(&result);
     if (error < 0)
@@ -4049,66 +4049,16 @@ SWIGINTERN void delete__CameraFile(struct _CameraFile *self){
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
   }
-SWIGINTERN void _CameraFile_set_name(struct _CameraFile *self,char const *name){
 
+#include <limits.h>
+#if !defined(SWIG_NO_LLONG_MAX)
+# if !defined(LLONG_MAX) && defined(__GNUC__) && defined (__LONG_LONG_MAX__)
+#   define LLONG_MAX __LONG_LONG_MAX__
+#   define LLONG_MIN (-LLONG_MAX - 1LL)
+#   define ULLONG_MAX (LLONG_MAX * 2ULL + 1ULL)
+# endif
+#endif
 
-
-    int result = gp_file_set_name (self, name);
-
-
-
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
-
-
-
-  }
-SWIGINTERN void _CameraFile_get_name(struct _CameraFile *self,char const **name){
-
-
-
-    int result = gp_file_get_name (self, name);
-
-
-
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
-
-
-
-  }
-SWIGINTERN void _CameraFile_set_mime_type(struct _CameraFile *self,char const *mime_type){
-
-
-
-    int result = gp_file_set_mime_type (self, mime_type);
-
-
-
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
-
-
-
-  }
-SWIGINTERN void _CameraFile_get_mime_type(struct _CameraFile *self,char const **mime_type){
-
-
-
-    int result = gp_file_get_mime_type (self, mime_type);
-
-
-
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
-
-
-
-  }
 
 SWIGINTERN int
 SWIG_AsVal_double (PyObject *obj, double *val)
@@ -4234,6 +4184,91 @@ SWIG_AsVal_long (PyObject *obj, long* val)
   return SWIG_TypeError;
 }
 
+
+SWIGINTERN int
+SWIG_AsVal_int (PyObject * obj, int *val)
+{
+  long v;
+  int res = SWIG_AsVal_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v < INT_MIN || v > INT_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = (int)(v);
+    }
+  }  
+  return res;
+}
+
+SWIGINTERN struct _CameraFile *new__CameraFile__SWIG_1(int fd){
+    struct _CameraFile *result;
+    int error = gp_file_new_from_fd(&result, fd);
+    if (error < 0)
+      /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+/*@SWIG@*/
+    return result;
+  }
+SWIGINTERN void _CameraFile_set_name(struct _CameraFile *self,char const *name){
+
+
+
+    int result = gp_file_set_name (self, name);
+
+
+
+    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
+/*@SWIG@*/
+
+
+
+  }
+SWIGINTERN void _CameraFile_get_name(struct _CameraFile *self,char const **name){
+
+
+
+    int result = gp_file_get_name (self, name);
+
+
+
+    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
+/*@SWIG@*/
+
+
+
+  }
+SWIGINTERN void _CameraFile_set_mime_type(struct _CameraFile *self,char const *mime_type){
+
+
+
+    int result = gp_file_set_mime_type (self, mime_type);
+
+
+
+    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
+/*@SWIG@*/
+
+
+
+  }
+SWIGINTERN void _CameraFile_get_mime_type(struct _CameraFile *self,char const **mime_type){
+
+
+
+    int result = gp_file_get_mime_type (self, mime_type);
+
+
+
+    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
+/*@SWIG@*/
+
+
+
+  }
 SWIGINTERN void _CameraFile_set_mtime(struct _CameraFile *self,time_t mtime){
 
 
@@ -4297,32 +4332,6 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 
 
   }
-
-#include <limits.h>
-#if !defined(SWIG_NO_LLONG_MAX)
-# if !defined(LLONG_MAX) && defined(__GNUC__) && defined (__LONG_LONG_MAX__)
-#   define LLONG_MAX __LONG_LONG_MAX__
-#   define LLONG_MIN (-LLONG_MAX - 1LL)
-#   define ULLONG_MAX (LLONG_MAX * 2ULL + 1ULL)
-# endif
-#endif
-
-
-SWIGINTERN int
-SWIG_AsVal_int (PyObject * obj, int *val)
-{
-  long v;
-  int res = SWIG_AsVal_long (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v < INT_MIN || v > INT_MAX)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = (int)(v);
-    }
-  }  
-  return res;
-}
-
 SWIGINTERN void _CameraFile_get_name_by_type(struct _CameraFile *self,char const *basename,CameraFileType type,char **newname){
 
 
@@ -4548,7 +4557,7 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_CameraFile(PyObject *self, PyObject *args, PyObject *kwargs) {
+SWIGINTERN int _wrap_new_CameraFile__SWIG_0(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
   struct _CameraFile *result = 0 ;
   
@@ -4556,7 +4565,7 @@ SWIGINTERN int _wrap_new_CameraFile(PyObject *self, PyObject *args, PyObject *kw
   if (!SWIG_Python_CheckNoKeywords(kwargs, "new_CameraFile")) SWIG_fail;
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "new_CameraFile takes no arguments");
   {
-    result = (struct _CameraFile *)new__CameraFile();
+    result = (struct _CameraFile *)new__CameraFile__SWIG_0();
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraFile, SWIG_BUILTIN_INIT |  0 );
@@ -4587,6 +4596,71 @@ SWIGINTERN PyObject *_wrap_delete_CameraFile(PyObject *self, PyObject *args) {
   return resultobj;
 fail:
   return NULL;
+}
+
+
+SWIGINTERN int _wrap_new_CameraFile__SWIG_1(PyObject *self, PyObject *args, PyObject *kwargs) {
+  PyObject *resultobj = 0;
+  int arg1 ;
+  int val1 ;
+  int ecode1 = 0 ;
+  PyObject * obj1 = 0 ;
+  struct _CameraFile *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_CheckNoKeywords(kwargs, "new_CameraFile")) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "new_CameraFile", 1, 1, &obj1)) SWIG_fail;
+  ecode1 = SWIG_AsVal_int(obj1, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "new_CameraFile" "', argument " "1"" of type '" "int""'");
+  } 
+  arg1 = (int)(val1);
+  {
+    result = (struct _CameraFile *)new__CameraFile__SWIG_1(arg1);
+    if (PyErr_Occurred()) SWIG_fail;
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraFile, SWIG_BUILTIN_INIT |  0 );
+  return resultobj == Py_None ? -1 : 0;
+fail:
+  return -1;
+}
+
+
+SWIGINTERN int _wrap_new_CameraFile(PyObject *self, PyObject *args, PyObject *kwargs) {
+  Py_ssize_t argc;
+  PyObject *argv[2] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  (void)self;
+  if (!SWIG_Python_CheckNoKeywords(kwargs, "new_CameraFile")) SWIG_fail;
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = PyObject_Length(args);
+  for (ii = 0; (ii < 1) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 0) {
+    {
+      int retval = _wrap_new_CameraFile__SWIG_0(self, args, NULL);
+      if (retval == 0 || !SWIG_Python_TypeErrorOccurred(NULL)) return retval;
+      SWIG_fail;
+    }
+  }
+  if (argc == 1) {
+    {
+      int retval = _wrap_new_CameraFile__SWIG_1(self, args, NULL);
+      if (retval == 0 || !SWIG_Python_TypeErrorOccurred(NULL)) return retval;
+      SWIG_fail;
+    }
+  }
+  
+fail:
+  SWIG_Python_RaiseOrModifyTypeError("Wrong number or type of arguments for overloaded function 'new_CameraFile'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    _CameraFile::_CameraFile()\n"
+    "    _CameraFile::_CameraFile(int)\n");
+  return -1;
 }
 
 

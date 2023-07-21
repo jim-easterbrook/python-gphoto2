@@ -200,6 +200,17 @@ struct _CameraFile {};
 DEFAULT_CTOR(_CameraFile, gp_file_new)
 DEFAULT_DTOR(_CameraFile, gp_file_unref)
 
+// Add constructor from file descriptor
+%extend _CameraFile {
+  _CameraFile(int fd) {
+    struct _CameraFile *result;
+    int error = gp_file_new_from_fd(&result, fd);
+    if (error < GP_OK)
+      GPHOTO2_ERROR(error)
+    return result;
+  }
+};
+
 // Add member methods to _CameraFile
 MEMBER_FUNCTION(_CameraFile,
     void, set_name, (const char *name),

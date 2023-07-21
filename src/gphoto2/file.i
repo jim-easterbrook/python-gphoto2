@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -253,6 +253,7 @@ MEMBER_FUNCTION(_CameraFile,
 %ignore gp_file_free;
 %ignore gp_file_ref;
 %ignore gp_file_unref;
+%ignore gp_file_new_from_handler;
 
 // Turn off default exception handling
 %noexception;

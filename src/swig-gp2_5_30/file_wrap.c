@@ -5163,46 +5163,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_gp_file_new_from_handler(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  CameraFile **arg1 = (CameraFile **) 0 ;
-  CameraFileHandler *arg2 = (CameraFileHandler *) 0 ;
-  void *arg3 = (void *) 0 ;
-  CameraFile *temp1 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
-  int res3 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  int result;
-  
-  {
-    temp1 = NULL;
-    arg1 = &temp1;
-  }
-  (void)self;
-  if (!PyArg_UnpackTuple(args, "gp_file_new_from_handler", 2, 2, &obj0, &obj1)) SWIG_fail;
-  res2 = SWIG_ConvertPtr(obj0, &argp2,SWIGTYPE_p__CameraFileHandler, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gp_file_new_from_handler" "', argument " "2"" of type '" "CameraFileHandler *""'"); 
-  }
-  arg2 = (CameraFileHandler *)(argp2);
-  res3 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gp_file_new_from_handler" "', argument " "3"" of type '" "void *""'"); 
-  }
-  result = (int)gp_file_new_from_handler(arg1,arg2,arg3);
-  resultobj = SWIG_From_int((int)(result));
-  {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg1, SWIGTYPE_p__CameraFile, SWIG_POINTER_OWN));
-  }
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_gp_file_set_name(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CameraFile *arg1 = (CameraFile *) 0 ;
@@ -5778,31 +5738,6 @@ static PyMethodDef SwigMethods[] = {
 		"a gphoto2 error code.\n"
 		"\n"
 		"See also gphoto2.CameraFile.new_from_fd\n"
-		""},
-	 { "gp_file_new_from_handler", _wrap_gp_file_new_from_handler, METH_VARARGS, "\n"
-		"gp_file_new_from_handler(handler, priv) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"handler: gphoto2.CameraFileHandler\n"
-		"priv: void *\n"
-		"\n"
-		"Create new CameraFile object using a programmatic handler.  \n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"* `file` :  \n"
-		"    a pointer to a CameraFile  \n"
-		"* `handler` :  \n"
-		"    a #CameraFileHandler  \n"
-		"* `private` :  \n"
-		"    a private pointer for frontend use  \n"
-		"\n"
-		"Returns\n"
-		"-------\n"
-		"a gphoto2 error code.\n"
-		"\n"
-		"See also gphoto2.CameraFile.new_from_handler\n"
 		""},
 	 { "gp_file_set_name", _wrap_gp_file_set_name, METH_VARARGS, "\n"
 		"gp_file_set_name(file, name) -> int\n"

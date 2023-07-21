@@ -56,6 +56,9 @@ class TestFile(unittest.TestCase):
         file_copy = gp.CameraFile()
         file_copy.copy(cam_file)
         self.assertEqual(memoryview(file_copy.get_data_and_size()), src_data)
+        # create file from file descriptor
+        file_copy = gp.CameraFile(os.open(test_file, os.O_RDONLY))
+        self.assertEqual(memoryview(file_copy.get_data_and_size()), src_data)
         # save CameraFile to computer
         with tempfile.TemporaryDirectory() as tmp_dir:
             temp_file = os.path.join(tmp_dir, file_name)

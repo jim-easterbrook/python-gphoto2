@@ -48,13 +48,6 @@ DEFAULT_EXCEPTION
 // gp_file_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFile **)
 
-// make gp_file_open() create a new CameraFile
-NEW_ARGOUT(CameraFile *camera_file, gp_file_new, gp_file_unref)
-// Redefine signature as many other functions also use *file
-%noexception gp_file_open;
-int gp_file_open(CameraFile *camera_file, const char *filename);
-%ignore gp_file_open;
-
 // Define a simple Python type that has the buffer interface
 // This definition is not SWIGGED, just compiled
 %{
@@ -254,6 +247,9 @@ MEMBER_FUNCTION(_CameraFile,
 MEMBER_FUNCTION(_CameraFile,
     void, copy, (CameraFile *source),
     gp_file_copy, ($self, source), 1)
+MEMBER_FUNCTION(_CameraFile,
+    void, open, (const char *filename),
+    gp_file_open, ($self, filename), 1)
 
 // These structures are private
 %ignore _CameraFileHandler;

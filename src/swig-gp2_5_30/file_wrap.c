@@ -3840,138 +3840,6 @@ static swig_module_info swig_module = {swig_types, 57, 0, 0, 0, 0};
 PyObject *PyExc_GPhoto2Error = NULL;
 
 
-SWIGINTERN swig_type_info*
-SWIG_pchar_descriptor(void)
-{
-  static int init = 0;
-  static swig_type_info* info = 0;
-  if (!init) {
-    info = SWIG_TypeQuery("_p_char");
-    init = 1;
-  }
-  return info;
-}
-
-
-SWIGINTERN int
-SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
-{
-#if PY_VERSION_HEX>=0x03000000
-#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
-  if (PyBytes_Check(obj))
-#else
-  if (PyUnicode_Check(obj))
-#endif
-#else  
-  if (PyString_Check(obj))
-#endif
-  {
-    char *cstr; Py_ssize_t len;
-    int ret = SWIG_OK;
-#if PY_VERSION_HEX>=0x03000000
-#if !defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
-    if (!alloc && cptr) {
-        /* We can't allow converting without allocation, since the internal
-           representation of string in Python 3 is UCS-2/UCS-4 but we require
-           a UTF-8 representation.
-           TODO(bhy) More detailed explanation */
-        return SWIG_RuntimeError;
-    }
-    obj = PyUnicode_AsUTF8String(obj);
-    if (!obj)
-      return SWIG_TypeError;
-    if (alloc)
-      *alloc = SWIG_NEWOBJ;
-#endif
-    if (PyBytes_AsStringAndSize(obj, &cstr, &len) == -1)
-      return SWIG_TypeError;
-#else
-    if (PyString_AsStringAndSize(obj, &cstr, &len) == -1)
-      return SWIG_TypeError;
-#endif
-    if (cptr) {
-      if (alloc) {
-	if (*alloc == SWIG_NEWOBJ) {
-	  *cptr = (char *)memcpy(malloc((len + 1)*sizeof(char)), cstr, sizeof(char)*(len + 1));
-	  *alloc = SWIG_NEWOBJ;
-	} else {
-	  *cptr = cstr;
-	  *alloc = SWIG_OLDOBJ;
-	}
-      } else {
-#if PY_VERSION_HEX>=0x03000000
-#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
-	*cptr = PyBytes_AsString(obj);
-#else
-	assert(0); /* Should never reach here with Unicode strings in Python 3 */
-#endif
-#else
-	*cptr = SWIG_Python_str_AsChar(obj);
-        if (!*cptr)
-          ret = SWIG_TypeError;
-#endif
-      }
-    }
-    if (psize) *psize = len + 1;
-#if PY_VERSION_HEX>=0x03000000 && !defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
-    Py_XDECREF(obj);
-#endif
-    return ret;
-  } else {
-#if defined(SWIG_PYTHON_2_UNICODE)
-#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
-#error "Cannot use both SWIG_PYTHON_2_UNICODE and SWIG_PYTHON_STRICT_BYTE_CHAR at once"
-#endif
-#if PY_VERSION_HEX<0x03000000
-    if (PyUnicode_Check(obj)) {
-      char *cstr; Py_ssize_t len;
-      if (!alloc && cptr) {
-        return SWIG_RuntimeError;
-      }
-      obj = PyUnicode_AsUTF8String(obj);
-      if (!obj)
-        return SWIG_TypeError;
-      if (PyString_AsStringAndSize(obj, &cstr, &len) != -1) {
-        if (cptr) {
-          if (alloc) *alloc = SWIG_NEWOBJ;
-          *cptr = (char *)memcpy(malloc((len + 1)*sizeof(char)), cstr, sizeof(char)*(len + 1));
-        }
-        if (psize) *psize = len + 1;
-
-        Py_XDECREF(obj);
-        return SWIG_OK;
-      } else {
-        Py_XDECREF(obj);
-      }
-    }
-#endif
-#endif
-
-    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-    if (pchar_descriptor) {
-      void* vptr = 0;
-      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
-	if (cptr) *cptr = (char *) vptr;
-	if (psize) *psize = vptr ? (strlen((char *)vptr) + 1) : 0;
-	if (alloc) *alloc = SWIG_OLDOBJ;
-	return SWIG_OK;
-      }
-    }
-  }
-  return SWIG_TypeError;
-}
-
-
-
-
-
-SWIGINTERNINLINE PyObject*
-  SWIG_From_int  (int value)
-{
-  return PyInt_FromLong((long) value);
-}
-
-
 typedef struct {
     PyObject_HEAD
     CameraFile  *file;
@@ -4209,6 +4077,131 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
     return result;
   }
+
+SWIGINTERN swig_type_info*
+SWIG_pchar_descriptor(void)
+{
+  static int init = 0;
+  static swig_type_info* info = 0;
+  if (!init) {
+    info = SWIG_TypeQuery("_p_char");
+    init = 1;
+  }
+  return info;
+}
+
+
+SWIGINTERN int
+SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
+{
+#if PY_VERSION_HEX>=0x03000000
+#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+  if (PyBytes_Check(obj))
+#else
+  if (PyUnicode_Check(obj))
+#endif
+#else  
+  if (PyString_Check(obj))
+#endif
+  {
+    char *cstr; Py_ssize_t len;
+    int ret = SWIG_OK;
+#if PY_VERSION_HEX>=0x03000000
+#if !defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+    if (!alloc && cptr) {
+        /* We can't allow converting without allocation, since the internal
+           representation of string in Python 3 is UCS-2/UCS-4 but we require
+           a UTF-8 representation.
+           TODO(bhy) More detailed explanation */
+        return SWIG_RuntimeError;
+    }
+    obj = PyUnicode_AsUTF8String(obj);
+    if (!obj)
+      return SWIG_TypeError;
+    if (alloc)
+      *alloc = SWIG_NEWOBJ;
+#endif
+    if (PyBytes_AsStringAndSize(obj, &cstr, &len) == -1)
+      return SWIG_TypeError;
+#else
+    if (PyString_AsStringAndSize(obj, &cstr, &len) == -1)
+      return SWIG_TypeError;
+#endif
+    if (cptr) {
+      if (alloc) {
+	if (*alloc == SWIG_NEWOBJ) {
+	  *cptr = (char *)memcpy(malloc((len + 1)*sizeof(char)), cstr, sizeof(char)*(len + 1));
+	  *alloc = SWIG_NEWOBJ;
+	} else {
+	  *cptr = cstr;
+	  *alloc = SWIG_OLDOBJ;
+	}
+      } else {
+#if PY_VERSION_HEX>=0x03000000
+#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+	*cptr = PyBytes_AsString(obj);
+#else
+	assert(0); /* Should never reach here with Unicode strings in Python 3 */
+#endif
+#else
+	*cptr = SWIG_Python_str_AsChar(obj);
+        if (!*cptr)
+          ret = SWIG_TypeError;
+#endif
+      }
+    }
+    if (psize) *psize = len + 1;
+#if PY_VERSION_HEX>=0x03000000 && !defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+    Py_XDECREF(obj);
+#endif
+    return ret;
+  } else {
+#if defined(SWIG_PYTHON_2_UNICODE)
+#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+#error "Cannot use both SWIG_PYTHON_2_UNICODE and SWIG_PYTHON_STRICT_BYTE_CHAR at once"
+#endif
+#if PY_VERSION_HEX<0x03000000
+    if (PyUnicode_Check(obj)) {
+      char *cstr; Py_ssize_t len;
+      if (!alloc && cptr) {
+        return SWIG_RuntimeError;
+      }
+      obj = PyUnicode_AsUTF8String(obj);
+      if (!obj)
+        return SWIG_TypeError;
+      if (PyString_AsStringAndSize(obj, &cstr, &len) != -1) {
+        if (cptr) {
+          if (alloc) *alloc = SWIG_NEWOBJ;
+          *cptr = (char *)memcpy(malloc((len + 1)*sizeof(char)), cstr, sizeof(char)*(len + 1));
+        }
+        if (psize) *psize = len + 1;
+
+        Py_XDECREF(obj);
+        return SWIG_OK;
+      } else {
+        Py_XDECREF(obj);
+      }
+    }
+#endif
+#endif
+
+    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+    if (pchar_descriptor) {
+      void* vptr = 0;
+      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
+	if (cptr) *cptr = (char *) vptr;
+	if (psize) *psize = vptr ? (strlen((char *)vptr) + 1) : 0;
+	if (alloc) *alloc = SWIG_OLDOBJ;
+	return SWIG_OK;
+      }
+    }
+  }
+  return SWIG_TypeError;
+}
+
+
+
+
 SWIGINTERN void _CameraFile_set_name(struct _CameraFile *self,char const *name){
 
 
@@ -4470,6 +4463,21 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 
 
   }
+SWIGINTERN void _CameraFile_open(struct _CameraFile *self,char const *filename){
+
+    SWIG_PYTHON_THREAD_BEGIN_ALLOW;
+
+    int result = gp_file_open (self, filename);
+
+    SWIG_PYTHON_THREAD_END_ALLOW;
+
+    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
+/*@SWIG@*/
+
+
+
+  }
 
 SWIGINTERNINLINE PyObject *
 SWIG_FromCharPtrAndSize(const char* carray, size_t size)
@@ -4502,61 +4510,16 @@ SWIG_FromCharPtr(const char *cptr)
   return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
 }
 
+
+SWIGINTERNINLINE PyObject*
+  SWIG_From_int  (int value)
+{
+  return PyInt_FromLong((long) value);
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN PyObject *_wrap_gp_file_open(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  CameraFile *arg1 = (CameraFile *) 0 ;
-  char *arg2 = (char *) 0 ;
-  int res2 ;
-  char *buf2 = 0 ;
-  int alloc2 = 0 ;
-  PyObject * obj0 = 0 ;
-  int result;
-  
-  {
-    int error = gp_file_new(&arg1);
-    if (error < 0) {
-      arg1 = NULL;
-      /*@SWIG:src/gphoto2/common/macros.i,36,GPHOTO2_ERROR@*/
-      PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-      /*@SWIG@*/
-      SWIG_fail;
-    }
-  }
-  (void)self;
-  if (!PyArg_UnpackTuple(args, "gp_file_open", 1, 1, &obj0)) SWIG_fail;
-  res2 = SWIG_AsCharPtrAndSize(obj0, &buf2, NULL, &alloc2);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gp_file_open" "', argument " "2"" of type '" "char const *""'");
-  }
-  arg2 = (char *)(buf2);
-  result = (int)gp_file_open(arg1,(char const *)arg2);
-  resultobj = SWIG_From_int((int)(result));
-  {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(arg1, SWIGTYPE_p__CameraFile, SWIG_POINTER_OWN));
-    arg1 = NULL;
-  }
-  {
-    if (arg1 != NULL) {
-      gp_file_unref(arg1);
-    }
-  }
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return resultobj;
-fail:
-  {
-    if (arg1 != NULL) {
-      gp_file_unref(arg1);
-    }
-  }
-  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
-  return NULL;
-}
-
-
 SWIGINTERN int _wrap_new_CameraFile__SWIG_0(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
   struct _CameraFile *result = 0 ;
@@ -5178,6 +5141,42 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CameraFile_open(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFile *arg1 = (struct _CameraFile *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFile_open", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFile, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFile_open" "', argument " "1"" of type '" "struct _CameraFile *""'"); 
+  }
+  arg1 = (struct _CameraFile *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CameraFile_open" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  {
+    _CameraFile_open(arg1,(char const *)arg2);
+    if (PyErr_Occurred()) SWIG_fail;
+  }
+  resultobj = SWIG_Py_Void();
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraFile) /* defines _wrap_delete_CameraFile_destructor_closure */
 
 SWIGINTERN PyObject *_wrap_gp_file_new(PyObject *self, PyObject *args) {
@@ -5655,6 +5654,41 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_gp_file_open(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  CameraFile *arg1 = (CameraFile *) 0 ;
+  char *arg2 = (char *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int res2 ;
+  char *buf2 = 0 ;
+  int alloc2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  int result;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "gp_file_open", 2, 2, &obj0, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__CameraFile, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gp_file_open" "', argument " "1"" of type '" "CameraFile *""'"); 
+  }
+  arg1 = (CameraFile *)(argp1);
+  res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gp_file_open" "', argument " "2"" of type '" "char const *""'");
+  }
+  arg2 = (char *)(buf2);
+  result = (int)gp_file_open(arg1,(char const *)arg2);
+  resultobj = SWIG_From_int((int)(result));
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return resultobj;
+fail:
+  if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_gp_file_save(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CameraFile *arg1 = (CameraFile *) 0 ;
@@ -5754,25 +5788,6 @@ fail:
 
 
 static PyMethodDef SwigMethods[] = {
-	 { "gp_file_open", _wrap_gp_file_open, METH_VARARGS, "\n"
-		"gp_file_open(filename) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"filename: str\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"* `file` :  \n"
-		"    a CameraFile  \n"
-		"* `filename` :  \n"
-		"\n"
-		"Returns\n"
-		"-------\n"
-		"a gphoto2 error code.\n"
-		"\n"
-		"See also gphoto2.CameraFile.open\n"
-		""},
 	 { "gp_file_new", _wrap_gp_file_new, METH_VARARGS, "\n"
 		"gp_file_new() -> int\n"
 		"Create new CameraFile object.  \n"
@@ -6057,6 +6072,26 @@ static PyMethodDef SwigMethods[] = {
 		"\n"
 		"See also gphoto2.CameraFile.get_data_and_size\n"
 		""},
+	 { "gp_file_open", _wrap_gp_file_open, METH_VARARGS, "\n"
+		"gp_file_open(file, filename) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"file: gphoto2.CameraFile\n"
+		"filename: str\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"* `file` :  \n"
+		"    a CameraFile  \n"
+		"* `filename` :  \n"
+		"\n"
+		"Returns\n"
+		"-------\n"
+		"a gphoto2 error code.\n"
+		"\n"
+		"See also gphoto2.CameraFile.open\n"
+		""},
 	 { "gp_file_save", _wrap_gp_file_save, METH_VARARGS, "\n"
 		"gp_file_save(file, filename) -> int\n"
 		"\n"
@@ -6122,18 +6157,9 @@ static PyMethodDef SwigMethods[] = {
 static SwigPyGetSet CameraFile___dict___getset = { SwigPyObject_get___dict__, 0 };
 SWIGINTERN PyGetSetDef SwigPyBuiltin___CameraFile_getset[] = {
     { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"\n"
-		"gp_file_open\n"
-		"Parameters\n"
-		"----------\n"
-		"* `file` :  \n"
-		"    a CameraFile  \n"
-		"* `filename` :  \n"
-		"\n"
-		"Returns\n"
-		"-------\n"
-		"a gphoto2 error code.\n"
-		"\n"
-		"See also gphoto2.CameraFile.open\n"
+		"_CameraFile\n"
+		"CameraFile\n"
+		"The internals of the CameraFile struct are private.\n"
 		"", &CameraFile___dict___getset },
     { NULL, NULL, NULL, NULL, NULL } /* Sentinel */
 };
@@ -6418,6 +6444,25 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___CameraFile_methods[] = {
 		"a gphoto2 error code.\n"
 		"\n"
 		"See also gphoto2.gp_file_copy\n"
+		"" },
+  { "open", _wrap_CameraFile_open, METH_VARARGS, "\n"
+		"open(self, filename)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"filename: str\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"* `file` :  \n"
+		"    a CameraFile  \n"
+		"* `filename` :  \n"
+		"\n"
+		"Returns\n"
+		"-------\n"
+		"a gphoto2 error code.\n"
+		"\n"
+		"See also gphoto2.gp_file_open\n"
 		"" },
   { NULL, NULL, 0, NULL } /* Sentinel */
 };

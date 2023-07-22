@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -31,6 +31,14 @@ DEFAULT_EXCEPTION
 
 // gp_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraList **)
+
+// gp_list_find_by_name() returns the result in an integer, or NULL
+%typemap(in, numinputs=0) int *index (int temp=0) %{
+  $1 = &temp;
+%}
+%typemap(argout) int *index %{
+  $result = SWIG_Python_AppendOutput($result, PyInt_FromLong(*$1));
+%}
 
 // Add constructor and destructor to _CameraList
 struct _CameraList {};

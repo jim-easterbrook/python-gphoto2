@@ -4569,27 +4569,23 @@ SWIGINTERN PyObject *_wrap_CameraList_find_by_name(PyObject *self, PyObject *arg
   char *arg3 = (char *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
+  int temp2 = 0 ;
   int res3 ;
   char *buf3 = 0 ;
   int alloc3 = 0 ;
   PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
+  
+  
+  arg2 = &temp2;
   
   (void)self;
-  if (!PyArg_UnpackTuple(args, "CameraList_find_by_name", 2, 2, &obj1, &obj2)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "CameraList_find_by_name", 1, 1, &obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_find_by_name" "', argument " "1"" of type '" "struct _CameraList *""'"); 
   }
   arg1 = (struct _CameraList *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CameraList_find_by_name" "', argument " "2"" of type '" "int *""'"); 
-  }
-  arg2 = (int *)(argp2);
-  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  res3 = SWIG_AsCharPtrAndSize(obj1, &buf3, NULL, &alloc3);
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "CameraList_find_by_name" "', argument " "3"" of type '" "char const *""'");
   }
@@ -4599,6 +4595,9 @@ SWIGINTERN PyObject *_wrap_CameraList_find_by_name(PyObject *self, PyObject *arg
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
+  
+  resultobj = SWIG_Python_AppendOutput(resultobj, PyInt_FromLong(*arg2));
+  
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return resultobj;
 fail:
@@ -4991,35 +4990,34 @@ SWIGINTERN PyObject *_wrap_gp_list_find_by_name(PyObject *self, PyObject *args) 
   char *arg3 = (char *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  void *argp2 = 0 ;
-  int res2 = 0 ;
+  int temp2 = 0 ;
   int res3 ;
   char *buf3 = 0 ;
   int alloc3 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
   int result;
   
+  
+  arg2 = &temp2;
+  
   (void)self;
-  if (!PyArg_UnpackTuple(args, "gp_list_find_by_name", 3, 3, &obj0, &obj1, &obj2)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "gp_list_find_by_name", 2, 2, &obj0, &obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__CameraList, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gp_list_find_by_name" "', argument " "1"" of type '" "CameraList *""'"); 
   }
   arg1 = (CameraList *)(argp1);
-  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_int, 0 |  0 );
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gp_list_find_by_name" "', argument " "2"" of type '" "int *""'"); 
-  }
-  arg2 = (int *)(argp2);
-  res3 = SWIG_AsCharPtrAndSize(obj2, &buf3, NULL, &alloc3);
+  res3 = SWIG_AsCharPtrAndSize(obj1, &buf3, NULL, &alloc3);
   if (!SWIG_IsOK(res3)) {
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gp_list_find_by_name" "', argument " "3"" of type '" "char const *""'");
   }
   arg3 = (char *)(buf3);
   result = (int)gp_list_find_by_name(arg1,arg2,(char const *)arg3);
   resultobj = SWIG_From_int((int)(result));
+  
+  resultobj = SWIG_Python_AppendOutput(resultobj, PyInt_FromLong(*arg2));
+  
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return resultobj;
 fail:
@@ -5356,12 +5354,11 @@ static PyMethodDef SwigMethods[] = {
 		"See also gphoto2.CameraList.sort\n"
 		""},
 	 { "gp_list_find_by_name", _wrap_gp_list_find_by_name, METH_VARARGS, "\n"
-		"gp_list_find_by_name(list, index, name) -> int\n"
+		"gp_list_find_by_name(list, name) -> int\n"
 		"\n"
 		"Parameters\n"
 		"----------\n"
 		"list: gphoto2.CameraList\n"
-		"index: int *\n"
 		"name: str\n"
 		"\n"
 		"Retrieves the `index` of an arbitrary entry with `name`.  \n"
@@ -5621,11 +5618,10 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___CameraList_methods[] = {
 		"See also gphoto2.gp_list_sort\n"
 		"" },
   { "find_by_name", _wrap_CameraList_find_by_name, METH_VARARGS, "\n"
-		"find_by_name(self, index, name)\n"
+		"find_by_name(self, name)\n"
 		"\n"
 		"Parameters\n"
 		"----------\n"
-		"index: int *\n"
 		"name: str\n"
 		"\n"
 		"Retrieves the `index` of an arbitrary entry with `name`.  \n"

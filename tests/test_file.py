@@ -56,6 +56,12 @@ class TestFile(unittest.TestCase):
         file_copy = gp.CameraFile()
         file_copy.copy(cam_file)
         self.assertEqual(memoryview(file_copy.get_data_and_size()), src_data)
+        # open file directly
+        direct_file = gp.CameraFile()
+        direct_file.open(test_file)
+        self.assertEqual(memoryview(direct_file.get_data_and_size()), src_data)
+        self.assertEqual(direct_file.get_mtime(), file_time)
+        self.assertEqual(direct_file.get_name(), os.path.basename(test_file))
         # create file from file descriptor
         file_copy = gp.CameraFile(os.open(test_file, os.O_RDONLY))
         self.assertEqual(memoryview(file_copy.get_data_and_size()), src_data)

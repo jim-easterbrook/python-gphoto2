@@ -36,7 +36,6 @@ typedef long int time_t;
 #ifndef SWIGIMPORTED
 
 // Allow other Python threads to continue during some function calls
-%thread gp_file_append;
 %thread gp_file_copy;
 %thread gp_file_get_data_and_size;
 %thread gp_file_save;
@@ -166,27 +165,6 @@ static PyTypeObject FileDataType = {
   if ($1 && PyErr_Occurred()) free($1);
 }
 %typemap(doc) char * data, unsigned long int size "$1_name: readable buffer (e.g. bytes)"
-
-// gp_file_append() takes any readable buffer
-%typemap(in, numinputs=1) (const char * data, unsigned long int size) {
-  Py_buffer view;
-  if (PyObject_CheckBuffer($input) != 1) {
-    PyErr_SetString(
-      PyExc_TypeError,
-      "in method '$symname', argument $argnum does not support the buffer interface");
-    SWIG_fail;
-  }
-  if (PyObject_GetBuffer($input, &view, PyBUF_SIMPLE) != 0) {
-    PyErr_SetString(
-      PyExc_TypeError,
-      "in method '$symname', argument $argnum does not export a simple buffer");
-    SWIG_fail;
-  }
-  $1 = view.buf;
-  $2 = view.len;
-  PyBuffer_Release(&view);
-}
-%typemap(doc) const char * data, unsigned long int size "$1_name: readable buffer (e.g. bytes)"
 
 // Add default constructor and destructor to _CameraFile
 struct _CameraFile {};

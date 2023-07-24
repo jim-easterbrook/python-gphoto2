@@ -312,19 +312,13 @@ The data can be made accessible to Python by using a memoryview_ object.
 This allows the data to be used without copying.
 See the ``copy-data.py`` example for typical usage.
 
-In earlier versions of python-gphoto2 these functions returned a ``bytes`` object containing a copy of the data in the ``CameraFile`` object.
+Note that if another function (such as gp_file_set_data_and_size or gp_file_open) changes the file's data then this object will be invalidated and you will probably get a segmentation fault.
 
 gp_file_set_data_and_size / CameraFile.set_data_and_size
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Since python-gphoto2 version 2.1.0 these functions accept any `bytes-like object`_.
 In earlier versions of python-gphoto2 these functions required a string and its length, and didn't work correctly anyway.
-
-gp_file_append / CameraFile.append
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Since python-gphoto2 version 2.1.0 these functions accept any `bytes-like object`_.
-In earlier versions of python-gphoto2 these functions required a string and its length.
 
 gp_camera_file_read / Camera.file_read
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

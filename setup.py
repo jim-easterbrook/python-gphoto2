@@ -166,6 +166,7 @@ setup_kwds = {
     'package_dir': package_dir,
     'package_data': package_data,
     'exclude_package_data': exclude_package_data,
+    'include_package_data': False,
     }
 
 if tuple(map(int, setuptools_version.split('.'))) < (61, 0):

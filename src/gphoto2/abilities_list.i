@@ -50,7 +50,6 @@ PLAIN_ARGOUT(CameraAbilitiesList **)
 struct _CameraAbilitiesList {};
 DEFAULT_CTOR(_CameraAbilitiesList, gp_abilities_list_new)
 DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
-%ignore gp_abilities_list_new;
 %ignore gp_abilities_list_free;
 
 // Make CameraAbilitiesList more like a Python list

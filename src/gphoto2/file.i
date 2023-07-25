@@ -47,99 +47,17 @@ DEFAULT_EXCEPTION
 // gp_file_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFile **)
 
-// Define a simple Python type that has the buffer interface
-// This definition is not SWIGGED, just compiled
-%{
-typedef struct {
-    PyObject_HEAD
-    CameraFile  *file;
-    void        *buf;
-    Py_ssize_t  len;
-} FileData;
-
-static void
-FileData_dealloc(FileData* self)
-{
-    if (self->file)
-        gp_file_unref(self->file);
-    Py_TYPE(self)->tp_free((PyObject*)self);
-}
-
-static int
-FileData_getbuffer(FileData *self, Py_buffer *view, int flags)
-{
-    return PyBuffer_FillInfo(view, (PyObject*)self, self->buf, self->len, 1, flags);
-}
-
-static void
-FileData_set(FileData *self, CameraFile *file, void *buf, Py_ssize_t len)
-{
-    if (self->file)
-        gp_file_unref(self->file);
-    self->file = file;
-    self->buf = buf;
-    self->len = len;
-    if (self->file)
-        gp_file_ref(self->file);
-}
-
-static PyBufferProcs FileData_BufferProcs = {
-    (getbufferproc)FileData_getbuffer,        /* bf_getbuffer */
-    (releasebufferproc) 0,                    /* bf_releasebuffer */
-};
-
-static PyTypeObject FileDataType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "gphoto2.FileData",                       /*tp_name*/
-    sizeof(FileData),                         /*tp_basicsize*/
-    0,                                        /*tp_itemsize*/
-    (destructor)FileData_dealloc,             /*tp_dealloc*/
-    0,                                        /*tp_print*/
-    0,                                        /*tp_getattr*/
-    0,                                        /*tp_setattr*/
-    0,                                        /*tp_compare */
-    0,                                        /*tp_repr*/
-    0,                                        /*tp_as_number*/
-    0,                                        /*tp_as_sequence*/
-    0,                                        /*tp_as_mapping*/
-    0,                                        /*tp_hash */
-    0,                                        /*tp_call*/
-    0,                                        /*tp_str*/
-    0,                                        /*tp_getattro*/
-    0,                                        /*tp_setattro*/
-    &FileData_BufferProcs,                    /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT,                       /*tp_flags*/
-    "gphoto2 CameraFile data buffer",         /* tp_doc */
-};
-%}
-
-%init %{
-  FileDataType.tp_new = PyType_GenericNew;
-  if (PyType_Ready(&FileDataType) >= 0) {
-    Py_INCREF(&FileDataType);
-    PyModule_AddObject(m, "FileData", (PyObject *)&FileDataType);
-  }
-%}
-
 // gp_file_get_data_and_size() returns a pointer to some data
-%typemap(in, numinputs=0) (const char ** data, unsigned long * size)
-                          (char *temp_data, unsigned long temp_size) {
-  temp_data = NULL;
-  temp_size = 0;
+%typemap(in, numinputs=0) (const char **data, unsigned long int *size)
+                          (char *temp_data = NULL,
+                           unsigned long temp_size = 0) %{
   $1 = &temp_data;
   $2 = &temp_size;
-}
-%typemap(argout) (CameraFile *, const char ** data, unsigned long * size),
-                 (struct _CameraFile *self, char const **data, unsigned long *size) {
-  // Create a new FileData object to store result
-  PyObject *file_data = PyObject_CallObject((PyObject*)&FileDataType, NULL);
-  if (file_data == NULL) {
-    PyErr_SetString(PyExc_MemoryError, "Cannot create FileData");
-    SWIG_fail;
-  }
-  FileData_set((FileData*)file_data, $1, *$2, *$3);
-  $result = SWIG_Python_AppendOutput($result, file_data);
-}
+%}
+%typemap(argout) (const char **data, unsigned long int *size) %{
+  $result = SWIG_Python_AppendOutput(
+    $result, PyMemoryView_FromMemory(*$1, *$2, PyBUF_READ));
+%}
 
 // gp_file_set_data_and_size() requires data allocated by malloc which it will free later
 %typemap(in, numinputs=1) (char * data, unsigned long int size) {

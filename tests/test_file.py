@@ -44,7 +44,7 @@ class TestFile(unittest.TestCase):
         file_name = 'cam_file.jpg'
         cam_file.set_name(file_name)
         # read data from CameraFile
-        self.assertEqual(memoryview(cam_file.get_data_and_size()), src_data)
+        self.assertEqual(cam_file.get_data_and_size(), src_data)
         self.assertEqual(cam_file.get_mime_type(), 'image/jpeg')
         self.assertEqual(cam_file.get_mtime(), file_time)
         self.assertEqual(cam_file.get_name(), file_name)
@@ -55,16 +55,16 @@ class TestFile(unittest.TestCase):
         # copy file
         file_copy = gp.CameraFile()
         file_copy.copy(cam_file)
-        self.assertEqual(memoryview(file_copy.get_data_and_size()), src_data)
+        self.assertEqual(file_copy.get_data_and_size(), src_data)
         # open file directly
         direct_file = gp.CameraFile()
         direct_file.open(test_file)
-        self.assertEqual(memoryview(direct_file.get_data_and_size()), src_data)
+        self.assertEqual(direct_file.get_data_and_size(), src_data)
         self.assertEqual(direct_file.get_mtime(), file_time)
         self.assertEqual(direct_file.get_name(), os.path.basename(test_file))
         # create file from file descriptor
         file_copy = gp.CameraFile(os.open(test_file, os.O_RDONLY))
-        self.assertEqual(memoryview(file_copy.get_data_and_size()), src_data)
+        self.assertEqual(file_copy.get_data_and_size(), src_data)
         # save CameraFile to computer
         with tempfile.TemporaryDirectory() as tmp_dir:
             temp_file = os.path.join(tmp_dir, file_name)
@@ -75,7 +75,7 @@ class TestFile(unittest.TestCase):
             self.assertEqual(int(os.path.getmtime(temp_file)), file_time)
         # wipe file data
         cam_file.clean()
-        self.assertEqual(memoryview(cam_file.get_data_and_size()), b'')
+        self.assertEqual(cam_file.get_data_and_size(), b'')
         self.assertEqual(cam_file.get_name(), '')
 
 

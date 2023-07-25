@@ -307,12 +307,12 @@ See the ``context_with_callbacks.py`` example for a convenient way to do this.
 gp_file_get_data_and_size / CameraFile.get_data_and_size
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Since python-gphoto2 version 1.2.0 these functions return a ``FileData`` object that supports the `buffer protocol`_.
-The data can be made accessible to Python by using a memoryview_ object.
+Since python-gphoto2 version 2.4.0 these functions return a Python memoryview_ object.
+Prior to that they returned a ``FileData`` object that supports the `buffer protocol`_ so its data can be made accessible to Python by using a memoryview_ object.
 This allows the data to be used without copying.
 See the ``copy-data.py`` example for typical usage.
 
-Note that if another function (such as gp_file_set_data_and_size or gp_file_open) changes the file's data then this object will be invalidated and you will probably get a segmentation fault.
+Note that if the CameraFile object is deleted, or another function (such as ``gp_file_set_data_and_size`` or ``gp_file_open``) changes the CameraFile's data, then this object will be invalidated and you will probably get a segmentation fault.
 
 gp_file_set_data_and_size / CameraFile.set_data_and_size
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -355,11 +355,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses/.
 
 .. _API documentation: http://www.gphoto.org/doc/api/
-.. _buffer protocol:   https://docs.python.org/2/c-api/buffer.html
-.. _bytearray:         https://docs.python.org/2/library/functions.html#bytearray
+.. _buffer protocol:   https://docs.python.org/3/c-api/buffer.html
+.. _bytearray:         https://docs.python.org/3/library/functions.html#bytearray
 .. _bytes-like object: https://docs.python.org/3/glossary.html#term-bytes-like-object
 .. _cffi:              http://cffi.readthedocs.org/
-.. _ctypes:            https://docs.python.org/2/library/ctypes.html
+.. _ctypes:            https://docs.python.org/3/library/ctypes.html
 .. _functions:         http://www.gphoto.org/doc/api/
 .. _GitHub:            https://github.com/jim-easterbrook/python-gphoto2
 .. _gphoto2-cffi:      https://github.com/jbaiter/gphoto2-cffi
@@ -368,7 +368,7 @@ along with this program.  If not, see http://www.gnu.org/licenses/.
 .. _gphoto-user mailing list:
                        http://gphoto.org/mailinglists/
 .. _libgphoto2:        http://www.gphoto.org/proj/libgphoto2/
-.. _memoryview:        https://docs.python.org/2/library/stdtypes.html#memoryview
+.. _memoryview:        https://docs.python.org/3/library/stdtypes.html#memoryview
 .. _Python bindings:
    http://sourceforge.net/p/gphoto/code/HEAD/tree/trunk/bindings/libgphoto2-python/
 .. _piggyphoto:        https://github.com/alexdu/piggyphoto

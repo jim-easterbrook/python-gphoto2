@@ -3839,69 +3839,6 @@ static swig_module_info swig_module = {swig_types, 57, 0, 0, 0, 0};
 
 PyObject *PyExc_GPhoto2Error = NULL;
 
-
-typedef struct {
-    PyObject_HEAD
-    CameraFile  *file;
-    void        *buf;
-    Py_ssize_t  len;
-} FileData;
-
-static void
-FileData_dealloc(FileData* self)
-{
-    if (self->file)
-        gp_file_unref(self->file);
-    Py_TYPE(self)->tp_free((PyObject*)self);
-}
-
-static int
-FileData_getbuffer(FileData *self, Py_buffer *view, int flags)
-{
-    return PyBuffer_FillInfo(view, (PyObject*)self, self->buf, self->len, 1, flags);
-}
-
-static void
-FileData_set(FileData *self, CameraFile *file, void *buf, Py_ssize_t len)
-{
-    if (self->file)
-        gp_file_unref(self->file);
-    self->file = file;
-    self->buf = buf;
-    self->len = len;
-    if (self->file)
-        gp_file_ref(self->file);
-}
-
-static PyBufferProcs FileData_BufferProcs = {
-    (getbufferproc)FileData_getbuffer,        /* bf_getbuffer */
-    (releasebufferproc) 0,                    /* bf_releasebuffer */
-};
-
-static PyTypeObject FileDataType = {
-    PyVarObject_HEAD_INIT(NULL, 0)
-    "gphoto2.FileData",                       /*tp_name*/
-    sizeof(FileData),                         /*tp_basicsize*/
-    0,                                        /*tp_itemsize*/
-    (destructor)FileData_dealloc,             /*tp_dealloc*/
-    0,                                        /*tp_print*/
-    0,                                        /*tp_getattr*/
-    0,                                        /*tp_setattr*/
-    0,                                        /*tp_compare */
-    0,                                        /*tp_repr*/
-    0,                                        /*tp_as_number*/
-    0,                                        /*tp_as_sequence*/
-    0,                                        /*tp_as_mapping*/
-    0,                                        /*tp_hash */
-    0,                                        /*tp_call*/
-    0,                                        /*tp_str*/
-    0,                                        /*tp_getattro*/
-    0,                                        /*tp_setattro*/
-    &FileData_BufferProcs,                    /*tp_as_buffer*/
-    Py_TPFLAGS_DEFAULT,                       /*tp_flags*/
-    "gphoto2 CameraFile data buffer",         /* tp_doc */
-};
-
 SWIGINTERN struct _CameraFile *new__CameraFile__SWIG_0(void){
     struct _CameraFile *result;
     int error = gp_file_new(&result);
@@ -5011,15 +4948,13 @@ SWIGINTERN PyObject *_wrap_CameraFile_get_data_and_size(PyObject *self, PyObject
   unsigned long *arg3 = (unsigned long *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  char *temp_data2 ;
-  unsigned long temp_size2 ;
+  char *temp_data2 = NULL ;
+  unsigned long temp_size2 = 0 ;
   
-  {
-    temp_data2 = NULL;
-    temp_size2 = 0;
-    arg2 = &temp_data2;
-    arg3 = &temp_size2;
-  }
+  
+  arg2 = &temp_data2;
+  arg3 = &temp_size2;
+  
   (void)self;
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraFile_get_data_and_size takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFile, 0 |  0 );
@@ -5032,16 +4967,10 @@ SWIGINTERN PyObject *_wrap_CameraFile_get_data_and_size(PyObject *self, PyObject
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  {
-    // Create a new FileData object to store result
-    PyObject *file_data = PyObject_CallObject((PyObject*)&FileDataType, NULL);
-    if (file_data == NULL) {
-      PyErr_SetString(PyExc_MemoryError, "Cannot create FileData");
-      SWIG_fail;
-    }
-    FileData_set((FileData*)file_data, arg1, *arg2, *arg3);
-    resultobj = SWIG_Python_AppendOutput(resultobj, file_data);
-  }
+  
+  resultobj = SWIG_Python_AppendOutput(
+    resultobj, PyMemoryView_FromMemory(*arg2, *arg3, PyBUF_READ));
+  
   return resultobj;
 fail:
   return NULL;
@@ -5614,17 +5543,15 @@ SWIGINTERN PyObject *_wrap_gp_file_get_data_and_size(PyObject *self, PyObject *a
   unsigned long *arg3 = (unsigned long *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  char *temp_data2 ;
-  unsigned long temp_size2 ;
+  char *temp_data2 = NULL ;
+  unsigned long temp_size2 = 0 ;
   PyObject * obj0 = 0 ;
   int result;
   
-  {
-    temp_data2 = NULL;
-    temp_size2 = 0;
-    arg2 = &temp_data2;
-    arg3 = &temp_size2;
-  }
+  
+  arg2 = &temp_data2;
+  arg3 = &temp_size2;
+  
   (void)self;
   if (!PyArg_UnpackTuple(args, "gp_file_get_data_and_size", 1, 1, &obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__CameraFile, 0 |  0 );
@@ -5638,16 +5565,10 @@ SWIGINTERN PyObject *_wrap_gp_file_get_data_and_size(PyObject *self, PyObject *a
     SWIG_PYTHON_THREAD_END_ALLOW;
   }
   resultobj = SWIG_From_int((int)(result));
-  {
-    // Create a new FileData object to store result
-    PyObject *file_data = PyObject_CallObject((PyObject*)&FileDataType, NULL);
-    if (file_data == NULL) {
-      PyErr_SetString(PyExc_MemoryError, "Cannot create FileData");
-      SWIG_fail;
-    }
-    FileData_set((FileData*)file_data, arg1, *arg2, *arg3);
-    resultobj = SWIG_Python_AppendOutput(resultobj, file_data);
-  }
+  
+  resultobj = SWIG_Python_AppendOutput(
+    resultobj, PyMemoryView_FromMemory(*arg2, *arg3, PyBUF_READ));
+  
   return resultobj;
 fail:
   return NULL;
@@ -7389,13 +7310,6 @@ SWIG_init(void) {
 #else
     return;
 #endif
-  }
-  
-  
-  FileDataType.tp_new = PyType_GenericNew;
-  if (PyType_Ready(&FileDataType) >= 0) {
-    Py_INCREF(&FileDataType);
-    PyModule_AddObject(m, "FileData", (PyObject *)&FileDataType);
   }
   
   

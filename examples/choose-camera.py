@@ -70,7 +70,7 @@ def main():
     camera = gp.Camera()
     idx = port_info_list.lookup_path(addr)
     camera.set_port_info(port_info_list[idx])
-    idx = abilities_list.lookup_model(camera_list[0][0])
+    idx = abilities_list.lookup_model(camera_list[choice][0])
     camera.set_abilities(abilities_list[idx])
     # do something with camera
     text = camera.get_summary()

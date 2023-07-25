@@ -21,6 +21,10 @@
 
 %rename(CameraAbilitiesList) _CameraAbilitiesList;
 
+// Deprecate some functions intended for camera drivers
+DEPRECATED(gp_abilities_list_append,)
+DEPRECATED(_CameraAbilitiesList::append, 1)
+
 // Make docstring parameter types more Pythonic
 %typemap(doc) CameraAbilities "$1_name: gphoto2.$1_type"
 %typemap(doc) CameraAbilitiesList * "$1_name: gphoto2.$*1_type"

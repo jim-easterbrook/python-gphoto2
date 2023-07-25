@@ -4669,8 +4669,12 @@ SWIGINTERN PyObject *_wrap_CameraAbilitiesList_append(PyObject *self, PyObject *
     }
   }
   {
+    if (PyErr_WarnEx(PyExc_DeprecationWarning,"_CameraAbilitiesList::append"" is deprecated and"
+        " will be removed in a future release", 1) < 0) SWIG_fail;
     _CameraAbilitiesList_append(arg1,arg2);
+    
     if (PyErr_Occurred()) SWIG_fail;
+    
   }
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -5568,7 +5572,14 @@ SWIGINTERN PyObject *_wrap_gp_abilities_list_append(PyObject *self, PyObject *ar
       arg2 = *((CameraAbilities *)(argp2));
     }
   }
-  result = (int)gp_abilities_list_append(arg1,arg2);
+  {
+    if (PyErr_WarnEx(PyExc_DeprecationWarning,"gp_abilities_list_append"" is deprecated and"
+        " will be removed in a future release", 1) < 0) SWIG_fail;
+    result = (int)gp_abilities_list_append(arg1,arg2);
+    
+    
+    
+  }
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
@@ -5849,23 +5860,7 @@ static PyMethodDef SwigMethods[] = {
 		"list: gphoto2.CameraAbilitiesList\n"
 		"abilities: gphoto2.CameraAbilities\n"
 		"\n"
-		"Append the abilities to the list.  \n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"* `list` :  \n"
-		"    CameraAbilitiesList  \n"
-		"* `abilities` :  \n"
-		"    CameraAbilities  \n"
-		"\n"
-		"Returns\n"
-		"-------\n"
-		"a gphoto2 error code  \n"
-		"\n"
-		"This function is called by a camera library on camera_abilities() in\n"
-		"order to inform libgphoto2 about a supported camera model.\n"
-		"\n"
-		"See also gphoto2.CameraAbilitiesList.append\n"
+		"This function is deprecated and will be removed in a future release.\n"
 		""},
 	 { "gp_abilities_list_count", _wrap_gp_abilities_list_count, METH_VARARGS, "\n"
 		"gp_abilities_list_count(list) -> int\n"
@@ -6113,23 +6108,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___CameraAbilitiesList_methods[] = {
 		"----------\n"
 		"abilities: gphoto2.CameraAbilities\n"
 		"\n"
-		"Append the abilities to the list.  \n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"* `list` :  \n"
-		"    CameraAbilitiesList  \n"
-		"* `abilities` :  \n"
-		"    CameraAbilities  \n"
-		"\n"
-		"Returns\n"
-		"-------\n"
-		"a gphoto2 error code  \n"
-		"\n"
-		"This function is called by a camera library on camera_abilities() in\n"
-		"order to inform libgphoto2 about a supported camera model.\n"
-		"\n"
-		"See also gphoto2.gp_abilities_list_append\n"
+		"This function is deprecated and will be removed in a future release.\n"
 		"" },
   { "count", _wrap_CameraAbilitiesList_count, METH_VARARGS, "\n"
 		"count(self) -> int\n"

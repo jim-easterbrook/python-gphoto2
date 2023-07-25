@@ -22,14 +22,16 @@
 }
 %enddef
 
-%define DEPRECATED(func_name)
+%define DEPRECATED(func_name, check_result)
 %feature("docstring") func_name
   "This function is deprecated and will be removed in a future release."
 %exception func_name {
   if (PyErr_WarnEx(PyExc_DeprecationWarning, #func_name ## " is deprecated and"
     " will be removed in a future release", 1) < 0) SWIG_fail;
   $action
+#if #check_result != ""
   if (PyErr_Occurred()) SWIG_fail;
+#endif
 }
 %enddef
 

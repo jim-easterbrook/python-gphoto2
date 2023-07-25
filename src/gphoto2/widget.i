@@ -22,16 +22,16 @@
 %rename(CameraWidget) _CameraWidget;
 
 // Deprecate some functions intended for camera drivers
-DEPRECATED(gp_widget_add_choice)
-DEPRECATED(_CameraWidget::add_choice)
-DEPRECATED(gp_widget_set_info)
-DEPRECATED(_CameraWidget::set_info)
-DEPRECATED(gp_widget_set_name)
-DEPRECATED(_CameraWidget::set_name)
-DEPRECATED(gp_widget_set_range)
-DEPRECATED(_CameraWidget::set_range)
-DEPRECATED(gp_widget_set_readonly)
-DEPRECATED(_CameraWidget::set_readonly)
+DEPRECATED(gp_widget_add_choice,)
+DEPRECATED(_CameraWidget::add_choice, 1)
+DEPRECATED(gp_widget_set_info,)
+DEPRECATED(_CameraWidget::set_info, 1)
+DEPRECATED(gp_widget_set_name,)
+DEPRECATED(_CameraWidget::set_name, 1)
+DEPRECATED(gp_widget_set_range,)
+DEPRECATED(_CameraWidget::set_range, 1)
+DEPRECATED(gp_widget_set_readonly,)
+DEPRECATED(_CameraWidget::set_readonly, 1)
 
 /* These are the only wrapped functions that return a CameraWidget:
 gp_widget_get_child(..., CameraWidget **child)

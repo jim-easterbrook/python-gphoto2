@@ -75,12 +75,25 @@ PLAIN_ARGOUT(CameraFile **)
     SWIG_fail;
   }
   $1 = malloc(view.len);
+  if (!$1) {
+    PyErr_SetString(
+      PyExc_MemoryError, "in method '$symname', insufficient memory");
+    SWIG_fail;
+  }
   memcpy($1, view.buf, view.len);
   $2 = view.len;
   PyBuffer_Release(&view);
 }
-%typemap(freearg) (char * data, unsigned long int size) {
-  if ($1 && PyErr_Occurred()) free($1);
+%exception gp_file_set_data_and_size %{
+  $action
+  if (result < GP_OK) free(arg2);
+%}
+%exception _CameraFile::set_data_and_size {
+  $action
+  if (PyErr_Occurred()) {
+    free(arg2);
+    SWIG_fail;
+  }
 }
 %typemap(doc) char * data, unsigned long int size "$1_name: readable buffer (e.g. bytes)"
 

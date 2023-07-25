@@ -4920,23 +4920,25 @@ SWIGINTERN PyObject *_wrap_CameraFile_set_data_and_size(PyObject *self, PyObject
       SWIG_fail;
     }
     arg2 = malloc(view.len);
+    if (!arg2) {
+      PyErr_SetString(
+        PyExc_MemoryError, "in method 'CameraFile_set_data_and_size', insufficient memory");
+      SWIG_fail;
+    }
     memcpy(arg2, view.buf, view.len);
     arg3 = view.len;
     PyBuffer_Release(&view);
   }
   {
     _CameraFile_set_data_and_size(arg1,arg2,arg3);
-    if (PyErr_Occurred()) SWIG_fail;
+    if (PyErr_Occurred()) {
+      free(arg2);
+      SWIG_fail;
+    }
   }
   resultobj = SWIG_Py_Void();
-  {
-    if (arg2 && PyErr_Occurred()) free(arg2);
-  }
   return resultobj;
 fail:
-  {
-    if (arg2 && PyErr_Occurred()) free(arg2);
-  }
   return NULL;
 }
 
@@ -5514,24 +5516,26 @@ SWIGINTERN PyObject *_wrap_gp_file_set_data_and_size(PyObject *self, PyObject *a
       SWIG_fail;
     }
     arg2 = malloc(view.len);
+    if (!arg2) {
+      PyErr_SetString(
+        PyExc_MemoryError, "in method 'gp_file_set_data_and_size', insufficient memory");
+      SWIG_fail;
+    }
     memcpy(arg2, view.buf, view.len);
     arg3 = view.len;
     PyBuffer_Release(&view);
   }
+  
   {
     SWIG_PYTHON_THREAD_BEGIN_ALLOW;
     result = (int)gp_file_set_data_and_size(arg1,arg2,arg3);
     SWIG_PYTHON_THREAD_END_ALLOW;
   }
+  if (result < GP_OK) free(arg2);
+  
   resultobj = SWIG_From_int((int)(result));
-  {
-    if (arg2 && PyErr_Occurred()) free(arg2);
-  }
   return resultobj;
 fail:
-  {
-    if (arg2 && PyErr_Occurred()) free(arg2);
-  }
   return NULL;
 }
 

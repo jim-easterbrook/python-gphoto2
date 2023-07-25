@@ -3793,15 +3793,14 @@ SwigPyBuiltin_iternextfunc_closure(SwigPyWrapperFunction wrapper, PyObject *a) {
 #define SWIGTYPE_p_int swig_types[45]
 #define SWIGTYPE_p_long swig_types[46]
 #define SWIGTYPE_p_long_long swig_types[47]
-#define SWIGTYPE_p_p__CameraAbilitiesList swig_types[48]
-#define SWIGTYPE_p_short swig_types[49]
-#define SWIGTYPE_p_signed_char swig_types[50]
-#define SWIGTYPE_p_unsigned_char swig_types[51]
-#define SWIGTYPE_p_unsigned_int swig_types[52]
-#define SWIGTYPE_p_unsigned_long_long swig_types[53]
-#define SWIGTYPE_p_unsigned_short swig_types[54]
-static swig_type_info *swig_types[56];
-static swig_module_info swig_module = {swig_types, 55, 0, 0, 0, 0};
+#define SWIGTYPE_p_short swig_types[48]
+#define SWIGTYPE_p_signed_char swig_types[49]
+#define SWIGTYPE_p_unsigned_char swig_types[50]
+#define SWIGTYPE_p_unsigned_int swig_types[51]
+#define SWIGTYPE_p_unsigned_long_long swig_types[52]
+#define SWIGTYPE_p_unsigned_short swig_types[53]
+static swig_type_info *swig_types[55];
+static swig_module_info swig_module = {swig_types, 54, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -5337,30 +5336,6 @@ fail:
 
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraAbilities) /* defines _wrap_delete_CameraAbilities_destructor_closure */
 
-SWIGINTERN PyObject *_wrap_gp_abilities_list_new(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  CameraAbilitiesList **arg1 = (CameraAbilitiesList **) 0 ;
-  CameraAbilitiesList *temp1 ;
-  int result;
-  
-  {
-    temp1 = NULL;
-    arg1 = &temp1;
-  }
-  (void)self;
-  if (!PyArg_UnpackTuple(args, "gp_abilities_list_new", 0, 0)) SWIG_fail;
-  result = (int)gp_abilities_list_new(arg1);
-  resultobj = SWIG_From_int((int)(result));
-  {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg1, SWIGTYPE_p__CameraAbilitiesList, SWIG_POINTER_OWN));
-  }
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_gp_abilities_list_load(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CameraAbilitiesList *arg1 = (CameraAbilitiesList *) 0 ;
@@ -5749,25 +5724,6 @@ fail:
 
 
 static PyMethodDef SwigMethods[] = {
-	 { "gp_abilities_list_new", _wrap_gp_abilities_list_new, METH_VARARGS, "\n"
-		"gp_abilities_list_new() -> int\n"
-		"Allocate the memory for a new abilities list.  \n"
-		"\n"
-		"Function to allocate the memory for a new abilities list.  \n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"* `list` :  \n"
-		"    CameraAbilitiesList object to initialize  \n"
-		"\n"
-		"Returns\n"
-		"-------\n"
-		"gphoto2 error code  \n"
-		"\n"
-		"You would then call gp_abilities_list_load() in order to populate it.\n"
-		"\n"
-		"See also gphoto2.CameraAbilitiesList\n"
-		""},
 	 { "gp_abilities_list_load", _wrap_gp_abilities_list_load, METH_VARARGS, "\n"
 		"gp_abilities_list_load(list, context) -> int\n"
 		"\n"
@@ -6717,7 +6673,6 @@ static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int32_t *|int_fast16_t *|int_fast32_t *|int_least32_t *|intptr_t *|int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_long = {"_p_long", "time_t *|long *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_long_long = {"_p_long_long", "int64_t *|int_fast64_t *|int_least64_t *|intmax_t *|long long *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_p__CameraAbilitiesList = {"_p_p__CameraAbilitiesList", "CameraAbilitiesList **|struct _CameraAbilitiesList **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_short = {"_p_short", "int16_t *|int_least16_t *|short *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_signed_char = {"_p_signed_char", "int8_t *|int_fast8_t *|int_least8_t *|signed char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "uint8_t *|uint_fast8_t *|uint_least8_t *|unsigned char *", 0, 0, (void*)0, 0};
@@ -6774,7 +6729,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_int,
   &_swigt__p_long,
   &_swigt__p_long_long,
-  &_swigt__p_p__CameraAbilitiesList,
   &_swigt__p_short,
   &_swigt__p_signed_char,
   &_swigt__p_unsigned_char,
@@ -6831,7 +6785,6 @@ static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0,
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_long[] = {  {&_swigt__p_long, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_long_long[] = {  {&_swigt__p_long_long, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_p__CameraAbilitiesList[] = {  {&_swigt__p_p__CameraAbilitiesList, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_short[] = {  {&_swigt__p_short, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_signed_char[] = {  {&_swigt__p_signed_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_unsigned_char[] = {  {&_swigt__p_unsigned_char, 0, 0, 0},{0, 0, 0, 0}};
@@ -6888,7 +6841,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_int,
   _swigc__p_long,
   _swigc__p_long_long,
-  _swigc__p_p__CameraAbilitiesList,
   _swigc__p_short,
   _swigc__p_signed_char,
   _swigc__p_unsigned_char,

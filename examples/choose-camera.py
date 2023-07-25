@@ -56,7 +56,7 @@ def main():
             print('Number out of range')
             return 3
         # use chosen camera
-        addr = camera_list[choice][1]
+        name, addr = camera_list[choice]
     # get port info and camera abilities
     port_info_list = gp.PortInfoList()
     port_info_list.load()
@@ -70,7 +70,7 @@ def main():
     camera = gp.Camera()
     idx = port_info_list.lookup_path(addr)
     camera.set_port_info(port_info_list[idx])
-    idx = abilities_list.lookup_model(camera_list[0][0])
+    idx = abilities_list.lookup_model(name)
     camera.set_abilities(abilities_list[idx])
     # do something with camera
     text = camera.get_summary()

@@ -58,16 +58,7 @@ class TestFile(unittest.TestCase):
         file_copy = gp.CameraFile()
         file_copy.copy(cam_file)
         self.assertEqual(file_copy.get_data_and_size(), self.src_data)
-        # open file directly
-        direct_file = gp.CameraFile()
-        direct_file.open(self.test_file)
-        self.assertEqual(direct_file.get_data_and_size(), self.src_data)
-        self.assertEqual(direct_file.get_mtime(), file_time)
-        self.assertEqual(
-            direct_file.get_name(), os.path.basename(self.test_file))
-        # create file from file descriptor
-        file_copy = gp.CameraFile(os.open(self.test_file, os.O_RDONLY))
-        self.assertEqual(file_copy.get_data_and_size(), self.src_data)
+        del file_copy
         # save CameraFile to computer
         with tempfile.TemporaryDirectory() as tmp_dir:
             temp_file = os.path.join(tmp_dir, file_name)
@@ -80,6 +71,19 @@ class TestFile(unittest.TestCase):
         cam_file.clean()
         self.assertEqual(cam_file.get_data_and_size(), b'')
         self.assertEqual(cam_file.get_name(), '')
+        del cam_file
+        # open file directly
+        direct_file = gp.CameraFile()
+        direct_file.open(self.test_file)
+        self.assertEqual(direct_file.get_data_and_size(), self.src_data)
+        self.assertEqual(direct_file.get_mtime(), file_time)
+        self.assertEqual(
+            direct_file.get_name(), os.path.basename(self.test_file))
+        del direct_file
+        # create file from file descriptor
+        file_copy = gp.CameraFile(os.open(self.test_file, os.O_RDONLY))
+        self.assertEqual(file_copy.get_data_and_size(), self.src_data)
+        del file_copy
 
     def test_c_style(self):
         # create CameraFile from data
@@ -116,22 +120,7 @@ class TestFile(unittest.TestCase):
         self.assertEqual(gp.gp_file_copy(file_copy, cam_file), gp.GP_OK)
         self.assertEqual(gp.gp_file_get_data_and_size(file_copy),
                          [gp.GP_OK, self.src_data])
-        # open file directly
-        OK, direct_file = gp.gp_file_new()
-        self.assertEqual(OK, gp.GP_OK)
-        self.assertEqual(gp.gp_file_open(direct_file, self.test_file), gp.GP_OK)
-        self.assertEqual(gp.gp_file_get_data_and_size(direct_file),
-                         [gp.GP_OK, self.src_data])
-        self.assertEqual(gp.gp_file_get_mtime(direct_file),
-                         [gp.GP_OK, file_time])
-        self.assertEqual(gp.gp_file_get_name(direct_file),
-                         [gp.GP_OK, os.path.basename(self.test_file)])
-        # create file from file descriptor
-        OK, file_copy = gp.gp_file_new_from_fd(
-            os.open(self.test_file, os.O_RDONLY))
-        self.assertEqual(OK, gp.GP_OK)
-        self.assertEqual(gp.gp_file_get_data_and_size(file_copy),
-                         [gp.GP_OK, self.src_data])
+        del file_copy
         # save CameraFile to computer
         with tempfile.TemporaryDirectory() as tmp_dir:
             temp_file = os.path.join(tmp_dir, file_name)
@@ -145,6 +134,25 @@ class TestFile(unittest.TestCase):
         self.assertEqual(gp.gp_file_get_data_and_size(cam_file),
                          [gp.GP_OK, b''])
         self.assertEqual(gp.gp_file_get_name(cam_file), [gp.GP_OK, ''])
+        del cam_file
+        # open file directly
+        OK, direct_file = gp.gp_file_new()
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertEqual(gp.gp_file_open(direct_file, self.test_file), gp.GP_OK)
+        self.assertEqual(gp.gp_file_get_data_and_size(direct_file),
+                         [gp.GP_OK, self.src_data])
+        self.assertEqual(gp.gp_file_get_mtime(direct_file),
+                         [gp.GP_OK, file_time])
+        self.assertEqual(gp.gp_file_get_name(direct_file),
+                         [gp.GP_OK, os.path.basename(self.test_file)])
+        del direct_file
+        # create file from file descriptor
+        OK, file_copy = gp.gp_file_new_from_fd(
+            os.open(self.test_file, os.O_RDONLY))
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertEqual(gp.gp_file_get_data_and_size(file_copy),
+                         [gp.GP_OK, self.src_data])
+        del file_copy
 
 
 if __name__ == "__main__":

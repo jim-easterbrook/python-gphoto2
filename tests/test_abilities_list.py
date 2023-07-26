@@ -28,7 +28,7 @@ class TestAbilitiesList(unittest.TestCase):
         # switch to virtual camera from normal drivers
         os.environ['IOLIBS'] = os.environ['IOLIBS'].replace('iolibs', 'vusb')
 
-    def test_abilities_list(self):
+    def test_oo_style(self):
         abilities_list = gp.CameraAbilitiesList()
         self.assertIsInstance(abilities_list, gp.CameraAbilitiesList)
         self.assertEqual(len(abilities_list), 0)
@@ -46,6 +46,34 @@ class TestAbilitiesList(unittest.TestCase):
         self.assertIsInstance(abilities_list.lookup_model(name), int)
         abilities_list.reset()
         self.assertEqual(len(abilities_list), 0)
+
+    def test_c_style(self):
+        OK, abilities_list = gp.gp_abilities_list_new()
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertIsInstance(abilities_list, gp.CameraAbilitiesList)
+        self.assertEqual(gp.gp_abilities_list_count(abilities_list), 0)
+        self.assertEqual(gp.gp_abilities_list_load(abilities_list), gp.GP_OK)
+        self.assertNotEqual(gp.gp_abilities_list_count(abilities_list), 0)
+        OK, abilities = gp.gp_abilities_list_get_abilities(abilities_list, 0)
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertIsInstance(abilities, gp.CameraAbilities)
+        self.assertIsInstance(abilities.model, str)
+        OK, port_info_list = gp.gp_port_info_list_new()
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertEqual(gp.gp_port_info_list_load(port_info_list), gp.GP_OK)
+        OK, camera_list = gp.gp_abilities_list_detect(
+            abilities_list, port_info_list)
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertEqual(gp.gp_list_count(camera_list), 1)
+        OK, name = gp.gp_list_get_name(camera_list, 0)
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertEqual(name, 'Nikon DSC D750')
+        OK, value = gp.gp_list_get_value(camera_list, 0)
+        self.assertEqual(OK, gp.GP_OK)
+        idx = gp.gp_abilities_list_lookup_model(abilities_list, name)
+        self.assertIsInstance(idx, int)
+        self.assertEqual(gp.gp_abilities_list_reset(abilities_list), gp.GP_OK)
+        self.assertEqual(gp.gp_abilities_list_count(abilities_list), 0)
 
 
 if __name__ == "__main__":

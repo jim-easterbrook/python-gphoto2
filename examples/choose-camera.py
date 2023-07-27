@@ -33,9 +33,20 @@ def main():
     logging.basicConfig(
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     callback_obj = gp.check_result(gp.use_python_logging())
+    # get port info and camera abilities
+    port_info_list = gp.PortInfoList()
+    port_info_list.load()
+    abilities_list = gp.CameraAbilitiesList()
+    abilities_list.load()
     if len(sys.argv) > 1:
         # if user has given an address open it directly
-        addr = sys.argv[1]
+        camera_list = abilities_list.detect(port_info_list)
+        for name, addr in camera_list:
+            if addr == sys.argv[1]:
+                break
+        else:
+            print('No camera found at', sys.argv[1])
+            return 5
     else:
         # make a list of all available cameras
         camera_list = list(gp.Camera.autodetect())
@@ -57,16 +68,7 @@ def main():
             return 3
         # use chosen camera
         name, addr = camera_list[choice]
-    # get port info and camera abilities
-    port_info_list = gp.PortInfoList()
-    port_info_list.load()
-    abilities_list = gp.CameraAbilitiesList()
-    abilities_list.load()
-    camera_list = abilities_list.detect(port_info_list)
-    if len(camera_list) < 1:
-        print('No camera detected')
-        return 4
-    # choose camera
+    # set up specified camera
     camera = gp.Camera()
     idx = port_info_list.lookup_path(addr)
     camera.set_port_info(port_info_list[idx])

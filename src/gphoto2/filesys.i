@@ -26,38 +26,44 @@ CALLOC_ARGOUT(CameraFileInfo *info)
 
 // Make docstring parameter types more Pythonic
 %typemap(doc) CameraFileInfo "$1_name: gphoto2.$1_type"
-%typemap(doc) CameraFilesystem * "$1_name: gphoto2.$*1_type"
-
-// Turn on default exception handling
-DEFAULT_EXCEPTION
 
 // image dimensions use uint32_t and storage info uses uint64_t
 %include "stdint.i"
 
-// Many functions accept NULL context value
-DEFAULT_CONTEXT
-
-// gp_filesystem_new() returns a pointer in an output parameter
-PLAIN_ARGOUT(CameraFilesystem **)
-
-// gp_filesystem_list_files() etc. return a pointer in an output parameter
-NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
-
-// Ignore some functions
-%ignore gp_filesystem_get_storageinfo;
+// Ignore functions only used by camera drivers
+%ignore gp_filesystem_append;
+%ignore gp_filesystem_count;
+%ignore gp_filesystem_delete_all;
+%ignore gp_filesystem_delete_file;
+%ignore gp_filesystem_delete_file_noop;
+%ignore gp_filesystem_dump;
 %ignore gp_filesystem_free;
+%ignore gp_filesystem_get_file;
+%ignore gp_filesystem_get_folder;
+%ignore gp_filesystem_get_info;
+%ignore gp_filesystem_get_storageinfo;
+%ignore gp_filesystem_list_files;
+%ignore gp_filesystem_list_folders;
+%ignore gp_filesystem_make_dir;
+%ignore gp_filesystem_name;
+%ignore gp_filesystem_new;
+%ignore gp_filesystem_number;
+%ignore gp_filesystem_put_file;
+%ignore gp_filesystem_read_file;
+%ignore gp_filesystem_remove_dir;
+%ignore gp_filesystem_reset;
 %ignore gp_filesystem_set_file_noop;
+%ignore gp_filesystem_set_funcs;
+%ignore gp_filesystem_set_info;
+%ignore gp_filesystem_set_info_noop;
 %ignore gp_filesystem_set_info_dirty;
+
+// Ignore internal structures
+%ignore CameraFilesystem;
+%ignore CameraFilesystemFuncs;
+%ignore _CameraFilesystemFuncs;
 
 // Structures are read only
 %immutable;
-
-// Add default constructor and destructor to _CameraFilesystem
-struct _CameraFilesystem {};
-DEFAULT_CTOR(_CameraFilesystem, gp_filesystem_new)
-DEFAULT_DTOR(_CameraFilesystem, gp_filesystem_free)
-
-// Turn off default exception handling
-%noexception;
 
 %include "gphoto2/gphoto2-filesys.h"

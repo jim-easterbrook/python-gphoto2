@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2017-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2017-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -25,21 +25,6 @@
 // Include macros and typemaps
 %include "macros.i"
 %include "typemaps.i"
-
-// Import all modules to ensure all type definitions are shared
-#ifndef SWIGIMPORTED
-%import "abilities_list.i"
-%import "camera.i"
-%import "context.i"
-%import "file.i"
-%import "filesys.i"
-%import "list.i"
-%import "port_info_list.i"
-%import "port_log.i"
-%import "result.i"
-%import "version.i"
-%import "widget.i"
-#endif //ifndef SWIGIMPORTED
 
 // Include doxygen documentation
 #if defined(DOC_FILE)

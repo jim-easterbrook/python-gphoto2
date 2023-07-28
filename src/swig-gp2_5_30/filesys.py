@@ -5,16 +5,7 @@
 # the SWIG interface file instead.
 
 from sys import version_info as _swig_python_version_info
-import gphoto2.abilities_list
-import gphoto2.camera
-import gphoto2.context
 import gphoto2.file
-import gphoto2.list
-import gphoto2.port_info_list
-import gphoto2.port_log
-import gphoto2.result
-import gphoto2.version
-import gphoto2.widget
 
 # Pull in all the attributes from the low-level C/C++ module
 if __package__ or "." in __name__:

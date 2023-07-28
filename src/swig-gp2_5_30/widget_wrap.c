@@ -3745,67 +3745,18 @@ SwigPyBuiltin_iternextfunc_closure(SwigPyWrapperFunction wrapper, PyObject *a) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_CameraAbilities swig_types[0]
-#define SWIGTYPE_p_CameraCaptureType swig_types[1]
-#define SWIGTYPE_p_CameraDriverStatus swig_types[2]
-#define SWIGTYPE_p_CameraEventType swig_types[3]
-#define SWIGTYPE_p_CameraFileAccessType swig_types[4]
-#define SWIGTYPE_p_CameraFileInfoFields swig_types[5]
-#define SWIGTYPE_p_CameraFileOperation swig_types[6]
-#define SWIGTYPE_p_CameraFilePath swig_types[7]
-#define SWIGTYPE_p_CameraFilePermissions swig_types[8]
-#define SWIGTYPE_p_CameraFileStatus swig_types[9]
-#define SWIGTYPE_p_CameraFileType swig_types[10]
-#define SWIGTYPE_p_CameraFolderOperation swig_types[11]
-#define SWIGTYPE_p_CameraOperation swig_types[12]
-#define SWIGTYPE_p_CameraStorageAccessType swig_types[13]
-#define SWIGTYPE_p_CameraStorageFilesystemType swig_types[14]
-#define SWIGTYPE_p_CameraStorageInfoFields swig_types[15]
-#define SWIGTYPE_p_CameraStorageType swig_types[16]
-#define SWIGTYPE_p_CameraText swig_types[17]
-#define SWIGTYPE_p_CameraWidgetChildIter swig_types[18]
-#define SWIGTYPE_p_CameraWidgetChoiceIter swig_types[19]
-#define SWIGTYPE_p_CameraWidgetType swig_types[20]
-#define SWIGTYPE_p_GPLogLevel swig_types[21]
-#define SWIGTYPE_p_GPPortType swig_types[22]
-#define SWIGTYPE_p_GPVersionVerbosity swig_types[23]
-#define SWIGTYPE_p_GphotoDeviceType swig_types[24]
-#define SWIGTYPE_p_SwigPyObject swig_types[25]
-#define SWIGTYPE_p__Camera swig_types[26]
-#define SWIGTYPE_p__CameraAbilitiesList swig_types[27]
-#define SWIGTYPE_p__CameraFile swig_types[28]
-#define SWIGTYPE_p__CameraFileHandler swig_types[29]
-#define SWIGTYPE_p__CameraFileInfo swig_types[30]
-#define SWIGTYPE_p__CameraFileInfoAudio swig_types[31]
-#define SWIGTYPE_p__CameraFileInfoFile swig_types[32]
-#define SWIGTYPE_p__CameraFileInfoPreview swig_types[33]
-#define SWIGTYPE_p__CameraFilesystem swig_types[34]
-#define SWIGTYPE_p__CameraFilesystemFuncs swig_types[35]
-#define SWIGTYPE_p__CameraFunctions swig_types[36]
-#define SWIGTYPE_p__CameraList swig_types[37]
-#define SWIGTYPE_p__CameraPrivateCore swig_types[38]
-#define SWIGTYPE_p__CameraPrivateLibrary swig_types[39]
-#define SWIGTYPE_p__CameraStorageInformation swig_types[40]
-#define SWIGTYPE_p__CameraWidget swig_types[41]
-#define SWIGTYPE_p__GPContext swig_types[42]
-#define SWIGTYPE_p__GPContextFeedback swig_types[43]
-#define SWIGTYPE_p__GPPortInfo swig_types[44]
-#define SWIGTYPE_p__GPPortInfoList swig_types[45]
-#define SWIGTYPE_p_char swig_types[46]
-#define SWIGTYPE_p_float swig_types[47]
-#define SWIGTYPE_p_int swig_types[48]
-#define SWIGTYPE_p_long swig_types[49]
-#define SWIGTYPE_p_long_long swig_types[50]
-#define SWIGTYPE_p_p__CameraWidget swig_types[51]
-#define SWIGTYPE_p_p_char swig_types[52]
-#define SWIGTYPE_p_short swig_types[53]
-#define SWIGTYPE_p_signed_char swig_types[54]
-#define SWIGTYPE_p_unsigned_char swig_types[55]
-#define SWIGTYPE_p_unsigned_int swig_types[56]
-#define SWIGTYPE_p_unsigned_long_long swig_types[57]
-#define SWIGTYPE_p_unsigned_short swig_types[58]
-static swig_type_info *swig_types[60];
-static swig_module_info swig_module = {swig_types, 59, 0, 0, 0, 0};
+#define SWIGTYPE_p_CameraWidgetChildIter swig_types[0]
+#define SWIGTYPE_p_CameraWidgetChoiceIter swig_types[1]
+#define SWIGTYPE_p_CameraWidgetType swig_types[2]
+#define SWIGTYPE_p_SwigPyObject swig_types[3]
+#define SWIGTYPE_p__CameraWidget swig_types[4]
+#define SWIGTYPE_p_char swig_types[5]
+#define SWIGTYPE_p_float swig_types[6]
+#define SWIGTYPE_p_int swig_types[7]
+#define SWIGTYPE_p_p__CameraWidget swig_types[8]
+#define SWIGTYPE_p_p_char swig_types[9]
+static swig_type_info *swig_types[11];
+static swig_module_info swig_module = {swig_types, 10, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3878,7 +3829,7 @@ SWIGINTERN CameraWidget *CameraWidgetChildIter___next__(struct CameraWidgetChild
     }
     error = gp_widget_get_child(self->parent, self->idx, &result);
     self->idx++;
-    if (error < 0)
+    if (error < GP_OK)
     {
       /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
@@ -3914,7 +3865,7 @@ SWIGINTERN char const *CameraWidgetChoiceIter___next__(struct CameraWidgetChoice
     }
     error = gp_widget_get_choice(self->parent, self->idx, &result);
     self->idx++;
-    if (error < 0)
+    if (error < GP_OK)
     {
       /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
@@ -3993,7 +3944,7 @@ static int widget_dtor(CameraWidget *widget) {
 
 SWIGINTERN void delete__CameraWidget(struct _CameraWidget *self){
     int error = widget_dtor(self);
-    if (error < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
   }
@@ -4005,7 +3956,7 @@ SWIGINTERN int _CameraWidget_count_children(struct _CameraWidget *self){
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4171,7 +4122,7 @@ SWIGINTERN void _CameraWidget_get_child(struct _CameraWidget *self,int child_num
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4186,7 +4137,7 @@ SWIGINTERN void _CameraWidget_get_children(struct _CameraWidget *self,CameraWidg
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4313,7 +4264,7 @@ SWIGINTERN void _CameraWidget_get_child_by_label(struct _CameraWidget *self,char
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4328,7 +4279,7 @@ SWIGINTERN void _CameraWidget_get_child_by_id(struct _CameraWidget *self,int id,
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4343,7 +4294,7 @@ SWIGINTERN void _CameraWidget_get_child_by_name(struct _CameraWidget *self,char 
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4358,7 +4309,7 @@ SWIGINTERN void _CameraWidget_get_root(struct _CameraWidget *self,CameraWidget *
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4373,7 +4324,7 @@ SWIGINTERN void _CameraWidget_get_parent(struct _CameraWidget *self,CameraWidget
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4388,7 +4339,7 @@ SWIGINTERN void _CameraWidget_set_value(struct _CameraWidget *self,void const *v
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4403,7 +4354,7 @@ SWIGINTERN void _CameraWidget_get_value(struct _CameraWidget *self,void *value_o
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4418,7 +4369,7 @@ SWIGINTERN void _CameraWidget_set_name(struct _CameraWidget *self,char const *na
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4433,7 +4384,7 @@ SWIGINTERN void _CameraWidget_get_name(struct _CameraWidget *self,char const **n
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4448,7 +4399,7 @@ SWIGINTERN void _CameraWidget_set_info(struct _CameraWidget *self,char const *in
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4463,7 +4414,7 @@ SWIGINTERN void _CameraWidget_get_info(struct _CameraWidget *self,char const **i
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4478,7 +4429,7 @@ SWIGINTERN void _CameraWidget_get_id(struct _CameraWidget *self,int *id){
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4493,7 +4444,7 @@ SWIGINTERN void _CameraWidget_get_type(struct _CameraWidget *self,CameraWidgetTy
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4508,7 +4459,7 @@ SWIGINTERN void _CameraWidget_get_label(struct _CameraWidget *self,char const **
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4579,7 +4530,7 @@ SWIGINTERN void _CameraWidget_set_range(struct _CameraWidget *self,float min,flo
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4604,7 +4555,7 @@ SWIGINTERN void _CameraWidget_get_range(struct _CameraWidget *self,float *min,fl
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4619,7 +4570,7 @@ SWIGINTERN void _CameraWidget_add_choice(struct _CameraWidget *self,char const *
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4634,7 +4585,7 @@ SWIGINTERN int _CameraWidget_count_choices(struct _CameraWidget *self){
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4649,7 +4600,7 @@ SWIGINTERN void _CameraWidget_get_choices(struct _CameraWidget *self,CameraWidge
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4664,7 +4615,7 @@ SWIGINTERN void _CameraWidget_get_choice(struct _CameraWidget *self,int choice_n
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4679,7 +4630,7 @@ SWIGINTERN int _CameraWidget_changed(struct _CameraWidget *self){
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4694,7 +4645,7 @@ SWIGINTERN void _CameraWidget_set_changed(struct _CameraWidget *self,int changed
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4709,7 +4660,7 @@ SWIGINTERN void _CameraWidget_set_readonly(struct _CameraWidget *self,int readon
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4724,7 +4675,7 @@ SWIGINTERN void _CameraWidget_get_readonly(struct _CameraWidget *self,int *reado
 
 
 
-    if (result < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4762,7 +4713,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_value(PyObject *self, PyObject *args) {
     PyObject* py_value = NULL;
     VoidValue* value = (VoidValue*) arg2;
     int error = gp_widget_get_type(arg1, &type);
-    if (error < 0) {
+    if (error < GP_OK) {
       /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
       PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
       /*@SWIG@*/;
@@ -5069,14 +5020,14 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child(PyObject *self, PyObject *args
       // Increment refcount on root widget
       CameraWidget *root;
       int error = gp_widget_get_root(*arg3, &root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
         SWIG_fail;
       }
       error = gp_widget_ref(root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
@@ -5175,14 +5126,14 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_label(PyObject *self, PyObj
       // Increment refcount on root widget
       CameraWidget *root;
       int error = gp_widget_get_root(*arg3, &root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
         SWIG_fail;
       }
       error = gp_widget_ref(root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
@@ -5239,14 +5190,14 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_id(PyObject *self, PyObject
       // Increment refcount on root widget
       CameraWidget *root;
       int error = gp_widget_get_root(*arg3, &root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
         SWIG_fail;
       }
       error = gp_widget_ref(root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
@@ -5302,14 +5253,14 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_name(PyObject *self, PyObje
       // Increment refcount on root widget
       CameraWidget *root;
       int error = gp_widget_get_root(*arg3, &root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
         SWIG_fail;
       }
       error = gp_widget_ref(root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
@@ -5357,14 +5308,14 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_root(PyObject *self, PyObject *args)
       // Increment refcount on root widget
       CameraWidget *root;
       int error = gp_widget_get_root(*arg2, &root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
         SWIG_fail;
       }
       error = gp_widget_ref(root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
@@ -5410,14 +5361,14 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_parent(PyObject *self, PyObject *arg
       // Increment refcount on root widget
       CameraWidget *root;
       int error = gp_widget_get_root(*arg2, &root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
         SWIG_fail;
       }
       error = gp_widget_ref(root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
@@ -5455,7 +5406,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_set_value(PyObject *self, PyObject *args
   arg1 = (struct _CameraWidget *)(argp1);
   // Camera widget is stored in arg1 as it's definitely the first argument to gp_widget_set_value
   res2 = gp_widget_get_type(arg1, &type2);
-  if (res2 < 0) {
+  if (res2 < GP_OK) {
     /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
     PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(res2));
     /*@SWIG@*/;
@@ -5537,7 +5488,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_value(PyObject *self, PyObject *args
     PyObject* py_value = NULL;
     VoidValue* value = (VoidValue*) arg2;
     int error = gp_widget_get_type(arg1, &type);
-    if (error < 0) {
+    if (error < GP_OK) {
       /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
       PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
       /*@SWIG@*/;
@@ -6358,14 +6309,14 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child(PyObject *self, PyObject *args) {
       // Increment refcount on root widget
       CameraWidget *root;
       int error = gp_widget_get_root(*arg3, &root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
         SWIG_fail;
       }
       error = gp_widget_ref(root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
@@ -6420,14 +6371,14 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_label(PyObject *self, PyObject
       // Increment refcount on root widget
       CameraWidget *root;
       int error = gp_widget_get_root(*arg3, &root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
         SWIG_fail;
       }
       error = gp_widget_ref(root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
@@ -6483,14 +6434,14 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_id(PyObject *self, PyObject *a
       // Increment refcount on root widget
       CameraWidget *root;
       int error = gp_widget_get_root(*arg3, &root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
         SWIG_fail;
       }
       error = gp_widget_ref(root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
@@ -6545,14 +6496,14 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_name(PyObject *self, PyObject 
       // Increment refcount on root widget
       CameraWidget *root;
       int error = gp_widget_get_root(*arg3, &root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
         SWIG_fail;
       }
       error = gp_widget_ref(root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
@@ -6599,14 +6550,14 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_root(PyObject *self, PyObject *args) {
       // Increment refcount on root widget
       CameraWidget *root;
       int error = gp_widget_get_root(*arg2, &root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
         SWIG_fail;
       }
       error = gp_widget_ref(root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
@@ -6651,14 +6602,14 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_parent(PyObject *self, PyObject *args) 
       // Increment refcount on root widget
       CameraWidget *root;
       int error = gp_widget_get_root(*arg2, &root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
         SWIG_fail;
       }
       error = gp_widget_ref(root);
-      if (error < 0) {
+      if (error < GP_OK) {
         /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
         PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
         /*@SWIG@*/;
@@ -6698,7 +6649,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_set_value(PyObject *self, PyObject *args) {
   arg1 = (CameraWidget *)(argp1);
   // Camera widget is stored in arg1 as it's definitely the first argument to gp_widget_set_value
   res2 = gp_widget_get_type(arg1, &type2);
-  if (res2 < 0) {
+  if (res2 < GP_OK) {
     /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
     PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(res2));
     /*@SWIG@*/;
@@ -9156,248 +9107,52 @@ SWIGINTERN SwigPyClientData SwigPyBuiltin___CameraWidget_clientdata = {0, 0, 0, 
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
-static swig_type_info _swigt__p_CameraAbilities = {"_p_CameraAbilities", "CameraAbilities *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraCaptureType = {"_p_CameraCaptureType", "CameraCaptureType *|enum CameraCaptureType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraDriverStatus = {"_p_CameraDriverStatus", "CameraDriverStatus *|enum CameraDriverStatus *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraEventType = {"_p_CameraEventType", "CameraEventType *|enum CameraEventType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraFileAccessType = {"_p_CameraFileAccessType", "CameraFileAccessType *|enum CameraFileAccessType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraFileInfoFields = {"_p_CameraFileInfoFields", "CameraFileInfoFields *|enum CameraFileInfoFields *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraFileOperation = {"_p_CameraFileOperation", "CameraFileOperation *|enum CameraFileOperation *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraFilePath = {"_p_CameraFilePath", "CameraFilePath *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraFilePermissions = {"_p_CameraFilePermissions", "CameraFilePermissions *|enum CameraFilePermissions *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraFileStatus = {"_p_CameraFileStatus", "CameraFileStatus *|enum CameraFileStatus *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraFileType = {"_p_CameraFileType", "CameraFileType *|enum CameraFileType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraFolderOperation = {"_p_CameraFolderOperation", "CameraFolderOperation *|enum CameraFolderOperation *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraOperation = {"_p_CameraOperation", "CameraOperation *|enum CameraOperation *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraStorageAccessType = {"_p_CameraStorageAccessType", "CameraStorageAccessType *|enum CameraStorageAccessType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraStorageFilesystemType = {"_p_CameraStorageFilesystemType", "CameraStorageFilesystemType *|enum CameraStorageFilesystemType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraStorageInfoFields = {"_p_CameraStorageInfoFields", "CameraStorageInfoFields *|enum CameraStorageInfoFields *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraStorageType = {"_p_CameraStorageType", "CameraStorageType *|enum CameraStorageType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraText = {"_p_CameraText", "CameraText *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CameraWidgetChildIter = {"_p_CameraWidgetChildIter", "CameraWidgetChildIter *|struct CameraWidgetChildIter *", 0, 0, (void*)&SwigPyBuiltin__CameraWidgetChildIter_clientdata, 0};
 static swig_type_info _swigt__p_CameraWidgetChoiceIter = {"_p_CameraWidgetChoiceIter", "CameraWidgetChoiceIter *|struct CameraWidgetChoiceIter *", 0, 0, (void*)&SwigPyBuiltin__CameraWidgetChoiceIter_clientdata, 0};
 static swig_type_info _swigt__p_CameraWidgetType = {"_p_CameraWidgetType", "CameraWidgetType *|enum CameraWidgetType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_GPLogLevel = {"_p_GPLogLevel", "GPLogLevel *|enum GPLogLevel *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_GPPortType = {"_p_GPPortType", "GPPortType *|enum GPPortType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_GPVersionVerbosity = {"_p_GPVersionVerbosity", "GPVersionVerbosity *|enum GPVersionVerbosity *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_GphotoDeviceType = {"_p_GphotoDeviceType", "GphotoDeviceType *|enum GphotoDeviceType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_SwigPyObject = {"_p_SwigPyObject", "SwigPyObject *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__Camera = {"_p__Camera", "Camera *|struct _Camera *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraAbilitiesList = {"_p__CameraAbilitiesList", "CameraAbilitiesList *|struct _CameraAbilitiesList *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraFile = {"_p__CameraFile", "CameraFile *|struct _CameraFile *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraFileHandler = {"_p__CameraFileHandler", "CameraFileHandler *|struct _CameraFileHandler *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraFileInfo = {"_p__CameraFileInfo", "CameraFileInfo *|struct _CameraFileInfo *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraFileInfoAudio = {"_p__CameraFileInfoAudio", "CameraFileInfoAudio *|struct _CameraFileInfoAudio *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraFileInfoFile = {"_p__CameraFileInfoFile", "CameraFileInfoFile *|struct _CameraFileInfoFile *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraFileInfoPreview = {"_p__CameraFileInfoPreview", "CameraFileInfoPreview *|struct _CameraFileInfoPreview *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraFilesystem = {"_p__CameraFilesystem", "CameraFilesystem *|struct _CameraFilesystem *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraFilesystemFuncs = {"_p__CameraFilesystemFuncs", "CameraFilesystemFuncs *|struct _CameraFilesystemFuncs *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraFunctions = {"_p__CameraFunctions", "CameraFunctions *|struct _CameraFunctions *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraList = {"_p__CameraList", "CameraList *|struct _CameraList *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraPrivateCore = {"_p__CameraPrivateCore", "CameraPrivateCore *|struct _CameraPrivateCore *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraPrivateLibrary = {"_p__CameraPrivateLibrary", "CameraPrivateLibrary *|struct _CameraPrivateLibrary *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraStorageInformation = {"_p__CameraStorageInformation", "CameraStorageInformation *|struct _CameraStorageInformation *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraWidget = {"_p__CameraWidget", "CameraWidget *|struct _CameraWidget *|_CameraWidget *", 0, 0, (void*)&SwigPyBuiltin___CameraWidget_clientdata, 0};
-static swig_type_info _swigt__p__GPContext = {"_p__GPContext", "GPContext *|struct _GPContext *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__GPContextFeedback = {"_p__GPContextFeedback", "GPContextFeedback *|enum _GPContextFeedback *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__GPPortInfo = {"_p__GPPortInfo", "_GPPortInfo *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__GPPortInfoList = {"_p__GPPortInfoList", "GPPortInfoList *|struct _GPPortInfoList *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_float = {"_p_float", "float *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_int = {"_p_int", "int32_t *|int_fast16_t *|int_fast32_t *|int_least32_t *|intptr_t *|int *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_long = {"_p_long", "time_t *|long *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_long_long = {"_p_long_long", "int64_t *|int_fast64_t *|int_least64_t *|intmax_t *|long long *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_int = {"_p_int", "int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p__CameraWidget = {"_p_p__CameraWidget", "CameraWidget **|struct _CameraWidget **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_char = {"_p_p_char", "char **", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_short = {"_p_short", "int16_t *|int_least16_t *|short *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_signed_char = {"_p_signed_char", "int8_t *|int_fast8_t *|int_least8_t *|signed char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_unsigned_char = {"_p_unsigned_char", "uint8_t *|uint_fast8_t *|uint_least8_t *|unsigned char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_unsigned_int = {"_p_unsigned_int", "uint32_t *|uint_fast16_t *|uint_fast32_t *|uint_least32_t *|uintptr_t *|unsigned int *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_unsigned_long_long = {"_p_unsigned_long_long", "uint64_t *|uint_fast64_t *|uint_least64_t *|uintmax_t *|unsigned long long *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_unsigned_short = {"_p_unsigned_short", "uint16_t *|uint_least16_t *|unsigned short *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
-  &_swigt__p_CameraAbilities,
-  &_swigt__p_CameraCaptureType,
-  &_swigt__p_CameraDriverStatus,
-  &_swigt__p_CameraEventType,
-  &_swigt__p_CameraFileAccessType,
-  &_swigt__p_CameraFileInfoFields,
-  &_swigt__p_CameraFileOperation,
-  &_swigt__p_CameraFilePath,
-  &_swigt__p_CameraFilePermissions,
-  &_swigt__p_CameraFileStatus,
-  &_swigt__p_CameraFileType,
-  &_swigt__p_CameraFolderOperation,
-  &_swigt__p_CameraOperation,
-  &_swigt__p_CameraStorageAccessType,
-  &_swigt__p_CameraStorageFilesystemType,
-  &_swigt__p_CameraStorageInfoFields,
-  &_swigt__p_CameraStorageType,
-  &_swigt__p_CameraText,
   &_swigt__p_CameraWidgetChildIter,
   &_swigt__p_CameraWidgetChoiceIter,
   &_swigt__p_CameraWidgetType,
-  &_swigt__p_GPLogLevel,
-  &_swigt__p_GPPortType,
-  &_swigt__p_GPVersionVerbosity,
-  &_swigt__p_GphotoDeviceType,
   &_swigt__p_SwigPyObject,
-  &_swigt__p__Camera,
-  &_swigt__p__CameraAbilitiesList,
-  &_swigt__p__CameraFile,
-  &_swigt__p__CameraFileHandler,
-  &_swigt__p__CameraFileInfo,
-  &_swigt__p__CameraFileInfoAudio,
-  &_swigt__p__CameraFileInfoFile,
-  &_swigt__p__CameraFileInfoPreview,
-  &_swigt__p__CameraFilesystem,
-  &_swigt__p__CameraFilesystemFuncs,
-  &_swigt__p__CameraFunctions,
-  &_swigt__p__CameraList,
-  &_swigt__p__CameraPrivateCore,
-  &_swigt__p__CameraPrivateLibrary,
-  &_swigt__p__CameraStorageInformation,
   &_swigt__p__CameraWidget,
-  &_swigt__p__GPContext,
-  &_swigt__p__GPContextFeedback,
-  &_swigt__p__GPPortInfo,
-  &_swigt__p__GPPortInfoList,
   &_swigt__p_char,
   &_swigt__p_float,
   &_swigt__p_int,
-  &_swigt__p_long,
-  &_swigt__p_long_long,
   &_swigt__p_p__CameraWidget,
   &_swigt__p_p_char,
-  &_swigt__p_short,
-  &_swigt__p_signed_char,
-  &_swigt__p_unsigned_char,
-  &_swigt__p_unsigned_int,
-  &_swigt__p_unsigned_long_long,
-  &_swigt__p_unsigned_short,
 };
 
-static swig_cast_info _swigc__p_CameraAbilities[] = {  {&_swigt__p_CameraAbilities, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraCaptureType[] = {  {&_swigt__p_CameraCaptureType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraDriverStatus[] = {  {&_swigt__p_CameraDriverStatus, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraEventType[] = {  {&_swigt__p_CameraEventType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraFileAccessType[] = {  {&_swigt__p_CameraFileAccessType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraFileInfoFields[] = {  {&_swigt__p_CameraFileInfoFields, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraFileOperation[] = {  {&_swigt__p_CameraFileOperation, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraFilePath[] = {  {&_swigt__p_CameraFilePath, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraFilePermissions[] = {  {&_swigt__p_CameraFilePermissions, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraFileStatus[] = {  {&_swigt__p_CameraFileStatus, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraFileType[] = {  {&_swigt__p_CameraFileType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraFolderOperation[] = {  {&_swigt__p_CameraFolderOperation, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraOperation[] = {  {&_swigt__p_CameraOperation, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraStorageAccessType[] = {  {&_swigt__p_CameraStorageAccessType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraStorageFilesystemType[] = {  {&_swigt__p_CameraStorageFilesystemType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraStorageInfoFields[] = {  {&_swigt__p_CameraStorageInfoFields, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraStorageType[] = {  {&_swigt__p_CameraStorageType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraText[] = {  {&_swigt__p_CameraText, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CameraWidgetChildIter[] = {  {&_swigt__p_CameraWidgetChildIter, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CameraWidgetChoiceIter[] = {  {&_swigt__p_CameraWidgetChoiceIter, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CameraWidgetType[] = {  {&_swigt__p_CameraWidgetType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_GPLogLevel[] = {  {&_swigt__p_GPLogLevel, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_GPPortType[] = {  {&_swigt__p_GPPortType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_GPVersionVerbosity[] = {  {&_swigt__p_GPVersionVerbosity, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_GphotoDeviceType[] = {  {&_swigt__p_GphotoDeviceType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SwigPyObject[] = {  {&_swigt__p_SwigPyObject, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__Camera[] = {  {&_swigt__p__Camera, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraAbilitiesList[] = {  {&_swigt__p__CameraAbilitiesList, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraFile[] = {  {&_swigt__p__CameraFile, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraFileHandler[] = {  {&_swigt__p__CameraFileHandler, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraFileInfo[] = {  {&_swigt__p__CameraFileInfo, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraFileInfoAudio[] = {  {&_swigt__p__CameraFileInfoAudio, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraFileInfoFile[] = {  {&_swigt__p__CameraFileInfoFile, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraFileInfoPreview[] = {  {&_swigt__p__CameraFileInfoPreview, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraFilesystem[] = {  {&_swigt__p__CameraFilesystem, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraFilesystemFuncs[] = {  {&_swigt__p__CameraFilesystemFuncs, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraFunctions[] = {  {&_swigt__p__CameraFunctions, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraList[] = {  {&_swigt__p__CameraList, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraPrivateCore[] = {  {&_swigt__p__CameraPrivateCore, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraPrivateLibrary[] = {  {&_swigt__p__CameraPrivateLibrary, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraStorageInformation[] = {  {&_swigt__p__CameraStorageInformation, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraWidget[] = {  {&_swigt__p__CameraWidget, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__GPContext[] = {  {&_swigt__p__GPContext, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__GPContextFeedback[] = {  {&_swigt__p__GPContextFeedback, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__GPPortInfo[] = {  {&_swigt__p__GPPortInfo, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__GPPortInfoList[] = {  {&_swigt__p__GPPortInfoList, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_long[] = {  {&_swigt__p_long, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_long_long[] = {  {&_swigt__p_long_long, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p__CameraWidget[] = {  {&_swigt__p_p__CameraWidget, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_char[] = {  {&_swigt__p_p_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_short[] = {  {&_swigt__p_short, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_signed_char[] = {  {&_swigt__p_signed_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_unsigned_char[] = {  {&_swigt__p_unsigned_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_unsigned_int[] = {  {&_swigt__p_unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_unsigned_long_long[] = {  {&_swigt__p_unsigned_long_long, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_unsigned_short[] = {  {&_swigt__p_unsigned_short, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
-  _swigc__p_CameraAbilities,
-  _swigc__p_CameraCaptureType,
-  _swigc__p_CameraDriverStatus,
-  _swigc__p_CameraEventType,
-  _swigc__p_CameraFileAccessType,
-  _swigc__p_CameraFileInfoFields,
-  _swigc__p_CameraFileOperation,
-  _swigc__p_CameraFilePath,
-  _swigc__p_CameraFilePermissions,
-  _swigc__p_CameraFileStatus,
-  _swigc__p_CameraFileType,
-  _swigc__p_CameraFolderOperation,
-  _swigc__p_CameraOperation,
-  _swigc__p_CameraStorageAccessType,
-  _swigc__p_CameraStorageFilesystemType,
-  _swigc__p_CameraStorageInfoFields,
-  _swigc__p_CameraStorageType,
-  _swigc__p_CameraText,
   _swigc__p_CameraWidgetChildIter,
   _swigc__p_CameraWidgetChoiceIter,
   _swigc__p_CameraWidgetType,
-  _swigc__p_GPLogLevel,
-  _swigc__p_GPPortType,
-  _swigc__p_GPVersionVerbosity,
-  _swigc__p_GphotoDeviceType,
   _swigc__p_SwigPyObject,
-  _swigc__p__Camera,
-  _swigc__p__CameraAbilitiesList,
-  _swigc__p__CameraFile,
-  _swigc__p__CameraFileHandler,
-  _swigc__p__CameraFileInfo,
-  _swigc__p__CameraFileInfoAudio,
-  _swigc__p__CameraFileInfoFile,
-  _swigc__p__CameraFileInfoPreview,
-  _swigc__p__CameraFilesystem,
-  _swigc__p__CameraFilesystemFuncs,
-  _swigc__p__CameraFunctions,
-  _swigc__p__CameraList,
-  _swigc__p__CameraPrivateCore,
-  _swigc__p__CameraPrivateLibrary,
-  _swigc__p__CameraStorageInformation,
   _swigc__p__CameraWidget,
-  _swigc__p__GPContext,
-  _swigc__p__GPContextFeedback,
-  _swigc__p__GPPortInfo,
-  _swigc__p__GPPortInfoList,
   _swigc__p_char,
   _swigc__p_float,
   _swigc__p_int,
-  _swigc__p_long,
-  _swigc__p_long_long,
   _swigc__p_p__CameraWidget,
   _swigc__p_p_char,
-  _swigc__p_short,
-  _swigc__p_signed_char,
-  _swigc__p_unsigned_char,
-  _swigc__p_unsigned_int,
-  _swigc__p_unsigned_long_long,
-  _swigc__p_unsigned_short,
 };
 
 

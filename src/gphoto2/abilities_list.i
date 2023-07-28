@@ -19,6 +19,10 @@
 
 %include "common/preamble.i"
 
+%import "context.i"
+%import "list.i"
+%import "port_info_list.i"
+
 %rename(CameraAbilitiesList) _CameraAbilitiesList;
 
 // Deprecate some functions intended for camera drivers

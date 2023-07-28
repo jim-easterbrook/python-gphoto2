@@ -3745,73 +3745,50 @@ SwigPyBuiltin_iternextfunc_closure(SwigPyWrapperFunction wrapper, PyObject *a) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_CameraAbilities swig_types[0]
-#define SWIGTYPE_p_CameraCaptureType swig_types[1]
-#define SWIGTYPE_p_CameraDriverStatus swig_types[2]
-#define SWIGTYPE_p_CameraEventType swig_types[3]
-#define SWIGTYPE_p_CameraFileAccessType swig_types[4]
-#define SWIGTYPE_p_CameraFileInfoFields swig_types[5]
-#define SWIGTYPE_p_CameraFileOperation swig_types[6]
-#define SWIGTYPE_p_CameraFilePath swig_types[7]
-#define SWIGTYPE_p_CameraFilePermissions swig_types[8]
-#define SWIGTYPE_p_CameraFileStatus swig_types[9]
-#define SWIGTYPE_p_CameraFileType swig_types[10]
-#define SWIGTYPE_p_CameraFolderOperation swig_types[11]
-#define SWIGTYPE_p_CameraOperation swig_types[12]
-#define SWIGTYPE_p_CameraStorageAccessType swig_types[13]
-#define SWIGTYPE_p_CameraStorageFilesystemType swig_types[14]
-#define SWIGTYPE_p_CameraStorageInfoFields swig_types[15]
-#define SWIGTYPE_p_CameraStorageType swig_types[16]
-#define SWIGTYPE_p_CameraText swig_types[17]
-#define SWIGTYPE_p_CameraWidgetType swig_types[18]
-#define SWIGTYPE_p_GPLogLevel swig_types[19]
-#define SWIGTYPE_p_GPPortType swig_types[20]
-#define SWIGTYPE_p_GPVersionVerbosity swig_types[21]
-#define SWIGTYPE_p_GphotoDeviceType swig_types[22]
-#define SWIGTYPE_p_SwigPyObject swig_types[23]
-#define SWIGTYPE_p__Camera swig_types[24]
-#define SWIGTYPE_p__CameraAbilitiesList swig_types[25]
-#define SWIGTYPE_p__CameraFile swig_types[26]
-#define SWIGTYPE_p__CameraFileHandler swig_types[27]
-#define SWIGTYPE_p__CameraFileInfo swig_types[28]
-#define SWIGTYPE_p__CameraFileInfoAudio swig_types[29]
-#define SWIGTYPE_p__CameraFileInfoFile swig_types[30]
-#define SWIGTYPE_p__CameraFileInfoPreview swig_types[31]
-#define SWIGTYPE_p__CameraFilesystem swig_types[32]
-#define SWIGTYPE_p__CameraFilesystemFuncs swig_types[33]
-#define SWIGTYPE_p__CameraFunctions swig_types[34]
-#define SWIGTYPE_p__CameraList swig_types[35]
-#define SWIGTYPE_p__CameraPrivateCore swig_types[36]
-#define SWIGTYPE_p__CameraPrivateLibrary swig_types[37]
-#define SWIGTYPE_p__CameraStorageInformation swig_types[38]
-#define SWIGTYPE_p__CameraWidget swig_types[39]
-#define SWIGTYPE_p__GPContext swig_types[40]
-#define SWIGTYPE_p__GPContextFeedback swig_types[41]
-#define SWIGTYPE_p__GPPortInfo swig_types[42]
-#define SWIGTYPE_p__GPPortInfoList swig_types[43]
-#define SWIGTYPE_p_char swig_types[44]
-#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_struct__GPContext__int swig_types[45]
-#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_struct__GPContext__int swig_types[46]
-#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_struct__GPContext__int swig_types[47]
-#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_struct__GPContext__int swig_types[48]
-#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_struct__GPContext__int swig_types[49]
-#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_struct__GPContext__int swig_types[50]
-#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_struct__CameraList_p_void_p_struct__GPContext__int swig_types[51]
-#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_struct__GPContext__int swig_types[52]
-#define SWIGTYPE_p_int swig_types[53]
-#define SWIGTYPE_p_long swig_types[54]
-#define SWIGTYPE_p_long_long swig_types[55]
-#define SWIGTYPE_p_p__CameraFilesystem swig_types[56]
-#define SWIGTYPE_p_p_char swig_types[57]
-#define SWIGTYPE_p_p_void swig_types[58]
-#define SWIGTYPE_p_short swig_types[59]
-#define SWIGTYPE_p_signed_char swig_types[60]
-#define SWIGTYPE_p_unsigned_char swig_types[61]
-#define SWIGTYPE_p_unsigned_int swig_types[62]
-#define SWIGTYPE_p_unsigned_long_long swig_types[63]
-#define SWIGTYPE_p_unsigned_short swig_types[64]
-static swig_type_info *swig_types[66];
-static swig_module_info swig_module = {swig_types, 65, 0, 0, 0, 0};
+#define SWIGTYPE_p_CameraFileAccessType swig_types[0]
+#define SWIGTYPE_p_CameraFileInfoFields swig_types[1]
+#define SWIGTYPE_p_CameraFilePermissions swig_types[2]
+#define SWIGTYPE_p_CameraFileStatus swig_types[3]
+#define SWIGTYPE_p_CameraFileType swig_types[4]
+#define SWIGTYPE_p_CameraList swig_types[5]
+#define SWIGTYPE_p_CameraStorageAccessType swig_types[6]
+#define SWIGTYPE_p_CameraStorageFilesystemType swig_types[7]
+#define SWIGTYPE_p_CameraStorageInfoFields swig_types[8]
+#define SWIGTYPE_p_CameraStorageType swig_types[9]
+#define SWIGTYPE_p_GPContext swig_types[10]
+#define SWIGTYPE_p_SwigPyObject swig_types[11]
+#define SWIGTYPE_p__CameraFile swig_types[12]
+#define SWIGTYPE_p__CameraFileHandler swig_types[13]
+#define SWIGTYPE_p__CameraFileInfo swig_types[14]
+#define SWIGTYPE_p__CameraFileInfoAudio swig_types[15]
+#define SWIGTYPE_p__CameraFileInfoFile swig_types[16]
+#define SWIGTYPE_p__CameraFileInfoPreview swig_types[17]
+#define SWIGTYPE_p__CameraFilesystem swig_types[18]
+#define SWIGTYPE_p__CameraFilesystemFuncs swig_types[19]
+#define SWIGTYPE_p__CameraStorageInformation swig_types[20]
+#define SWIGTYPE_p_char swig_types[21]
+#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_GPContext__int swig_types[22]
+#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_CameraList_p_void_p_GPContext__int swig_types[23]
+#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_GPContext__int swig_types[24]
+#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_GPContext__int swig_types[25]
+#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_GPContext__int swig_types[26]
+#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_GPContext__int swig_types[27]
+#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_GPContext__int swig_types[28]
+#define SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_GPContext__int swig_types[29]
+#define SWIGTYPE_p_int swig_types[30]
+#define SWIGTYPE_p_long swig_types[31]
+#define SWIGTYPE_p_long_long swig_types[32]
+#define SWIGTYPE_p_p__CameraFilesystem swig_types[33]
+#define SWIGTYPE_p_p_char swig_types[34]
+#define SWIGTYPE_p_p_void swig_types[35]
+#define SWIGTYPE_p_short swig_types[36]
+#define SWIGTYPE_p_signed_char swig_types[37]
+#define SWIGTYPE_p_unsigned_char swig_types[38]
+#define SWIGTYPE_p_unsigned_int swig_types[39]
+#define SWIGTYPE_p_unsigned_long_long swig_types[40]
+#define SWIGTYPE_p_unsigned_short swig_types[41]
+static swig_type_info *swig_types[43];
+static swig_module_info swig_module = {swig_types, 42, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3846,10 +3823,13 @@ static swig_module_info swig_module = {swig_types, 65, 0, 0, 0, 0};
 
 PyObject *PyExc_GPhoto2Error = NULL;
 
+
+#include <stdint.h>		// Use the C99 official header
+
 SWIGINTERN struct _CameraFilesystem *new__CameraFilesystem(void){
     struct _CameraFilesystem *result;
     int error = gp_filesystem_new(&result);
-    if (error < 0)
+    if (error < GP_OK)
       /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
@@ -3857,7 +3837,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
   }
 SWIGINTERN void delete__CameraFilesystem(struct _CameraFilesystem *self){
     int error = gp_filesystem_free(self);
-    if (error < 0) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
   }
@@ -5240,7 +5220,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_append(PyObject *self, PyObject *args) 
   }
   arg3 = (char *)(buf3);
   if (obj3) {
-    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p__GPContext, 0 |  0 );
+    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res4)) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gp_filesystem_append" "', argument " "4"" of type '" "GPContext *""'"); 
     }
@@ -5316,7 +5296,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_set_info_noop(PyObject *self, PyObject 
     }
   }
   if (obj4) {
-    res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p__GPContext, 0 |  0 );
+    res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res5)) {
       SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "gp_filesystem_set_info_noop" "', argument " "5"" of type '" "GPContext *""'"); 
     }
@@ -5377,7 +5357,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_delete_file_noop(PyObject *self, PyObje
   }
   arg3 = (char *)(buf3);
   if (obj3) {
-    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p__GPContext, 0 |  0 );
+    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res4)) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gp_filesystem_delete_file_noop" "', argument " "4"" of type '" "GPContext *""'"); 
     }
@@ -5451,7 +5431,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_count(PyObject *self, PyObject *args) {
   }
   arg2 = (char *)(buf2);
   if (obj2) {
-    res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p__GPContext, 0 |  0 );
+    res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res3)) {
       SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gp_filesystem_count" "', argument " "3"" of type '" "GPContext *""'"); 
     }
@@ -5515,7 +5495,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_name(PyObject *self, PyObject *args) {
   } 
   arg3 = (int)(val3);
   if (obj3) {
-    res5 = SWIG_ConvertPtr(obj3, &argp5,SWIGTYPE_p__GPContext, 0 |  0 );
+    res5 = SWIG_ConvertPtr(obj3, &argp5,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res5)) {
       SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "gp_filesystem_name" "', argument " "5"" of type '" "GPContext *""'"); 
     }
@@ -5579,7 +5559,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_get_folder(PyObject *self, PyObject *ar
   }
   arg2 = (char *)(buf2);
   if (obj2) {
-    res4 = SWIG_ConvertPtr(obj2, &argp4,SWIGTYPE_p__GPContext, 0 |  0 );
+    res4 = SWIG_ConvertPtr(obj2, &argp4,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res4)) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gp_filesystem_get_folder" "', argument " "4"" of type '" "GPContext *""'"); 
     }
@@ -5647,7 +5627,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_number(PyObject *self, PyObject *args) 
   }
   arg3 = (char *)(buf3);
   if (obj3) {
-    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p__GPContext, 0 |  0 );
+    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res4)) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gp_filesystem_number" "', argument " "4"" of type '" "GPContext *""'"); 
     }
@@ -5688,7 +5668,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_list_files(PyObject *self, PyObject *ar
   }
   {
     int error = gp_list_new(&arg3);
-    if (error < 0) {
+    if (error < GP_OK) {
       arg3 = NULL;
       /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
       PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
@@ -5709,7 +5689,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_list_files(PyObject *self, PyObject *ar
   }
   arg2 = (char *)(buf2);
   if (obj2) {
-    res4 = SWIG_ConvertPtr(obj2, &argp4,SWIGTYPE_p__GPContext, 0 |  0 );
+    res4 = SWIG_ConvertPtr(obj2, &argp4,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res4)) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gp_filesystem_list_files" "', argument " "4"" of type '" "GPContext *""'"); 
     }
@@ -5719,7 +5699,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_list_files(PyObject *self, PyObject *ar
   resultobj = SWIG_From_int((int)(result));
   {
     resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(arg3, SWIGTYPE_p__CameraList, SWIG_POINTER_OWN));
+      resultobj, SWIG_NewPointerObj(arg3, SWIGTYPE_p_CameraList, SWIG_POINTER_OWN));
     arg3 = NULL;
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
@@ -5763,7 +5743,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_list_folders(PyObject *self, PyObject *
   }
   {
     int error = gp_list_new(&arg3);
-    if (error < 0) {
+    if (error < GP_OK) {
       arg3 = NULL;
       /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
       PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
@@ -5784,7 +5764,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_list_folders(PyObject *self, PyObject *
   }
   arg2 = (char *)(buf2);
   if (obj2) {
-    res4 = SWIG_ConvertPtr(obj2, &argp4,SWIGTYPE_p__GPContext, 0 |  0 );
+    res4 = SWIG_ConvertPtr(obj2, &argp4,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res4)) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gp_filesystem_list_folders" "', argument " "4"" of type '" "GPContext *""'"); 
     }
@@ -5794,7 +5774,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_list_folders(PyObject *self, PyObject *
   resultobj = SWIG_From_int((int)(result));
   {
     resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(arg3, SWIGTYPE_p__CameraList, SWIG_POINTER_OWN));
+      resultobj, SWIG_NewPointerObj(arg3, SWIGTYPE_p_CameraList, SWIG_POINTER_OWN));
     arg3 = NULL;
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
@@ -5866,7 +5846,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_get_info(PyObject *self, PyObject *args
   }
   arg3 = (char *)(buf3);
   if (obj3) {
-    res5 = SWIG_ConvertPtr(obj3, &argp5,SWIGTYPE_p__GPContext, 0 |  0 );
+    res5 = SWIG_ConvertPtr(obj3, &argp5,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res5)) {
       SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "gp_filesystem_get_info" "', argument " "5"" of type '" "GPContext *""'"); 
     }
@@ -5953,7 +5933,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_set_info(PyObject *self, PyObject *args
     }
   }
   if (obj4) {
-    res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p__GPContext, 0 |  0 );
+    res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res5)) {
       SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "gp_filesystem_set_info" "', argument " "5"" of type '" "GPContext *""'"); 
     }
@@ -6032,7 +6012,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_get_file(PyObject *self, PyObject *args
   }
   arg5 = (CameraFile *)(argp5);
   if (obj5) {
-    res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p__GPContext, 0 |  0 );
+    res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res6)) {
       SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "gp_filesystem_get_file" "', argument " "6"" of type '" "GPContext *""'"); 
     }
@@ -6130,7 +6110,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_read_file(PyObject *self, PyObject *arg
   }
   arg7 = (uint64_t *)(argp7);
   if (obj7) {
-    res8 = SWIG_ConvertPtr(obj7, &argp8,SWIGTYPE_p__GPContext, 0 |  0 );
+    res8 = SWIG_ConvertPtr(obj7, &argp8,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res8)) {
       SWIG_exception_fail(SWIG_ArgError(res8), "in method '" "gp_filesystem_read_file" "', argument " "8"" of type '" "GPContext *""'"); 
     }
@@ -6193,7 +6173,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_delete_file(PyObject *self, PyObject *a
   }
   arg3 = (char *)(buf3);
   if (obj3) {
-    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p__GPContext, 0 |  0 );
+    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res4)) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gp_filesystem_delete_file" "', argument " "4"" of type '" "GPContext *""'"); 
     }
@@ -6226,7 +6206,7 @@ SWIGINTERN PyObject *_wrap__CameraFilesystemFuncs_file_list_func_get(PyObject *s
   }
   arg1 = (struct _CameraFilesystemFuncs *)(argp1);
   result = (CameraFilesystemListFunc) ((arg1)->file_list_func);
-  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_struct__CameraList_p_void_p_struct__GPContext__int);
+  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_CameraList_p_void_p_GPContext__int);
   return resultobj;
 fail:
   return NULL;
@@ -6248,7 +6228,7 @@ SWIGINTERN PyObject *_wrap__CameraFilesystemFuncs_folder_list_func_get(PyObject 
   }
   arg1 = (struct _CameraFilesystemFuncs *)(argp1);
   result = (CameraFilesystemListFunc) ((arg1)->folder_list_func);
-  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_struct__CameraList_p_void_p_struct__GPContext__int);
+  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_CameraList_p_void_p_GPContext__int);
   return resultobj;
 fail:
   return NULL;
@@ -6270,7 +6250,7 @@ SWIGINTERN PyObject *_wrap__CameraFilesystemFuncs_put_file_func_get(PyObject *se
   }
   arg1 = (struct _CameraFilesystemFuncs *)(argp1);
   result = (CameraFilesystemPutFileFunc) ((arg1)->put_file_func);
-  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_struct__GPContext__int);
+  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_GPContext__int);
   return resultobj;
 fail:
   return NULL;
@@ -6292,7 +6272,7 @@ SWIGINTERN PyObject *_wrap__CameraFilesystemFuncs_delete_all_func_get(PyObject *
   }
   arg1 = (struct _CameraFilesystemFuncs *)(argp1);
   result = (CameraFilesystemDeleteAllFunc) ((arg1)->delete_all_func);
-  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_struct__GPContext__int);
+  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_GPContext__int);
   return resultobj;
 fail:
   return NULL;
@@ -6314,7 +6294,7 @@ SWIGINTERN PyObject *_wrap__CameraFilesystemFuncs_get_info_func_get(PyObject *se
   }
   arg1 = (struct _CameraFilesystemFuncs *)(argp1);
   result = (CameraFilesystemGetInfoFunc) ((arg1)->get_info_func);
-  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_struct__GPContext__int);
+  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_GPContext__int);
   return resultobj;
 fail:
   return NULL;
@@ -6336,7 +6316,7 @@ SWIGINTERN PyObject *_wrap__CameraFilesystemFuncs_set_info_func_get(PyObject *se
   }
   arg1 = (struct _CameraFilesystemFuncs *)(argp1);
   result = (CameraFilesystemSetInfoFunc) ((arg1)->set_info_func);
-  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_struct__GPContext__int);
+  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_GPContext__int);
   return resultobj;
 fail:
   return NULL;
@@ -6358,7 +6338,7 @@ SWIGINTERN PyObject *_wrap__CameraFilesystemFuncs_make_dir_func_get(PyObject *se
   }
   arg1 = (struct _CameraFilesystemFuncs *)(argp1);
   result = (CameraFilesystemDirFunc) ((arg1)->make_dir_func);
-  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_struct__GPContext__int);
+  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_GPContext__int);
   return resultobj;
 fail:
   return NULL;
@@ -6380,7 +6360,7 @@ SWIGINTERN PyObject *_wrap__CameraFilesystemFuncs_remove_dir_func_get(PyObject *
   }
   arg1 = (struct _CameraFilesystemFuncs *)(argp1);
   result = (CameraFilesystemDirFunc) ((arg1)->remove_dir_func);
-  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_struct__GPContext__int);
+  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_GPContext__int);
   return resultobj;
 fail:
   return NULL;
@@ -6402,7 +6382,7 @@ SWIGINTERN PyObject *_wrap__CameraFilesystemFuncs_get_file_func_get(PyObject *se
   }
   arg1 = (struct _CameraFilesystemFuncs *)(argp1);
   result = (CameraFilesystemGetFileFunc) ((arg1)->get_file_func);
-  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_struct__GPContext__int);
+  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_GPContext__int);
   return resultobj;
 fail:
   return NULL;
@@ -6424,7 +6404,7 @@ SWIGINTERN PyObject *_wrap__CameraFilesystemFuncs_read_file_func_get(PyObject *s
   }
   arg1 = (struct _CameraFilesystemFuncs *)(argp1);
   result = (CameraFilesystemReadFileFunc) ((arg1)->read_file_func);
-  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_struct__GPContext__int);
+  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_GPContext__int);
   return resultobj;
 fail:
   return NULL;
@@ -6446,7 +6426,7 @@ SWIGINTERN PyObject *_wrap__CameraFilesystemFuncs_del_file_func_get(PyObject *se
   }
   arg1 = (struct _CameraFilesystemFuncs *)(argp1);
   result = (CameraFilesystemDeleteFileFunc) ((arg1)->del_file_func);
-  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_struct__GPContext__int);
+  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_GPContext__int);
   return resultobj;
 fail:
   return NULL;
@@ -6468,7 +6448,7 @@ SWIGINTERN PyObject *_wrap__CameraFilesystemFuncs_storage_info_func_get(PyObject
   }
   arg1 = (struct _CameraFilesystemFuncs *)(argp1);
   result = (CameraFilesystemStorageInfoFunc) ((arg1)->storage_info_func);
-  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_struct__GPContext__int);
+  resultobj = SWIG_NewFunctionPtrObj((void *)(result), SWIGTYPE_p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_GPContext__int);
   return resultobj;
 fail:
   return NULL;
@@ -6620,7 +6600,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_put_file(PyObject *self, PyObject *args
   }
   arg5 = (CameraFile *)(argp5);
   if (obj5) {
-    res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p__GPContext, 0 |  0 );
+    res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res6)) {
       SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "gp_filesystem_put_file" "', argument " "6"" of type '" "GPContext *""'"); 
     }
@@ -6671,7 +6651,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_delete_all(PyObject *self, PyObject *ar
   }
   arg2 = (char *)(buf2);
   if (obj2) {
-    res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p__GPContext, 0 |  0 );
+    res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res3)) {
       SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gp_filesystem_delete_all" "', argument " "3"" of type '" "GPContext *""'"); 
     }
@@ -6730,7 +6710,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_make_dir(PyObject *self, PyObject *args
   }
   arg3 = (char *)(buf3);
   if (obj3) {
-    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p__GPContext, 0 |  0 );
+    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res4)) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gp_filesystem_make_dir" "', argument " "4"" of type '" "GPContext *""'"); 
     }
@@ -6791,7 +6771,7 @@ SWIGINTERN PyObject *_wrap_gp_filesystem_remove_dir(PyObject *self, PyObject *ar
   }
   arg3 = (char *)(buf3);
   if (obj3) {
-    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p__GPContext, 0 |  0 );
+    res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_GPContext, 0 |  0 );
     if (!SWIG_IsOK(res4)) {
       SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gp_filesystem_remove_dir" "', argument " "4"" of type '" "GPContext *""'"); 
     }
@@ -9304,32 +9284,18 @@ SWIGINTERN SwigPyClientData SwigPyBuiltin___CameraFilesystemFuncs_clientdata = {
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
-static swig_type_info _swigt__p_CameraAbilities = {"_p_CameraAbilities", "CameraAbilities *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraCaptureType = {"_p_CameraCaptureType", "CameraCaptureType *|enum CameraCaptureType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraDriverStatus = {"_p_CameraDriverStatus", "CameraDriverStatus *|enum CameraDriverStatus *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraEventType = {"_p_CameraEventType", "CameraEventType *|enum CameraEventType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CameraFileAccessType = {"_p_CameraFileAccessType", "CameraFileAccessType *|enum CameraFileAccessType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CameraFileInfoFields = {"_p_CameraFileInfoFields", "CameraFileInfoFields *|enum CameraFileInfoFields *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraFileOperation = {"_p_CameraFileOperation", "CameraFileOperation *|enum CameraFileOperation *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraFilePath = {"_p_CameraFilePath", "CameraFilePath *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CameraFilePermissions = {"_p_CameraFilePermissions", "CameraFilePermissions *|enum CameraFilePermissions *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CameraFileStatus = {"_p_CameraFileStatus", "CameraFileStatus *|enum CameraFileStatus *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CameraFileType = {"_p_CameraFileType", "CameraFileType *|enum CameraFileType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraFolderOperation = {"_p_CameraFolderOperation", "CameraFolderOperation *|enum CameraFolderOperation *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraOperation = {"_p_CameraOperation", "CameraOperation *|enum CameraOperation *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_CameraList = {"_p_CameraList", "CameraList *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CameraStorageAccessType = {"_p_CameraStorageAccessType", "CameraStorageAccessType *|enum CameraStorageAccessType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CameraStorageFilesystemType = {"_p_CameraStorageFilesystemType", "CameraStorageFilesystemType *|enum CameraStorageFilesystemType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CameraStorageInfoFields = {"_p_CameraStorageInfoFields", "CameraStorageInfoFields *|enum CameraStorageInfoFields *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_CameraStorageType = {"_p_CameraStorageType", "CameraStorageType *|enum CameraStorageType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraText = {"_p_CameraText", "CameraText *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_CameraWidgetType = {"_p_CameraWidgetType", "CameraWidgetType *|enum CameraWidgetType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_GPLogLevel = {"_p_GPLogLevel", "GPLogLevel *|enum GPLogLevel *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_GPPortType = {"_p_GPPortType", "GPPortType *|enum GPPortType *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_GPVersionVerbosity = {"_p_GPVersionVerbosity", "GPVersionVerbosity *|enum GPVersionVerbosity *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_GphotoDeviceType = {"_p_GphotoDeviceType", "GphotoDeviceType *|enum GphotoDeviceType *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_GPContext = {"_p_GPContext", "GPContext *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_SwigPyObject = {"_p_SwigPyObject", "SwigPyObject *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__Camera = {"_p__Camera", "Camera *|struct _Camera *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraAbilitiesList = {"_p__CameraAbilitiesList", "CameraAbilitiesList *|struct _CameraAbilitiesList *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraFile = {"_p__CameraFile", "CameraFile *|struct _CameraFile *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraFileHandler = {"_p__CameraFileHandler", "CameraFileHandler *|struct _CameraFileHandler *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraFileInfo = {"_p__CameraFileInfo", "CameraFileInfo *|struct _CameraFileInfo *|_CameraFileInfo *", 0, 0, (void*)&SwigPyBuiltin___CameraFileInfo_clientdata, 0};
@@ -9338,25 +9304,16 @@ static swig_type_info _swigt__p__CameraFileInfoFile = {"_p__CameraFileInfoFile",
 static swig_type_info _swigt__p__CameraFileInfoPreview = {"_p__CameraFileInfoPreview", "CameraFileInfoPreview *|struct _CameraFileInfoPreview *|_CameraFileInfoPreview *", 0, 0, (void*)&SwigPyBuiltin___CameraFileInfoPreview_clientdata, 0};
 static swig_type_info _swigt__p__CameraFilesystem = {"_p__CameraFilesystem", "CameraFilesystem *|struct _CameraFilesystem *|_CameraFilesystem *", 0, 0, (void*)&SwigPyBuiltin___CameraFilesystem_clientdata, 0};
 static swig_type_info _swigt__p__CameraFilesystemFuncs = {"_p__CameraFilesystemFuncs", "CameraFilesystemFuncs *|struct _CameraFilesystemFuncs *|_CameraFilesystemFuncs *", 0, 0, (void*)&SwigPyBuiltin___CameraFilesystemFuncs_clientdata, 0};
-static swig_type_info _swigt__p__CameraFunctions = {"_p__CameraFunctions", "CameraFunctions *|struct _CameraFunctions *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraList = {"_p__CameraList", "CameraList *|struct _CameraList *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraPrivateCore = {"_p__CameraPrivateCore", "CameraPrivateCore *|struct _CameraPrivateCore *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__CameraPrivateLibrary = {"_p__CameraPrivateLibrary", "CameraPrivateLibrary *|struct _CameraPrivateLibrary *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraStorageInformation = {"_p__CameraStorageInformation", "CameraStorageInformation *|struct _CameraStorageInformation *|_CameraStorageInformation *", 0, 0, (void*)&SwigPyBuiltin___CameraStorageInformation_clientdata, 0};
-static swig_type_info _swigt__p__CameraWidget = {"_p__CameraWidget", "CameraWidget *|struct _CameraWidget *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__GPContext = {"_p__GPContext", "GPContext *|struct _GPContext *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__GPContextFeedback = {"_p__GPContextFeedback", "GPContextFeedback *|enum _GPContextFeedback *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__GPPortInfo = {"_p__GPPortInfo", "_GPPortInfo *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p__GPPortInfoList = {"_p__GPPortInfoList", "GPPortInfoList *|struct _GPPortInfoList *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_struct__GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_struct__GPContext__int", "CameraFilesystemStorageInfoFunc|int (*)(struct _CameraFilesystem *,struct _CameraStorageInformation **,int *,void *,struct _GPContext *)", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_struct__GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_struct__GPContext__int", "CameraFilesystemGetFileFunc|CameraFilesystemPutFileFunc|int (*)(struct _CameraFilesystem *,char const *,char const *,enum CameraFileType,struct _CameraFile *,void *,struct _GPContext *)", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_struct__GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_struct__GPContext__int", "CameraFilesystemReadFileFunc|int (*)(struct _CameraFilesystem *,char const *,char const *,enum CameraFileType,unsigned long long,char *,unsigned long long *,void *,struct _GPContext *)", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_struct__GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_struct__GPContext__int", "CameraFilesystemGetInfoFunc|int (*)(struct _CameraFilesystem *,char const *,char const *,struct _CameraFileInfo *,void *,struct _GPContext *)", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_struct__GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_struct__GPContext__int", "CameraFilesystemDeleteFileFunc|CameraFilesystemDirFunc|int (*)(struct _CameraFilesystem *,char const *,char const *,void *,struct _GPContext *)", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_struct__GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_struct__GPContext__int", "CameraFilesystemSetInfoFunc|int (*)(struct _CameraFilesystem *,char const *,char const *,struct _CameraFileInfo,void *,struct _GPContext *)", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_struct__CameraList_p_void_p_struct__GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_struct__CameraList_p_void_p_struct__GPContext__int", "CameraFilesystemListFunc|int (*)(struct _CameraFilesystem *,char const *,struct _CameraList *,void *,struct _GPContext *)", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_struct__GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_struct__GPContext__int", "CameraFilesystemDeleteAllFunc|int (*)(struct _CameraFilesystem *,char const *,void *,struct _GPContext *)", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_GPContext__int", "CameraFilesystemStorageInfoFunc|int (*)(struct _CameraFilesystem *,struct _CameraStorageInformation **,int *,void *,GPContext *)", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_CameraList_p_void_p_GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_CameraList_p_void_p_GPContext__int", "CameraFilesystemListFunc|int (*)(struct _CameraFilesystem *,char const *,CameraList *,void *,GPContext *)", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_GPContext__int", "CameraFilesystemGetFileFunc|CameraFilesystemPutFileFunc|int (*)(struct _CameraFilesystem *,char const *,char const *,enum CameraFileType,struct _CameraFile *,void *,GPContext *)", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_GPContext__int", "CameraFilesystemReadFileFunc|int (*)(struct _CameraFilesystem *,char const *,char const *,enum CameraFileType,unsigned long long,char *,unsigned long long *,void *,GPContext *)", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_GPContext__int", "CameraFilesystemGetInfoFunc|int (*)(struct _CameraFilesystem *,char const *,char const *,struct _CameraFileInfo *,void *,GPContext *)", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_GPContext__int", "CameraFilesystemDeleteFileFunc|CameraFilesystemDirFunc|int (*)(struct _CameraFilesystem *,char const *,char const *,void *,GPContext *)", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_GPContext__int", "CameraFilesystemSetInfoFunc|int (*)(struct _CameraFilesystem *,char const *,char const *,struct _CameraFileInfo,void *,GPContext *)", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_GPContext__int = {"_p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_GPContext__int", "CameraFilesystemDeleteAllFunc|int (*)(struct _CameraFilesystem *,char const *,void *,GPContext *)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int32_t *|int_fast16_t *|int_fast32_t *|int_least32_t *|intptr_t *|int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_long = {"_p_long", "time_t *|long *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_long_long = {"_p_long_long", "int64_t *|int_fast64_t *|int_least64_t *|intmax_t *|long long *", 0, 0, (void*)0, 0};
@@ -9371,32 +9328,18 @@ static swig_type_info _swigt__p_unsigned_long_long = {"_p_unsigned_long_long", "
 static swig_type_info _swigt__p_unsigned_short = {"_p_unsigned_short", "uint16_t *|uint_least16_t *|unsigned short *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
-  &_swigt__p_CameraAbilities,
-  &_swigt__p_CameraCaptureType,
-  &_swigt__p_CameraDriverStatus,
-  &_swigt__p_CameraEventType,
   &_swigt__p_CameraFileAccessType,
   &_swigt__p_CameraFileInfoFields,
-  &_swigt__p_CameraFileOperation,
-  &_swigt__p_CameraFilePath,
   &_swigt__p_CameraFilePermissions,
   &_swigt__p_CameraFileStatus,
   &_swigt__p_CameraFileType,
-  &_swigt__p_CameraFolderOperation,
-  &_swigt__p_CameraOperation,
+  &_swigt__p_CameraList,
   &_swigt__p_CameraStorageAccessType,
   &_swigt__p_CameraStorageFilesystemType,
   &_swigt__p_CameraStorageInfoFields,
   &_swigt__p_CameraStorageType,
-  &_swigt__p_CameraText,
-  &_swigt__p_CameraWidgetType,
-  &_swigt__p_GPLogLevel,
-  &_swigt__p_GPPortType,
-  &_swigt__p_GPVersionVerbosity,
-  &_swigt__p_GphotoDeviceType,
+  &_swigt__p_GPContext,
   &_swigt__p_SwigPyObject,
-  &_swigt__p__Camera,
-  &_swigt__p__CameraAbilitiesList,
   &_swigt__p__CameraFile,
   &_swigt__p__CameraFileHandler,
   &_swigt__p__CameraFileInfo,
@@ -9405,25 +9348,16 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p__CameraFileInfoPreview,
   &_swigt__p__CameraFilesystem,
   &_swigt__p__CameraFilesystemFuncs,
-  &_swigt__p__CameraFunctions,
-  &_swigt__p__CameraList,
-  &_swigt__p__CameraPrivateCore,
-  &_swigt__p__CameraPrivateLibrary,
   &_swigt__p__CameraStorageInformation,
-  &_swigt__p__CameraWidget,
-  &_swigt__p__GPContext,
-  &_swigt__p__GPContextFeedback,
-  &_swigt__p__GPPortInfo,
-  &_swigt__p__GPPortInfoList,
   &_swigt__p_char,
-  &_swigt__p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_struct__GPContext__int,
-  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_struct__GPContext__int,
-  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_struct__GPContext__int,
-  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_struct__GPContext__int,
-  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_struct__GPContext__int,
-  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_struct__GPContext__int,
-  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_struct__CameraList_p_void_p_struct__GPContext__int,
-  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_struct__GPContext__int,
+  &_swigt__p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_GPContext__int,
+  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_CameraList_p_void_p_GPContext__int,
+  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_GPContext__int,
+  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_GPContext__int,
+  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_GPContext__int,
+  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_GPContext__int,
+  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_GPContext__int,
+  &_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_GPContext__int,
   &_swigt__p_int,
   &_swigt__p_long,
   &_swigt__p_long_long,
@@ -9438,32 +9372,18 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_unsigned_short,
 };
 
-static swig_cast_info _swigc__p_CameraAbilities[] = {  {&_swigt__p_CameraAbilities, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraCaptureType[] = {  {&_swigt__p_CameraCaptureType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraDriverStatus[] = {  {&_swigt__p_CameraDriverStatus, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraEventType[] = {  {&_swigt__p_CameraEventType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CameraFileAccessType[] = {  {&_swigt__p_CameraFileAccessType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CameraFileInfoFields[] = {  {&_swigt__p_CameraFileInfoFields, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraFileOperation[] = {  {&_swigt__p_CameraFileOperation, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraFilePath[] = {  {&_swigt__p_CameraFilePath, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CameraFilePermissions[] = {  {&_swigt__p_CameraFilePermissions, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CameraFileStatus[] = {  {&_swigt__p_CameraFileStatus, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CameraFileType[] = {  {&_swigt__p_CameraFileType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraFolderOperation[] = {  {&_swigt__p_CameraFolderOperation, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraOperation[] = {  {&_swigt__p_CameraOperation, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_CameraList[] = {  {&_swigt__p_CameraList, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CameraStorageAccessType[] = {  {&_swigt__p_CameraStorageAccessType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CameraStorageFilesystemType[] = {  {&_swigt__p_CameraStorageFilesystemType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CameraStorageInfoFields[] = {  {&_swigt__p_CameraStorageInfoFields, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CameraStorageType[] = {  {&_swigt__p_CameraStorageType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraText[] = {  {&_swigt__p_CameraText, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraWidgetType[] = {  {&_swigt__p_CameraWidgetType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_GPLogLevel[] = {  {&_swigt__p_GPLogLevel, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_GPPortType[] = {  {&_swigt__p_GPPortType, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_GPVersionVerbosity[] = {  {&_swigt__p_GPVersionVerbosity, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_GphotoDeviceType[] = {  {&_swigt__p_GphotoDeviceType, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_GPContext[] = {  {&_swigt__p_GPContext, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SwigPyObject[] = {  {&_swigt__p_SwigPyObject, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__Camera[] = {  {&_swigt__p__Camera, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraAbilitiesList[] = {  {&_swigt__p__CameraAbilitiesList, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraFile[] = {  {&_swigt__p__CameraFile, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraFileHandler[] = {  {&_swigt__p__CameraFileHandler, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraFileInfo[] = {  {&_swigt__p__CameraFileInfo, 0, 0, 0},{0, 0, 0, 0}};
@@ -9472,25 +9392,16 @@ static swig_cast_info _swigc__p__CameraFileInfoFile[] = {  {&_swigt__p__CameraFi
 static swig_cast_info _swigc__p__CameraFileInfoPreview[] = {  {&_swigt__p__CameraFileInfoPreview, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraFilesystem[] = {  {&_swigt__p__CameraFilesystem, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraFilesystemFuncs[] = {  {&_swigt__p__CameraFilesystemFuncs, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraFunctions[] = {  {&_swigt__p__CameraFunctions, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraList[] = {  {&_swigt__p__CameraList, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraPrivateCore[] = {  {&_swigt__p__CameraPrivateCore, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraPrivateLibrary[] = {  {&_swigt__p__CameraPrivateLibrary, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraStorageInformation[] = {  {&_swigt__p__CameraStorageInformation, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraWidget[] = {  {&_swigt__p__CameraWidget, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__GPContext[] = {  {&_swigt__p__GPContext, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__GPContextFeedback[] = {  {&_swigt__p__GPContextFeedback, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__GPPortInfo[] = {  {&_swigt__p__GPPortInfo, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__GPPortInfoList[] = {  {&_swigt__p__GPPortInfoList, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_struct__GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_struct__GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_struct__GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_struct__GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_struct__GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_struct__GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_struct__GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_struct__GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_struct__GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_struct__GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_struct__GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_struct__GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_struct__CameraList_p_void_p_struct__GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_struct__CameraList_p_void_p_struct__GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_struct__GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_struct__GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_CameraList_p_void_p_GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_CameraList_p_void_p_GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_GPContext__int[] = {  {&_swigt__p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_long[] = {  {&_swigt__p_long, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_long_long[] = {  {&_swigt__p_long_long, 0, 0, 0},{0, 0, 0, 0}};
@@ -9505,32 +9416,18 @@ static swig_cast_info _swigc__p_unsigned_long_long[] = {  {&_swigt__p_unsigned_l
 static swig_cast_info _swigc__p_unsigned_short[] = {  {&_swigt__p_unsigned_short, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
-  _swigc__p_CameraAbilities,
-  _swigc__p_CameraCaptureType,
-  _swigc__p_CameraDriverStatus,
-  _swigc__p_CameraEventType,
   _swigc__p_CameraFileAccessType,
   _swigc__p_CameraFileInfoFields,
-  _swigc__p_CameraFileOperation,
-  _swigc__p_CameraFilePath,
   _swigc__p_CameraFilePermissions,
   _swigc__p_CameraFileStatus,
   _swigc__p_CameraFileType,
-  _swigc__p_CameraFolderOperation,
-  _swigc__p_CameraOperation,
+  _swigc__p_CameraList,
   _swigc__p_CameraStorageAccessType,
   _swigc__p_CameraStorageFilesystemType,
   _swigc__p_CameraStorageInfoFields,
   _swigc__p_CameraStorageType,
-  _swigc__p_CameraText,
-  _swigc__p_CameraWidgetType,
-  _swigc__p_GPLogLevel,
-  _swigc__p_GPPortType,
-  _swigc__p_GPVersionVerbosity,
-  _swigc__p_GphotoDeviceType,
+  _swigc__p_GPContext,
   _swigc__p_SwigPyObject,
-  _swigc__p__Camera,
-  _swigc__p__CameraAbilitiesList,
   _swigc__p__CameraFile,
   _swigc__p__CameraFileHandler,
   _swigc__p__CameraFileInfo,
@@ -9539,25 +9436,16 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p__CameraFileInfoPreview,
   _swigc__p__CameraFilesystem,
   _swigc__p__CameraFilesystemFuncs,
-  _swigc__p__CameraFunctions,
-  _swigc__p__CameraList,
-  _swigc__p__CameraPrivateCore,
-  _swigc__p__CameraPrivateLibrary,
   _swigc__p__CameraStorageInformation,
-  _swigc__p__CameraWidget,
-  _swigc__p__GPContext,
-  _swigc__p__GPContextFeedback,
-  _swigc__p__GPPortInfo,
-  _swigc__p__GPPortInfoList,
   _swigc__p_char,
-  _swigc__p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_struct__GPContext__int,
-  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_struct__GPContext__int,
-  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_struct__GPContext__int,
-  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_struct__GPContext__int,
-  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_struct__GPContext__int,
-  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_struct__GPContext__int,
-  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_struct__CameraList_p_void_p_struct__GPContext__int,
-  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_struct__GPContext__int,
+  _swigc__p_f_p_struct__CameraFilesystem_p_p_struct__CameraStorageInformation_p_int_p_void_p_GPContext__int,
+  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_CameraList_p_void_p_GPContext__int,
+  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_p_struct__CameraFile_p_void_p_GPContext__int,
+  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_enum_CameraFileType_unsigned_long_long_p_char_p_unsigned_long_long_p_void_p_GPContext__int,
+  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_struct__CameraFileInfo_p_void_p_GPContext__int,
+  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_p_void_p_GPContext__int,
+  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_q_const__char_struct__CameraFileInfo_p_void_p_GPContext__int,
+  _swigc__p_f_p_struct__CameraFilesystem_p_q_const__char_p_void_p_GPContext__int,
   _swigc__p_int,
   _swigc__p_long,
   _swigc__p_long_long,

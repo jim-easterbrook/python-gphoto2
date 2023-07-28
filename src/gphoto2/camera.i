@@ -22,6 +22,10 @@
 
 %include "stdint.i"
 
+%import "abilities_list.i"
+%import "filesys.i"
+%import "widget.i"
+
 %rename(Camera) _Camera;
 
 // Make docstring parameter types more Pythonic

@@ -34,8 +34,6 @@
 %typemap(doc) GPPortInfo "$1_name: gphoto2.$1_type";
 %typemap(doc) GPPortInfoList * "$1_name: gphoto2.$*1_type";
 
-#ifndef SWIGIMPORTED
-
 // Turn on default exception handling
 DEFAULT_EXCEPTION
 
@@ -132,7 +130,5 @@ static int gp_port_init_localedir(const char *localedir) {
 
 // Turn off default exception handling
 %noexception;
-
-#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-port-info-list.h"

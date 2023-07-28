@@ -24,8 +24,6 @@
 // Make docstring parameter types more Pythonic
 %typemap(doc) CameraList * "$1_name: gphoto2.$*1_type"
 
-#ifndef SWIGIMPORTED
-
 // Turn on default exception handling
 DEFAULT_EXCEPTION
 
@@ -129,7 +127,5 @@ MEMBER_FUNCTION(_CameraList,
 
 // Turn off default exception handling
 %noexception;
-
-#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-list.h"

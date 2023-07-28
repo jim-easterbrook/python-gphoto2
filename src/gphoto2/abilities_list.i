@@ -33,8 +33,6 @@ DEPRECATED(_CameraAbilitiesList::append, 1)
 %typemap(doc) CameraAbilities "$1_name: gphoto2.$1_type"
 %typemap(doc) CameraAbilitiesList * "$1_name: gphoto2.$*1_type"
 
-#ifndef SWIGIMPORTED
-
 // Turn on default exception handling
 DEFAULT_EXCEPTION
 
@@ -134,7 +132,5 @@ MEMBER_FUNCTION(_CameraAbilitiesList,
 
 // Turn off default exception handling
 %noexception;
-
-#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-abilities-list.h"

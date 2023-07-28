@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-20  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -26,8 +26,6 @@
 // Make docstring parameter types more Pythonic
 %typemap(doc) enum GPVersionVerbosity "$1_name: $1_type (gphoto2.GP_VERSION_SHORT etc.)"
 
-#ifndef SWIGIMPORTED
-
 %include "typemaps.i"
 
 %typemap(out) char ** {
@@ -41,8 +39,6 @@
     line++;
   }
 }
-
-#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-port-version.h"
 %include "gphoto2/gphoto2-version.h"

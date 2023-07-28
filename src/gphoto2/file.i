@@ -33,8 +33,6 @@ typedef long int time_t;
 %typemap(doc) CameraFileHandler * "$1_name: gphoto2.$*1_type"
 %typemap(doc) enum CameraFileType "$1_name: $1_type (gphoto2.GP_FILE_TYPE_PREVIEW etc.)"
 
-#ifndef SWIGIMPORTED
-
 // Allow other Python threads to continue during some function calls
 %thread gp_file_copy;
 %thread gp_file_get_data_and_size;
@@ -173,7 +171,5 @@ MEMBER_FUNCTION(_CameraFile,
 
 // Turn off default exception handling
 %noexception;
-
-#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-file.h"

@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-21  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
@@ -21,8 +21,6 @@
 
 // Make docstring parameter types more Pythonic
 %typemap(doc) enum GPLogLevel "$1_name: $1_type (gphoto2.GP_LOG_ERROR etc.)"
-
-#ifndef SWIGIMPORTED
 
 // Turn on default exception handling
 DEFAULT_EXCEPTION
@@ -191,7 +189,5 @@ def use_python_logging(mapping={}):
 
 // Turn off default exception handling
 %noexception;
-
-#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-port-log.h"

@@ -28,8 +28,6 @@ CALLOC_ARGOUT(CameraFileInfo *info)
 %typemap(doc) CameraFileInfo "$1_name: gphoto2.$1_type"
 %typemap(doc) CameraFilesystem * "$1_name: gphoto2.$*1_type"
 
-#ifndef SWIGIMPORTED
-
 // Turn on default exception handling
 DEFAULT_EXCEPTION
 
@@ -61,7 +59,5 @@ DEFAULT_DTOR(_CameraFilesystem, gp_filesystem_free)
 
 // Turn off default exception handling
 %noexception;
-
-#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-filesys.h"

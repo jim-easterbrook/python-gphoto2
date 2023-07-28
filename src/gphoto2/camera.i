@@ -32,8 +32,6 @@
 %typemap(doc) Camera * "$1_name: gphoto2.$*1_type"
 %typemap(doc) enum CameraCaptureType "$1_name: $1_type (gphoto2.GP_CAPTURE_IMAGE etc.)"
 
-#ifndef SWIGIMPORTED
-
 // Allow other Python threads to continue during some function calls
 %thread gp_camera_wait_for_event;
 %thread gp_camera_capture;
@@ -311,7 +309,5 @@ MEMBER_FUNCTION(_Camera,
 
 // Other structures are read only
 %immutable;
-
-#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-camera.h"

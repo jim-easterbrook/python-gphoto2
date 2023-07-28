@@ -85,8 +85,6 @@ Beware of changes in the libgphoto2 definitions though.
 // Make docstring parameter types more Pythonic
 %typemap(doc) (CameraWidget *) "$1_name: gphoto2.$*1_type"
 
-#ifndef SWIGIMPORTED
-
 %apply int *OUTPUT { CameraWidgetType * };
 %apply int *OUTPUT { int * };
 %apply float *OUTPUT { float * };
@@ -137,7 +135,7 @@ typedef union {
   }
   $result = SWIG_Python_AppendOutput($result, py_value);
 }
-%typemap(doc) (void *) "$1_name: int/float/str"
+%typemap(doc) (void *value) "$1_name: int/float/str"
 
 // Redefine signature of gp_widget_get_value to select correct typemaps
 int gp_widget_get_value(CameraWidget *widget, void *value_out);
@@ -189,6 +187,8 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
 
 // Turn on default exception handling
 DEFAULT_EXCEPTION
+
+#ifndef SWIGIMPORTED
 
 // function to allow python iter() to be called with python object
 #if defined(SWIGPYTHON_BUILTIN)
@@ -331,6 +331,8 @@ int gp_widget_get_choices(CameraWidget* widget, CameraWidgetChoiceIter* iter) {
 };
 %}
 
+#endif //ifndef SWIGIMPORTED
+
 // Add default destructor to _CameraWidget
 // Destructor decrefs root widget
 %{
@@ -440,7 +442,5 @@ MEMBER_FUNCTION(_CameraWidget,
 
 // Turn off default exception handling
 %noexception;
-
-#endif //ifndef SWIGIMPORTED
 
 %include "gphoto2/gphoto2-widget.h"

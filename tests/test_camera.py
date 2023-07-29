@@ -130,6 +130,14 @@ class TestVirtualCamera(unittest.TestCase):
             '/store_00010001', 'copyright-free-image.jpg',
             gp.GP_FILE_TYPE_NORMAL)
         self.assertIsInstance(file, gp.CameraFile)
+        # file_read
+        buffer = bytearray(10)
+        with self.assertRaises(gp.GPhoto2Error) as cm:
+            data = self.camera.file_read(
+                '/store_00010001', 'copyright-free-image.jpg',
+                gp.GP_FILE_TYPE_NORMAL, 0, buffer)
+        ex = cm.exception
+        self.assertEqual(ex.code, gp.GP_ERROR_NOT_SUPPORTED)
         # capture
         path = self.camera.capture(gp.GP_CAPTURE_IMAGE)
         self.assertRegex(path.name, 'GPH_\d{4}.JPG')
@@ -207,6 +215,12 @@ class TestVirtualCamera(unittest.TestCase):
             gp.GP_FILE_TYPE_NORMAL)
         self.assertEqual(OK, gp.GP_OK)
         self.assertIsInstance(file, gp.CameraFile)
+        # file_read
+        buffer = bytearray(10)
+        OK, data = gp.gp_camera_file_read(
+            self.camera, '/store_00010001', 'copyright-free-image.jpg',
+            gp.GP_FILE_TYPE_NORMAL, 0, buffer)
+        self.assertEqual(OK, gp.GP_ERROR_NOT_SUPPORTED)
         # capture
         OK, path = gp.gp_camera_capture(self.camera, gp.GP_CAPTURE_IMAGE)
         self.assertEqual(OK, gp.GP_OK)

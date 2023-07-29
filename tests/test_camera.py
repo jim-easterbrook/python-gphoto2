@@ -23,6 +23,25 @@ os.environ['VCAMERADIR'] = os.path.join(os.path.dirname(__file__), 'vcamera')
 import gphoto2 as gp
 
 
+class TestNoCamera(unittest.TestCase):
+    def setUp(self):
+        # switch from virtual camera to normal drivers
+        os.environ['IOLIBS'] = os.environ['IOLIBS'].replace('vusb', 'iolibs')
+
+    def test_autodetect_and_init(self):
+        cameras = gp.Camera.autodetect()
+        self.assertIsInstance(cameras, gp.CameraList)
+        camera = gp.Camera()
+        if len(cameras) > 0:
+            # there is actually a camera connected
+            camera.init()
+        else:
+            with self.assertRaises(gp.GPhoto2Error) as cm:
+                camera.init()
+            ex = cm.exception
+            self.assertEqual(ex.code, -105)
+
+
 class TestAutoDetect(unittest.TestCase):
     def setUp(self):
         # switch to virtual camera from normal drivers

@@ -125,6 +125,11 @@ class TestVirtualCamera(unittest.TestCase):
         # list_files
         files = list_files()
         self.assertEqual(files[0], '/store_00010001/copyright-free-image.jpg')
+        # file_get
+        file = self.camera.file_get(
+            '/store_00010001', 'copyright-free-image.jpg',
+            gp.GP_FILE_TYPE_NORMAL)
+        self.assertIsInstance(file, gp.CameraFile)
         # capture
         path = self.camera.capture(gp.GP_CAPTURE_IMAGE)
         self.assertRegex(path.name, 'GPH_\d{4}.JPG')
@@ -137,6 +142,11 @@ class TestVirtualCamera(unittest.TestCase):
         self.assertEqual(info.height, 0)
         # delete file
         self.camera.file_delete(path.folder, path.name)
+        # capture preview
+        with self.assertRaises(gp.GPhoto2Error) as cm:
+            self.camera.capture_preview()
+        ex = cm.exception
+        self.assertEqual(ex.code, gp.GP_ERROR_NOT_SUPPORTED)
 
     def test_c_style(self):
         def list_config(widget):
@@ -191,6 +201,12 @@ class TestVirtualCamera(unittest.TestCase):
         # list_files
         files = list_files()
         self.assertEqual(files[0], '/store_00010001/copyright-free-image.jpg')
+        # file_get
+        OK, file = gp.gp_camera_file_get(
+            self.camera, '/store_00010001', 'copyright-free-image.jpg',
+            gp.GP_FILE_TYPE_NORMAL)
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertIsInstance(file, gp.CameraFile)
         # capture
         OK, path = gp.gp_camera_capture(self.camera, gp.GP_CAPTURE_IMAGE)
         self.assertEqual(OK, gp.GP_OK)
@@ -208,6 +224,9 @@ class TestVirtualCamera(unittest.TestCase):
         # delete file
         self.assertEqual(gp.gp_camera_file_delete(
             self.camera, path.folder, path.name), gp.GP_OK)
+        # capture preview
+        OK, path = gp.gp_camera_capture_preview(self.camera)
+        self.assertEqual(OK, gp.GP_ERROR_NOT_SUPPORTED)
 
 
 if __name__ == "__main__":

@@ -4371,6 +4371,8 @@ SWIGINTERN PyObject *_wrap_Context_set_idle_func(PyObject *self, PyObject *args)
     arg2 = (GPContextIdleFunc) wrap_idle_func;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj2);
     _global_callbacks->data = obj2;
     arg3 = _global_callbacks;
@@ -4437,6 +4439,8 @@ SWIGINTERN PyObject *_wrap_Context_set_error_func(PyObject *self, PyObject *args
     arg2 = (GPContextErrorFunc) wrap_error_func;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj2);
     _global_callbacks->data = obj2;
     arg3 = _global_callbacks;
@@ -4503,6 +4507,8 @@ SWIGINTERN PyObject *_wrap_Context_set_message_func(PyObject *self, PyObject *ar
     arg2 = (GPContextMessageFunc) wrap_message_func;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj2);
     _global_callbacks->data = obj2;
     arg3 = _global_callbacks;
@@ -4569,6 +4575,8 @@ SWIGINTERN PyObject *_wrap_Context_set_question_func(PyObject *self, PyObject *a
     arg2 = (GPContextQuestionFunc) wrap_question_func;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj2);
     _global_callbacks->data = obj2;
     arg3 = _global_callbacks;
@@ -4635,6 +4643,8 @@ SWIGINTERN PyObject *_wrap_Context_set_cancel_func(PyObject *self, PyObject *arg
     arg2 = (GPContextCancelFunc) wrap_cancel_func;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj2);
     _global_callbacks->data = obj2;
     arg3 = _global_callbacks;
@@ -4721,6 +4731,8 @@ SWIGINTERN PyObject *_wrap_Context_set_progress_funcs(PyObject *self, PyObject *
     arg4 = (GPContextProgressStopFunc) py_progress_stop;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj4);
     _global_callbacks->data = obj4;
     arg5 = _global_callbacks;
@@ -4787,6 +4799,8 @@ SWIGINTERN PyObject *_wrap_Context_set_status_func(PyObject *self, PyObject *arg
     arg2 = (GPContextStatusFunc) wrap_status_func;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj2);
     _global_callbacks->data = obj2;
     arg3 = _global_callbacks;
@@ -4870,13 +4884,11 @@ SWIGINTERN PyObject *_wrap_gp_context_set_idle_func(PyObject *self, PyObject *ar
     arg2 = (GPContextIdleFunc) wrap_idle_func;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj2);
     _global_callbacks->data = obj2;
     arg3 = _global_callbacks;
-  }
-  {
-    gp_context_ref(arg1);
-    _global_callbacks->context = arg1;
   }
   gp_context_set_idle_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
@@ -4961,13 +4973,11 @@ SWIGINTERN PyObject *_wrap_gp_context_set_progress_funcs(PyObject *self, PyObjec
     arg4 = (GPContextProgressStopFunc) py_progress_stop;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj4);
     _global_callbacks->data = obj4;
     arg5 = _global_callbacks;
-  }
-  {
-    gp_context_ref(arg1);
-    _global_callbacks->context = arg1;
   }
   gp_context_set_progress_funcs(arg1,arg2,arg3,arg4,arg5);
   resultobj = SWIG_Py_Void();
@@ -5032,13 +5042,11 @@ SWIGINTERN PyObject *_wrap_gp_context_set_error_func(PyObject *self, PyObject *a
     arg2 = (GPContextErrorFunc) wrap_error_func;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj2);
     _global_callbacks->data = obj2;
     arg3 = _global_callbacks;
-  }
-  {
-    gp_context_ref(arg1);
-    _global_callbacks->context = arg1;
   }
   gp_context_set_error_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
@@ -5103,13 +5111,11 @@ SWIGINTERN PyObject *_wrap_gp_context_set_status_func(PyObject *self, PyObject *
     arg2 = (GPContextStatusFunc) wrap_status_func;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj2);
     _global_callbacks->data = obj2;
     arg3 = _global_callbacks;
-  }
-  {
-    gp_context_ref(arg1);
-    _global_callbacks->context = arg1;
   }
   gp_context_set_status_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
@@ -5174,13 +5180,11 @@ SWIGINTERN PyObject *_wrap_gp_context_set_question_func(PyObject *self, PyObject
     arg2 = (GPContextQuestionFunc) wrap_question_func;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj2);
     _global_callbacks->data = obj2;
     arg3 = _global_callbacks;
-  }
-  {
-    gp_context_ref(arg1);
-    _global_callbacks->context = arg1;
   }
   gp_context_set_question_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
@@ -5245,13 +5249,11 @@ SWIGINTERN PyObject *_wrap_gp_context_set_cancel_func(PyObject *self, PyObject *
     arg2 = (GPContextCancelFunc) wrap_cancel_func;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj2);
     _global_callbacks->data = obj2;
     arg3 = _global_callbacks;
-  }
-  {
-    gp_context_ref(arg1);
-    _global_callbacks->context = arg1;
   }
   gp_context_set_cancel_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
@@ -5316,13 +5318,11 @@ SWIGINTERN PyObject *_wrap_gp_context_set_message_func(PyObject *self, PyObject 
     arg2 = (GPContextMessageFunc) wrap_message_func;
   }
   {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF(obj2);
     _global_callbacks->data = obj2;
     arg3 = _global_callbacks;
-  }
-  {
-    gp_context_ref(arg1);
-    _global_callbacks->context = arg1;
   }
   gp_context_set_message_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();

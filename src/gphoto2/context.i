@@ -206,7 +206,11 @@ CB_WRAPPER(void, py_progress_stop, (GPContext *context, unsigned int id, void *d
     if (_global_callbacks)
         del_CallbackDetails(_global_callbacks);
 }
+
+// Assumes the GPContext value is always in arg1
 %typemap(in) void *data {
+    gp_context_ref(arg1);
+    _global_callbacks->context = arg1;
     Py_INCREF($input);
     _global_callbacks->data = $input;
     $1 = _global_callbacks;
@@ -217,11 +221,6 @@ CB_WRAPPER(void, py_progress_stop, (GPContext *context, unsigned int id, void *d
     $result = SWIG_Python_AppendOutput($result,
         SWIG_NewPointerObj(_global_callbacks, $descriptor(CallbackDetails*), SWIG_POINTER_OWN));
     _global_callbacks = NULL;
-}
-
-%typemap(check) GPContext *context {
-    gp_context_ref($1);
-    _global_callbacks->context = $1;
 }
 
 // Macro to define typemaps for the six single callback function variants

@@ -3815,8 +3815,10 @@ static void unset_progress_funcs(GPContext *context,
 
 // Destructor
 static int del_CallbackDetails(struct CallbackDetails *this) {
-    if (this->context)
+    if (this->context && this->remove) {
         this->remove(this->context, NULL, NULL);
+        gp_context_unref(this->context);
+    }
     Py_XDECREF(this->func_1);
     Py_XDECREF(this->func_2);
     Py_XDECREF(this->func_3);
@@ -4180,144 +4182,6 @@ SWIGINTERNINLINE PyObject*
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN PyObject *_wrap_CallbackDetails_func_1_set(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct CallbackDetails *arg1 = (struct CallbackDetails *) 0 ;
-  PyObject *arg2 = (PyObject *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  (void)self;
-  if (!PyArg_UnpackTuple(args, "CallbackDetails_func_1_set", 1, 1, &obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CallbackDetails, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CallbackDetails_func_1_set" "', argument " "1"" of type '" "struct CallbackDetails *""'"); 
-  }
-  arg1 = (struct CallbackDetails *)(argp1);
-  arg2 = obj1;
-  if (arg1) (arg1)->func_1 = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CallbackDetails_func_1_get(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct CallbackDetails *arg1 = (struct CallbackDetails *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject *result = 0 ;
-  
-  (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CallbackDetails_func_1_get takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CallbackDetails, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CallbackDetails_func_1_get" "', argument " "1"" of type '" "struct CallbackDetails *""'"); 
-  }
-  arg1 = (struct CallbackDetails *)(argp1);
-  result = (PyObject *) ((arg1)->func_1);
-  resultobj = result;
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CallbackDetails_func_2_set(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct CallbackDetails *arg1 = (struct CallbackDetails *) 0 ;
-  PyObject *arg2 = (PyObject *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  (void)self;
-  if (!PyArg_UnpackTuple(args, "CallbackDetails_func_2_set", 1, 1, &obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CallbackDetails, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CallbackDetails_func_2_set" "', argument " "1"" of type '" "struct CallbackDetails *""'"); 
-  }
-  arg1 = (struct CallbackDetails *)(argp1);
-  arg2 = obj1;
-  if (arg1) (arg1)->func_2 = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CallbackDetails_func_2_get(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct CallbackDetails *arg1 = (struct CallbackDetails *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject *result = 0 ;
-  
-  (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CallbackDetails_func_2_get takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CallbackDetails, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CallbackDetails_func_2_get" "', argument " "1"" of type '" "struct CallbackDetails *""'"); 
-  }
-  arg1 = (struct CallbackDetails *)(argp1);
-  result = (PyObject *) ((arg1)->func_2);
-  resultobj = result;
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CallbackDetails_func_3_set(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct CallbackDetails *arg1 = (struct CallbackDetails *) 0 ;
-  PyObject *arg2 = (PyObject *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  (void)self;
-  if (!PyArg_UnpackTuple(args, "CallbackDetails_func_3_set", 1, 1, &obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CallbackDetails, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CallbackDetails_func_3_set" "', argument " "1"" of type '" "struct CallbackDetails *""'"); 
-  }
-  arg1 = (struct CallbackDetails *)(argp1);
-  arg2 = obj1;
-  if (arg1) (arg1)->func_3 = arg2;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CallbackDetails_func_3_get(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct CallbackDetails *arg1 = (struct CallbackDetails *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject *result = 0 ;
-  
-  (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CallbackDetails_func_3_get takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CallbackDetails, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CallbackDetails_func_3_get" "', argument " "1"" of type '" "struct CallbackDetails *""'"); 
-  }
-  arg1 = (struct CallbackDetails *)(argp1);
-  result = (PyObject *) ((arg1)->func_3);
-  resultobj = result;
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_delete_CallbackDetails(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct CallbackDetails *arg1 = (struct CallbackDetails *) 0 ;
@@ -4488,7 +4352,7 @@ SWIGINTERN PyObject *_wrap_Context_set_idle_func(PyObject *self, PyObject *args)
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) gp_context_set_idle_func;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "Context_set_idle_func", 2, 2, &obj1, &obj2)) SWIG_fail;
@@ -4501,13 +4365,14 @@ SWIGINTERN PyObject *_wrap_Context_set_idle_func(PyObject *self, PyObject *args)
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_idle_func" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) gp_context_set_idle_func;
     arg2 = (GPContextIdleFunc) wrap_idle_func;
   }
   {
+    Py_INCREF(obj2);
     _global_callbacks->data = obj2;
-    Py_INCREF(_global_callbacks->data);
     arg3 = _global_callbacks;
   }
   _GPContext_set_idle_func(arg1,arg2,arg3);
@@ -4553,7 +4418,7 @@ SWIGINTERN PyObject *_wrap_Context_set_error_func(PyObject *self, PyObject *args
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) gp_context_set_error_func;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "Context_set_error_func", 2, 2, &obj1, &obj2)) SWIG_fail;
@@ -4566,13 +4431,14 @@ SWIGINTERN PyObject *_wrap_Context_set_error_func(PyObject *self, PyObject *args
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_error_func" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) gp_context_set_error_func;
     arg2 = (GPContextErrorFunc) wrap_error_func;
   }
   {
+    Py_INCREF(obj2);
     _global_callbacks->data = obj2;
-    Py_INCREF(_global_callbacks->data);
     arg3 = _global_callbacks;
   }
   _GPContext_set_error_func(arg1,arg2,arg3);
@@ -4618,7 +4484,7 @@ SWIGINTERN PyObject *_wrap_Context_set_message_func(PyObject *self, PyObject *ar
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) gp_context_set_message_func;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "Context_set_message_func", 2, 2, &obj1, &obj2)) SWIG_fail;
@@ -4631,13 +4497,14 @@ SWIGINTERN PyObject *_wrap_Context_set_message_func(PyObject *self, PyObject *ar
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_message_func" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) gp_context_set_message_func;
     arg2 = (GPContextMessageFunc) wrap_message_func;
   }
   {
+    Py_INCREF(obj2);
     _global_callbacks->data = obj2;
-    Py_INCREF(_global_callbacks->data);
     arg3 = _global_callbacks;
   }
   _GPContext_set_message_func(arg1,arg2,arg3);
@@ -4683,7 +4550,7 @@ SWIGINTERN PyObject *_wrap_Context_set_question_func(PyObject *self, PyObject *a
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) gp_context_set_question_func;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "Context_set_question_func", 2, 2, &obj1, &obj2)) SWIG_fail;
@@ -4696,13 +4563,14 @@ SWIGINTERN PyObject *_wrap_Context_set_question_func(PyObject *self, PyObject *a
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_question_func" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) gp_context_set_question_func;
     arg2 = (GPContextQuestionFunc) wrap_question_func;
   }
   {
+    Py_INCREF(obj2);
     _global_callbacks->data = obj2;
-    Py_INCREF(_global_callbacks->data);
     arg3 = _global_callbacks;
   }
   _GPContext_set_question_func(arg1,arg2,arg3);
@@ -4748,7 +4616,7 @@ SWIGINTERN PyObject *_wrap_Context_set_cancel_func(PyObject *self, PyObject *arg
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) gp_context_set_cancel_func;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "Context_set_cancel_func", 2, 2, &obj1, &obj2)) SWIG_fail;
@@ -4761,13 +4629,14 @@ SWIGINTERN PyObject *_wrap_Context_set_cancel_func(PyObject *self, PyObject *arg
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_cancel_func" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) gp_context_set_cancel_func;
     arg2 = (GPContextCancelFunc) wrap_cancel_func;
   }
   {
+    Py_INCREF(obj2);
     _global_callbacks->data = obj2;
-    Py_INCREF(_global_callbacks->data);
     arg3 = _global_callbacks;
   }
   _GPContext_set_cancel_func(arg1,arg2,arg3);
@@ -4817,7 +4686,7 @@ SWIGINTERN PyObject *_wrap_Context_set_progress_funcs(PyObject *self, PyObject *
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) unset_progress_funcs;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "Context_set_progress_funcs", 4, 4, &obj1, &obj2, &obj3, &obj4)) SWIG_fail;
@@ -4830,8 +4699,9 @@ SWIGINTERN PyObject *_wrap_Context_set_progress_funcs(PyObject *self, PyObject *
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_progress_funcs" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) unset_progress_funcs;
     arg2 = (GPContextProgressStartFunc) py_progress_start;
   }
   {
@@ -4851,8 +4721,8 @@ SWIGINTERN PyObject *_wrap_Context_set_progress_funcs(PyObject *self, PyObject *
     arg4 = (GPContextProgressStopFunc) py_progress_stop;
   }
   {
+    Py_INCREF(obj4);
     _global_callbacks->data = obj4;
-    Py_INCREF(_global_callbacks->data);
     arg5 = _global_callbacks;
   }
   _GPContext_set_progress_funcs(arg1,arg2,arg3,arg4,arg5);
@@ -4898,7 +4768,7 @@ SWIGINTERN PyObject *_wrap_Context_set_status_func(PyObject *self, PyObject *arg
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) gp_context_set_status_func;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "Context_set_status_func", 2, 2, &obj1, &obj2)) SWIG_fail;
@@ -4911,13 +4781,14 @@ SWIGINTERN PyObject *_wrap_Context_set_status_func(PyObject *self, PyObject *arg
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_status_func" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) gp_context_set_status_func;
     arg2 = (GPContextStatusFunc) wrap_status_func;
   }
   {
+    Py_INCREF(obj2);
     _global_callbacks->data = obj2;
-    Py_INCREF(_global_callbacks->data);
     arg3 = _global_callbacks;
   }
   _GPContext_set_status_func(arg1,arg2,arg3);
@@ -4980,7 +4851,7 @@ SWIGINTERN PyObject *_wrap_gp_context_set_idle_func(PyObject *self, PyObject *ar
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) gp_context_set_idle_func;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "gp_context_set_idle_func", 3, 3, &obj0, &obj1, &obj2)) SWIG_fail;
@@ -4993,16 +4864,18 @@ SWIGINTERN PyObject *_wrap_gp_context_set_idle_func(PyObject *self, PyObject *ar
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "gp_context_set_idle_func" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) gp_context_set_idle_func;
     arg2 = (GPContextIdleFunc) wrap_idle_func;
   }
   {
+    Py_INCREF(obj2);
     _global_callbacks->data = obj2;
-    Py_INCREF(_global_callbacks->data);
     arg3 = _global_callbacks;
   }
   {
+    gp_context_ref(arg1);
     _global_callbacks->context = arg1;
   }
   gp_context_set_idle_func(arg1,arg2,arg3);
@@ -5053,7 +4926,7 @@ SWIGINTERN PyObject *_wrap_gp_context_set_progress_funcs(PyObject *self, PyObjec
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) unset_progress_funcs;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "gp_context_set_progress_funcs", 5, 5, &obj0, &obj1, &obj2, &obj3, &obj4)) SWIG_fail;
@@ -5066,8 +4939,9 @@ SWIGINTERN PyObject *_wrap_gp_context_set_progress_funcs(PyObject *self, PyObjec
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "gp_context_set_progress_funcs" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) unset_progress_funcs;
     arg2 = (GPContextProgressStartFunc) py_progress_start;
   }
   {
@@ -5087,11 +4961,12 @@ SWIGINTERN PyObject *_wrap_gp_context_set_progress_funcs(PyObject *self, PyObjec
     arg4 = (GPContextProgressStopFunc) py_progress_stop;
   }
   {
+    Py_INCREF(obj4);
     _global_callbacks->data = obj4;
-    Py_INCREF(_global_callbacks->data);
     arg5 = _global_callbacks;
   }
   {
+    gp_context_ref(arg1);
     _global_callbacks->context = arg1;
   }
   gp_context_set_progress_funcs(arg1,arg2,arg3,arg4,arg5);
@@ -5138,7 +5013,7 @@ SWIGINTERN PyObject *_wrap_gp_context_set_error_func(PyObject *self, PyObject *a
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) gp_context_set_error_func;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "gp_context_set_error_func", 3, 3, &obj0, &obj1, &obj2)) SWIG_fail;
@@ -5151,16 +5026,18 @@ SWIGINTERN PyObject *_wrap_gp_context_set_error_func(PyObject *self, PyObject *a
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "gp_context_set_error_func" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) gp_context_set_error_func;
     arg2 = (GPContextErrorFunc) wrap_error_func;
   }
   {
+    Py_INCREF(obj2);
     _global_callbacks->data = obj2;
-    Py_INCREF(_global_callbacks->data);
     arg3 = _global_callbacks;
   }
   {
+    gp_context_ref(arg1);
     _global_callbacks->context = arg1;
   }
   gp_context_set_error_func(arg1,arg2,arg3);
@@ -5207,7 +5084,7 @@ SWIGINTERN PyObject *_wrap_gp_context_set_status_func(PyObject *self, PyObject *
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) gp_context_set_status_func;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "gp_context_set_status_func", 3, 3, &obj0, &obj1, &obj2)) SWIG_fail;
@@ -5220,16 +5097,18 @@ SWIGINTERN PyObject *_wrap_gp_context_set_status_func(PyObject *self, PyObject *
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "gp_context_set_status_func" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) gp_context_set_status_func;
     arg2 = (GPContextStatusFunc) wrap_status_func;
   }
   {
+    Py_INCREF(obj2);
     _global_callbacks->data = obj2;
-    Py_INCREF(_global_callbacks->data);
     arg3 = _global_callbacks;
   }
   {
+    gp_context_ref(arg1);
     _global_callbacks->context = arg1;
   }
   gp_context_set_status_func(arg1,arg2,arg3);
@@ -5276,7 +5155,7 @@ SWIGINTERN PyObject *_wrap_gp_context_set_question_func(PyObject *self, PyObject
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) gp_context_set_question_func;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "gp_context_set_question_func", 3, 3, &obj0, &obj1, &obj2)) SWIG_fail;
@@ -5289,16 +5168,18 @@ SWIGINTERN PyObject *_wrap_gp_context_set_question_func(PyObject *self, PyObject
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "gp_context_set_question_func" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) gp_context_set_question_func;
     arg2 = (GPContextQuestionFunc) wrap_question_func;
   }
   {
+    Py_INCREF(obj2);
     _global_callbacks->data = obj2;
-    Py_INCREF(_global_callbacks->data);
     arg3 = _global_callbacks;
   }
   {
+    gp_context_ref(arg1);
     _global_callbacks->context = arg1;
   }
   gp_context_set_question_func(arg1,arg2,arg3);
@@ -5345,7 +5226,7 @@ SWIGINTERN PyObject *_wrap_gp_context_set_cancel_func(PyObject *self, PyObject *
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) gp_context_set_cancel_func;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "gp_context_set_cancel_func", 3, 3, &obj0, &obj1, &obj2)) SWIG_fail;
@@ -5358,16 +5239,18 @@ SWIGINTERN PyObject *_wrap_gp_context_set_cancel_func(PyObject *self, PyObject *
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "gp_context_set_cancel_func" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) gp_context_set_cancel_func;
     arg2 = (GPContextCancelFunc) wrap_cancel_func;
   }
   {
+    Py_INCREF(obj2);
     _global_callbacks->data = obj2;
-    Py_INCREF(_global_callbacks->data);
     arg3 = _global_callbacks;
   }
   {
+    gp_context_ref(arg1);
     _global_callbacks->context = arg1;
   }
   gp_context_set_cancel_func(arg1,arg2,arg3);
@@ -5414,7 +5297,7 @@ SWIGINTERN PyObject *_wrap_gp_context_set_message_func(PyObject *self, PyObject 
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) gp_context_set_message_func;
+    _global_callbacks->remove = NULL;
   }
   (void)self;
   if (!PyArg_UnpackTuple(args, "gp_context_set_message_func", 3, 3, &obj0, &obj1, &obj2)) SWIG_fail;
@@ -5427,16 +5310,18 @@ SWIGINTERN PyObject *_wrap_gp_context_set_message_func(PyObject *self, PyObject 
     if (!PyCallable_Check(obj1)) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "gp_context_set_message_func" "', argument " "2"" of type '" "callable""'");
     }
+    Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
-    Py_INCREF(_global_callbacks->func_1);
+    _global_callbacks->remove = (RemoveFunc) gp_context_set_message_func;
     arg2 = (GPContextMessageFunc) wrap_message_func;
   }
   {
+    Py_INCREF(obj2);
     _global_callbacks->data = obj2;
-    Py_INCREF(_global_callbacks->data);
     arg3 = _global_callbacks;
   }
   {
+    gp_context_ref(arg1);
     _global_callbacks->context = arg1;
   }
   gp_context_set_message_func(arg1,arg2,arg3);
@@ -5559,14 +5444,8 @@ static PyMethodDef SwigMethods[] = {
 };
 
 static SwigPyGetSet CallbackDetails___dict___getset = { SwigPyObject_get___dict__, 0 };
-static SwigPyGetSet CallbackDetails_func_1_getset = { _wrap_CallbackDetails_func_1_get, _wrap_CallbackDetails_func_1_set };
-static SwigPyGetSet CallbackDetails_func_2_getset = { _wrap_CallbackDetails_func_2_get, _wrap_CallbackDetails_func_2_set };
-static SwigPyGetSet CallbackDetails_func_3_getset = { _wrap_CallbackDetails_func_3_get, _wrap_CallbackDetails_func_3_set };
 SWIGINTERN PyGetSetDef SwigPyBuiltin__CallbackDetails_getset[] = {
-    { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"func_1", &CallbackDetails___dict___getset },
-    { (char *)"func_1", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"func_1", &CallbackDetails_func_1_getset },
-    { (char *)"func_2", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"func_2", &CallbackDetails_func_2_getset },
-    { (char *)"func_3", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"func_3", &CallbackDetails_func_3_getset },
+    { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"~CallbackDetails", &CallbackDetails___dict___getset },
     { NULL, NULL, NULL, NULL, NULL } /* Sentinel */
 };
 

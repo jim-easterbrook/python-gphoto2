@@ -44,7 +44,9 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
 // Structs to store callback details
 %ignore CallbackDetails::context;
-%ignore CallbackDetails::func;
+%ignore CallbackDetails::func_1;
+%ignore CallbackDetails::func_2;
+%ignore CallbackDetails::func_3;
 %ignore CallbackDetails::data;
 %ignore CallbackDetails::remove;
 %ignore del_CallbackDetails;
@@ -70,8 +72,10 @@ static void unset_progress_funcs(GPContext *context,
 
 // Destructor
 static int del_CallbackDetails(struct CallbackDetails *this) {
-    if (this->context)
+    if (this->context && this->remove) {
         this->remove(this->context, NULL, NULL);
+        gp_context_unref(this->context);
+    }
     Py_XDECREF(this->func_1);
     Py_XDECREF(this->func_2);
     Py_XDECREF(this->func_3);
@@ -185,21 +189,7 @@ CB_WRAPPER(void, py_progress_stop, (GPContext *context, unsigned int id, void *d
            this->func_3)
 
 // Typemaps for all callback setting functions
-%typemap(in) void *data {
-    _global_callbacks->data = $input;
-    Py_INCREF(_global_callbacks->data);
-    $1 = _global_callbacks;
-}
-%typemap(doc) void *data "$1_name: object"
-
-%typemap(check) GPContext *context {
-    _global_callbacks->context = $1;
-}
-
-// Macro to define typemaps for the six single callback function variants
-%define SINGLE_CALLBACK_FUNCTION(cb_func_type, remove_func, cb_wrapper)
-
-%typemap(arginit) cb_func_type (CallbackDetails *_global_callbacks) {
+%typemap(arginit) void *data (CallbackDetails *_global_callbacks) {
     _global_callbacks = malloc(sizeof(CallbackDetails));
     if (!_global_callbacks) {
         PyErr_SetNone(PyExc_MemoryError);
@@ -210,27 +200,44 @@ CB_WRAPPER(void, py_progress_stop, (GPContext *context, unsigned int id, void *d
     _global_callbacks->func_2 = NULL;
     _global_callbacks->func_3 = NULL;
     _global_callbacks->data = NULL;
-    _global_callbacks->remove = (RemoveFunc) remove_func;
+    _global_callbacks->remove = NULL;
 }
-%typemap(freearg) cb_func_type {
+%typemap(freearg) void *data {
     if (_global_callbacks)
         del_CallbackDetails(_global_callbacks);
 }
-%typemap(in) cb_func_type {
-    if (!PyCallable_Check($input)) {
-        %argument_fail(SWIG_TypeError, callable, $symname, $argnum);
-    }
-    _global_callbacks->func_1 = $input;
-    Py_INCREF(_global_callbacks->func_1);
-    $1 = (cb_func_type) cb_wrapper;
+%typemap(in) void *data {
+    Py_INCREF($input);
+    _global_callbacks->data = $input;
+    $1 = _global_callbacks;
 }
-%typemap(doc) cb_func_type "$1_name: callable function"
+%typemap(doc) void *data "$1_name: object"
 
-%typemap(argout) cb_func_type {
+%typemap(argout) void *data {
     $result = SWIG_Python_AppendOutput($result,
         SWIG_NewPointerObj(_global_callbacks, $descriptor(CallbackDetails*), SWIG_POINTER_OWN));
     _global_callbacks = NULL;
 }
+
+%typemap(check) GPContext *context {
+    gp_context_ref($1);
+    _global_callbacks->context = $1;
+}
+
+// Macro to define typemaps for the six single callback function variants
+%define SINGLE_CALLBACK_FUNCTION(cb_func_type, remove_func, cb_wrapper)
+
+%typemap(in) cb_func_type {
+    if (!PyCallable_Check($input)) {
+        %argument_fail(SWIG_TypeError, callable, $symname, $argnum);
+    }
+    Py_INCREF($input);
+    _global_callbacks->func_1 = $input;
+    _global_callbacks->remove = (RemoveFunc) remove_func;
+    $1 = (cb_func_type) cb_wrapper;
+}
+
+%typemap(doc) cb_func_type "$1_name: callable function"
 
 %enddef // SINGLE_CALLBACK_FUNCTION
 
@@ -261,8 +268,6 @@ SINGLE_CALLBACK_FUNCTION(GPContextProgressStartFunc,
     Py_INCREF(_global_callbacks->func_2);
     $1 = (GPContextProgressUpdateFunc) py_progress_update;
 }
-%typemap(doc) GPContextProgressUpdateFunc "$1_name: callable function"
-
 %typemap(in) GPContextProgressStopFunc {
     if (!PyCallable_Check($input)) {
         %argument_fail(SWIG_TypeError, callable, $symname, $argnum);
@@ -271,7 +276,8 @@ SINGLE_CALLBACK_FUNCTION(GPContextProgressStartFunc,
     Py_INCREF(_global_callbacks->func_3);
     $1 = (GPContextProgressStopFunc) py_progress_stop;
 }
-%typemap(doc) GPContextProgressStopFunc "$1_name: callable function"
+%typemap(doc) GPContextProgressUpdateFunc, GPContextProgressStopFunc
+    "$1_name: callable function"
 
 #endif //ifndef SWIGIMPORTED
 

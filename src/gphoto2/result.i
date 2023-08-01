@@ -25,6 +25,8 @@
 %pythoncode %{
 import logging
 
+from gphoto2 import GPhoto2Error
+
 # user adjustable check_result lookup table
 error_severity = {
     GP_ERROR_CANCEL           : logging.INFO,
@@ -58,7 +60,7 @@ def check_result(result):
     if error in error_severity:
         severity = error_severity[error]
     if severity >= error_exception:
-        raise gphoto2.GPhoto2Error(error)
+        raise GPhoto2Error(error)
     _return_logger.log(severity, '[%d] %s', error, gp_result_as_string(error))
     return result
 %}

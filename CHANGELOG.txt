@@ -16,8 +16,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 Changes in 2.4.0:
-  */ API change! gp_file_open no longer creates CameraFile object. It's now
+  */ API change! gp_file_open no longer creates CameraFile object. It is now
      consistent with the C API.
+  */ Deprecated functions: gp_abilities_list_append, gp_list_populate,
+     gp_port_info_list_append, gp_widget_add_choice, gp_widget_set_info,
+     gp_widget_set_name, gp_widget_set_range, gp_widget_set_readonly.
+     These will be removed in a future release.
 
 Changes in 2.3.6:
   1/ Use libusb1 instead of libusb0 in Linux binary wheels.

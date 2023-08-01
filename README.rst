@@ -276,6 +276,14 @@ The callback function is installed with ``gp_log_add_func``:
     callback_obj2 = gp.check_result(gp.gp_log_add_func(gp.GP_LOG_VERBOSE, callback, 123))
     ...
 
+Deprecated functions
+--------------------
+
+Some functions are intended for use by camera drivers and should not have been included in the Python interface.
+They will be removed in a future release.
+During testing you should run your software with Python's ``-Wd`` flag to show the warnings issued if you use any of the deprecated functions.
+Please contact me if you have reason to believe a deprecated function should not be removed.
+
 What to do if you have a problem
 --------------------------------
 

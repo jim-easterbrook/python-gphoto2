@@ -4567,8 +4567,12 @@ SWIGINTERN PyObject *_wrap_PortInfoList_append(PyObject *self, PyObject *args) {
   }
   arg2 = (GPPortInfo)(argp2);
   {
+    if (PyErr_WarnEx(PyExc_DeprecationWarning,"_GPPortInfoList::append"" is deprecated and"
+        " will be removed in a future release", 1) < 0) SWIG_fail;
     _GPPortInfoList_append(arg1,arg2);
+    
     if (PyErr_Occurred()) SWIG_fail;
+    
   }
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -4906,7 +4910,14 @@ SWIGINTERN PyObject *_wrap_gp_port_info_list_append(PyObject *self, PyObject *ar
     SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gp_port_info_list_append" "', argument " "2"" of type '" "GPPortInfo""'"); 
   }
   arg2 = (GPPortInfo)(argp2);
-  result = (int)gp_port_info_list_append(arg1,arg2);
+  {
+    if (PyErr_WarnEx(PyExc_DeprecationWarning,"gp_port_info_list_append"" is deprecated and"
+        " will be removed in a future release", 1) < 0) SWIG_fail;
+    result = (int)gp_port_info_list_append(arg1,arg2);
+    
+    
+    
+  }
   resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
@@ -5223,27 +5234,7 @@ static PyMethodDef SwigMethods[] = {
 		"list: gphoto2.GPPortInfoList\n"
 		"info: gphoto2.GPPortInfo\n"
 		"\n"
-		"Append a portinfo to the port information list.  \n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"* `list` :  \n"
-		"    a #GPPortInfoList  \n"
-		"* `info` :  \n"
-		"    the info to append  \n"
-		"\n"
-		"Appends an entry to the list. This function is typically called by an\n"
-		"io-driver during #gp_port_library_list. If you leave info.name blank,\n"
-		"gp_port_info_list_lookup_path will try to match non-existent paths\n"
-		"against info.path and - if successful - will append this entry to the\n"
-		"list.  \n"
-		"\n"
-		"Returns\n"
-		"-------\n"
-		"A gphoto2 error code, or an index into the port list (excluding generic\n"
-		"entries). which can be used for gp_port_info_list_get_info.\n"
-		"\n"
-		"See also gphoto2.PortInfoList.append\n"
+		"This function is deprecated and will be removed in a future release.\n"
 		""},
 	 { "gp_port_info_list_load", _wrap_gp_port_info_list_load, METH_VARARGS, "\n"
 		"gp_port_info_list_load(list) -> int\n"
@@ -5786,27 +5777,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfoList_methods[] = {
 		"----------\n"
 		"info: gphoto2.GPPortInfo\n"
 		"\n"
-		"Append a portinfo to the port information list.  \n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"* `list` :  \n"
-		"    a #GPPortInfoList  \n"
-		"* `info` :  \n"
-		"    the info to append  \n"
-		"\n"
-		"Appends an entry to the list. This function is typically called by an\n"
-		"io-driver during #gp_port_library_list. If you leave info.name blank,\n"
-		"gp_port_info_list_lookup_path will try to match non-existent paths\n"
-		"against info.path and - if successful - will append this entry to the\n"
-		"list.  \n"
-		"\n"
-		"Returns\n"
-		"-------\n"
-		"A gphoto2 error code, or an index into the port list (excluding generic\n"
-		"entries). which can be used for gp_port_info_list_get_info.\n"
-		"\n"
-		"See also gphoto2.gp_port_info_list_append\n"
+		"This function is deprecated and will be removed in a future release.\n"
 		"" },
   { "load", _wrap_PortInfoList_load, METH_VARARGS, "\n"
 		"load(self)\n"

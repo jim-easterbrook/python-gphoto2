@@ -21,6 +21,10 @@
 
 %rename(PortInfoList) _GPPortInfoList;
 
+// Deprecate some functions intended for camera drivers
+DEPRECATED(gp_port_info_list_append,)
+DEPRECATED(_GPPortInfoList::append, 1)
+
 %typemap(in, numinputs=0) GPPortInfo * (GPPortInfo temp) {
   temp = NULL;
   $1 = &temp;

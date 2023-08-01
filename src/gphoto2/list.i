@@ -21,6 +21,10 @@
 
 %rename(CameraList) _CameraList;
 
+// Deprecate some functions intended for camera drivers
+DEPRECATED(gp_list_populate,)
+DEPRECATED(_CameraList::populate, 1)
+
 // Make docstring parameter types more Pythonic
 %typemap(doc) CameraList * "$1_name: gphoto2.$*1_type"
 

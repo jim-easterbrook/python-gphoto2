@@ -22,7 +22,7 @@ import gphoto2 as gp
 
 
 class TestList(unittest.TestCase):
-    def test_list(self):
+    def test_oo_style(self):
         test_list = gp.CameraList()
         self.assertIsInstance(test_list, gp.CameraList)
         self.assertEqual(len(test_list), 0)
@@ -38,7 +38,7 @@ class TestList(unittest.TestCase):
         with self.assertRaises(gp.GPhoto2Error) as cm:
             test_list.find_by_name('C')
         ex = cm.exception
-        self.assertEqual(ex.code, -1)
+        self.assertEqual(ex.code, gp.GP_ERROR)
         test_list.sort()
         self.assertEqual(test_list.get_name(0), 'A')
         self.assertEqual(test_list.get_value(0), '1')
@@ -48,6 +48,32 @@ class TestList(unittest.TestCase):
         self.assertEqual(test_list.get_value(0), '3')
         test_list.reset()
         self.assertEqual(len(test_list), 0)
+
+    def test_c_style(self):
+        OK, test_list = gp.gp_list_new()
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertIsInstance(test_list, gp.CameraList)
+        self.assertEqual(gp.gp_list_count(test_list), 0)
+        self.assertEqual(gp.gp_list_append(test_list, 'B', '2'), gp.GP_OK)
+        self.assertEqual(gp.gp_list_append(test_list, 'A', '1'), gp.GP_OK)
+        self.assertEqual(gp.gp_list_count(test_list), 2)
+        self.assertEqual(gp.gp_list_get_name(test_list, 0), [gp.GP_OK, 'B'])
+        self.assertEqual(gp.gp_list_get_value(test_list, 0), [gp.GP_OK, '2'])
+        self.assertEqual(gp.gp_list_get_name(test_list, 1), [gp.GP_OK, 'A'])
+        self.assertEqual(gp.gp_list_get_value(test_list, 1), [gp.GP_OK, '1'])
+        self.assertEqual(gp.gp_list_find_by_name(test_list, 'B'), [gp.GP_OK, 0])
+        self.assertEqual(gp.gp_list_find_by_name(test_list, 'A'), [gp.GP_OK, 1])
+        self.assertEqual(
+            gp.gp_list_find_by_name(test_list, 'C'), [gp.GP_ERROR, 0])
+        self.assertEqual(gp.gp_list_sort(test_list), gp.GP_OK)
+        self.assertEqual(gp.gp_list_get_name(test_list, 0), [gp.GP_OK, 'A'])
+        self.assertEqual(gp.gp_list_get_value(test_list, 0), [gp.GP_OK, '1'])
+        self.assertEqual(gp.gp_list_set_name(test_list, 0, 'C'), gp.GP_OK)
+        self.assertEqual(gp.gp_list_set_value(test_list, 0, '3'), gp.GP_OK)
+        self.assertEqual(gp.gp_list_get_name(test_list, 0), [gp.GP_OK, 'C'])
+        self.assertEqual(gp.gp_list_get_value(test_list, 0), [gp.GP_OK, '3'])
+        self.assertEqual(gp.gp_list_reset(test_list), gp.GP_OK)
+        self.assertEqual(gp.gp_list_count(test_list), 0)
 
 
 if __name__ == "__main__":

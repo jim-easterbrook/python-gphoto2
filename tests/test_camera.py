@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
+import time
 import unittest
 
 os.environ['VCAMERADIR'] = os.path.join(os.path.dirname(__file__), 'vcamera')
@@ -90,15 +91,6 @@ class TestVirtualCamera(unittest.TestCase):
         self.camera.exit()
 
     def test_oo_style(self):
-        def list_config(widget):
-            label = '{} ({})'.format(widget.get_label(), widget.get_name())
-            result = [label]
-            widget_type = widget.get_type()
-            if widget_type in (gp.GP_WIDGET_WINDOW, gp.GP_WIDGET_SECTION):
-                for child in widget.get_children():
-                    result += list_config(child)
-            return result
-
         def list_files(path='/'):
             result = []
             # get files
@@ -116,12 +108,27 @@ class TestVirtualCamera(unittest.TestCase):
         # get_summary
         text = str(self.camera.get_summary())
         self.assertTrue(text.startswith('Manufacturer'))
+        # get manual
+        with self.assertRaises(gp.GPhoto2Error) as cm:
+            manual = self.camera.get_manual()
+        ex = cm.exception
+        self.assertEqual(ex.code, gp.GP_ERROR_NOT_SUPPORTED)
+        # get storage info
+        storage_info = self.camera.get_storageinfo()
+        self.assertEqual(len(storage_info), 1)
+        storage_info = storage_info[0]
+        self.assertIsInstance(storage_info, gp.CameraStorageInformation)
         # get_config
         widget = self.camera.get_config()
-        config_list = list_config(widget)
-        self.assertEqual(len(config_list), 31)
-        self.assertEqual(
-            config_list[0], 'Camera and Driver Configuration (main)')
+        self.assertIsInstance(widget, gp.CameraWidget)
+        self.camera.set_config(widget)
+        # get single config
+        widget = self.camera.get_single_config('thumbsize')
+        self.assertIsInstance(widget, gp.CameraWidget)
+        self.camera.set_single_config('thumbsize', widget)
+        # list config
+        config_list = self.camera.list_config()
+        self.assertEqual(len(config_list), 68)
         # list_files
         files = list_files()
         self.assertEqual(files[0], '/store_00010001/copyright-free-image.jpg')
@@ -130,6 +137,12 @@ class TestVirtualCamera(unittest.TestCase):
             '/store_00010001', 'copyright-free-image.jpg',
             gp.GP_FILE_TYPE_NORMAL)
         self.assertIsInstance(file, gp.CameraFile)
+        # file put
+        with self.assertRaises(gp.GPhoto2Error) as cm:
+            self.camera.folder_put_file('/store_00010001', 'uploaded.jpg',
+                                        gp.GP_FILE_TYPE_NORMAL, file)
+        ex = cm.exception
+        self.assertEqual(ex.code, gp.GP_ERROR_NOT_SUPPORTED)
         # file_read
         buffer = bytearray(10)
         with self.assertRaises(gp.GPhoto2Error) as cm:
@@ -142,36 +155,69 @@ class TestVirtualCamera(unittest.TestCase):
         path = self.camera.capture(gp.GP_CAPTURE_IMAGE)
         self.assertRegex(path.name, 'GPH_\d{4}.JPG')
         self.assertRegex(path.folder, '/store_00010001/DCIM/\d{3}GPHOT')
-        info = self.camera.file_get_info(path.folder, path.name).file
-        self.assertEqual(info.size, 7082)
-        self.assertEqual(info.type, 'image/jpeg')
+        info = self.camera.file_get_info(path.folder, path.name)
+        self.assertEqual(info.file.size, 7082)
+        self.assertEqual(info.file.type, 'image/jpeg')
         # width and height are zero as test image has no exif info
-        self.assertEqual(info.width, 0)
-        self.assertEqual(info.height, 0)
-        # delete file
-        self.camera.file_delete(path.folder, path.name)
+        self.assertEqual(info.file.width, 0)
+        self.assertEqual(info.file.height, 0)
+        # file set info
+        new_info = gp.CameraFileInfo()
+        new_info.preview.fields = gp.GP_FILE_INFO_NONE
+        new_info.audio.fields = gp.GP_FILE_INFO_NONE
+        new_info.file.fields = gp.GP_FILE_INFO_MTIME
+        new_info.file.mtime = int(time.time())
+        self.camera.file_set_info(path.folder, path.name, new_info)
         # capture preview
         with self.assertRaises(gp.GPhoto2Error) as cm:
-            self.camera.capture_preview()
+            preview_file = self.camera.capture_preview()
         ex = cm.exception
         self.assertEqual(ex.code, gp.GP_ERROR_NOT_SUPPORTED)
+        # trigger capture
+        self.camera.trigger_capture()
+        # wait for event
+        while True:
+            event_type, event_data = self.camera.wait_for_event(100)
+            if event_type in (gp.GP_EVENT_TIMEOUT,
+                              gp.GP_EVENT_CAPTURE_COMPLETE):
+                break
+            if event_type in (gp.GP_EVENT_FILE_ADDED,
+                              gp.GP_EVENT_FOLDER_ADDED):
+                self.assertIsInstance(event_data, gp.CameraFilePath)
+        # delete file(s)
+        self.camera.file_delete(path.folder, path.name)
+        self.camera.folder_delete_all(path.folder)
+        # create folder
+        folder, name = '/store_00010001', 'new folder'
+        with self.assertRaises(gp.GPhoto2Error) as cm:
+            self.camera.folder_make_dir(folder, name)
+        ex = cm.exception
+        self.assertEqual(ex.code, gp.GP_ERROR_NOT_SUPPORTED)
+        # delete folder
+        with self.assertRaises(gp.GPhoto2Error) as cm:
+            self.camera.folder_remove_dir(folder, name)
+        ex = cm.exception
+        self.assertEqual(ex.code, gp.GP_ERROR_DIRECTORY_NOT_FOUND)
+        # port info
+        info = self.camera.get_port_info()
+        self.assertIsInstance(info, gp.PortInfo)
+        with self.assertRaises(gp.GPhoto2Error) as cm:
+            self.camera.set_port_info(info)
+        ex = cm.exception
+        self.assertEqual(ex.code, gp.GP_ERROR_LIBRARY)
+        # port speed
+        speed = self.camera.get_port_speed()
+        self.assertEqual(speed, 0)
+        with self.assertRaises(gp.GPhoto2Error) as cm:
+            self.camera.set_port_speed(0)
+        ex = cm.exception
+        self.assertEqual(ex.code, gp.GP_ERROR_BAD_PARAMETERS)
+        # abilities list
+        abilities = self.camera.get_abilities()
+        self.assertIsInstance(abilities, gp.CameraAbilities)
+        self.camera.set_abilities(abilities)
 
     def test_c_style(self):
-        def list_config(widget):
-            OK, label = gp.gp_widget_get_label(widget)
-            self.assertEqual(OK, gp.GP_OK)
-            OK, name = gp.gp_widget_get_name(widget)
-            self.assertEqual(OK, gp.GP_OK)
-            result = ['{} ({})'.format(label, name)]
-            OK, widget_type = gp.gp_widget_get_type(widget)
-            self.assertEqual(OK, gp.GP_OK)
-            if widget_type in (gp.GP_WIDGET_WINDOW, gp.GP_WIDGET_SECTION):
-                for idx in range(gp.gp_widget_count_children(widget)):
-                    OK, child = gp.gp_widget_get_child(widget, idx)
-                    self.assertEqual(OK, gp.GP_OK)
-                    result += list_config(child)
-            return result
-
         def list_files(path='/'):
             result = []
             # get files
@@ -199,13 +245,30 @@ class TestVirtualCamera(unittest.TestCase):
         OK, text = gp.gp_camera_get_summary(self.camera)
         self.assertEqual(OK, gp.GP_OK)
         self.assertTrue(text.text.startswith('Manufacturer'))
+        # get manual
+        OK, manual = gp.gp_camera_get_manual(self.camera)
+        self.assertEqual(OK, gp.GP_ERROR_NOT_SUPPORTED)
+        # get storage info
+        OK, storage_info = gp.gp_camera_get_storageinfo(self.camera)
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertEqual(len(storage_info), 1)
+        storage_info = storage_info[0]
+        self.assertIsInstance(storage_info, gp.CameraStorageInformation)
         # get_config
         OK, widget = gp.gp_camera_get_config(self.camera)
         self.assertEqual(OK, gp.GP_OK)
-        config_list = list_config(widget)
-        self.assertEqual(len(config_list), 31)
-        self.assertEqual(
-            config_list[0], 'Camera and Driver Configuration (main)')
+        self.assertIsInstance(widget, gp.CameraWidget)
+        self.assertEqual(gp.gp_camera_set_config(self.camera, widget), gp.GP_OK)
+        # get single config
+        OK, widget = gp.gp_camera_get_single_config(self.camera, 'thumbsize')
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertIsInstance(widget, gp.CameraWidget)
+        self.assertEqual(gp.gp_camera_set_single_config(
+            self.camera, 'thumbsize', widget), gp.GP_OK)
+        # list config
+        OK, config_list = gp.gp_camera_list_config(self.camera)
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertEqual(gp.gp_list_count(config_list), 68)
         # list_files
         files = list_files()
         self.assertEqual(files[0], '/store_00010001/copyright-free-image.jpg')
@@ -215,6 +278,12 @@ class TestVirtualCamera(unittest.TestCase):
             gp.GP_FILE_TYPE_NORMAL)
         self.assertEqual(OK, gp.GP_OK)
         self.assertIsInstance(file, gp.CameraFile)
+        # file put
+        self.assertEqual(
+            gp.gp_camera_folder_put_file(
+                self.camera, '/store_00010001', 'uploaded.jpg',
+                gp.GP_FILE_TYPE_NORMAL, file),
+            gp.GP_ERROR_NOT_SUPPORTED)
         # file_read
         buffer = bytearray(10)
         OK, data = gp.gp_camera_file_read(
@@ -229,18 +298,67 @@ class TestVirtualCamera(unittest.TestCase):
         OK, info = gp.gp_camera_file_get_info(
             self.camera, path.folder, path.name)
         self.assertEqual(OK, gp.GP_OK)
-        info = info.file
-        self.assertEqual(info.size, 7082)
-        self.assertEqual(info.type, 'image/jpeg')
+        self.assertEqual(info.file.size, 7082)
+        self.assertEqual(info.file.type, 'image/jpeg')
         # width and height are zero as test image has no exif info
-        self.assertEqual(info.width, 0)
-        self.assertEqual(info.height, 0)
-        # delete file
+        self.assertEqual(info.file.width, 0)
+        self.assertEqual(info.file.height, 0)
+        # file set info
+        new_info = gp.CameraFileInfo()
+        new_info.preview.fields = gp.GP_FILE_INFO_NONE
+        new_info.audio.fields = gp.GP_FILE_INFO_NONE
+        new_info.file.fields = gp.GP_FILE_INFO_MTIME
+        new_info.file.mtime = int(time.time())
+        OK = gp.gp_camera_file_set_info(
+            self.camera, path.folder, path.name, new_info)
+        self.assertEqual(OK, gp.GP_OK)
+        # capture preview
+        OK, preview_file = gp.gp_camera_capture_preview(self.camera)
+        self.assertEqual(OK, gp.GP_ERROR_NOT_SUPPORTED)
+        # trigger capture
+        self.assertEqual(gp.gp_camera_trigger_capture(self.camera), gp.GP_OK)
+        # wait for event
+        while True:
+            OK, event_type, event_data = gp.gp_camera_wait_for_event(
+                self.camera, 100)
+            self.assertEqual(OK, gp.GP_OK)
+            if event_type in (gp.GP_EVENT_TIMEOUT,
+                              gp.GP_EVENT_CAPTURE_COMPLETE):
+                break
+            if event_type in (gp.GP_EVENT_FILE_ADDED,
+                              gp.GP_EVENT_FOLDER_ADDED):
+                self.assertIsInstance(event_data, gp.CameraFilePath)
+        # delete file(s)
         self.assertEqual(gp.gp_camera_file_delete(
             self.camera, path.folder, path.name), gp.GP_OK)
-        # capture preview
-        OK, path = gp.gp_camera_capture_preview(self.camera)
-        self.assertEqual(OK, gp.GP_ERROR_NOT_SUPPORTED)
+        self.assertEqual(gp.gp_camera_folder_delete_all(
+            self.camera, path.folder), gp.GP_OK)
+        # create folder
+        folder, name = '/store_00010001', 'new folder'
+        self.assertEqual(
+            gp.gp_camera_folder_make_dir(self.camera, folder, name),
+            gp.GP_ERROR_NOT_SUPPORTED)
+        # delete folder
+        self.assertEqual(
+            gp.gp_camera_folder_remove_dir(self.camera, folder, name),
+            gp.GP_ERROR_DIRECTORY_NOT_FOUND)
+        # port info
+        OK, info = gp.gp_camera_get_port_info(self.camera)
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertIsInstance(info, gp.PortInfo)
+        self.assertEqual(
+            gp.gp_camera_set_port_info(self.camera, info), gp.GP_ERROR_LIBRARY)
+        # port speed
+        speed = gp.gp_camera_get_port_speed(self.camera)
+        self.assertEqual(speed, 0)
+        self.assertEqual(gp.gp_camera_set_port_speed(self.camera, 0),
+                         gp.GP_ERROR_BAD_PARAMETERS)
+        # abilities list
+        OK, abilities = gp.gp_camera_get_abilities(self.camera)
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertIsInstance(abilities, gp.CameraAbilities)
+        self.assertEqual(
+            gp.gp_camera_set_abilities(self.camera, abilities), gp.GP_OK)
 
 
 if __name__ == "__main__":

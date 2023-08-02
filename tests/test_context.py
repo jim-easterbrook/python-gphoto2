@@ -69,7 +69,7 @@ class TestContext(unittest.TestCase):
         self.callback_count['cb_progress_stop'] += 1
         self.assertEqual(id_, 123)
 
-    def test_context(self):
+    def test_oo_style(self):
         self.callback_count = defaultdict(int)
         context = gp.Context()
         # set callbacks
@@ -91,8 +91,8 @@ class TestContext(unittest.TestCase):
         # call some camera functions which may invoke some callbacks
         text = camera.get_summary(context)
         config = camera.get_config(context)
-        path = camera.capture(gp.GP_CAPTURE_IMAGE)
-        info = camera.file_get_info(path.folder, path.name).file
+        path = camera.capture(gp.GP_CAPTURE_IMAGE, context)
+        info = camera.file_get_info(path.folder, path.name, context)
         # all done
         camera.exit(context)
         del callbacks
@@ -100,7 +100,53 @@ class TestContext(unittest.TestCase):
         self.assertEqual(self.callback_count['cb_progress_start'], 1)
         self.assertEqual(self.callback_count['cb_progress_stop'], 1)
         self.assertEqual(self.callback_count['cb_progress_update'], 20)
-        self.assertEqual(self.callback_count['cb_cancel'], 20)
+        self.assertEqual(self.callback_count['cb_cancel'], 30)
+
+    def test_c_style(self):
+        self.callback_count = defaultdict(int)
+        context = gp.gp_context_new()
+        # set callbacks
+        callbacks = []
+        callbacks.append(
+            gp.gp_context_set_idle_func(context, self.cb_idle, 'A'))
+        callbacks.append(
+            gp.gp_context_set_error_func(context, self.cb_error, 'B'))
+        callbacks.append(
+            gp.gp_context_set_status_func(context, self.cb_status, 'C'))
+        callbacks.append(
+            gp.gp_context_set_message_func(context, self.cb_message, 'D'))
+        callbacks.append(
+            gp.gp_context_set_question_func(context, self.cb_question, 'E'))
+        callbacks.append(
+            gp.gp_context_set_cancel_func(context, self.cb_cancel, 'F'))
+        callbacks.append(
+            gp.gp_context_set_progress_funcs(
+                context, self.cb_progress_start, self.cb_progress_update,
+                self.cb_progress_stop, 'G'))
+        for cb in callbacks:
+            self.assertIsInstance(cb, gp.CallbackDetails)
+        # create a virtual camera
+        OK, camera = gp.gp_camera_new()
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertEqual(gp.gp_camera_init(camera, context), gp.GP_OK)
+        # call some camera functions which may invoke some callbacks
+        OK, text = gp.gp_camera_get_summary(camera, context)
+        self.assertEqual(OK, gp.GP_OK)
+        OK, config = gp.gp_camera_get_config(camera, context)
+        self.assertEqual(OK, gp.GP_OK)
+        OK, path = gp.gp_camera_capture(camera, gp.GP_CAPTURE_IMAGE, context)
+        self.assertEqual(OK, gp.GP_OK)
+        OK, info = gp.gp_camera_file_get_info(
+            camera, path.folder, path.name, context)
+        self.assertEqual(OK, gp.GP_OK)
+        # all done
+        self.assertEqual(gp.gp_camera_exit(camera, context), gp.GP_OK)
+        del callbacks
+        # check result
+        self.assertEqual(self.callback_count['cb_progress_start'], 1)
+        self.assertEqual(self.callback_count['cb_progress_stop'], 1)
+        self.assertEqual(self.callback_count['cb_progress_update'], 20)
+        self.assertEqual(self.callback_count['cb_cancel'], 30)
 
 
 if __name__ == "__main__":

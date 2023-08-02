@@ -3787,25 +3787,22 @@ SwigPyBuiltin_iternextfunc_closure(SwigPyWrapperFunction wrapper, PyObject *a) {
 #define SWIGTYPE_p__GPPortInfo swig_types[38]
 #define SWIGTYPE_p__GPPortInfoList swig_types[39]
 #define SWIGTYPE_p_char swig_types[40]
-#define SWIGTYPE_p_f_p_struct__Camera_p_struct__GPContext__int swig_types[41]
-#define SWIGTYPE_p_f_p_struct__Camera_unsigned_int_p_f_p_struct__Camera_p_struct__GPContext__int_p_void__unsigned_int swig_types[42]
-#define SWIGTYPE_p_f_p_struct__Camera_unsigned_int_p_void__void swig_types[43]
-#define SWIGTYPE_p_int swig_types[44]
-#define SWIGTYPE_p_long swig_types[45]
-#define SWIGTYPE_p_long_long swig_types[46]
-#define SWIGTYPE_p_p__Camera swig_types[47]
-#define SWIGTYPE_p_p__CameraStorageInformation swig_types[48]
-#define SWIGTYPE_p_p__CameraWidget swig_types[49]
-#define SWIGTYPE_p_p__GPPortInfo swig_types[50]
-#define SWIGTYPE_p_p_void swig_types[51]
-#define SWIGTYPE_p_short swig_types[52]
-#define SWIGTYPE_p_signed_char swig_types[53]
-#define SWIGTYPE_p_unsigned_char swig_types[54]
-#define SWIGTYPE_p_unsigned_int swig_types[55]
-#define SWIGTYPE_p_unsigned_long_long swig_types[56]
-#define SWIGTYPE_p_unsigned_short swig_types[57]
-static swig_type_info *swig_types[59];
-static swig_module_info swig_module = {swig_types, 58, 0, 0, 0, 0};
+#define SWIGTYPE_p_int swig_types[41]
+#define SWIGTYPE_p_long swig_types[42]
+#define SWIGTYPE_p_long_long swig_types[43]
+#define SWIGTYPE_p_p__Camera swig_types[44]
+#define SWIGTYPE_p_p__CameraStorageInformation swig_types[45]
+#define SWIGTYPE_p_p__CameraWidget swig_types[46]
+#define SWIGTYPE_p_p__GPPortInfo swig_types[47]
+#define SWIGTYPE_p_p_void swig_types[48]
+#define SWIGTYPE_p_short swig_types[49]
+#define SWIGTYPE_p_signed_char swig_types[50]
+#define SWIGTYPE_p_unsigned_char swig_types[51]
+#define SWIGTYPE_p_unsigned_int swig_types[52]
+#define SWIGTYPE_p_unsigned_long_long swig_types[53]
+#define SWIGTYPE_p_unsigned_short swig_types[54]
+static swig_type_info *swig_types[56];
+static swig_module_info swig_module = {swig_types, 55, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -4780,22 +4777,6 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 
 
   }
-
-SWIGINTERN int
-SWIG_AsVal_unsigned_SS_int (PyObject * obj, unsigned int *val)
-{
-  unsigned long v;
-  int res = SWIG_AsVal_unsigned_SS_long (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if ((v > UINT_MAX)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = (unsigned int)(v);
-    }
-  }  
-  return res;
-}
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -8918,122 +8899,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_gp_camera_set_timeout_funcs(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  Camera *arg1 = (Camera *) 0 ;
-  CameraTimeoutStartFunc arg2 = (CameraTimeoutStartFunc) 0 ;
-  CameraTimeoutStopFunc arg3 = (CameraTimeoutStopFunc) 0 ;
-  void *arg4 = (void *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res4 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  
-  (void)self;
-  if (!PyArg_UnpackTuple(args, "gp_camera_set_timeout_funcs", 4, 4, &obj0, &obj1, &obj2, &obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__Camera, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gp_camera_set_timeout_funcs" "', argument " "1"" of type '" "Camera *""'"); 
-  }
-  arg1 = (Camera *)(argp1);
-  {
-    int res = SWIG_ConvertFunctionPtr(obj1, (void**)(&arg2), SWIGTYPE_p_f_p_struct__Camera_unsigned_int_p_f_p_struct__Camera_p_struct__GPContext__int_p_void__unsigned_int);
-    if (!SWIG_IsOK(res)) {
-      SWIG_exception_fail(SWIG_ArgError(res), "in method '" "gp_camera_set_timeout_funcs" "', argument " "2"" of type '" "CameraTimeoutStartFunc""'"); 
-    }
-  }
-  {
-    int res = SWIG_ConvertFunctionPtr(obj2, (void**)(&arg3), SWIGTYPE_p_f_p_struct__Camera_unsigned_int_p_void__void);
-    if (!SWIG_IsOK(res)) {
-      SWIG_exception_fail(SWIG_ArgError(res), "in method '" "gp_camera_set_timeout_funcs" "', argument " "3"" of type '" "CameraTimeoutStopFunc""'"); 
-    }
-  }
-  res4 = SWIG_ConvertPtr(obj3,SWIG_as_voidptrptr(&arg4), 0, 0);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "gp_camera_set_timeout_funcs" "', argument " "4"" of type '" "void *""'"); 
-  }
-  gp_camera_set_timeout_funcs(arg1,arg2,arg3,arg4);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_gp_camera_start_timeout(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  Camera *arg1 = (Camera *) 0 ;
-  unsigned int arg2 ;
-  CameraTimeoutFunc arg3 = (CameraTimeoutFunc) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  unsigned int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  int result;
-  
-  (void)self;
-  if (!PyArg_UnpackTuple(args, "gp_camera_start_timeout", 3, 3, &obj0, &obj1, &obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__Camera, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gp_camera_start_timeout" "', argument " "1"" of type '" "Camera *""'"); 
-  }
-  arg1 = (Camera *)(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "gp_camera_start_timeout" "', argument " "2"" of type '" "unsigned int""'");
-  } 
-  arg2 = (unsigned int)(val2);
-  {
-    int res = SWIG_ConvertFunctionPtr(obj2, (void**)(&arg3), SWIGTYPE_p_f_p_struct__Camera_p_struct__GPContext__int);
-    if (!SWIG_IsOK(res)) {
-      SWIG_exception_fail(SWIG_ArgError(res), "in method '" "gp_camera_start_timeout" "', argument " "3"" of type '" "CameraTimeoutFunc""'"); 
-    }
-  }
-  result = (int)gp_camera_start_timeout(arg1,arg2,arg3);
-  resultobj = SWIG_From_int((int)(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_gp_camera_stop_timeout(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  Camera *arg1 = (Camera *) 0 ;
-  unsigned int arg2 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  unsigned int val2 ;
-  int ecode2 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  
-  (void)self;
-  if (!PyArg_UnpackTuple(args, "gp_camera_stop_timeout", 2, 2, &obj0, &obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__Camera, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gp_camera_stop_timeout" "', argument " "1"" of type '" "Camera *""'"); 
-  }
-  arg1 = (Camera *)(argp1);
-  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
-  if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "gp_camera_stop_timeout" "', argument " "2"" of type '" "unsigned int""'");
-  } 
-  arg2 = (unsigned int)(val2);
-  gp_camera_stop_timeout(arg1,arg2);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 static PyMethodDef SwigMethods[] = {
 	 { "gp_camera_capture_preview", _wrap_gp_camera_capture_preview, METH_VARARGS, "\n"
 		"gp_camera_capture_preview(camera, context) -> int\n"
@@ -9972,85 +9837,6 @@ static PyMethodDef SwigMethods[] = {
 		"a gphoto2 error code\n"
 		"\n"
 		"See also gphoto2.Camera.file_delete\n"
-		""},
-	 { "gp_camera_set_timeout_funcs", _wrap_gp_camera_set_timeout_funcs, METH_VARARGS, "\n"
-		"gp_camera_set_timeout_funcs(camera, start_func, stop_func, data)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"camera: gphoto2.Camera\n"
-		"start_func: CameraTimeoutStartFunc\n"
-		"stop_func: CameraTimeoutStopFunc\n"
-		"data: void *\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"* `camera` :  \n"
-		"    a Camera  \n"
-		"* `start_func` :  \n"
-		"* `stop_func` :  \n"
-		"* `data` :  \n"
-		"\n"
-		"Returns\n"
-		"-------\n"
-		"a gphoto2 error code  \n"
-		"\n"
-		"If your frontend has something like idle loops, it is recommended you\n"
-		"use gp_camera_set_timeout_funcs in order to give the camera driver the\n"
-		"possibility to keep up the connection to the camera.\n"
-		"\n"
-		"See also gphoto2.Camera.set_timeout_funcs\n"
-		""},
-	 { "gp_camera_start_timeout", _wrap_gp_camera_start_timeout, METH_VARARGS, "\n"
-		"gp_camera_start_timeout(camera, timeout, func) -> int\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"camera: gphoto2.Camera\n"
-		"timeout: unsigned int\n"
-		"func: CameraTimeoutFunc\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"* `camera` :  \n"
-		"    a Camera  \n"
-		"* `timeout` :  \n"
-		"    number of seconds that should pass between each call to `func`  \n"
-		"* `func` :  \n"
-		"    the function that should be called each `timeout` seconds  \n"
-		"\n"
-		"Returns\n"
-		"-------\n"
-		"The id of the background process or a gphoto2 error code  \n"
-		"\n"
-		"This function should be called by the camera driver during camera_init()\n"
-		"if the camera needs to be sent messages periodically in order to prevent\n"
-		"it from shutting down.\n"
-		"\n"
-		"See also gphoto2.Camera.start_timeout\n"
-		""},
-	 { "gp_camera_stop_timeout", _wrap_gp_camera_stop_timeout, METH_VARARGS, "\n"
-		"gp_camera_stop_timeout(camera, id)\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"camera: gphoto2.Camera\n"
-		"id: unsigned int\n"
-		"\n"
-		"Stop periodic calls to keepalive function.  \n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"* `camera` :  \n"
-		"    a Camera  \n"
-		"* `id` :  \n"
-		"    the id of the background process previously returned by\n"
-		"    gp_camera_start_timeout  \n"
-		"\n"
-		"Call this function in the camera driver if you want to stop a periodic\n"
-		"call to a function that has been started using gp_camera_start_timeout.\n"
-		"\n"
-		"See also gphoto2.Camera.stop_timeout\n"
 		""},
 	 { NULL, NULL, 0, NULL }
 };
@@ -11719,9 +11505,6 @@ static swig_type_info _swigt__p__GPContextFeedback = {"_p__GPContextFeedback", "
 static swig_type_info _swigt__p__GPPortInfo = {"_p__GPPortInfo", "GPPortInfo|struct _GPPortInfo *|_GPPortInfo *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__GPPortInfoList = {"_p__GPPortInfoList", "GPPortInfoList *|struct _GPPortInfoList *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_struct__Camera_p_struct__GPContext__int = {"_p_f_p_struct__Camera_p_struct__GPContext__int", "CameraTimeoutFunc|int (*)(struct _Camera *,struct _GPContext *)", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_struct__Camera_unsigned_int_p_f_p_struct__Camera_p_struct__GPContext__int_p_void__unsigned_int = {"_p_f_p_struct__Camera_unsigned_int_p_f_p_struct__Camera_p_struct__GPContext__int_p_void__unsigned_int", "CameraTimeoutStartFunc|unsigned int (*)(struct _Camera *,unsigned int,int (*)(struct _Camera *,struct _GPContext *),void *)", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_f_p_struct__Camera_unsigned_int_p_void__void = {"_p_f_p_struct__Camera_unsigned_int_p_void__void", "CameraTimeoutStopFunc|void (*)(struct _Camera *,unsigned int,void *)", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int32_t *|int_fast16_t *|int_fast32_t *|int_least32_t *|intptr_t *|int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_long = {"_p_long", "time_t *|long *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_long_long = {"_p_long_long", "int64_t *|int_fast64_t *|int_least64_t *|intmax_t *|long long *", 0, 0, (void*)0, 0};
@@ -11779,9 +11562,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p__GPPortInfo,
   &_swigt__p__GPPortInfoList,
   &_swigt__p_char,
-  &_swigt__p_f_p_struct__Camera_p_struct__GPContext__int,
-  &_swigt__p_f_p_struct__Camera_unsigned_int_p_f_p_struct__Camera_p_struct__GPContext__int_p_void__unsigned_int,
-  &_swigt__p_f_p_struct__Camera_unsigned_int_p_void__void,
   &_swigt__p_int,
   &_swigt__p_long,
   &_swigt__p_long_long,
@@ -11839,9 +11619,6 @@ static swig_cast_info _swigc__p__GPContextFeedback[] = {  {&_swigt__p__GPContext
 static swig_cast_info _swigc__p__GPPortInfo[] = {  {&_swigt__p__GPPortInfo, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__GPPortInfoList[] = {  {&_swigt__p__GPPortInfoList, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_struct__Camera_p_struct__GPContext__int[] = {  {&_swigt__p_f_p_struct__Camera_p_struct__GPContext__int, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_struct__Camera_unsigned_int_p_f_p_struct__Camera_p_struct__GPContext__int_p_void__unsigned_int[] = {  {&_swigt__p_f_p_struct__Camera_unsigned_int_p_f_p_struct__Camera_p_struct__GPContext__int_p_void__unsigned_int, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_f_p_struct__Camera_unsigned_int_p_void__void[] = {  {&_swigt__p_f_p_struct__Camera_unsigned_int_p_void__void, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_long[] = {  {&_swigt__p_long, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_long_long[] = {  {&_swigt__p_long_long, 0, 0, 0},{0, 0, 0, 0}};
@@ -11899,9 +11676,6 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p__GPPortInfo,
   _swigc__p__GPPortInfoList,
   _swigc__p_char,
-  _swigc__p_f_p_struct__Camera_p_struct__GPContext__int,
-  _swigc__p_f_p_struct__Camera_unsigned_int_p_f_p_struct__Camera_p_struct__GPContext__int_p_void__unsigned_int,
-  _swigc__p_f_p_struct__Camera_unsigned_int_p_void__void,
   _swigc__p_int,
   _swigc__p_long,
   _swigc__p_long_long,

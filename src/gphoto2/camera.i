@@ -297,6 +297,11 @@ MEMBER_FUNCTION(_Camera,
 // Don't wrap deprecated functions
 %ignore gp_camera_free;
 
+// Ignore functions called by camera drivers
+%ignore gp_camera_set_timeout_funcs;
+%ignore gp_camera_start_timeout;
+%ignore gp_camera_stop_timeout;
+
 // These structures are private
 %ignore _CameraFunctions;
 

@@ -3829,8 +3829,238 @@ SWIGINTERNINLINE PyObject*
 #endif
 
 
+SWIGINTERN int
+SWIG_AsVal_double (PyObject *obj, double *val)
+{
+  int res = SWIG_TypeError;
+  if (PyFloat_Check(obj)) {
+    if (val) *val = PyFloat_AsDouble(obj);
+    return SWIG_OK;
+#if PY_VERSION_HEX < 0x03000000
+  } else if (PyInt_Check(obj)) {
+    if (val) *val = (double) PyInt_AsLong(obj);
+    return SWIG_OK;
+#endif
+  } else if (PyLong_Check(obj)) {
+    double v = PyLong_AsDouble(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_OK;
+    } else {
+      PyErr_Clear();
+    }
+  }
+#ifdef SWIG_PYTHON_CAST_MODE
+  {
+    int dispatch = 0;
+    double d = PyFloat_AsDouble(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = d;
+      return SWIG_AddCast(SWIG_OK);
+    } else {
+      PyErr_Clear();
+    }
+    if (!dispatch) {
+      long v = PyLong_AsLong(obj);
+      if (!PyErr_Occurred()) {
+	if (val) *val = v;
+	return SWIG_AddCast(SWIG_AddCast(SWIG_OK));
+      } else {
+	PyErr_Clear();
+      }
+    }
+  }
+#endif
+  return res;
+}
+
+
+#include <float.h>
+
+
+#include <math.h>
+
+
+SWIGINTERNINLINE int
+SWIG_CanCastAsInteger(double *d, double min, double max) {
+  double x = *d;
+  if ((min <= x && x <= max)) {
+   double fx = floor(x);
+   double cx = ceil(x);
+   double rd =  ((x - fx) < 0.5) ? fx : cx; /* simple rint */
+   if ((errno == EDOM) || (errno == ERANGE)) {
+     errno = 0;
+   } else {
+     double summ, reps, diff;
+     if (rd < x) {
+       diff = x - rd;
+     } else if (rd > x) {
+       diff = rd - x;
+     } else {
+       return 1;
+     }
+     summ = rd + x;
+     reps = diff/summ;
+     if (reps < 8*DBL_EPSILON) {
+       *d = rd;
+       return 1;
+     }
+   }
+  }
+  return 0;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_long (PyObject *obj, long* val)
+{
+#if PY_VERSION_HEX < 0x03000000
+  if (PyInt_Check(obj)) {
+    if (val) *val = PyInt_AsLong(obj);
+    return SWIG_OK;
+  } else
+#endif
+  if (PyLong_Check(obj)) {
+    long v = PyLong_AsLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_OK;
+    } else {
+      PyErr_Clear();
+      return SWIG_OverflowError;
+    }
+  }
+#ifdef SWIG_PYTHON_CAST_MODE
+  {
+    int dispatch = 0;
+    long v = PyInt_AsLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_AddCast(SWIG_OK);
+    } else {
+      PyErr_Clear();
+    }
+    if (!dispatch) {
+      double d;
+      int res = SWIG_AddCast(SWIG_AsVal_double (obj,&d));
+      if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, LONG_MIN, LONG_MAX)) {
+	if (val) *val = (long)(d);
+	return res;
+      }
+    }
+  }
+#endif
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_int (PyObject * obj, int *val)
+{
+  long v;
+  int res = SWIG_AsVal_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v < INT_MIN || v > INT_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = (int)(v);
+    }
+  }  
+  return res;
+}
+
+
+SWIGINTERN int
+SWIG_AsVal_unsigned_SS_long (PyObject *obj, unsigned long *val) 
+{
+#if PY_VERSION_HEX < 0x03000000
+  if (PyInt_Check(obj)) {
+    long v = PyInt_AsLong(obj);
+    if (v >= 0) {
+      if (val) *val = v;
+      return SWIG_OK;
+    } else {
+      return SWIG_OverflowError;
+    }
+  } else
+#endif
+  if (PyLong_Check(obj)) {
+    unsigned long v = PyLong_AsUnsignedLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_OK;
+    } else {
+      PyErr_Clear();
+      return SWIG_OverflowError;
+    }
+  }
+#ifdef SWIG_PYTHON_CAST_MODE
+  {
+    int dispatch = 0;
+    unsigned long v = PyLong_AsUnsignedLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_AddCast(SWIG_OK);
+    } else {
+      PyErr_Clear();
+    }
+    if (!dispatch) {
+      double d;
+      int res = SWIG_AddCast(SWIG_AsVal_double (obj,&d));
+      if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, 0, ULONG_MAX)) {
+	if (val) *val = (unsigned long)(d);
+	return res;
+      }
+    }
+  }
+#endif
+  return SWIG_TypeError;
+}
+
+
 #if defined(LLONG_MAX) && !defined(SWIG_LONG_LONG_AVAILABLE)
 #  define SWIG_LONG_LONG_AVAILABLE
+#endif
+
+
+#ifdef SWIG_LONG_LONG_AVAILABLE
+SWIGINTERN int
+SWIG_AsVal_unsigned_SS_long_SS_long (PyObject *obj, unsigned long long *val)
+{
+  int res = SWIG_TypeError;
+  if (PyLong_Check(obj)) {
+    unsigned long long v = PyLong_AsUnsignedLongLong(obj);
+    if (!PyErr_Occurred()) {
+      if (val) *val = v;
+      return SWIG_OK;
+    } else {
+      PyErr_Clear();
+      res = SWIG_OverflowError;
+    }
+  } else {
+    unsigned long v;
+    res = SWIG_AsVal_unsigned_SS_long (obj,&v);
+    if (SWIG_IsOK(res)) {
+      if (val) *val = v;
+      return res;
+    }
+  }
+#ifdef SWIG_PYTHON_CAST_MODE
+  {
+    const double mant_max = 1LL << DBL_MANT_DIG;
+    double d;
+    res = SWIG_AsVal_double (obj,&d);
+    if (SWIG_IsOK(res) && !SWIG_CanCastAsInteger(&d, 0, mant_max))
+      return SWIG_OverflowError;
+    if (SWIG_IsOK(res) && SWIG_CanCastAsInteger(&d, 0, mant_max)) {
+      if (val) *val = (unsigned long long)(d);
+      return SWIG_AddCast(res);
+    }
+    res = SWIG_TypeError;
+  }
+#endif
+  return res;
+}
 #endif
 
 
@@ -3854,6 +4084,140 @@ SWIG_pchar_descriptor(void)
     init = 1;
   }
   return info;
+}
+
+
+SWIGINTERN int
+SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
+{
+#if PY_VERSION_HEX>=0x03000000
+#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+  if (PyBytes_Check(obj))
+#else
+  if (PyUnicode_Check(obj))
+#endif
+#else  
+  if (PyString_Check(obj))
+#endif
+  {
+    char *cstr; Py_ssize_t len;
+    int ret = SWIG_OK;
+#if PY_VERSION_HEX>=0x03000000
+#if !defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+    if (!alloc && cptr) {
+        /* We can't allow converting without allocation, since the internal
+           representation of string in Python 3 is UCS-2/UCS-4 but we require
+           a UTF-8 representation.
+           TODO(bhy) More detailed explanation */
+        return SWIG_RuntimeError;
+    }
+    obj = PyUnicode_AsUTF8String(obj);
+    if (!obj)
+      return SWIG_TypeError;
+    if (alloc)
+      *alloc = SWIG_NEWOBJ;
+#endif
+    if (PyBytes_AsStringAndSize(obj, &cstr, &len) == -1)
+      return SWIG_TypeError;
+#else
+    if (PyString_AsStringAndSize(obj, &cstr, &len) == -1)
+      return SWIG_TypeError;
+#endif
+    if (cptr) {
+      if (alloc) {
+	if (*alloc == SWIG_NEWOBJ) {
+	  *cptr = (char *)memcpy(malloc((len + 1)*sizeof(char)), cstr, sizeof(char)*(len + 1));
+	  *alloc = SWIG_NEWOBJ;
+	} else {
+	  *cptr = cstr;
+	  *alloc = SWIG_OLDOBJ;
+	}
+      } else {
+#if PY_VERSION_HEX>=0x03000000
+#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+	*cptr = PyBytes_AsString(obj);
+#else
+	assert(0); /* Should never reach here with Unicode strings in Python 3 */
+#endif
+#else
+	*cptr = SWIG_Python_str_AsChar(obj);
+        if (!*cptr)
+          ret = SWIG_TypeError;
+#endif
+      }
+    }
+    if (psize) *psize = len + 1;
+#if PY_VERSION_HEX>=0x03000000 && !defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+    Py_XDECREF(obj);
+#endif
+    return ret;
+  } else {
+#if defined(SWIG_PYTHON_2_UNICODE)
+#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
+#error "Cannot use both SWIG_PYTHON_2_UNICODE and SWIG_PYTHON_STRICT_BYTE_CHAR at once"
+#endif
+#if PY_VERSION_HEX<0x03000000
+    if (PyUnicode_Check(obj)) {
+      char *cstr; Py_ssize_t len;
+      if (!alloc && cptr) {
+        return SWIG_RuntimeError;
+      }
+      obj = PyUnicode_AsUTF8String(obj);
+      if (!obj)
+        return SWIG_TypeError;
+      if (PyString_AsStringAndSize(obj, &cstr, &len) != -1) {
+        if (cptr) {
+          if (alloc) *alloc = SWIG_NEWOBJ;
+          *cptr = (char *)memcpy(malloc((len + 1)*sizeof(char)), cstr, sizeof(char)*(len + 1));
+        }
+        if (psize) *psize = len + 1;
+
+        Py_XDECREF(obj);
+        return SWIG_OK;
+      } else {
+        Py_XDECREF(obj);
+      }
+    }
+#endif
+#endif
+
+    swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
+    if (pchar_descriptor) {
+      void* vptr = 0;
+      if (SWIG_ConvertPtr(obj, &vptr, pchar_descriptor, 0) == SWIG_OK) {
+	if (cptr) *cptr = (char *) vptr;
+	if (psize) *psize = vptr ? (strlen((char *)vptr) + 1) : 0;
+	if (alloc) *alloc = SWIG_OLDOBJ;
+	return SWIG_OK;
+      }
+    }
+  }
+  return SWIG_TypeError;
+}
+
+
+SWIGINTERN int
+SWIG_AsCharArray(PyObject * obj, char *val, size_t size)
+{ 
+  char* cptr = 0; size_t csize = 0; int alloc = SWIG_OLDOBJ;
+  int res = SWIG_AsCharPtrAndSize(obj, &cptr, &csize, &alloc);
+  if (SWIG_IsOK(res)) {
+    /* special case of single char conversion when we don't need space for NUL */
+    if (size == 1 && csize == 2 && cptr && !cptr[1]) --csize;
+    if (csize <= size) {
+      if (val) {
+	if (csize) memcpy(val, cptr, csize*sizeof(char));
+	if (csize < size) memset(val + csize, 0, (size - csize)*sizeof(char));
+      }
+      if (alloc == SWIG_NEWOBJ) {
+	free((char*)cptr);
+	res = SWIG_DelNewMask(res);
+      }      
+      return res;
+    }
+    if (alloc == SWIG_NEWOBJ) free((char*)cptr);
+  }
+  return SWIG_TypeError;
 }
 
 
@@ -3892,6 +4256,22 @@ SWIG_strnlen(const char* s, size_t maxlen)
 }
 
 
+SWIGINTERN int
+SWIG_AsVal_unsigned_SS_int (PyObject * obj, unsigned int *val)
+{
+  unsigned long v;
+  int res = SWIG_AsVal_unsigned_SS_long (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if ((v > UINT_MAX)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = (unsigned int)(v);
+    }
+  }  
+  return res;
+}
+
+
 SWIGINTERNINLINE PyObject*
   SWIG_From_unsigned_SS_int  (unsigned int value)
 {
@@ -3904,6 +4284,36 @@ SWIGINTERNINLINE PyObject*
 #ifdef __cplusplus
 extern "C" {
 #endif
+SWIGINTERN PyObject *_wrap_CameraFileInfoFile_fields_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoFile *arg1 = (struct _CameraFileInfoFile *) 0 ;
+  CameraFileInfoFields arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoFile_fields_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoFile, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoFile_fields_set" "', argument " "1"" of type '" "struct _CameraFileInfoFile *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoFile *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoFile_fields_set" "', argument " "2"" of type '" "CameraFileInfoFields""'");
+  } 
+  arg2 = (CameraFileInfoFields)(val2);
+  if (arg1) (arg1)->fields = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CameraFileInfoFile_fields_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _CameraFileInfoFile *arg1 = (struct _CameraFileInfoFile *) 0 ;
@@ -3920,6 +4330,36 @@ SWIGINTERN PyObject *_wrap_CameraFileInfoFile_fields_get(PyObject *self, PyObjec
   arg1 = (struct _CameraFileInfoFile *)(argp1);
   result = (CameraFileInfoFields) ((arg1)->fields);
   resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraFileInfoFile_status_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoFile *arg1 = (struct _CameraFileInfoFile *) 0 ;
+  CameraFileStatus arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoFile_status_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoFile, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoFile_status_set" "', argument " "1"" of type '" "struct _CameraFileInfoFile *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoFile *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoFile_status_set" "', argument " "2"" of type '" "CameraFileStatus""'");
+  } 
+  arg2 = (CameraFileStatus)(val2);
+  if (arg1) (arg1)->status = arg2;
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -3948,6 +4388,36 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CameraFileInfoFile_size_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoFile *arg1 = (struct _CameraFileInfoFile *) 0 ;
+  uint64_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned long long val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoFile_size_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoFile, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoFile_size_set" "', argument " "1"" of type '" "struct _CameraFileInfoFile *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoFile *)(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_long_SS_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoFile_size_set" "', argument " "2"" of type '" "uint64_t""'");
+  } 
+  arg2 = (uint64_t)(val2);
+  if (arg1) (arg1)->size = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CameraFileInfoFile_size_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _CameraFileInfoFile *arg1 = (struct _CameraFileInfoFile *) 0 ;
@@ -3964,6 +4434,37 @@ SWIGINTERN PyObject *_wrap_CameraFileInfoFile_size_get(PyObject *self, PyObject 
   arg1 = (struct _CameraFileInfoFile *)(argp1);
   result = (uint64_t) ((arg1)->size);
   resultobj = SWIG_From_unsigned_SS_long_SS_long((unsigned long long)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraFileInfoFile_type_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoFile *arg1 = (struct _CameraFileInfoFile *) 0 ;
+  char *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char temp2[64] ;
+  int res2 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoFile_type_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoFile, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoFile_type_set" "', argument " "1"" of type '" "struct _CameraFileInfoFile *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoFile *)(argp1);
+  res2 = SWIG_AsCharArray(obj1, temp2, 64);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CameraFileInfoFile_type_set" "', argument " "2"" of type '" "char [64]""'");
+  }
+  arg2 = (char *)(temp2);
+  if (arg2) memcpy(arg1->type,arg2,64*sizeof(char));
+  else memset(arg1->type,0,64*sizeof(char));
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -3998,6 +4499,36 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CameraFileInfoFile_width_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoFile *arg1 = (struct _CameraFileInfoFile *) 0 ;
+  uint32_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoFile_width_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoFile, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoFile_width_set" "', argument " "1"" of type '" "struct _CameraFileInfoFile *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoFile *)(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoFile_width_set" "', argument " "2"" of type '" "uint32_t""'");
+  } 
+  arg2 = (uint32_t)(val2);
+  if (arg1) (arg1)->width = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CameraFileInfoFile_width_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _CameraFileInfoFile *arg1 = (struct _CameraFileInfoFile *) 0 ;
@@ -4014,6 +4545,36 @@ SWIGINTERN PyObject *_wrap_CameraFileInfoFile_width_get(PyObject *self, PyObject
   arg1 = (struct _CameraFileInfoFile *)(argp1);
   result = (uint32_t) ((arg1)->width);
   resultobj = SWIG_From_unsigned_SS_int((unsigned int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraFileInfoFile_height_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoFile *arg1 = (struct _CameraFileInfoFile *) 0 ;
+  uint32_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoFile_height_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoFile, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoFile_height_set" "', argument " "1"" of type '" "struct _CameraFileInfoFile *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoFile *)(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoFile_height_set" "', argument " "2"" of type '" "uint32_t""'");
+  } 
+  arg2 = (uint32_t)(val2);
+  if (arg1) (arg1)->height = arg2;
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -4042,6 +4603,36 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CameraFileInfoFile_permissions_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoFile *arg1 = (struct _CameraFileInfoFile *) 0 ;
+  CameraFilePermissions arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoFile_permissions_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoFile, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoFile_permissions_set" "', argument " "1"" of type '" "struct _CameraFileInfoFile *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoFile *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoFile_permissions_set" "', argument " "2"" of type '" "CameraFilePermissions""'");
+  } 
+  arg2 = (CameraFilePermissions)(val2);
+  if (arg1) (arg1)->permissions = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CameraFileInfoFile_permissions_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _CameraFileInfoFile *arg1 = (struct _CameraFileInfoFile *) 0 ;
@@ -4058,6 +4649,36 @@ SWIGINTERN PyObject *_wrap_CameraFileInfoFile_permissions_get(PyObject *self, Py
   arg1 = (struct _CameraFileInfoFile *)(argp1);
   result = (CameraFilePermissions) ((arg1)->permissions);
   resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraFileInfoFile_mtime_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoFile *arg1 = (struct _CameraFileInfoFile *) 0 ;
+  time_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  long val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoFile_mtime_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoFile, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoFile_mtime_set" "', argument " "1"" of type '" "struct _CameraFileInfoFile *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoFile *)(argp1);
+  ecode2 = SWIG_AsVal_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoFile_mtime_set" "', argument " "2"" of type '" "time_t""'");
+  } 
+  arg2 = (time_t)(val2);
+  if (arg1) (arg1)->mtime = arg2;
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -4109,6 +4730,36 @@ fail:
 
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraFileInfoFile) /* defines _wrap_delete_CameraFileInfoFile_destructor_closure */
 
+SWIGINTERN PyObject *_wrap_CameraFileInfoPreview_fields_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoPreview *arg1 = (struct _CameraFileInfoPreview *) 0 ;
+  CameraFileInfoFields arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoPreview_fields_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoPreview, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoPreview_fields_set" "', argument " "1"" of type '" "struct _CameraFileInfoPreview *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoPreview *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoPreview_fields_set" "', argument " "2"" of type '" "CameraFileInfoFields""'");
+  } 
+  arg2 = (CameraFileInfoFields)(val2);
+  if (arg1) (arg1)->fields = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CameraFileInfoPreview_fields_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _CameraFileInfoPreview *arg1 = (struct _CameraFileInfoPreview *) 0 ;
@@ -4125,6 +4776,36 @@ SWIGINTERN PyObject *_wrap_CameraFileInfoPreview_fields_get(PyObject *self, PyOb
   arg1 = (struct _CameraFileInfoPreview *)(argp1);
   result = (CameraFileInfoFields) ((arg1)->fields);
   resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraFileInfoPreview_status_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoPreview *arg1 = (struct _CameraFileInfoPreview *) 0 ;
+  CameraFileStatus arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoPreview_status_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoPreview, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoPreview_status_set" "', argument " "1"" of type '" "struct _CameraFileInfoPreview *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoPreview *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoPreview_status_set" "', argument " "2"" of type '" "CameraFileStatus""'");
+  } 
+  arg2 = (CameraFileStatus)(val2);
+  if (arg1) (arg1)->status = arg2;
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -4153,6 +4834,36 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CameraFileInfoPreview_size_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoPreview *arg1 = (struct _CameraFileInfoPreview *) 0 ;
+  uint64_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned long long val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoPreview_size_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoPreview, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoPreview_size_set" "', argument " "1"" of type '" "struct _CameraFileInfoPreview *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoPreview *)(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_long_SS_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoPreview_size_set" "', argument " "2"" of type '" "uint64_t""'");
+  } 
+  arg2 = (uint64_t)(val2);
+  if (arg1) (arg1)->size = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CameraFileInfoPreview_size_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _CameraFileInfoPreview *arg1 = (struct _CameraFileInfoPreview *) 0 ;
@@ -4169,6 +4880,37 @@ SWIGINTERN PyObject *_wrap_CameraFileInfoPreview_size_get(PyObject *self, PyObje
   arg1 = (struct _CameraFileInfoPreview *)(argp1);
   result = (uint64_t) ((arg1)->size);
   resultobj = SWIG_From_unsigned_SS_long_SS_long((unsigned long long)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraFileInfoPreview_type_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoPreview *arg1 = (struct _CameraFileInfoPreview *) 0 ;
+  char *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char temp2[64] ;
+  int res2 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoPreview_type_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoPreview, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoPreview_type_set" "', argument " "1"" of type '" "struct _CameraFileInfoPreview *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoPreview *)(argp1);
+  res2 = SWIG_AsCharArray(obj1, temp2, 64);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CameraFileInfoPreview_type_set" "', argument " "2"" of type '" "char [64]""'");
+  }
+  arg2 = (char *)(temp2);
+  if (arg2) memcpy(arg1->type,arg2,64*sizeof(char));
+  else memset(arg1->type,0,64*sizeof(char));
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -4203,6 +4945,36 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CameraFileInfoPreview_width_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoPreview *arg1 = (struct _CameraFileInfoPreview *) 0 ;
+  uint32_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoPreview_width_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoPreview, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoPreview_width_set" "', argument " "1"" of type '" "struct _CameraFileInfoPreview *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoPreview *)(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoPreview_width_set" "', argument " "2"" of type '" "uint32_t""'");
+  } 
+  arg2 = (uint32_t)(val2);
+  if (arg1) (arg1)->width = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CameraFileInfoPreview_width_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _CameraFileInfoPreview *arg1 = (struct _CameraFileInfoPreview *) 0 ;
@@ -4219,6 +4991,36 @@ SWIGINTERN PyObject *_wrap_CameraFileInfoPreview_width_get(PyObject *self, PyObj
   arg1 = (struct _CameraFileInfoPreview *)(argp1);
   result = (uint32_t) ((arg1)->width);
   resultobj = SWIG_From_unsigned_SS_int((unsigned int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraFileInfoPreview_height_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoPreview *arg1 = (struct _CameraFileInfoPreview *) 0 ;
+  uint32_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoPreview_height_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoPreview, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoPreview_height_set" "', argument " "1"" of type '" "struct _CameraFileInfoPreview *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoPreview *)(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoPreview_height_set" "', argument " "2"" of type '" "uint32_t""'");
+  } 
+  arg2 = (uint32_t)(val2);
+  if (arg1) (arg1)->height = arg2;
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -4270,6 +5072,36 @@ fail:
 
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraFileInfoPreview) /* defines _wrap_delete_CameraFileInfoPreview_destructor_closure */
 
+SWIGINTERN PyObject *_wrap_CameraFileInfoAudio_fields_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoAudio *arg1 = (struct _CameraFileInfoAudio *) 0 ;
+  CameraFileInfoFields arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoAudio_fields_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoAudio, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoAudio_fields_set" "', argument " "1"" of type '" "struct _CameraFileInfoAudio *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoAudio *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoAudio_fields_set" "', argument " "2"" of type '" "CameraFileInfoFields""'");
+  } 
+  arg2 = (CameraFileInfoFields)(val2);
+  if (arg1) (arg1)->fields = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CameraFileInfoAudio_fields_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _CameraFileInfoAudio *arg1 = (struct _CameraFileInfoAudio *) 0 ;
@@ -4286,6 +5118,36 @@ SWIGINTERN PyObject *_wrap_CameraFileInfoAudio_fields_get(PyObject *self, PyObje
   arg1 = (struct _CameraFileInfoAudio *)(argp1);
   result = (CameraFileInfoFields) ((arg1)->fields);
   resultobj = SWIG_From_int((int)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraFileInfoAudio_status_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoAudio *arg1 = (struct _CameraFileInfoAudio *) 0 ;
+  CameraFileStatus arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoAudio_status_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoAudio, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoAudio_status_set" "', argument " "1"" of type '" "struct _CameraFileInfoAudio *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoAudio *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoAudio_status_set" "', argument " "2"" of type '" "CameraFileStatus""'");
+  } 
+  arg2 = (CameraFileStatus)(val2);
+  if (arg1) (arg1)->status = arg2;
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -4314,6 +5176,36 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_CameraFileInfoAudio_size_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoAudio *arg1 = (struct _CameraFileInfoAudio *) 0 ;
+  uint64_t arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  unsigned long long val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoAudio_size_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoAudio, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoAudio_size_set" "', argument " "1"" of type '" "struct _CameraFileInfoAudio *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoAudio *)(argp1);
+  ecode2 = SWIG_AsVal_unsigned_SS_long_SS_long(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraFileInfoAudio_size_set" "', argument " "2"" of type '" "uint64_t""'");
+  } 
+  arg2 = (uint64_t)(val2);
+  if (arg1) (arg1)->size = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_CameraFileInfoAudio_size_get(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _CameraFileInfoAudio *arg1 = (struct _CameraFileInfoAudio *) 0 ;
@@ -4330,6 +5222,37 @@ SWIGINTERN PyObject *_wrap_CameraFileInfoAudio_size_get(PyObject *self, PyObject
   arg1 = (struct _CameraFileInfoAudio *)(argp1);
   result = (uint64_t) ((arg1)->size);
   resultobj = SWIG_From_unsigned_SS_long_SS_long((unsigned long long)(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraFileInfoAudio_type_set(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfoAudio *arg1 = (struct _CameraFileInfoAudio *) 0 ;
+  char *arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  char temp2[64] ;
+  int res2 ;
+  PyObject * obj1 = 0 ;
+  
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "CameraFileInfoAudio_type_set", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraFileInfoAudio, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraFileInfoAudio_type_set" "', argument " "1"" of type '" "struct _CameraFileInfoAudio *""'"); 
+  }
+  arg1 = (struct _CameraFileInfoAudio *)(argp1);
+  res2 = SWIG_AsCharArray(obj1, temp2, 64);
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "CameraFileInfoAudio_type_set" "', argument " "2"" of type '" "char [64]""'");
+  }
+  arg2 = (char *)(temp2);
+  if (arg2) memcpy(arg1->type,arg2,64*sizeof(char));
+  else memset(arg1->type,0,64*sizeof(char));
+  resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
   return NULL;
@@ -4450,6 +5373,21 @@ SWIGINTERN PyObject *_wrap_CameraFileInfo_audio_get(PyObject *self, PyObject *ar
   return resultobj;
 fail:
   return NULL;
+}
+
+
+SWIGINTERN int _wrap_new_CameraFileInfo(PyObject *self, PyObject *args, PyObject *kwargs) {
+  PyObject *resultobj = 0;
+  struct _CameraFileInfo *result = 0 ;
+  
+  (void)self;
+  if (!SWIG_Python_CheckNoKeywords(kwargs, "new_CameraFileInfo")) SWIG_fail;
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "new_CameraFileInfo takes no arguments");
+  result = (struct _CameraFileInfo *)calloc(1, sizeof(struct _CameraFileInfo));
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraFileInfo, SWIG_BUILTIN_INIT |  0 );
+  return resultobj == Py_None ? -1 : 0;
+fail:
+  return -1;
 }
 
 
@@ -4741,25 +5679,25 @@ static PyMethodDef SwigMethods[] = {
 	 { NULL, NULL, 0, NULL }
 };
 
-static SwigPyGetSet CameraFileInfoFile_type_getset = { _wrap_CameraFileInfoFile_type_get, 0 };
-static SwigPyGetSet CameraFileInfoFile_size_getset = { _wrap_CameraFileInfoFile_size_get, 0 };
-static SwigPyGetSet CameraFileInfoFile_status_getset = { _wrap_CameraFileInfoFile_status_get, 0 };
-static SwigPyGetSet CameraFileInfoFile_permissions_getset = { _wrap_CameraFileInfoFile_permissions_get, 0 };
+static SwigPyGetSet CameraFileInfoFile_type_getset = { _wrap_CameraFileInfoFile_type_get, _wrap_CameraFileInfoFile_type_set };
+static SwigPyGetSet CameraFileInfoFile_size_getset = { _wrap_CameraFileInfoFile_size_get, _wrap_CameraFileInfoFile_size_set };
+static SwigPyGetSet CameraFileInfoFile_status_getset = { _wrap_CameraFileInfoFile_status_get, _wrap_CameraFileInfoFile_status_set };
+static SwigPyGetSet CameraFileInfoFile_permissions_getset = { _wrap_CameraFileInfoFile_permissions_get, _wrap_CameraFileInfoFile_permissions_set };
 static SwigPyGetSet CameraFileInfoFile___dict___getset = { SwigPyObject_get___dict__, 0 };
-static SwigPyGetSet CameraFileInfoFile_fields_getset = { _wrap_CameraFileInfoFile_fields_get, 0 };
-static SwigPyGetSet CameraFileInfoFile_width_getset = { _wrap_CameraFileInfoFile_width_get, 0 };
-static SwigPyGetSet CameraFileInfoFile_height_getset = { _wrap_CameraFileInfoFile_height_get, 0 };
-static SwigPyGetSet CameraFileInfoFile_mtime_getset = { _wrap_CameraFileInfoFile_mtime_get, 0 };
+static SwigPyGetSet CameraFileInfoFile_fields_getset = { _wrap_CameraFileInfoFile_fields_get, _wrap_CameraFileInfoFile_fields_set };
+static SwigPyGetSet CameraFileInfoFile_width_getset = { _wrap_CameraFileInfoFile_width_get, _wrap_CameraFileInfoFile_width_set };
+static SwigPyGetSet CameraFileInfoFile_height_getset = { _wrap_CameraFileInfoFile_height_get, _wrap_CameraFileInfoFile_height_set };
+static SwigPyGetSet CameraFileInfoFile_mtime_getset = { _wrap_CameraFileInfoFile_mtime_get, _wrap_CameraFileInfoFile_mtime_set };
 SWIGINTERN PyGetSetDef SwigPyBuiltin___CameraFileInfoFile_getset[] = {
-    { (char *)"type", SwigPyBuiltin_GetterClosure, 0, (char *)"type", &CameraFileInfoFile_type_getset },
-    { (char *)"size", SwigPyBuiltin_GetterClosure, 0, (char *)"size", &CameraFileInfoFile_size_getset },
-    { (char *)"status", SwigPyBuiltin_GetterClosure, 0, (char *)"status", &CameraFileInfoFile_status_getset },
-    { (char *)"permissions", SwigPyBuiltin_GetterClosure, 0, (char *)"permissions", &CameraFileInfoFile_permissions_getset },
+    { (char *)"type", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"type", &CameraFileInfoFile_type_getset },
+    { (char *)"size", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"size", &CameraFileInfoFile_size_getset },
+    { (char *)"status", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"status", &CameraFileInfoFile_status_getset },
+    { (char *)"permissions", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"permissions", &CameraFileInfoFile_permissions_getset },
     { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"fields", &CameraFileInfoFile___dict___getset },
-    { (char *)"fields", SwigPyBuiltin_GetterClosure, 0, (char *)"fields", &CameraFileInfoFile_fields_getset },
-    { (char *)"width", SwigPyBuiltin_GetterClosure, 0, (char *)"width", &CameraFileInfoFile_width_getset },
-    { (char *)"height", SwigPyBuiltin_GetterClosure, 0, (char *)"height", &CameraFileInfoFile_height_getset },
-    { (char *)"mtime", SwigPyBuiltin_GetterClosure, 0, (char *)"mtime", &CameraFileInfoFile_mtime_getset },
+    { (char *)"fields", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"fields", &CameraFileInfoFile_fields_getset },
+    { (char *)"width", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"width", &CameraFileInfoFile_width_getset },
+    { (char *)"height", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"height", &CameraFileInfoFile_height_getset },
+    { (char *)"mtime", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"mtime", &CameraFileInfoFile_mtime_getset },
     { NULL, NULL, NULL, NULL, NULL } /* Sentinel */
 };
 
@@ -4997,21 +5935,21 @@ static PyHeapTypeObject SwigPyBuiltin___CameraFileInfoFile_type = {
 
 SWIGINTERN SwigPyClientData SwigPyBuiltin___CameraFileInfoFile_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin___CameraFileInfoFile_type};
 
-static SwigPyGetSet CameraFileInfoPreview_type_getset = { _wrap_CameraFileInfoPreview_type_get, 0 };
-static SwigPyGetSet CameraFileInfoPreview_size_getset = { _wrap_CameraFileInfoPreview_size_get, 0 };
-static SwigPyGetSet CameraFileInfoPreview_status_getset = { _wrap_CameraFileInfoPreview_status_get, 0 };
+static SwigPyGetSet CameraFileInfoPreview_type_getset = { _wrap_CameraFileInfoPreview_type_get, _wrap_CameraFileInfoPreview_type_set };
+static SwigPyGetSet CameraFileInfoPreview_size_getset = { _wrap_CameraFileInfoPreview_size_get, _wrap_CameraFileInfoPreview_size_set };
+static SwigPyGetSet CameraFileInfoPreview_status_getset = { _wrap_CameraFileInfoPreview_status_get, _wrap_CameraFileInfoPreview_status_set };
 static SwigPyGetSet CameraFileInfoPreview___dict___getset = { SwigPyObject_get___dict__, 0 };
-static SwigPyGetSet CameraFileInfoPreview_fields_getset = { _wrap_CameraFileInfoPreview_fields_get, 0 };
-static SwigPyGetSet CameraFileInfoPreview_width_getset = { _wrap_CameraFileInfoPreview_width_get, 0 };
-static SwigPyGetSet CameraFileInfoPreview_height_getset = { _wrap_CameraFileInfoPreview_height_get, 0 };
+static SwigPyGetSet CameraFileInfoPreview_fields_getset = { _wrap_CameraFileInfoPreview_fields_get, _wrap_CameraFileInfoPreview_fields_set };
+static SwigPyGetSet CameraFileInfoPreview_width_getset = { _wrap_CameraFileInfoPreview_width_get, _wrap_CameraFileInfoPreview_width_set };
+static SwigPyGetSet CameraFileInfoPreview_height_getset = { _wrap_CameraFileInfoPreview_height_get, _wrap_CameraFileInfoPreview_height_set };
 SWIGINTERN PyGetSetDef SwigPyBuiltin___CameraFileInfoPreview_getset[] = {
-    { (char *)"type", SwigPyBuiltin_GetterClosure, 0, (char *)"type", &CameraFileInfoPreview_type_getset },
-    { (char *)"size", SwigPyBuiltin_GetterClosure, 0, (char *)"size", &CameraFileInfoPreview_size_getset },
-    { (char *)"status", SwigPyBuiltin_GetterClosure, 0, (char *)"status", &CameraFileInfoPreview_status_getset },
+    { (char *)"type", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"type", &CameraFileInfoPreview_type_getset },
+    { (char *)"size", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"size", &CameraFileInfoPreview_size_getset },
+    { (char *)"status", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"status", &CameraFileInfoPreview_status_getset },
     { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"fields", &CameraFileInfoPreview___dict___getset },
-    { (char *)"fields", SwigPyBuiltin_GetterClosure, 0, (char *)"fields", &CameraFileInfoPreview_fields_getset },
-    { (char *)"width", SwigPyBuiltin_GetterClosure, 0, (char *)"width", &CameraFileInfoPreview_width_getset },
-    { (char *)"height", SwigPyBuiltin_GetterClosure, 0, (char *)"height", &CameraFileInfoPreview_height_getset },
+    { (char *)"fields", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"fields", &CameraFileInfoPreview_fields_getset },
+    { (char *)"width", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"width", &CameraFileInfoPreview_width_getset },
+    { (char *)"height", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"height", &CameraFileInfoPreview_height_getset },
     { NULL, NULL, NULL, NULL, NULL } /* Sentinel */
 };
 
@@ -5249,17 +6187,17 @@ static PyHeapTypeObject SwigPyBuiltin___CameraFileInfoPreview_type = {
 
 SWIGINTERN SwigPyClientData SwigPyBuiltin___CameraFileInfoPreview_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin___CameraFileInfoPreview_type};
 
-static SwigPyGetSet CameraFileInfoAudio_type_getset = { _wrap_CameraFileInfoAudio_type_get, 0 };
-static SwigPyGetSet CameraFileInfoAudio_size_getset = { _wrap_CameraFileInfoAudio_size_get, 0 };
-static SwigPyGetSet CameraFileInfoAudio_status_getset = { _wrap_CameraFileInfoAudio_status_get, 0 };
+static SwigPyGetSet CameraFileInfoAudio_type_getset = { _wrap_CameraFileInfoAudio_type_get, _wrap_CameraFileInfoAudio_type_set };
+static SwigPyGetSet CameraFileInfoAudio_size_getset = { _wrap_CameraFileInfoAudio_size_get, _wrap_CameraFileInfoAudio_size_set };
+static SwigPyGetSet CameraFileInfoAudio_status_getset = { _wrap_CameraFileInfoAudio_status_get, _wrap_CameraFileInfoAudio_status_set };
 static SwigPyGetSet CameraFileInfoAudio___dict___getset = { SwigPyObject_get___dict__, 0 };
-static SwigPyGetSet CameraFileInfoAudio_fields_getset = { _wrap_CameraFileInfoAudio_fields_get, 0 };
+static SwigPyGetSet CameraFileInfoAudio_fields_getset = { _wrap_CameraFileInfoAudio_fields_get, _wrap_CameraFileInfoAudio_fields_set };
 SWIGINTERN PyGetSetDef SwigPyBuiltin___CameraFileInfoAudio_getset[] = {
-    { (char *)"type", SwigPyBuiltin_GetterClosure, 0, (char *)"type", &CameraFileInfoAudio_type_getset },
-    { (char *)"size", SwigPyBuiltin_GetterClosure, 0, (char *)"size", &CameraFileInfoAudio_size_getset },
-    { (char *)"status", SwigPyBuiltin_GetterClosure, 0, (char *)"status", &CameraFileInfoAudio_status_getset },
+    { (char *)"type", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"type", &CameraFileInfoAudio_type_getset },
+    { (char *)"size", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"size", &CameraFileInfoAudio_size_getset },
+    { (char *)"status", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"status", &CameraFileInfoAudio_status_getset },
     { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"fields", &CameraFileInfoAudio___dict___getset },
-    { (char *)"fields", SwigPyBuiltin_GetterClosure, 0, (char *)"fields", &CameraFileInfoAudio_fields_getset },
+    { (char *)"fields", SwigPyBuiltin_GetterClosure, SwigPyBuiltin_SetterClosure, (char *)"fields", &CameraFileInfoAudio_fields_getset },
     { NULL, NULL, NULL, NULL, NULL } /* Sentinel */
 };
 
@@ -5593,7 +6531,7 @@ static PyHeapTypeObject SwigPyBuiltin___CameraFileInfo_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     offsetof(SwigPyObject, dict),             /* tp_dictoffset */
-    SwigPyBuiltin_BadInit,                    /* tp_init */
+    _wrap_new_CameraFileInfo,                 /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */

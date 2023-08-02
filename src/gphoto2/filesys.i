@@ -30,6 +30,9 @@ CALLOC_ARGOUT(CameraFileInfo *info)
 // image dimensions use uint32_t and storage info uses uint64_t
 %include "stdint.i"
 
+// Add constructor to CameraFileInfo
+%defaultctor _CameraFileInfo;
+
 // Ignore functions only used by camera drivers
 %ignore gp_filesystem_append;
 %ignore gp_filesystem_count;
@@ -63,7 +66,21 @@ CALLOC_ARGOUT(CameraFileInfo *info)
 %ignore CameraFilesystemFuncs;
 %ignore _CameraFilesystemFuncs;
 
-// Structures are read only
-%immutable;
+// Camera storage is immutable
+%immutable _CameraStorageInformation::fields;
+%immutable _CameraStorageInformation::basedir;
+%immutable _CameraStorageInformation::label;
+%immutable _CameraStorageInformation::description;
+%immutable _CameraStorageInformation::type;
+%immutable _CameraStorageInformation::fstype;
+%immutable _CameraStorageInformation::access;
+%immutable _CameraStorageInformation::capacitykbytes;
+%immutable _CameraStorageInformation::freekbytes;
+%immutable _CameraStorageInformation::freeimages;
+
+// Top level of CameraFileInfo is immutable
+%immutable _CameraFileInfo::preview;
+%immutable _CameraFileInfo::file;
+%immutable _CameraFileInfo::audio;
 
 %include "gphoto2/gphoto2-filesys.h"

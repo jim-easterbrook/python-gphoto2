@@ -87,7 +87,7 @@ static int del_CallbackDetails(struct CallbackDetails *this) {
 DEFAULT_DTOR(CallbackDetails, del_CallbackDetails);
 
 // Define wrapper functions to call Python callbacks from C callbacks
-%define CB_WRAPPER(rtn_type, cb_name, cb_args, py3_arglist, py2_arglist, function)
+%define CB_WRAPPER(rtn_type, cb_name, cb_args, func_arglist, function)
 %{
 static rtn_type cb_name cb_args {
     PyGILState_STATE gstate = PyGILState_Ensure();
@@ -108,7 +108,7 @@ static rtn_type cb_name cb_args {
 %{
     PyObject *py_context = SWIG_NewPointerObj(
         SWIG_as_voidptr(context), SWIGTYPE_p__GPContext, 0);
-    arglist = Py_BuildValue py3_arglist;
+    arglist = Py_BuildValue func_arglist;
     if (arglist == NULL) {
         PyErr_Print();
         goto fail;
@@ -141,52 +141,39 @@ fail:
 %enddef // CB_WRAPPER
 
 CB_WRAPPER(void, wrap_idle_func, (GPContext *context, void *data),
-           ("(OO)", py_context, this->data),
-           ("(OO)", py_context, this->data),
-           this->func_1)
+           ("(OO)", py_context, this->data), this->func_1)
 
-CB_WRAPPER(void, wrap_error_func, (GPContext *context, const char *text, void *data),
-           ("(OyO)", py_context, text, this->data),
-           ("(OsO)", py_context, text, this->data),
-           this->func_1)
+CB_WRAPPER(void, wrap_error_func,
+           (GPContext *context, const char *text, void *data),
+           ("(OyO)", py_context, text, this->data), this->func_1)
 
-CB_WRAPPER(void, wrap_status_func, (GPContext *context, const char *text, void *data),
-           ("(OyO)", py_context, text, this->data),
-           ("(OsO)", py_context, text, this->data),
-           this->func_1)
+CB_WRAPPER(void, wrap_status_func,
+           (GPContext *context, const char *text, void *data),
+           ("(OyO)", py_context, text, this->data), this->func_1)
 
-CB_WRAPPER(void, wrap_message_func, (GPContext *context, const char *text, void *data),
-           ("(OyO)", py_context, text, this->data),
-           ("(OsO)", py_context, text, this->data),
-           this->func_1)
+CB_WRAPPER(void, wrap_message_func,
+           (GPContext *context, const char *text, void *data),
+           ("(OyO)", py_context, text, this->data), this->func_1)
 
 CB_WRAPPER(GPContextFeedback, wrap_question_func,
            (GPContext *context, const char *text, void *data),
-           ("(OyO)", py_context, text, this->data),
-           ("(OsO)", py_context, text, this->data),
-           this->func_1)
+           ("(OyO)", py_context, text, this->data), this->func_1)
 
-CB_WRAPPER(GPContextFeedback, wrap_cancel_func, (GPContext *context, void *data),
-           ("(OO)", py_context, this->data),
-           ("(OO)", py_context, this->data),
-           this->func_1)
+CB_WRAPPER(GPContextFeedback, wrap_cancel_func,
+           (GPContext *context, void *data),
+           ("(OO)", py_context, this->data), this->func_1)
 
 CB_WRAPPER(int, py_progress_start,
            (GPContext *context, float target, const char *text, void *data),
-           ("(OfyO)", py_context, target, text, this->data),
-           ("(OfsO)", py_context, target, text, this->data),
-           this->func_1)
+           ("(OfyO)", py_context, target, text, this->data), this->func_1)
 
 CB_WRAPPER(void, py_progress_update,
            (GPContext *context, unsigned int id, float current, void *data),
-           ("(OifO)", py_context, id, current, this->data),
-           ("(OifO)", py_context, id, current, this->data),
-           this->func_2)
+           ("(OifO)", py_context, id, current, this->data), this->func_2)
 
-CB_WRAPPER(void, py_progress_stop, (GPContext *context, unsigned int id, void *data),
-           ("(OiO)", py_context, id, this->data),
-           ("(OiO)", py_context, id, this->data),
-           this->func_3)
+CB_WRAPPER(void, py_progress_stop,
+           (GPContext *context, unsigned int id, void *data),
+           ("(OiO)", py_context, id, this->data), this->func_3)
 
 // Typemaps for all callback setting functions
 %typemap(arginit) void *data (CallbackDetails *_global_callbacks) {

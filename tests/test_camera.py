@@ -93,10 +93,10 @@ class TestVirtualCamera(unittest.TestCase):
         def list_files(path='/'):
             result = []
             # get files
-            for name, value in self.camera.folder_list_files(path):
+            for name in self.camera.folder_list_files(path).keys():
                 result.append(os.path.join(path, name))
             # recurse over subfolders
-            for name, value in self.camera.folder_list_folders(path):
+            for name in self.camera.folder_list_folders(path).keys():
                 result.extend(list_files(os.path.join(path, name)))
             return result
 

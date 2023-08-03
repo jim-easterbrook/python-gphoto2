@@ -22,6 +22,7 @@ Changes in 2.4.0:
      gp_port_info_list_append, gp_widget_add_choice, gp_widget_set_info,
      gp_widget_set_name, gp_widget_set_range, gp_widget_set_readonly.
      These will be removed in a future release.
+  */ CameraList behaves like a cross between Python list and dict types.
 
 Changes in 2.3.6:
   1/ Use libusb1 instead of libusb0 in Linux binary wheels.

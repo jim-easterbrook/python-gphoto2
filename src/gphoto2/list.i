@@ -47,19 +47,32 @@ struct _CameraList {};
 DEFAULT_CTOR(_CameraList, gp_list_new)
 DEFAULT_DTOR(_CameraList, gp_list_unref)
 
-// Make CameraList more like a Python list
+// Make CameraList more like a Python list and/or dict
 LEN_MEMBER_FUNCTION(_CameraList, gp_list_count)
 #if defined(SWIGPYTHON_BUILTIN)
-%feature("python:slot", "sq_item",   functype="ssizeargfunc") _CameraList::__getitem__;
+%feature("python:slot", "mp_subscript", functype="binaryfunc")
+  _CameraList::__getitem__;
 #endif
+%feature("docstring") _CameraList::keys "Return a tuple of all the names in the list."
+%feature("docstring") _CameraList::values "Return a tuple of all the values in the list."
+%feature("docstring") _CameraList::items "Return a tuple of all the (name, value) pairs in the list."
 %noexception _CameraList::__getitem__;
+%noexception _CameraList::keys;
+%noexception _CameraList::values;
+%noexception _CameraList::items;
 %extend _CameraList {
   PyObject *__getitem__(int idx) {
-    int error = 0;
+    int error = GP_OK;
     const char *name = NULL;
     const char *value = NULL;
-    PyObject* result = NULL;
-    if (idx < 0 || idx >= gp_list_count($self)) {
+    int count = gp_list_count($self);
+    if (count < GP_OK) {
+      GPHOTO2_ERROR(count)
+      return NULL;
+    }
+    if (idx < 0)
+      idx += count;
+    if (idx < 0 || idx >= count) {
       PyErr_SetString(PyExc_IndexError, "CameraList index out of range");
       return NULL;
     }
@@ -73,24 +86,94 @@ LEN_MEMBER_FUNCTION(_CameraList, gp_list_count)
       GPHOTO2_ERROR(error)
       return NULL;
     }
-    result = PyList_New(2);
-    if (name == NULL) {
-      Py_INCREF(Py_None);
-      PyList_SetItem(result, 0, Py_None);
+    return PyTuple_Pack(2,
+      PyUnicode_FromString(name), PyUnicode_FromString(value));
+  }
+  PyObject *__getitem__(const char *name) {
+    int error = GP_OK;
+    const char *value = NULL;
+    int idx = 0;
+    error = gp_list_find_by_name($self, &idx, name);
+    if (error < GP_OK) {
+      PyErr_SetString(PyExc_KeyError, name);
+      return NULL;
     }
-    else {
-      PyList_SetItem(result, 0, PyString_FromString(name));
+    error = gp_list_get_value($self, idx, &value);
+    if (error < GP_OK) {
+      GPHOTO2_ERROR(error)
+      return NULL;
     }
-    if (value == NULL) {
-      Py_INCREF(Py_None);
-      PyList_SetItem(result, 1, Py_None);
+    return PyUnicode_FromString(value);
+  }
+  PyObject *keys() {
+    PyObject *result = NULL;
+    int error = GP_OK;
+    const char *name = NULL;
+    int count = gp_list_count($self);
+    if (count < GP_OK) {
+      GPHOTO2_ERROR(count)
+      return NULL;
     }
-    else {
-      PyList_SetItem(result, 1, PyString_FromString(value));
+    result = PyTuple_New(count);
+    for (int i = 0; i < count; i++) {
+      error = gp_list_get_name($self, i, &name);
+      if (error < GP_OK) {
+        GPHOTO2_ERROR(error)
+        return NULL;
+      }
+      PyTuple_SET_ITEM(result, i, PyUnicode_FromString(name));
+    }
+    return result;
+  }
+  PyObject *values() {
+    PyObject *result = NULL;
+    int error = GP_OK;
+    const char *value = NULL;
+    int count = gp_list_count($self);
+    if (count < GP_OK) {
+      GPHOTO2_ERROR(count)
+      return NULL;
+    }
+    result = PyTuple_New(count);
+    for (int i = 0; i < count; i++) {
+      error = gp_list_get_value($self, i, &value);
+      if (error < GP_OK) {
+        GPHOTO2_ERROR(error)
+        return NULL;
+      }
+      PyTuple_SET_ITEM(result, i, PyUnicode_FromString(value));
+    }
+    return result;
+  }
+  PyObject *items() {
+    PyObject *result = NULL;
+    int error = GP_OK;
+    const char *name = NULL;
+    const char *value = NULL;
+    int count = gp_list_count($self);
+    if (count < GP_OK) {
+      GPHOTO2_ERROR(count)
+      return NULL;
+    }
+    result = PyTuple_New(count);
+    for (int i = 0; i < count; i++) {
+      error = gp_list_get_name($self, i, &name);
+      if (error < GP_OK) {
+        GPHOTO2_ERROR(error)
+        return NULL;
+      }
+      error = gp_list_get_value($self, i, &value);
+      if (error < GP_OK) {
+        GPHOTO2_ERROR(error)
+        return NULL;
+      }
+      PyTuple_SET_ITEM(result, i, PyTuple_Pack(2,
+        PyUnicode_FromString(name), PyUnicode_FromString(value)));
     }
     return result;
   }
 };
+
 
 // Add member methods to _CameraList
 MEMBER_FUNCTION(_CameraList,

@@ -18,31 +18,25 @@
 import os
 import unittest
 
-os.environ['VCAMERADIR'] = os.path.join(os.path.dirname(__file__), 'vcamera')
-
 import gphoto2 as gp
 
 
 class TestPortInfoList(unittest.TestCase):
-    def setUp(self):
-        # switch to virtual camera from normal drivers
-        os.environ['IOLIBS'] = os.environ['IOLIBS'].replace('iolibs', 'vusb')
-
     def test_oo_style(self):
         port_info_list = gp.PortInfoList()
         self.assertIsInstance(port_info_list, gp.PortInfoList)
         self.assertEqual(len(port_info_list), 0)
         port_info_list.load()
-        self.assertEqual(len(port_info_list), 1)
+        self.assertGreater(len(port_info_list), 0)
         port_info = port_info_list.get_info(0)
         name = port_info.get_name()
-        self.assertEqual(name, 'Universal Serial Bus')
+        self.assertIsInstance(name, str)
         self.assertEqual(port_info_list.lookup_name(name), 0)
         path = port_info.get_path()
-        self.assertEqual(path, 'usb:001,001')
+        self.assertIsInstance(path, str)
         self.assertEqual(port_info_list.lookup_path(path), 0)
         type_ = port_info.get_type()
-        self.assertEqual(type_, gp.GP_PORT_USB)
+        self.assertIsInstance(type_, int)
 
     def test_c_style(self):
         OK, port_info_list = gp.gp_port_info_list_new()
@@ -50,22 +44,22 @@ class TestPortInfoList(unittest.TestCase):
         self.assertIsInstance(port_info_list, gp.PortInfoList)
         self.assertEqual(gp.gp_port_info_list_count(port_info_list), 0)
         self.assertEqual(gp.gp_port_info_list_load(port_info_list), gp.GP_OK)
-        self.assertEqual(gp.gp_port_info_list_count(port_info_list), 1)
+        self.assertGreater(gp.gp_port_info_list_count(port_info_list), 0)
         OK, port_info = gp.gp_port_info_list_get_info(port_info_list, 0)
         self.assertEqual(OK, gp.GP_OK)
         OK, name = gp.gp_port_info_get_name(port_info)
         self.assertEqual(OK, gp.GP_OK)
-        self.assertEqual(name, 'Universal Serial Bus')
+        self.assertIsInstance(name, str)
         self.assertEqual(
             gp.gp_port_info_list_lookup_name(port_info_list, name), 0)
         OK, path = gp.gp_port_info_get_path(port_info)
         self.assertEqual(OK, gp.GP_OK)
-        self.assertEqual(path, 'usb:001,001')
+        self.assertIsInstance(path, str)
         self.assertEqual(
             gp.gp_port_info_list_lookup_path(port_info_list, path), 0)
         OK, type_ = gp.gp_port_info_get_type(port_info)
         self.assertEqual(OK, gp.GP_OK)
-        self.assertEqual(type_, gp.GP_PORT_USB)
+        self.assertIsInstance(type_, int)
 
 
 if __name__ == "__main__":

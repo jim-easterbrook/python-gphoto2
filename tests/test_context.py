@@ -21,14 +21,13 @@ import unittest
 
 import gphoto2 as gp
 
-from tests.vcamera import has_vcam
+from tests.vcamera import has_vcam, use_vcam
 
 
 @unittest.skipUnless(has_vcam, 'no virtual camera')
 class TestContext(unittest.TestCase):
     def setUp(self):
-        # switch to virtual camera from normal drivers
-        os.environ['IOLIBS'] = os.environ['IOLIBS'].replace('iolibs', 'vusb')
+        use_vcam(True)
 
     def cb_idle(self, context, data):
         self.callback_count['cb_idle'] += 1

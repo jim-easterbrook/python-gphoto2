@@ -20,14 +20,13 @@ import unittest
 
 import gphoto2 as gp
 
-from tests.vcamera import has_vcam
+from tests.vcamera import has_vcam, use_vcam
 
 
 @unittest.skipUnless(has_vcam, 'no virtual camera')
 class TestAbilitiesList(unittest.TestCase):
     def setUp(self):
-        # switch to virtual camera from normal drivers
-        os.environ['IOLIBS'] = os.environ['IOLIBS'].replace('iolibs', 'vusb')
+        use_vcam(True)
         # set locale dir (should be already set by package __init__)
         locale_dir = os.environ['IOLIBS'].replace('vusb', 'locale')
         self.assertEqual(gp.gp_init_localedir(locale_dir), gp.GP_OK)

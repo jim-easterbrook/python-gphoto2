@@ -21,13 +21,12 @@ import unittest
 
 import gphoto2 as gp
 
-from tests.vcamera import has_vcam
+from tests.vcamera import has_vcam, use_vcam
 
 
 class TestNoCamera(unittest.TestCase):
     def setUp(self):
-        # switch from virtual camera to normal drivers
-        os.environ['IOLIBS'] = os.environ['IOLIBS'].replace('vusb', 'iolibs')
+        use_vcam(False)
 
     def test_oo_style(self):
         cameras = gp.Camera.autodetect()
@@ -61,8 +60,7 @@ class TestNoCamera(unittest.TestCase):
 @unittest.skipUnless(has_vcam, 'no virtual camera')
 class TestAutoDetect(unittest.TestCase):
     def setUp(self):
-        # switch to virtual camera from normal drivers
-        os.environ['IOLIBS'] = os.environ['IOLIBS'].replace('iolibs', 'vusb')
+        use_vcam(True)
 
     def test_oo_style(self):
         cameras = gp.Camera.autodetect()
@@ -84,8 +82,7 @@ class TestAutoDetect(unittest.TestCase):
 @unittest.skipUnless(has_vcam, 'no virtual camera')
 class TestVirtualCamera(unittest.TestCase):
     def setUp(self):
-        # switch to virtual camera from normal drivers
-        os.environ['IOLIBS'] = os.environ['IOLIBS'].replace('iolibs', 'vusb')
+        use_vcam(True)
         self.camera = gp.Camera()
         self.camera.init()
 

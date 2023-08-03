@@ -20,11 +20,12 @@ import unittest
 
 import gphoto2 as gp
 
+from tests.vcamera import use_vcam
+
 
 class TestPortInfoList(unittest.TestCase):
     def setUp(self):
-        # switch from virtual camera to normal drivers
-        os.environ['IOLIBS'] = os.environ['IOLIBS'].replace('vusb', 'iolibs')
+        use_vcam(False)
 
     def test_oo_style(self):
         port_info_list = gp.PortInfoList()

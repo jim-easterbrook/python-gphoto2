@@ -54,6 +54,11 @@ class TestList(unittest.TestCase):
         self.assertEqual(test_list['A'], '1')
         with self.assertRaises(KeyError) as cm:
             test_list['C']
+        it = iter(test_list)
+        self.assertEqual(next(it), test_list[0])
+        self.assertEqual(next(it), test_list[1])
+        with self.assertRaises(StopIteration):
+            next(it)
         test_list.sort()
         self.assertEqual(test_list.get_name(0), 'A')
         self.assertEqual(test_list.get_value(0), '1')

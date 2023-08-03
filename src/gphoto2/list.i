@@ -52,11 +52,14 @@ LEN_MEMBER_FUNCTION(_CameraList, gp_list_count)
 #if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "mp_subscript", functype="binaryfunc")
   _CameraList::__getitem__;
+%feature("python:slot", "tp_iter", functype="getiterfunc")
+  _CameraList::__iter__;
 #endif
 %feature("docstring") _CameraList::keys "Return a tuple of all the names in the list."
 %feature("docstring") _CameraList::values "Return a tuple of all the values in the list."
 %feature("docstring") _CameraList::items "Return a tuple of all the (name, value) pairs in the list."
 %noexception _CameraList::__getitem__;
+%noexception _CameraList::__iter__;
 %noexception _CameraList::keys;
 %noexception _CameraList::values;
 %noexception _CameraList::items;
@@ -171,6 +174,9 @@ LEN_MEMBER_FUNCTION(_CameraList, gp_list_count)
         PyUnicode_FromString(name), PyUnicode_FromString(value)));
     }
     return result;
+  }
+  PyObject *__iter__() {
+    return PySeqIter_New(_CameraList_items($self));
   }
 };
 

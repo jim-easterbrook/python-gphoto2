@@ -4233,6 +4233,9 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
     }
     return result;
   }
+SWIGINTERN PyObject *_CameraList___iter__(struct _CameraList *self){
+    return PySeqIter_New(_CameraList_items(self));
+  }
 SWIGINTERN int _CameraList_count(struct _CameraList *self){
 
 
@@ -4622,6 +4625,28 @@ SWIGINTERN PyObject *_wrap_CameraList_items(PyObject *self, PyObject *args) {
   }
   arg1 = (struct _CameraList *)(argp1);
   result = (PyObject *)_CameraList_items(arg1);
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraList___iter__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraList *arg1 = (struct _CameraList *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *result = 0 ;
+  
+  (void)self;
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList___iter__ takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList___iter__" "', argument " "1"" of type '" "struct _CameraList *""'"); 
+  }
+  arg1 = (struct _CameraList *)(argp1);
+  result = (PyObject *)_CameraList___iter__(arg1);
   resultobj = result;
   return resultobj;
 fail:
@@ -5034,6 +5059,8 @@ SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraList) /* defines _wrap_delete_Camer
 SWIGPY_LENFUNC_CLOSURE(_wrap_CameraList___len__) /* defines _wrap_CameraList___len___lenfunc_closure */
 
 SWIGPY_BINARYFUNC_CLOSURE(_wrap_CameraList___getitem__) /* defines _wrap_CameraList___getitem___binaryfunc_closure */
+
+SWIGPY_GETITERFUNC_CLOSURE(_wrap_CameraList___iter__) /* defines _wrap_CameraList___iter___getiterfunc_closure */
 
 SWIGINTERN PyObject *_wrap_gp_list_new(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
@@ -5747,6 +5774,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___CameraList_methods[] = {
 		"items(self) -> PyObject *\n"
 		"Return a tuple of all the (name, value) pairs in the list.\n"
 		"" },
+  { "__iter__", _wrap_CameraList___iter__, METH_VARARGS, "__iter__(self) -> PyObject *" },
   { "count", _wrap_CameraList_count, METH_VARARGS, "\n"
 		"count(self) -> int\n"
 		"Counts the entries in the `list`.  \n"
@@ -5997,7 +6025,7 @@ static PyHeapTypeObject SwigPyBuiltin___CameraList_type = {
     (inquiry) 0,                              /* tp_clear */
     SwigPyBuiltin___CameraList_richcompare,   /* tp_richcompare */
     0,                                        /* tp_weaklistoffset */
-    (getiterfunc) 0,                          /* tp_iter */
+    _wrap_CameraList___iter___getiterfunc_closure,                /* tp_iter */
     (iternextfunc) 0,                         /* tp_iternext */
     SwigPyBuiltin___CameraList_methods,       /* tp_methods */
     0,                                        /* tp_members */

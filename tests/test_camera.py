@@ -19,9 +19,9 @@ import os
 import time
 import unittest
 
-os.environ['VCAMERADIR'] = os.path.join(os.path.dirname(__file__), 'vcamera')
-
 import gphoto2 as gp
+
+from tests.vcamera import has_vcam
 
 
 class TestNoCamera(unittest.TestCase):
@@ -58,6 +58,7 @@ class TestNoCamera(unittest.TestCase):
             self.assertEqual(OK, gp.GP_ERROR_MODEL_NOT_FOUND)
 
 
+@unittest.skipUnless(has_vcam, 'no virtual camera')
 class TestAutoDetect(unittest.TestCase):
     def setUp(self):
         # switch to virtual camera from normal drivers
@@ -80,6 +81,7 @@ class TestAutoDetect(unittest.TestCase):
         self.assertEqual(name, 'Nikon DSC D750')
 
 
+@unittest.skipUnless(has_vcam, 'no virtual camera')
 class TestVirtualCamera(unittest.TestCase):
     def setUp(self):
         # switch to virtual camera from normal drivers

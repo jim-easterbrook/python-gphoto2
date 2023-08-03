@@ -18,11 +18,12 @@
 import os
 import unittest
 
-os.environ['VCAMERADIR'] = os.path.join(os.path.dirname(__file__), 'vcamera')
-
 import gphoto2 as gp
 
+from tests.vcamera import has_vcam
 
+
+@unittest.skipUnless(has_vcam, 'no virtual camera')
 class TestAbilitiesList(unittest.TestCase):
     def setUp(self):
         # switch to virtual camera from normal drivers

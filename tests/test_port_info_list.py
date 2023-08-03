@@ -22,6 +22,10 @@ import gphoto2 as gp
 
 
 class TestPortInfoList(unittest.TestCase):
+    def setUp(self):
+        # switch from virtual camera to normal drivers
+        os.environ['IOLIBS'] = os.environ['IOLIBS'].replace('vusb', 'iolibs')
+
     def test_oo_style(self):
         port_info_list = gp.PortInfoList()
         self.assertIsInstance(port_info_list, gp.PortInfoList)

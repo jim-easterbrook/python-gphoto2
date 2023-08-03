@@ -15,19 +15,32 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
+import locale
 import unittest
 
 import gphoto2 as gp
 
 
 class TestResult(unittest.TestCase):
-    def test_result(self):
+    def test_exceptions(self):
         for error in (gp.GP_ERROR_MODEL_NOT_FOUND, gp.GP_ERROR_NO_MEMORY):
             with self.assertRaises(gp.GPhoto2Error) as cm:
                 gp.check_result(error)
             ex = cm.exception
             self.assertEqual(ex.code, error)
             self.assertEqual(ex.string, gp.gp_result_as_string(error))
+
+    def test_locales(self):
+        locale.setlocale(locale.LC_ALL, locale.normalize('de'))
+        self.assertEqual(gp.gp_result_as_string(gp.GP_ERROR_MODEL_NOT_FOUND),
+                         'Unbekanntes Modell')
+        self.assertEqual(gp.gp_port_result_as_string(gp.GP_ERROR_NO_MEMORY),
+                         'Speicher voll')
+        locale.setlocale(locale.LC_ALL, locale.normalize('en'))
+        self.assertEqual(gp.gp_result_as_string(gp.GP_ERROR_MODEL_NOT_FOUND),
+                         'Unknown model')
+        self.assertEqual(gp.gp_port_result_as_string(gp.GP_ERROR_NO_MEMORY),
+                         'Out of memory')
 
 
 if __name__ == "__main__":

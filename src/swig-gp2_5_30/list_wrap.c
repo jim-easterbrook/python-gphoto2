@@ -3743,16 +3743,23 @@ SwigPyBuiltin_iternextfunc_closure(SwigPyWrapperFunction wrapper, PyObject *a) {
 
 
 
+#include "gphoto2/gphoto2.h"
+static PyObject* CameraList_item(CameraList *list, int type, int idx);
+typedef struct _CameraList_iterator CameraList_iterator;
+CameraList_iterator *new_CameraList_iterator(CameraList *list, int type);
+
+
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_SwigPyObject swig_types[0]
 #define SWIGTYPE_p__CameraList swig_types[1]
-#define SWIGTYPE_p_char swig_types[2]
-#define SWIGTYPE_p_int swig_types[3]
-#define SWIGTYPE_p_p__CameraList swig_types[4]
-#define SWIGTYPE_p_p_char swig_types[5]
-static swig_type_info *swig_types[7];
-static swig_module_info swig_module = {swig_types, 6, 0, 0, 0, 0};
+#define SWIGTYPE_p__CameraList_iterator swig_types[2]
+#define SWIGTYPE_p_char swig_types[3]
+#define SWIGTYPE_p_int swig_types[4]
+#define SWIGTYPE_p_p__CameraList swig_types[5]
+#define SWIGTYPE_p_p_char swig_types[6]
+static swig_type_info *swig_types[8];
+static swig_module_info swig_module = {swig_types, 7, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3802,28 +3809,6 @@ SWIGINTERN void delete__CameraList(struct _CameraList *self){
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
   }
-SWIGINTERN int _CameraList___len__(struct _CameraList *self){
-
-
-
-    int result = gp_list_count (self);
-
-
-
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
-
-    return result;
-
-  }
-
-SWIGINTERNINLINE PyObject*
-  SWIG_From_int  (int value)
-{
-  return PyInt_FromLong((long) value);
-}
-
 
 #include <limits.h>
 #if !defined(SWIG_NO_LLONG_MAX)
@@ -3976,9 +3961,6 @@ SWIG_AsVal_int (PyObject * obj, int *val)
 }
 
 SWIGINTERN PyObject *_CameraList___getitem____SWIG_0(struct _CameraList *self,int idx){
-    int error = GP_OK;
-    const char *name = NULL;
-    const char *value = NULL;
     int count = gp_list_count(self);
     if (count < GP_OK) {
       /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
@@ -3992,22 +3974,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(count));
       PyErr_SetString(PyExc_IndexError, "CameraList index out of range");
       return NULL;
     }
-    error = gp_list_get_name(self, idx, &name);
-    if (error < GP_OK) {
-      /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
-      return NULL;
-    }
-    error = gp_list_get_value(self, idx, &value);
-    if (error < GP_OK) {
-      /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
-      return NULL;
-    }
-    return PyTuple_Pack(2,
-      PyUnicode_FromString(name), PyUnicode_FromString(value));
+    return CameraList_item(self, 2, idx);
   }
 
 SWIGINTERN swig_type_info*
@@ -4135,107 +4102,47 @@ SWIG_AsCharPtrAndSize(PyObject *obj, char** cptr, size_t* psize, int *alloc)
 
 
 SWIGINTERN PyObject *_CameraList___getitem____SWIG_1(struct _CameraList *self,char const *name){
-    int error = GP_OK;
-    const char *value = NULL;
     int idx = 0;
-    error = gp_list_find_by_name(self, &idx, name);
-    if (error < GP_OK) {
+    if (gp_list_find_by_name(self, &idx, name) < GP_OK) {
       PyErr_SetString(PyExc_KeyError, name);
       return NULL;
     }
-    error = gp_list_get_value(self, idx, &value);
-    if (error < GP_OK) {
-      /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
-      return NULL;
-    }
-    return PyUnicode_FromString(value);
+    return CameraList_item(self, 1, idx);
   }
-SWIGINTERN PyObject *_CameraList_keys(struct _CameraList *self){
-    PyObject *result = NULL;
-    int error = GP_OK;
-    const char *name = NULL;
-    int count = gp_list_count(self);
-    if (count < GP_OK) {
-      /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(count));
+SWIGINTERN CameraList_iterator *_CameraList_keys(struct _CameraList *self){
+    return new_CameraList_iterator(self, 0);
+  }
+SWIGINTERN CameraList_iterator *_CameraList_values(struct _CameraList *self){
+    return new_CameraList_iterator(self, 1);
+  }
+SWIGINTERN CameraList_iterator *_CameraList_items(struct _CameraList *self){
+    return new_CameraList_iterator(self, 2);
+  }
+SWIGINTERN CameraList_iterator *_CameraList___iter__(struct _CameraList *self){
+    return new_CameraList_iterator(self, 2);
+  }
+SWIGINTERN int _CameraList___len__(struct _CameraList *self){
+
+
+
+    int result = gp_list_count (self);
+
+
+
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
-      return NULL;
-    }
-    result = PyTuple_New(count);
-    for (int i = 0; i < count; i++) {
-      error = gp_list_get_name(self, i, &name);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
-        return NULL;
-      }
-      PyTuple_SET_ITEM(result, i, PyUnicode_FromString(name));
-    }
+
     return result;
+
   }
-SWIGINTERN PyObject *_CameraList_values(struct _CameraList *self){
-    PyObject *result = NULL;
-    int error = GP_OK;
-    const char *value = NULL;
-    int count = gp_list_count(self);
-    if (count < GP_OK) {
-      /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(count));
-/*@SWIG@*/
-      return NULL;
-    }
-    result = PyTuple_New(count);
-    for (int i = 0; i < count; i++) {
-      error = gp_list_get_value(self, i, &value);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
-        return NULL;
-      }
-      PyTuple_SET_ITEM(result, i, PyUnicode_FromString(value));
-    }
-    return result;
-  }
-SWIGINTERN PyObject *_CameraList_items(struct _CameraList *self){
-    PyObject *result = NULL;
-    int error = GP_OK;
-    const char *name = NULL;
-    const char *value = NULL;
-    int count = gp_list_count(self);
-    if (count < GP_OK) {
-      /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(count));
-/*@SWIG@*/
-      return NULL;
-    }
-    result = PyTuple_New(count);
-    for (int i = 0; i < count; i++) {
-      error = gp_list_get_name(self, i, &name);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
-        return NULL;
-      }
-      error = gp_list_get_value(self, i, &value);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
-        return NULL;
-      }
-      PyTuple_SET_ITEM(result, i, PyTuple_Pack(2,
-        PyUnicode_FromString(name), PyUnicode_FromString(value)));
-    }
-    return result;
-  }
-SWIGINTERN PyObject *_CameraList___iter__(struct _CameraList *self){
-    return PySeqIter_New(_CameraList_items(self));
-  }
+
+SWIGINTERNINLINE PyObject*
+  SWIG_From_int  (int value)
+{
+  return PyInt_FromLong((long) value);
+}
+
 SWIGINTERN int _CameraList_count(struct _CameraList *self){
 
 
@@ -4386,6 +4293,88 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 
 
   }
+
+typedef struct _CameraList_iterator {
+  CameraList *list;
+  int type; // 0 = keys, 1 = values, 2 = items
+  int idx;
+  int count;
+} CameraList_iterator;
+
+SWIGINTERN void delete__CameraList_iterator(struct _CameraList_iterator *self){
+    int error = gp_list_unref(self->list);
+    if (error < GP_OK) {
+      /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+/*@SWIG@*/
+    }
+    free(self);
+  }
+SWIGINTERN CameraList_iterator *_CameraList_iterator___iter__(struct _CameraList_iterator *self){
+    return self;
+  }
+SWIGINTERN PyObject *_CameraList_iterator___next__(struct _CameraList_iterator *self){
+    if (self->idx >= self->count) {
+      PyErr_SetNone(PyExc_StopIteration);
+      return NULL;
+    }
+    return CameraList_item(self->list, self->type, self->idx++);
+  }
+
+static PyObject* CameraList_item(CameraList *list, int type, int idx) {
+  int error = GP_OK;
+  const char *name = NULL;
+  const char *value = NULL;
+  PyObject *py_name = NULL;
+  PyObject *py_value = NULL;
+  if (type != 1) {
+    error = gp_list_get_name(list, idx, &name);
+    if (error < GP_OK) {
+      PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+      return NULL;
+    }
+    py_name = PyUnicode_FromString(name);
+  }
+  if (type == 0)
+    return py_name;
+  error = gp_list_get_value(list, idx, &value);
+  if (error < GP_OK) {
+    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+    return NULL;
+  }
+  py_value = PyUnicode_FromString(value);
+  if (type == 1)
+    return py_value;
+  return PyTuple_Pack(2, py_name, py_value);
+}
+CameraList_iterator *new_CameraList_iterator(CameraList *list, int type) {
+  int error = GP_OK;
+  CameraList_iterator *self = malloc(sizeof(CameraList_iterator));
+  if (!self) {
+    PyErr_SetString(
+      PyExc_MemoryError, "cannot allocate CameraList_iterator");
+    goto fail;
+  }
+  self->list = list;
+  self->type = type;
+  self->idx = 0;
+  self->count = gp_list_count(list);
+  if (self->count < GP_OK) {
+    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(self->count));
+    goto fail;
+  }
+  error = gp_list_ref(list);
+  if (error < GP_OK) {
+    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+    goto fail;
+  }
+  return self;
+fail:
+  if (self)
+    free(self);
+  return NULL;
+}
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -4425,31 +4414,6 @@ SWIGINTERN PyObject *_wrap_delete_CameraList(PyObject *self, PyObject *args) {
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CameraList___len__(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _CameraList *arg1 = (struct _CameraList *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int result;
-  
-  (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList___len__ takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList___len__" "', argument " "1"" of type '" "struct _CameraList *""'"); 
-  }
-  arg1 = (struct _CameraList *)(argp1);
-  {
-    result = (int)_CameraList___len__(arg1);
-    if (PyErr_Occurred()) SWIG_fail;
-  }
-  resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
   return NULL;
@@ -4571,7 +4535,7 @@ SWIGINTERN PyObject *_wrap_CameraList_keys(PyObject *self, PyObject *args) {
   struct _CameraList *arg1 = (struct _CameraList *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  PyObject *result = 0 ;
+  CameraList_iterator *result = 0 ;
   
   (void)self;
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList_keys takes no arguments");
@@ -4580,8 +4544,8 @@ SWIGINTERN PyObject *_wrap_CameraList_keys(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_keys" "', argument " "1"" of type '" "struct _CameraList *""'"); 
   }
   arg1 = (struct _CameraList *)(argp1);
-  result = (PyObject *)_CameraList_keys(arg1);
-  resultobj = result;
+  result = (CameraList_iterator *)_CameraList_keys(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_iterator, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4593,7 +4557,7 @@ SWIGINTERN PyObject *_wrap_CameraList_values(PyObject *self, PyObject *args) {
   struct _CameraList *arg1 = (struct _CameraList *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  PyObject *result = 0 ;
+  CameraList_iterator *result = 0 ;
   
   (void)self;
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList_values takes no arguments");
@@ -4602,8 +4566,8 @@ SWIGINTERN PyObject *_wrap_CameraList_values(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_values" "', argument " "1"" of type '" "struct _CameraList *""'"); 
   }
   arg1 = (struct _CameraList *)(argp1);
-  result = (PyObject *)_CameraList_values(arg1);
-  resultobj = result;
+  result = (CameraList_iterator *)_CameraList_values(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_iterator, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4615,7 +4579,7 @@ SWIGINTERN PyObject *_wrap_CameraList_items(PyObject *self, PyObject *args) {
   struct _CameraList *arg1 = (struct _CameraList *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  PyObject *result = 0 ;
+  CameraList_iterator *result = 0 ;
   
   (void)self;
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList_items takes no arguments");
@@ -4624,8 +4588,8 @@ SWIGINTERN PyObject *_wrap_CameraList_items(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_items" "', argument " "1"" of type '" "struct _CameraList *""'"); 
   }
   arg1 = (struct _CameraList *)(argp1);
-  result = (PyObject *)_CameraList_items(arg1);
-  resultobj = result;
+  result = (CameraList_iterator *)_CameraList_items(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_iterator, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4637,7 +4601,7 @@ SWIGINTERN PyObject *_wrap_CameraList___iter__(PyObject *self, PyObject *args) {
   struct _CameraList *arg1 = (struct _CameraList *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  PyObject *result = 0 ;
+  CameraList_iterator *result = 0 ;
   
   (void)self;
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList___iter__ takes no arguments");
@@ -4646,8 +4610,33 @@ SWIGINTERN PyObject *_wrap_CameraList___iter__(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList___iter__" "', argument " "1"" of type '" "struct _CameraList *""'"); 
   }
   arg1 = (struct _CameraList *)(argp1);
-  result = (PyObject *)_CameraList___iter__(arg1);
-  resultobj = result;
+  result = (CameraList_iterator *)_CameraList___iter__(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_iterator, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraList___len__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraList *arg1 = (struct _CameraList *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  (void)self;
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList___len__ takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList___len__" "', argument " "1"" of type '" "struct _CameraList *""'"); 
+  }
+  arg1 = (struct _CameraList *)(argp1);
+  {
+    result = (int)_CameraList___len__(arg1);
+    if (PyErr_Occurred()) SWIG_fail;
+  }
+  resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
   return NULL;
@@ -5056,11 +5045,91 @@ fail:
 
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraList) /* defines _wrap_delete_CameraList_destructor_closure */
 
-SWIGPY_LENFUNC_CLOSURE(_wrap_CameraList___len__) /* defines _wrap_CameraList___len___lenfunc_closure */
-
 SWIGPY_BINARYFUNC_CLOSURE(_wrap_CameraList___getitem__) /* defines _wrap_CameraList___getitem___binaryfunc_closure */
 
 SWIGPY_GETITERFUNC_CLOSURE(_wrap_CameraList___iter__) /* defines _wrap_CameraList___iter___getiterfunc_closure */
+
+SWIGPY_LENFUNC_CLOSURE(_wrap_CameraList___len__) /* defines _wrap_CameraList___len___lenfunc_closure */
+
+SWIGINTERN PyObject *_wrap_delete_CameraList_iterator(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraList_iterator *arg1 = (struct _CameraList_iterator *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  (void)self;
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_CameraList_iterator takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList_iterator, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_CameraList_iterator" "', argument " "1"" of type '" "struct _CameraList_iterator *""'"); 
+  }
+  arg1 = (struct _CameraList_iterator *)(argp1);
+  {
+    delete__CameraList_iterator(arg1);
+    if (PyErr_Occurred()) SWIG_fail;
+  }
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraList_iterator___iter__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraList_iterator *arg1 = (struct _CameraList_iterator *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  CameraList_iterator *result = 0 ;
+  
+  (void)self;
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList_iterator___iter__ takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList_iterator, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_iterator___iter__" "', argument " "1"" of type '" "struct _CameraList_iterator *""'"); 
+  }
+  arg1 = (struct _CameraList_iterator *)(argp1);
+  {
+    result = (CameraList_iterator *)_CameraList_iterator___iter__(arg1);
+    if (PyErr_Occurred()) SWIG_fail;
+  }
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_iterator, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraList_iterator___next__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraList_iterator *arg1 = (struct _CameraList_iterator *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *result = 0 ;
+  
+  (void)self;
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList_iterator___next__ takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList_iterator, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_iterator___next__" "', argument " "1"" of type '" "struct _CameraList_iterator *""'"); 
+  }
+  arg1 = (struct _CameraList_iterator *)(argp1);
+  {
+    result = (PyObject *)_CameraList_iterator___next__(arg1);
+    if (PyErr_Occurred()) SWIG_fail;
+  }
+  resultobj = result;
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraList_iterator) /* defines _wrap_delete_CameraList_iterator_destructor_closure */
+
+SWIGPY_GETITERFUNC_CLOSURE(_wrap_CameraList_iterator___iter__) /* defines _wrap_CameraList_iterator___iter___getiterfunc_closure */
+
+SWIGPY_ITERNEXTFUNC_CLOSURE(_wrap_CameraList_iterator___next__) /* defines _wrap_CameraList_iterator___next___iternextfunc_closure */
 
 SWIGINTERN PyObject *_wrap_gp_list_new(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
@@ -5747,7 +5816,6 @@ SwigPyBuiltin___CameraList_richcompare(PyObject *self, PyObject *other, int op) 
 }
 
 SWIGINTERN PyMethodDef SwigPyBuiltin___CameraList_methods[] = {
-  { "__len__", _wrap_CameraList___len__, METH_VARARGS, "__len__(self) -> int" },
   { "__getitem__", _wrap_CameraList___getitem__, METH_VARARGS, "\n"
 		"__getitem__(self, idx) -> PyObject *\n"
 		"\n"
@@ -5763,18 +5831,19 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___CameraList_methods[] = {
 		"\n"
 		"" },
   { "keys", _wrap_CameraList_keys, METH_VARARGS, "\n"
-		"keys(self) -> PyObject *\n"
-		"Return a tuple of all the names in the list.\n"
+		"keys(self) -> CameraList_iterator\n"
+		"Return an iterator over the names in the list.\n"
 		"" },
   { "values", _wrap_CameraList_values, METH_VARARGS, "\n"
-		"values(self) -> PyObject *\n"
-		"Return a tuple of all the values in the list.\n"
+		"values(self) -> CameraList_iterator\n"
+		"Return an iterator over the values in the list.\n"
 		"" },
   { "items", _wrap_CameraList_items, METH_VARARGS, "\n"
-		"items(self) -> PyObject *\n"
-		"Return a tuple of all the (name, value) pairs in the list.\n"
+		"items(self) -> CameraList_iterator\n"
+		"Return an iterator over the (name, value) pairs in the list.\n"
 		"" },
-  { "__iter__", _wrap_CameraList___iter__, METH_VARARGS, "__iter__(self) -> PyObject *" },
+  { "__iter__", _wrap_CameraList___iter__, METH_VARARGS, "__iter__(self) -> CameraList_iterator" },
+  { "__len__", _wrap_CameraList___len__, METH_VARARGS, "__len__(self) -> int" },
   { "count", _wrap_CameraList_count, METH_VARARGS, "\n"
 		"count(self) -> int\n"
 		"Counts the entries in the `list`.  \n"
@@ -6185,11 +6254,247 @@ static PyHeapTypeObject SwigPyBuiltin___CameraList_type = {
 
 SWIGINTERN SwigPyClientData SwigPyBuiltin___CameraList_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin___CameraList_type};
 
+static SwigPyGetSet CameraList_iterator___dict___getset = { SwigPyObject_get___dict__, 0 };
+SWIGINTERN PyGetSetDef SwigPyBuiltin___CameraList_iterator_getset[] = {
+    { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"~_CameraList_iterator", &CameraList_iterator___dict___getset },
+    { NULL, NULL, NULL, NULL, NULL } /* Sentinel */
+};
+
+SWIGINTERN PyObject *
+SwigPyBuiltin___CameraList_iterator_richcompare(PyObject *self, PyObject *other, int op) {
+  PyObject *result = NULL;
+  PyObject *tuple = PyTuple_New(1);
+  assert(tuple);
+  PyTuple_SET_ITEM(tuple, 0, other);
+  Py_XINCREF(other);
+  if (!result) {
+    if (SwigPyObject_Check(self) && SwigPyObject_Check(other)) {
+      result = SwigPyObject_richcompare((SwigPyObject *)self, (SwigPyObject *)other, op);
+    } else {
+      result = Py_NotImplemented;
+      Py_INCREF(result);
+    }
+  }
+  Py_DECREF(tuple);
+  return result;
+}
+
+SWIGINTERN PyMethodDef SwigPyBuiltin___CameraList_iterator_methods[] = {
+  { "__iter__", _wrap_CameraList_iterator___iter__, METH_VARARGS, "__iter__(self) -> CameraList_iterator" },
+  { "__next__", _wrap_CameraList_iterator___next__, METH_VARARGS, "__next__(self) -> PyObject *" },
+  { NULL, NULL, 0, NULL } /* Sentinel */
+};
+
+static PyHeapTypeObject SwigPyBuiltin___CameraList_iterator_type = {
+  {
+#if PY_VERSION_HEX >= 0x03000000
+    PyVarObject_HEAD_INIT(NULL, 0)
+#else
+    PyObject_HEAD_INIT(NULL)
+    0,                                        /* ob_size */
+#endif
+    "gphoto2.list.CameraList_iterator",       /* tp_name */
+    sizeof(SwigPyObject),                     /* tp_basicsize */
+    0,                                        /* tp_itemsize */
+    _wrap_delete_CameraList_iterator_destructor_closure,          /* tp_dealloc */
+#if PY_VERSION_HEX < 0x030800b4
+    (printfunc) 0,                            /* tp_print */
+#else
+    (Py_ssize_t) 0,                           /* tp_vectorcall_offset */
+#endif
+    (getattrfunc) 0,                          /* tp_getattr */
+    (setattrfunc) 0,                          /* tp_setattr */
+#if PY_VERSION_HEX >= 0x03000000
+    0,                                        /* tp_compare */
+#else
+    (cmpfunc) 0,                              /* tp_compare */
+#endif
+    (reprfunc) 0,                             /* tp_repr */
+    &SwigPyBuiltin___CameraList_iterator_type.as_number,          /* tp_as_number */
+    &SwigPyBuiltin___CameraList_iterator_type.as_sequence,        /* tp_as_sequence */
+    &SwigPyBuiltin___CameraList_iterator_type.as_mapping,         /* tp_as_mapping */
+    SwigPyObject_hash,                        /* tp_hash */
+    (ternaryfunc) 0,                          /* tp_call */
+    (reprfunc) 0,                             /* tp_str */
+    (getattrofunc) 0,                         /* tp_getattro */
+    (setattrofunc) 0,                         /* tp_setattro */
+    &SwigPyBuiltin___CameraList_iterator_type.as_buffer,          /* tp_as_buffer */
+#if PY_VERSION_HEX >= 0x03000000
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,   /* tp_flags */
+#else
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+#endif
+    "::_CameraList_iterator",                 /* tp_doc */
+    (traverseproc) 0,                         /* tp_traverse */
+    (inquiry) 0,                              /* tp_clear */
+    SwigPyBuiltin___CameraList_iterator_richcompare,              /* tp_richcompare */
+    0,                                        /* tp_weaklistoffset */
+    _wrap_CameraList_iterator___iter___getiterfunc_closure,       /* tp_iter */
+    _wrap_CameraList_iterator___next___iternextfunc_closure,      /* tp_iternext */
+    SwigPyBuiltin___CameraList_iterator_methods,                  /* tp_methods */
+    0,                                        /* tp_members */
+    SwigPyBuiltin___CameraList_iterator_getset,                   /* tp_getset */
+    0,                                        /* tp_base */
+    0,                                        /* tp_dict */
+    (descrgetfunc) 0,                         /* tp_descr_get */
+    (descrsetfunc) 0,                         /* tp_descr_set */
+    offsetof(SwigPyObject, dict),             /* tp_dictoffset */
+    SwigPyBuiltin_BadInit,                    /* tp_init */
+    (allocfunc) 0,                            /* tp_alloc */
+    (newfunc) 0,                              /* tp_new */
+    (freefunc) 0,                             /* tp_free */
+    (inquiry) 0,                              /* tp_is_gc */
+    (PyObject *) 0,                           /* tp_bases */
+    (PyObject *) 0,                           /* tp_mro */
+    (PyObject *) 0,                           /* tp_cache */
+    (PyObject *) 0,                           /* tp_subclasses */
+    (PyObject *) 0,                           /* tp_weaklist */
+    (destructor) 0,                           /* tp_del */
+    (int) 0,                                  /* tp_version_tag */
+#if PY_VERSION_HEX >= 0x03040000
+    (destructor) 0,                           /* tp_finalize */
+#endif
+#if PY_VERSION_HEX >= 0x03080000
+    (vectorcallfunc) 0,                       /* tp_vectorcall */
+#endif
+#if (PY_VERSION_HEX >= 0x03080000) && (PY_VERSION_HEX < 0x03090000)
+    0,                                        /* tp_print */
+#endif
+#ifdef COUNT_ALLOCS
+    (Py_ssize_t) 0,                           /* tp_allocs */
+    (Py_ssize_t) 0,                           /* tp_frees */
+    (Py_ssize_t) 0,                           /* tp_maxalloc */
+    0,                                        /* tp_prev */
+    0,                                        /* tp_next */
+#endif
+  },
+#if PY_VERSION_HEX >= 0x03050000
+  {
+    (unaryfunc) 0,                            /* am_await */
+    (unaryfunc) 0,                            /* am_aiter */
+    (unaryfunc) 0,                            /* am_anext */
+# if PY_VERSION_HEX >= 0x030a0000
+    (sendfunc) 0,                             /* am_send */
+# endif
+  },
+#endif
+  {
+    (binaryfunc) 0,                           /* nb_add */
+    (binaryfunc) 0,                           /* nb_subtract */
+    (binaryfunc) 0,                           /* nb_multiply */
+#if PY_VERSION_HEX < 0x03000000
+    (binaryfunc) 0,                           /* nb_divide */
+#endif
+    (binaryfunc) 0,                           /* nb_remainder */
+    (binaryfunc) 0,                           /* nb_divmod */
+    (ternaryfunc) 0,                          /* nb_power */
+    (unaryfunc) 0,                            /* nb_negative */
+    (unaryfunc) 0,                            /* nb_positive */
+    (unaryfunc) 0,                            /* nb_absolute */
+    (inquiry) 0,                              /* nb_nonzero */
+    (unaryfunc) 0,                            /* nb_invert */
+    (binaryfunc) 0,                           /* nb_lshift */
+    (binaryfunc) 0,                           /* nb_rshift */
+    (binaryfunc) 0,                           /* nb_and */
+    (binaryfunc) 0,                           /* nb_xor */
+    (binaryfunc) 0,                           /* nb_or */
+#if PY_VERSION_HEX < 0x03000000
+    (coercion) 0,                             /* nb_coerce */
+#endif
+    (unaryfunc) 0,                            /* nb_int */
+#if PY_VERSION_HEX >= 0x03000000
+    (void *) 0,                               /* nb_reserved */
+#else
+    (unaryfunc) 0,                            /* nb_long */
+#endif
+    (unaryfunc) 0,                            /* nb_float */
+#if PY_VERSION_HEX < 0x03000000
+    (unaryfunc) 0,                            /* nb_oct */
+    (unaryfunc) 0,                            /* nb_hex */
+#endif
+    (binaryfunc) 0,                           /* nb_inplace_add */
+    (binaryfunc) 0,                           /* nb_inplace_subtract */
+    (binaryfunc) 0,                           /* nb_inplace_multiply */
+#if PY_VERSION_HEX < 0x03000000
+    (binaryfunc) 0,                           /* nb_inplace_divide */
+#endif
+    (binaryfunc) 0,                           /* nb_inplace_remainder */
+    (ternaryfunc) 0,                          /* nb_inplace_power */
+    (binaryfunc) 0,                           /* nb_inplace_lshift */
+    (binaryfunc) 0,                           /* nb_inplace_rshift */
+    (binaryfunc) 0,                           /* nb_inplace_and */
+    (binaryfunc) 0,                           /* nb_inplace_xor */
+    (binaryfunc) 0,                           /* nb_inplace_or */
+    (binaryfunc) 0,                           /* nb_floor_divide */
+    (binaryfunc) 0,                           /* nb_true_divide */
+    (binaryfunc) 0,                           /* nb_inplace_floor_divide */
+    (binaryfunc) 0,                           /* nb_inplace_true_divide */
+    (unaryfunc) 0,                            /* nb_index */
+#if PY_VERSION_HEX >= 0x03050000
+    (binaryfunc) 0,                           /* nb_matrix_multiply */
+    (binaryfunc) 0,                           /* nb_inplace_matrix_multiply */
+#endif
+  },
+  {
+    (lenfunc) 0,                              /* mp_length */
+    (binaryfunc) 0,                           /* mp_subscript */
+    (objobjargproc) 0,                        /* mp_ass_subscript */
+  },
+  {
+    (lenfunc) 0,                              /* sq_length */
+    (binaryfunc) 0,                           /* sq_concat */
+    (ssizeargfunc) 0,                         /* sq_repeat */
+    (ssizeargfunc) 0,                         /* sq_item */
+#if PY_VERSION_HEX >= 0x03000000
+    (void *) 0,                               /* was_sq_slice */
+#else
+    (ssizessizeargfunc) 0,                    /* sq_slice */
+#endif
+    (ssizeobjargproc) 0,                      /* sq_ass_item */
+#if PY_VERSION_HEX >= 0x03000000
+    (void *) 0,                               /* was_sq_ass_slice */
+#else
+    (ssizessizeobjargproc) 0,                 /* sq_ass_slice */
+#endif
+    (objobjproc) 0,                           /* sq_contains */
+    (binaryfunc) 0,                           /* sq_inplace_concat */
+    (ssizeargfunc) 0,                         /* sq_inplace_repeat */
+  },
+  {
+#if PY_VERSION_HEX < 0x03000000
+    (readbufferproc) 0,                       /* bf_getreadbuffer */
+    (writebufferproc) 0,                      /* bf_getwritebuffer */
+    (segcountproc) 0,                         /* bf_getsegcount */
+    (charbufferproc) 0,                       /* bf_getcharbuffer */
+#endif
+    (getbufferproc) 0,                        /* bf_getbuffer */
+    (releasebufferproc) 0,                    /* bf_releasebuffer */
+  },
+    (PyObject *) 0,                           /* ht_name */
+    (PyObject *) 0,                           /* ht_slots */
+#if PY_VERSION_HEX >= 0x03030000
+    (PyObject *) 0,                           /* ht_qualname */
+    0,                                        /* ht_cached_keys */
+#endif
+#if PY_VERSION_HEX >= 0x03090000
+    (PyObject *) 0,                           /* ht_module */
+#endif
+#if PY_VERSION_HEX >= 0x030b0000
+    (char *) 0,                               /* _ht_tpname */
+  {
+    (PyObject *) 0,                           /* getitem */
+  }
+#endif
+};
+
+SWIGINTERN SwigPyClientData SwigPyBuiltin___CameraList_iterator_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin___CameraList_iterator_type};
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_SwigPyObject = {"_p_SwigPyObject", "SwigPyObject *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraList = {"_p__CameraList", "CameraList *|struct _CameraList *|_CameraList *", 0, 0, (void*)&SwigPyBuiltin___CameraList_clientdata, 0};
+static swig_type_info _swigt__p__CameraList_iterator = {"_p__CameraList_iterator", "CameraList_iterator *|struct _CameraList_iterator *|_CameraList_iterator *", 0, 0, (void*)&SwigPyBuiltin___CameraList_iterator_clientdata, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p__CameraList = {"_p_p__CameraList", "CameraList **|struct _CameraList **", 0, 0, (void*)0, 0};
@@ -6198,6 +6503,7 @@ static swig_type_info _swigt__p_p_char = {"_p_p_char", "char **", 0, 0, (void*)0
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_SwigPyObject,
   &_swigt__p__CameraList,
+  &_swigt__p__CameraList_iterator,
   &_swigt__p_char,
   &_swigt__p_int,
   &_swigt__p_p__CameraList,
@@ -6206,6 +6512,7 @@ static swig_type_info *swig_type_initial[] = {
 
 static swig_cast_info _swigc__p_SwigPyObject[] = {  {&_swigt__p_SwigPyObject, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraList[] = {  {&_swigt__p__CameraList, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p__CameraList_iterator[] = {  {&_swigt__p__CameraList_iterator, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p__CameraList[] = {  {&_swigt__p_p__CameraList, 0, 0, 0},{0, 0, 0, 0}};
@@ -6214,6 +6521,7 @@ static swig_cast_info _swigc__p_p_char[] = {  {&_swigt__p_p_char, 0, 0, 0},{0, 0
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_SwigPyObject,
   _swigc__p__CameraList,
+  _swigc__p__CameraList_iterator,
   _swigc__p_char,
   _swigc__p_int,
   _swigc__p_p__CameraList,
@@ -6723,6 +7031,29 @@ SWIG_init(void) {
   Py_INCREF(builtin_pytype);
   PyModule_AddObject(m, "CameraList", (PyObject *)builtin_pytype);
   SwigPyBuiltin_AddPublicSymbol(public_interface, "CameraList");
+  d = md;
+  
+  /* type '::_CameraList_iterator' */
+  builtin_pytype = (PyTypeObject *)&SwigPyBuiltin___CameraList_iterator_type;
+  builtin_pytype->tp_dict = d = PyDict_New();
+  SwigPyBuiltin_SetMetaType(builtin_pytype, metatype);
+  builtin_pytype->tp_new = PyType_GenericNew;
+  builtin_base_count = 0;
+  builtin_bases[builtin_base_count] = NULL;
+  SwigPyBuiltin_InitBases(builtin_pytype, builtin_bases);
+  PyDict_SetItemString(d, "this", this_descr);
+  PyDict_SetItemString(d, "thisown", thisown_descr);
+  if (PyType_Ready(builtin_pytype) < 0) {
+    PyErr_SetString(PyExc_TypeError, "Could not create type 'CameraList_iterator'.");
+#if PY_VERSION_HEX >= 0x03000000
+    return NULL;
+#else
+    return;
+#endif
+  }
+  Py_INCREF(builtin_pytype);
+  PyModule_AddObject(m, "CameraList_iterator", (PyObject *)builtin_pytype);
+  SwigPyBuiltin_AddPublicSymbol(public_interface, "CameraList_iterator");
   d = md;
 #if PY_VERSION_HEX >= 0x03000000
   return m;

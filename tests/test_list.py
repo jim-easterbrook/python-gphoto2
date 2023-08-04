@@ -39,9 +39,9 @@ class TestList(unittest.TestCase):
             test_list.find_by_name('C')
         ex = cm.exception
         self.assertEqual(ex.code, gp.GP_ERROR)
-        self.assertEqual(test_list.keys(), ('B', 'A'))
-        self.assertEqual(test_list.values(), ('2', '1'))
-        self.assertEqual(test_list.items(), (('B', '2'), ('A', '1')))
+        self.assertEqual(tuple(test_list.keys()), ('B', 'A'))
+        self.assertEqual(tuple(test_list.values()), ('2', '1'))
+        self.assertEqual(tuple(test_list.items()), (('B', '2'), ('A', '1')))
         with self.assertRaises(IndexError) as cm:
             test_list[-3]
         self.assertEqual(test_list[-2], ('B', '2'))

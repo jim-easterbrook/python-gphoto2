@@ -47,27 +47,125 @@ struct _CameraList {};
 DEFAULT_CTOR(_CameraList, gp_list_new)
 DEFAULT_DTOR(_CameraList, gp_list_unref)
 
+// Forward declarations
+%runtime %{
+#include "gphoto2/gphoto2.h"
+static PyObject* CameraList_item(CameraList *list, int type, int idx);
+typedef struct _CameraList_iterator CameraList_iterator;
+CameraList_iterator *new_CameraList_iterator(CameraList *list, int type);
+%}
+
+#ifndef SWIGIMPORTED
+
+// Simple iterator object
+%ignore _CameraList_iterator::list;
+%ignore _CameraList_iterator::type;
+%ignore _CameraList_iterator::idx;
+%ignore _CameraList_iterator::count;
+%feature("python:slot", "tp_iter", functype="getiterfunc")
+  _CameraList_iterator::__iter__;
+%feature("python:slot", "tp_iternext", functype="iternextfunc")
+  _CameraList_iterator::__next__;
+%inline %{
+typedef struct _CameraList_iterator {
+  CameraList *list;
+  int type; // 0 = keys, 1 = values, 2 = items
+  int idx;
+  int count;
+} CameraList_iterator;
+%}
+%extend _CameraList_iterator {
+  ~_CameraList_iterator() {
+    int error = gp_list_unref($self->list);
+    if (error < GP_OK) {
+      GPHOTO2_ERROR(error)
+    }
+    free($self);
+  }
+  CameraList_iterator* __iter__() {
+    return $self;
+  }
+  PyObject* __next__() {
+    if ($self->idx >= $self->count) {
+      PyErr_SetNone(PyExc_StopIteration);
+      return NULL;
+    }
+    return CameraList_item($self->list, $self->type, $self->idx++);
+  }
+};
+
+#endif //ifndef SWIGIMPORTED
+
+// Helper functions
+%{
+static PyObject* CameraList_item(CameraList *list, int type, int idx) {
+  int error = GP_OK;
+  const char *name = NULL;
+  const char *value = NULL;
+  PyObject *py_name = NULL;
+  PyObject *py_value = NULL;
+  if (type != 1) {
+    error = gp_list_get_name(list, idx, &name);
+    if (error < GP_OK) {
+      PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+      return NULL;
+    }
+    py_name = PyUnicode_FromString(name);
+  }
+  if (type == 0)
+    return py_name;
+  error = gp_list_get_value(list, idx, &value);
+  if (error < GP_OK) {
+    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+    return NULL;
+  }
+  py_value = PyUnicode_FromString(value);
+  if (type == 1)
+    return py_value;
+  return PyTuple_Pack(2, py_name, py_value);
+}
+CameraList_iterator *new_CameraList_iterator(CameraList *list, int type) {
+  int error = GP_OK;
+  CameraList_iterator *self = malloc(sizeof(CameraList_iterator));
+  if (!self) {
+    PyErr_SetString(
+      PyExc_MemoryError, "cannot allocate CameraList_iterator");
+    goto fail;
+  }
+  self->list = list;
+  self->type = type;
+  self->idx = 0;
+  self->count = gp_list_count(list);
+  if (self->count < GP_OK) {
+    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(self->count));
+    goto fail;
+  }
+  error = gp_list_ref(list);
+  if (error < GP_OK) {
+    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+    goto fail;
+  }
+  return self;
+fail:
+  if (self)
+    free(self);
+  return NULL;
+}
+%}
+
+// Turn off default exception handling
+%noexception;
+
 // Make CameraList more like a Python list and/or dict
-LEN_MEMBER_FUNCTION(_CameraList, gp_list_count)
-#if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "mp_subscript", functype="binaryfunc")
   _CameraList::__getitem__;
 %feature("python:slot", "tp_iter", functype="getiterfunc")
   _CameraList::__iter__;
-#endif
-%feature("docstring") _CameraList::keys "Return a tuple of all the names in the list."
-%feature("docstring") _CameraList::values "Return a tuple of all the values in the list."
-%feature("docstring") _CameraList::items "Return a tuple of all the (name, value) pairs in the list."
-%noexception _CameraList::__getitem__;
-%noexception _CameraList::__iter__;
-%noexception _CameraList::keys;
-%noexception _CameraList::values;
-%noexception _CameraList::items;
+%feature("docstring") _CameraList::keys "Return an iterator over the names in the list."
+%feature("docstring") _CameraList::values "Return an iterator over the values in the list."
+%feature("docstring") _CameraList::items "Return an iterator over the (name, value) pairs in the list."
 %extend _CameraList {
   PyObject *__getitem__(int idx) {
-    int error = GP_OK;
-    const char *name = NULL;
-    const char *value = NULL;
     int count = gp_list_count($self);
     if (count < GP_OK) {
       GPHOTO2_ERROR(count)
@@ -79,109 +177,35 @@ LEN_MEMBER_FUNCTION(_CameraList, gp_list_count)
       PyErr_SetString(PyExc_IndexError, "CameraList index out of range");
       return NULL;
     }
-    error = gp_list_get_name($self, idx, &name);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error)
-      return NULL;
-    }
-    error = gp_list_get_value($self, idx, &value);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error)
-      return NULL;
-    }
-    return PyTuple_Pack(2,
-      PyUnicode_FromString(name), PyUnicode_FromString(value));
+    return CameraList_item($self, 2, idx);
   }
   PyObject *__getitem__(const char *name) {
-    int error = GP_OK;
-    const char *value = NULL;
     int idx = 0;
-    error = gp_list_find_by_name($self, &idx, name);
-    if (error < GP_OK) {
+    if (gp_list_find_by_name($self, &idx, name) < GP_OK) {
       PyErr_SetString(PyExc_KeyError, name);
       return NULL;
     }
-    error = gp_list_get_value($self, idx, &value);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error)
-      return NULL;
-    }
-    return PyUnicode_FromString(value);
+    return CameraList_item($self, 1, idx);
   }
-  PyObject *keys() {
-    PyObject *result = NULL;
-    int error = GP_OK;
-    const char *name = NULL;
-    int count = gp_list_count($self);
-    if (count < GP_OK) {
-      GPHOTO2_ERROR(count)
-      return NULL;
-    }
-    result = PyTuple_New(count);
-    for (int i = 0; i < count; i++) {
-      error = gp_list_get_name($self, i, &name);
-      if (error < GP_OK) {
-        GPHOTO2_ERROR(error)
-        return NULL;
-      }
-      PyTuple_SET_ITEM(result, i, PyUnicode_FromString(name));
-    }
-    return result;
+  CameraList_iterator* keys() {
+    return new_CameraList_iterator($self, 0);
   }
-  PyObject *values() {
-    PyObject *result = NULL;
-    int error = GP_OK;
-    const char *value = NULL;
-    int count = gp_list_count($self);
-    if (count < GP_OK) {
-      GPHOTO2_ERROR(count)
-      return NULL;
-    }
-    result = PyTuple_New(count);
-    for (int i = 0; i < count; i++) {
-      error = gp_list_get_value($self, i, &value);
-      if (error < GP_OK) {
-        GPHOTO2_ERROR(error)
-        return NULL;
-      }
-      PyTuple_SET_ITEM(result, i, PyUnicode_FromString(value));
-    }
-    return result;
+  CameraList_iterator* values() {
+    return new_CameraList_iterator($self, 1);
   }
-  PyObject *items() {
-    PyObject *result = NULL;
-    int error = GP_OK;
-    const char *name = NULL;
-    const char *value = NULL;
-    int count = gp_list_count($self);
-    if (count < GP_OK) {
-      GPHOTO2_ERROR(count)
-      return NULL;
-    }
-    result = PyTuple_New(count);
-    for (int i = 0; i < count; i++) {
-      error = gp_list_get_name($self, i, &name);
-      if (error < GP_OK) {
-        GPHOTO2_ERROR(error)
-        return NULL;
-      }
-      error = gp_list_get_value($self, i, &value);
-      if (error < GP_OK) {
-        GPHOTO2_ERROR(error)
-        return NULL;
-      }
-      PyTuple_SET_ITEM(result, i, PyTuple_Pack(2,
-        PyUnicode_FromString(name), PyUnicode_FromString(value)));
-    }
-    return result;
+  CameraList_iterator* items() {
+    return new_CameraList_iterator($self, 2);
   }
-  PyObject *__iter__() {
-    return PySeqIter_New(_CameraList_items($self));
+  CameraList_iterator* __iter__() {
+    return new_CameraList_iterator($self, 2);
   }
 };
 
+// Turn on default exception handling
+DEFAULT_EXCEPTION
 
 // Add member methods to _CameraList
+LEN_MEMBER_FUNCTION(_CameraList, gp_list_count)
 MEMBER_FUNCTION(_CameraList,
     int, count, (),
     gp_list_count, ($self), )

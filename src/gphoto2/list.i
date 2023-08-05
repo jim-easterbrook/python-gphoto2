@@ -62,6 +62,10 @@ CameraList_iterator *new_CameraList_iterator(CameraList *list, int type);
 %ignore _CameraList_iterator::type;
 %ignore _CameraList_iterator::idx;
 %ignore _CameraList_iterator::count;
+%feature("python:slot", "sq_length", functype="lenfunc")
+  _CameraList_iterator::__len__;
+%feature("python:slot", "sq_item", functype="ssizeargfunc")
+  _CameraList_iterator::__getitem__;
 %feature("python:slot", "tp_iter", functype="getiterfunc")
   _CameraList_iterator::__iter__;
 %feature("python:slot", "tp_iternext", functype="iternextfunc")
@@ -81,6 +85,19 @@ typedef struct _CameraList_iterator {
       GPHOTO2_ERROR(error)
     }
     free($self);
+  }
+  int __len__() {
+    return $self->count;
+  }
+  PyObject* __getitem__(int idx) {
+    if (idx < 0)
+      idx += $self->count;
+    if (idx < 0 || idx >= $self->count) {
+      PyErr_SetString(PyExc_IndexError,
+                      "CameraList_iterator index out of range");
+      return NULL;
+    }
+    return CameraList_item($self->list, $self->type, idx);
   }
   CameraList_iterator* __iter__() {
     return $self;

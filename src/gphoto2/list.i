@@ -58,6 +58,10 @@ CameraList_iterator *new_CameraList_iterator(CameraList *list, int type);
 #ifndef SWIGIMPORTED
 
 // Simple iterator object
+%feature("docstring") _CameraList_iterator "Iterator over CameraList keys, values, or (key, value) pairs.
+
+In addition to the usual iterator methods the values can be read by
+indexing, for example iterator[4] gets the 4th value."
 %ignore _CameraList_iterator::list;
 %ignore _CameraList_iterator::type;
 %ignore _CameraList_iterator::idx;

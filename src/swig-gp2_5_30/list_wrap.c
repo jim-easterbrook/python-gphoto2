@@ -6409,7 +6409,12 @@ static PyHeapTypeObject SwigPyBuiltin___CameraList_iterator_type = {
 #else
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES, /* tp_flags */
 #endif
-    "::_CameraList_iterator",                 /* tp_doc */
+    "\n"
+		"Iterator over CameraList keys, values, or (key, value) pairs.\n"
+		"\n"
+		"In addition to the usual iterator methods the values can be read by\n"
+		"indexing, for example iterator[4] gets the 4th value.\n"
+		"",/* tp_doc */
     (traverseproc) 0,                         /* tp_traverse */
     (inquiry) 0,                              /* tp_clear */
     SwigPyBuiltin___CameraList_iterator_richcompare,              /* tp_richcompare */

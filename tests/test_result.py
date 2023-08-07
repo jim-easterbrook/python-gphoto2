@@ -35,13 +35,19 @@ class TestResult(unittest.TestCase):
         # setting LANGUAGE works on Ubuntu, setlocale works on openSUSE
         # using both seems to be harmless
         os.environ['LANGUAGE'] = 'de'
-        locale.setlocale(locale.LC_MESSAGES, locale.normalize('de.utf8'))
+        for k in locale.locale_alias:
+            if k.startswith('de'):
+                locale.setlocale(locale.LC_MESSAGES, locale.locale_alias[k])
+                break
         self.assertEqual(gp.gp_result_as_string(gp.GP_ERROR_MODEL_NOT_FOUND),
                          'Unbekanntes Modell')
         self.assertEqual(gp.gp_port_result_as_string(gp.GP_ERROR_NO_MEMORY),
                          'Speicher voll')
         os.environ['LANGUAGE'] = 'en'
-        locale.setlocale(locale.LC_MESSAGES, locale.normalize('en.utf8'))
+        for k in locale.locale_alias:
+            if k.startswith('en'):
+                locale.setlocale(locale.LC_MESSAGES, locale.locale_alias[k])
+                break
         self.assertEqual(gp.gp_result_as_string(gp.GP_ERROR_MODEL_NOT_FOUND),
                          'Unknown model')
         self.assertEqual(gp.gp_port_result_as_string(gp.GP_ERROR_NO_MEMORY),

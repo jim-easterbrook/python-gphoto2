@@ -26,10 +26,11 @@ jobs:
           CIBW_SKIP: pp3*
           CIBW_ENVIRONMENT: GPHOTO2_ROOT=$PWD/libgphoto2/local_install
           CIBW_BEFORE_ALL: >
-            brew install libexif jpeg-turbo &&
+            brew install libexif jpeg-turbo libtool libusb gd gettext &&
             pushd $PWD/libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs \
-                --enable-vusb CFLAGS="-D_DARWIN_C_SOURCE" &&
+                --enable-vusb \
+                CFLAGS="-D_DARWIN_C_SOURCE -I$(brew --prefix)/include" &&
             make &&
             make install &&
             popd

@@ -16,6 +16,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import locale
+import os
 import unittest
 
 import gphoto2 as gp
@@ -31,12 +32,16 @@ class TestResult(unittest.TestCase):
             self.assertEqual(ex.string, gp.gp_result_as_string(error))
 
     def test_locales(self):
-        locale.setlocale(locale.LC_ALL, locale.normalize('de'))
+        # setting LANGUAGE works on Ubuntu, setlocale works on openSUSE
+        # using both seems to be harmless
+        os.environ['LANGUAGE'] = 'de'
+        locale.setlocale(locale.LC_MESSAGES, locale.normalize('de.utf8'))
         self.assertEqual(gp.gp_result_as_string(gp.GP_ERROR_MODEL_NOT_FOUND),
                          'Unbekanntes Modell')
         self.assertEqual(gp.gp_port_result_as_string(gp.GP_ERROR_NO_MEMORY),
                          'Speicher voll')
-        locale.setlocale(locale.LC_ALL, locale.normalize('en'))
+        os.environ['LANGUAGE'] = 'en'
+        locale.setlocale(locale.LC_MESSAGES, locale.normalize('en.utf8'))
         self.assertEqual(gp.gp_result_as_string(gp.GP_ERROR_MODEL_NOT_FOUND),
                          'Unknown model')
         self.assertEqual(gp.gp_port_result_as_string(gp.GP_ERROR_NO_MEMORY),

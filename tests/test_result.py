@@ -37,8 +37,12 @@ class TestResult(unittest.TestCase):
         os.environ['LANGUAGE'] = 'de'
         for k in locale.locale_alias:
             if k.startswith('de'):
-                locale.setlocale(locale.LC_MESSAGES, locale.locale_alias[k])
-                break
+                try:
+                    locale.setlocale(
+                        locale.LC_MESSAGES, locale.locale_alias[k])
+                    break
+                except locale.Error:
+                    continue
         self.assertEqual(gp.gp_result_as_string(gp.GP_ERROR_MODEL_NOT_FOUND),
                          'Unbekanntes Modell')
         self.assertEqual(gp.gp_port_result_as_string(gp.GP_ERROR_NO_MEMORY),
@@ -46,8 +50,12 @@ class TestResult(unittest.TestCase):
         os.environ['LANGUAGE'] = 'en'
         for k in locale.locale_alias:
             if k.startswith('en'):
-                locale.setlocale(locale.LC_MESSAGES, locale.locale_alias[k])
-                break
+                try:
+                    locale.setlocale(
+                        locale.LC_MESSAGES, locale.locale_alias[k])
+                    break
+                except locale.Error:
+                    continue
         self.assertEqual(gp.gp_result_as_string(gp.GP_ERROR_MODEL_NOT_FOUND),
                          'Unknown model')
         self.assertEqual(gp.gp_port_result_as_string(gp.GP_ERROR_NO_MEMORY),

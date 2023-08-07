@@ -67,7 +67,9 @@ jobs:
           architecture: 'x64'
 
       - name: Install locales
-        run: sudo apt-get install locales
+        run: |
+          sudo apt-get install locales
+          sudo locale-gen de
 
       - name: Install wheel
         run: pip3 install --disable-pip-version-check --no-index

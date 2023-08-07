@@ -48,6 +48,9 @@ jobs:
       matrix:
         python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11']
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v3
+
       - name: Fetch wheel files
         uses: actions/download-artifact@v3
         with:
@@ -64,4 +67,4 @@ jobs:
           --find-links=. gphoto2
 
       - name: Test installation
-        run: python3 -m gphoto2
+        run: python3 -m unittest discover tests -v

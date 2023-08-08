@@ -31,31 +31,34 @@ class TestResult(unittest.TestCase):
             self.assertEqual(ex.code, error)
             self.assertEqual(ex.string, gp.gp_result_as_string(error))
 
-    def test_locales(self):
+    def set_lang(self, lang):
         # setting LANGUAGE works on Ubuntu, setlocale works on openSUSE
         # using both seems to be harmless
-        os.environ['LANGUAGE'] = 'de'
+        os.environ['LANGUAGE'] = lang
+        # try default locale first
+        try:
+            if locale.setlocale(locale.LC_MESSAGES, '').startswith(lang):
+                return
+        except locale.Error:
+            pass
+        # try all known locales
         for k in locale.locale_alias:
-            if k.startswith('de'):
+            if k.startswith(lang):
                 try:
                     locale.setlocale(
                         locale.LC_MESSAGES, locale.locale_alias[k])
-                    break
+                    return
                 except locale.Error:
-                    continue
+                    pass
+        self.skipTest("failed to set language '{}'".format(lang))
+
+    def test_locales(self):
+        self.set_lang('de')
         self.assertEqual(gp.gp_result_as_string(gp.GP_ERROR_MODEL_NOT_FOUND),
                          'Unbekanntes Modell')
         self.assertEqual(gp.gp_port_result_as_string(gp.GP_ERROR_NO_MEMORY),
                          'Speicher voll')
-        os.environ['LANGUAGE'] = 'en'
-        for k in locale.locale_alias:
-            if k.startswith('en'):
-                try:
-                    locale.setlocale(
-                        locale.LC_MESSAGES, locale.locale_alias[k])
-                    break
-                except locale.Error:
-                    continue
+        self.set_lang('en')
         self.assertEqual(gp.gp_result_as_string(gp.GP_ERROR_MODEL_NOT_FOUND),
                          'Unknown model')
         self.assertEqual(gp.gp_port_result_as_string(gp.GP_ERROR_NO_MEMORY),

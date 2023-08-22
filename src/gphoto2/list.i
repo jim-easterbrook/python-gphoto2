@@ -133,7 +133,7 @@ static PyObject* CameraList_item(CameraList *list, int type, int idx) {
       PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
       return NULL;
     }
-    py_name = PyUnicode_FromString(name);
+    py_name = name ? PyUnicode_FromString(name) : SWIG_Py_Void();
   }
   if (type == 0)
     return py_name;
@@ -142,7 +142,7 @@ static PyObject* CameraList_item(CameraList *list, int type, int idx) {
     PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
     return NULL;
   }
-  py_value = PyUnicode_FromString(value);
+  py_value = value ? PyUnicode_FromString(value) : SWIG_Py_Void();
   if (type == 1)
     return py_value;
   return PyTuple_Pack(2, py_name, py_value);

@@ -31,40 +31,48 @@ class TestList(unittest.TestCase):
         self.assertEqual(len(test_list), 0)
         test_list.append('B', '2')
         test_list.append('A', '1')
-        self.assertEqual(len(test_list), 2)
+        test_list.append('D', None)
+        self.assertEqual(len(test_list), 3)
         self.assertEqual(test_list.get_name(0), 'B')
         self.assertEqual(test_list.get_value(0), '2')
         self.assertEqual(test_list.get_name(1), 'A')
         self.assertEqual(test_list.get_value(1), '1')
+        self.assertEqual(test_list.get_name(2), 'D')
+        self.assertIsNone(test_list.get_value(2))
         self.assertEqual(test_list.find_by_name('B'), 0)
         self.assertEqual(test_list.find_by_name('A'), 1)
+        self.assertEqual(test_list.find_by_name('D'), 2)
         with self.assertRaises(gp.GPhoto2Error) as cm:
-            test_list.find_by_name('C')
+            test_list.find_by_name('Z')
         ex = cm.exception
         self.assertEqual(ex.code, gp.GP_ERROR)
         keys = test_list.keys()
-        self.assertEqual(len(keys), 2)
+        self.assertEqual(len(keys), 3)
         self.assertEqual(keys[1], 'A')
         with self.assertRaises(IndexError):
-            keys[2]
-        self.assertEqual(tuple(keys), ('B', 'A'))
-        self.assertEqual(tuple(test_list.values()), ('2', '1'))
-        self.assertEqual(tuple(test_list.items()), (('B', '2'), ('A', '1')))
-        with self.assertRaises(IndexError) as cm:
-            test_list[-3]
-        self.assertEqual(test_list[-2], ('B', '2'))
-        self.assertEqual(test_list[-1], ('A', '1'))
+            keys[3]
+        self.assertEqual(tuple(keys), ('B', 'A', 'D'))
+        self.assertEqual(tuple(test_list.values()), ('2', '1', None))
+        self.assertEqual(tuple(test_list.items()),
+                         (('B', '2'), ('A', '1'), ('D', None)))
+        with self.assertRaises(IndexError):
+            test_list[-4]
+        self.assertEqual(test_list[-3], ('B', '2'))
+        self.assertEqual(test_list[-2], ('A', '1'))
+        self.assertEqual(test_list[-1], ('D', None))
         self.assertEqual(test_list[0], ('B', '2'))
         self.assertEqual(test_list[1], ('A', '1'))
-        with self.assertRaises(IndexError) as cm:
-            test_list[2]
+        self.assertEqual(test_list[2], ('D', None))
+        with self.assertRaises(IndexError):
+            test_list[3]
         self.assertEqual(test_list['B'], '2')
         self.assertEqual(test_list['A'], '1')
-        with self.assertRaises(KeyError) as cm:
-            test_list['C']
+        with self.assertRaises(KeyError):
+            test_list['Z']
         it = iter(test_list)
         self.assertEqual(next(it), test_list[0])
         self.assertEqual(next(it), test_list[1])
+        self.assertEqual(next(it), test_list[2])
         with self.assertRaises(StopIteration):
             next(it)
         test_list.sort()
@@ -84,15 +92,19 @@ class TestList(unittest.TestCase):
         self.assertEqual(gp.gp_list_count(test_list), 0)
         self.assertEqual(gp.gp_list_append(test_list, 'B', '2'), gp.GP_OK)
         self.assertEqual(gp.gp_list_append(test_list, 'A', '1'), gp.GP_OK)
-        self.assertEqual(gp.gp_list_count(test_list), 2)
+        self.assertEqual(gp.gp_list_append(test_list, 'D', None), gp.GP_OK)
+        self.assertEqual(gp.gp_list_count(test_list), 3)
         self.assertEqual(gp.gp_list_get_name(test_list, 0), [gp.GP_OK, 'B'])
         self.assertEqual(gp.gp_list_get_value(test_list, 0), [gp.GP_OK, '2'])
         self.assertEqual(gp.gp_list_get_name(test_list, 1), [gp.GP_OK, 'A'])
         self.assertEqual(gp.gp_list_get_value(test_list, 1), [gp.GP_OK, '1'])
+        self.assertEqual(gp.gp_list_get_name(test_list, 2), [gp.GP_OK, 'D'])
+        self.assertEqual(gp.gp_list_get_value(test_list, 2), [gp.GP_OK, None])
         self.assertEqual(gp.gp_list_find_by_name(test_list, 'B'), [gp.GP_OK, 0])
         self.assertEqual(gp.gp_list_find_by_name(test_list, 'A'), [gp.GP_OK, 1])
+        self.assertEqual(gp.gp_list_find_by_name(test_list, 'D'), [gp.GP_OK, 2])
         self.assertEqual(
-            gp.gp_list_find_by_name(test_list, 'C'), [gp.GP_ERROR, 0])
+            gp.gp_list_find_by_name(test_list, 'Z'), [gp.GP_ERROR, 0])
         self.assertEqual(gp.gp_list_sort(test_list), gp.GP_OK)
         self.assertEqual(gp.gp_list_get_name(test_list, 0), [gp.GP_OK, 'A'])
         self.assertEqual(gp.gp_list_get_value(test_list, 0), [gp.GP_OK, '1'])

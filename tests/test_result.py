@@ -20,6 +20,7 @@
 
 import locale
 import os
+import platform
 import unittest
 
 import gphoto2 as gp
@@ -55,6 +56,8 @@ class TestResult(unittest.TestCase):
                     pass
         self.skipTest("failed to set language '{}'".format(lang))
 
+    @unittest.skipIf(platform.system() == 'Darwin',
+                     'locale setting fails on MacOS')
     def test_locales(self):
         self.set_lang('de')
         self.assertEqual(gp.gp_result_as_string(gp.GP_ERROR_MODEL_NOT_FOUND),

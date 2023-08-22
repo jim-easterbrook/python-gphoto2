@@ -3797,7 +3797,7 @@ SWIGINTERN void _GPPortInfo_get_name(struct _GPPortInfo *self,char **name){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -3812,7 +3812,7 @@ SWIGINTERN void _GPPortInfo_get_path(struct _GPPortInfo *self,char **path){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -3834,7 +3834,7 @@ SWIGINTERN void _GPPortInfo_get_type(struct _GPPortInfo *self,GPPortType *type){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -3849,7 +3849,7 @@ SWIGINTERN int _GPPortInfoList___len__(struct _GPPortInfoList *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4015,7 +4015,7 @@ SWIGINTERN void _GPPortInfoList___getitem__(struct _GPPortInfoList *self,int idx
     {
       int error = gp_port_info_list_get_info(self, idx, info);
       if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
         return;
@@ -4026,14 +4026,14 @@ SWIGINTERN struct _GPPortInfoList *new__GPPortInfoList(void){
     struct _GPPortInfoList *result;
     int error = gp_port_info_list_new(&result);
     if (error < GP_OK)
-      /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
     return result;
   }
 SWIGINTERN void delete__GPPortInfoList(struct _GPPortInfoList *self){
     int error = gp_port_info_list_free(self);
-    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
   }
@@ -4045,7 +4045,7 @@ SWIGINTERN void _GPPortInfoList_append(struct _GPPortInfoList *self,GPPortInfo i
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4060,7 +4060,7 @@ SWIGINTERN void _GPPortInfoList_load(struct _GPPortInfoList *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4075,7 +4075,7 @@ SWIGINTERN int _GPPortInfoList_count(struct _GPPortInfoList *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4215,7 +4215,7 @@ SWIGINTERN int _GPPortInfoList_lookup_path(struct _GPPortInfoList *self,char con
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4230,7 +4230,7 @@ SWIGINTERN int _GPPortInfoList_lookup_name(struct _GPPortInfoList *self,char con
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 
@@ -4245,7 +4245,7 @@ SWIGINTERN void _GPPortInfoList_get_info(struct _GPPortInfoList *self,int const 
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
 

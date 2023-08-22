@@ -3829,7 +3829,7 @@ static int del_CallbackDetails(struct CallbackDetails *this) {
 
 SWIGINTERN void delete_CallbackDetails(struct CallbackDetails *self){
     int error = del_CallbackDetails(self);
-    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
   }
@@ -4147,7 +4147,7 @@ SWIGINTERN void delete__GPContext(struct _GPContext *self){
   }
 SWIGINTERN void _GPContext_camera_autodetect(struct _GPContext *self,CameraList *list){
     int error = gp_camera_autodetect(list, self);
-    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
   }
@@ -4289,7 +4289,7 @@ SWIGINTERN PyObject *_wrap_Context_camera_autodetect(PyObject *self, PyObject *a
     int error = gp_list_new(&arg2);
     if (error < GP_OK) {
       arg2 = NULL;
-      /*@SWIG:src/gphoto2/common/macros.i,38,GPHOTO2_ERROR@*/
+      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
       PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
       /*@SWIG@*/
       SWIG_fail;

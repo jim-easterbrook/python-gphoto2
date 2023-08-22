@@ -4321,15 +4321,10 @@ SWIGINTERN PyObject *_wrap_PortInfo_get_name(PyObject *self, PyObject *args) {
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  {
-    if (*arg2) {
-      resultobj = SWIG_Python_AppendOutput(resultobj, PyString_FromString(*arg2));
-    }
-    else {
-      Py_INCREF(Py_None);
-      resultobj = SWIG_Python_AppendOutput(resultobj, Py_None);
-    }
-  }
+  
+  resultobj = SWIG_Python_AppendOutput(resultobj,
+    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
+  
   return resultobj;
 fail:
   return NULL;
@@ -4360,15 +4355,10 @@ SWIGINTERN PyObject *_wrap_PortInfo_get_path(PyObject *self, PyObject *args) {
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  {
-    if (*arg2) {
-      resultobj = SWIG_Python_AppendOutput(resultobj, PyString_FromString(*arg2));
-    }
-    else {
-      Py_INCREF(Py_None);
-      resultobj = SWIG_Python_AppendOutput(resultobj, Py_None);
-    }
-  }
+  
+  resultobj = SWIG_Python_AppendOutput(resultobj,
+    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
+  
   return resultobj;
 fail:
   return NULL;
@@ -4776,15 +4766,10 @@ SWIGINTERN PyObject *_wrap_gp_port_info_get_name(PyObject *self, PyObject *args)
   arg1 = (GPPortInfo)(argp1);
   result = (int)gp_port_info_get_name(arg1,arg2);
   resultobj = SWIG_From_int((int)(result));
-  {
-    if (*arg2) {
-      resultobj = SWIG_Python_AppendOutput(resultobj, PyString_FromString(*arg2));
-    }
-    else {
-      Py_INCREF(Py_None);
-      resultobj = SWIG_Python_AppendOutput(resultobj, Py_None);
-    }
-  }
+  
+  resultobj = SWIG_Python_AppendOutput(resultobj,
+    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
+  
   return resultobj;
 fail:
   return NULL;
@@ -4814,15 +4799,10 @@ SWIGINTERN PyObject *_wrap_gp_port_info_get_path(PyObject *self, PyObject *args)
   arg1 = (GPPortInfo)(argp1);
   result = (int)gp_port_info_get_path(arg1,arg2);
   resultobj = SWIG_From_int((int)(result));
-  {
-    if (*arg2) {
-      resultobj = SWIG_Python_AppendOutput(resultobj, PyString_FromString(*arg2));
-    }
-    else {
-      Py_INCREF(Py_None);
-      resultobj = SWIG_Python_AppendOutput(resultobj, Py_None);
-    }
-  }
+  
+  resultobj = SWIG_Python_AppendOutput(resultobj,
+    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
+  
   return resultobj;
 fail:
   return NULL;

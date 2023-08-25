@@ -20,14 +20,16 @@ License along with python-gphoto2.  If not, see
 
 
 Changes in 2.4.0:
-  */ Change licence from GPLv3+ to LGPLv3+.
-  */ API change! gp_file_open no longer creates CameraFile object. It is now
+  1/ API change! gp_file_open no longer creates CameraFile object. It is now
      consistent with the C API.
-  */ Deprecated functions: gp_abilities_list_append, gp_list_populate,
+  2/ Deprecated functions: gp_abilities_list_append, gp_list_populate,
      gp_port_info_list_append, gp_widget_add_choice, gp_widget_set_info,
      gp_widget_set_name, gp_widget_set_range, gp_widget_set_readonly.
      These will be removed in a future release.
-  */ CameraList behaves like a cross between Python list and dict types.
+  3/ Change licence from GPLv3+ to LGPLv3+.
+  4/ CameraList behaves like a cross between Python list and dict types.
+  5/ Added unit tests to check most libgphoto2 functions.
+  6/ Include virtual camera in "binary wheels".
 
 Changes in 2.3.6:
   1/ Use libusb1 instead of libusb0 in Linux binary wheels.

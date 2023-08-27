@@ -1,4 +1,4 @@
-__version__ = "2.4.0"
+__version__ = "2.5.0"
 
 
 import os
@@ -33,6 +33,7 @@ from gphoto2.context import *
 from gphoto2.file import *
 from gphoto2.filesys import *
 from gphoto2.list import *
+from gphoto2.port import *
 from gphoto2.port_info_list import *
 from gphoto2.port_log import *
 from gphoto2.result import *

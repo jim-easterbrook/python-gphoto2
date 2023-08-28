@@ -4297,7 +4297,7 @@ SWIG_FromCharPtr(const char *cptr)
 #ifdef __cplusplus
 extern "C" {
 #endif
-SWIGINTERN PyObject *_wrap_PortInfo_get_name(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPPortInfo_get_name(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPPortInfo *arg1 = (struct _GPPortInfo *) 0 ;
   char **arg2 = (char **) 0 ;
@@ -4310,10 +4310,10 @@ SWIGINTERN PyObject *_wrap_PortInfo_get_name(PyObject *self, PyObject *args) {
     arg2 = &temp2;
   }
   (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "PortInfo_get_name takes no arguments");
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "GPPortInfo_get_name takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPPortInfo, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PortInfo_get_name" "', argument " "1"" of type '" "struct _GPPortInfo *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPPortInfo_get_name" "', argument " "1"" of type '" "struct _GPPortInfo *""'"); 
   }
   arg1 = (struct _GPPortInfo *)(argp1);
   {
@@ -4331,7 +4331,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_PortInfo_get_path(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPPortInfo_get_path(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPPortInfo *arg1 = (struct _GPPortInfo *) 0 ;
   char **arg2 = (char **) 0 ;
@@ -4344,10 +4344,10 @@ SWIGINTERN PyObject *_wrap_PortInfo_get_path(PyObject *self, PyObject *args) {
     arg2 = &temp2;
   }
   (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "PortInfo_get_path takes no arguments");
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "GPPortInfo_get_path takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPPortInfo, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PortInfo_get_path" "', argument " "1"" of type '" "struct _GPPortInfo *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPPortInfo_get_path" "', argument " "1"" of type '" "struct _GPPortInfo *""'"); 
   }
   arg1 = (struct _GPPortInfo *)(argp1);
   {
@@ -4365,7 +4365,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_PortInfo_get_type(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPPortInfo_get_type(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPPortInfo *arg1 = (struct _GPPortInfo *) 0 ;
   GPPortType *arg2 = (GPPortType *) 0 ;
@@ -4376,10 +4376,10 @@ SWIGINTERN PyObject *_wrap_PortInfo_get_type(PyObject *self, PyObject *args) {
   
   arg2 = &temp2;
   (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "PortInfo_get_type takes no arguments");
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "GPPortInfo_get_type takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPPortInfo, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PortInfo_get_type" "', argument " "1"" of type '" "struct _GPPortInfo *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPPortInfo_get_type" "', argument " "1"" of type '" "struct _GPPortInfo *""'"); 
   }
   arg1 = (struct _GPPortInfo *)(argp1);
   {
@@ -4399,17 +4399,17 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_PortInfo(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_delete_GPPortInfo(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPPortInfo *arg1 = (struct _GPPortInfo *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   
   (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_PortInfo takes no arguments");
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_GPPortInfo takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPPortInfo, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_PortInfo" "', argument " "1"" of type '" "struct _GPPortInfo *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_GPPortInfo" "', argument " "1"" of type '" "struct _GPPortInfo *""'"); 
   }
   arg1 = (struct _GPPortInfo *)(argp1);
   free((char *) arg1);
@@ -4420,9 +4420,9 @@ fail:
 }
 
 
-SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_PortInfo) /* defines _wrap_delete_PortInfo_destructor_closure */
+SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_GPPortInfo) /* defines _wrap_delete_GPPortInfo_destructor_closure */
 
-SWIGINTERN PyObject *_wrap_PortInfoList___len__(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPPortInfoList___len__(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPPortInfoList *arg1 = (struct _GPPortInfoList *) 0 ;
   void *argp1 = 0 ;
@@ -4430,10 +4430,10 @@ SWIGINTERN PyObject *_wrap_PortInfoList___len__(PyObject *self, PyObject *args) 
   int result;
   
   (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "PortInfoList___len__ takes no arguments");
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "GPPortInfoList___len__ takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPPortInfoList, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PortInfoList___len__" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPPortInfoList___len__" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
   }
   arg1 = (struct _GPPortInfoList *)(argp1);
   {
@@ -4447,7 +4447,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_PortInfoList___getitem__(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPPortInfoList___getitem__(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPPortInfoList *arg1 = (struct _GPPortInfoList *) 0 ;
   int arg2 ;
@@ -4464,15 +4464,15 @@ SWIGINTERN PyObject *_wrap_PortInfoList___getitem__(PyObject *self, PyObject *ar
     arg3 = &temp3;
   }
   (void)self;
-  if (!PyArg_UnpackTuple(args, "PortInfoList___getitem__", 1, 1, &obj1)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "GPPortInfoList___getitem__", 1, 1, &obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPPortInfoList, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PortInfoList___getitem__" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPPortInfoList___getitem__" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
   }
   arg1 = (struct _GPPortInfoList *)(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PortInfoList___getitem__" "', argument " "2"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GPPortInfoList___getitem__" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = (int)(val2);
   {
@@ -4492,13 +4492,13 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_PortInfoList(PyObject *self, PyObject *args, PyObject *kwargs) {
+SWIGINTERN int _wrap_new_GPPortInfoList(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
   struct _GPPortInfoList *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_CheckNoKeywords(kwargs, "new_PortInfoList")) SWIG_fail;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "new_PortInfoList takes no arguments");
+  if (!SWIG_Python_CheckNoKeywords(kwargs, "new_GPPortInfoList")) SWIG_fail;
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "new_GPPortInfoList takes no arguments");
   {
     result = (struct _GPPortInfoList *)new__GPPortInfoList();
     if (PyErr_Occurred()) SWIG_fail;
@@ -4510,17 +4510,17 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_PortInfoList(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_delete_GPPortInfoList(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPPortInfoList *arg1 = (struct _GPPortInfoList *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   
   (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_PortInfoList takes no arguments");
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_GPPortInfoList takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPPortInfoList, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_PortInfoList" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_GPPortInfoList" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
   }
   arg1 = (struct _GPPortInfoList *)(argp1);
   {
@@ -4534,7 +4534,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_PortInfoList_append(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPPortInfoList_append(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPPortInfoList *arg1 = (struct _GPPortInfoList *) 0 ;
   GPPortInfo arg2 = (GPPortInfo) 0 ;
@@ -4545,15 +4545,15 @@ SWIGINTERN PyObject *_wrap_PortInfoList_append(PyObject *self, PyObject *args) {
   PyObject * obj1 = 0 ;
   
   (void)self;
-  if (!PyArg_UnpackTuple(args, "PortInfoList_append", 1, 1, &obj1)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "GPPortInfoList_append", 1, 1, &obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPPortInfoList, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PortInfoList_append" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPPortInfoList_append" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
   }
   arg1 = (struct _GPPortInfoList *)(argp1);
   res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p__GPPortInfo, 0 |  0 );
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PortInfoList_append" "', argument " "2"" of type '" "GPPortInfo""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GPPortInfoList_append" "', argument " "2"" of type '" "GPPortInfo""'"); 
   }
   arg2 = (GPPortInfo)(argp2);
   {
@@ -4571,17 +4571,17 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_PortInfoList_load(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPPortInfoList_load(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPPortInfoList *arg1 = (struct _GPPortInfoList *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   
   (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "PortInfoList_load takes no arguments");
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "GPPortInfoList_load takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPPortInfoList, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PortInfoList_load" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPPortInfoList_load" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
   }
   arg1 = (struct _GPPortInfoList *)(argp1);
   {
@@ -4595,7 +4595,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_PortInfoList_count(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPPortInfoList_count(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPPortInfoList *arg1 = (struct _GPPortInfoList *) 0 ;
   void *argp1 = 0 ;
@@ -4603,10 +4603,10 @@ SWIGINTERN PyObject *_wrap_PortInfoList_count(PyObject *self, PyObject *args) {
   int result;
   
   (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "PortInfoList_count takes no arguments");
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "GPPortInfoList_count takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPPortInfoList, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PortInfoList_count" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPPortInfoList_count" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
   }
   arg1 = (struct _GPPortInfoList *)(argp1);
   {
@@ -4620,7 +4620,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_PortInfoList_lookup_path(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPPortInfoList_lookup_path(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPPortInfoList *arg1 = (struct _GPPortInfoList *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -4633,15 +4633,15 @@ SWIGINTERN PyObject *_wrap_PortInfoList_lookup_path(PyObject *self, PyObject *ar
   int result;
   
   (void)self;
-  if (!PyArg_UnpackTuple(args, "PortInfoList_lookup_path", 1, 1, &obj1)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "GPPortInfoList_lookup_path", 1, 1, &obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPPortInfoList, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PortInfoList_lookup_path" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPPortInfoList_lookup_path" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
   }
   arg1 = (struct _GPPortInfoList *)(argp1);
   res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PortInfoList_lookup_path" "', argument " "2"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GPPortInfoList_lookup_path" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = (char *)(buf2);
   {
@@ -4657,7 +4657,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_PortInfoList_lookup_name(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPPortInfoList_lookup_name(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPPortInfoList *arg1 = (struct _GPPortInfoList *) 0 ;
   char *arg2 = (char *) 0 ;
@@ -4670,15 +4670,15 @@ SWIGINTERN PyObject *_wrap_PortInfoList_lookup_name(PyObject *self, PyObject *ar
   int result;
   
   (void)self;
-  if (!PyArg_UnpackTuple(args, "PortInfoList_lookup_name", 1, 1, &obj1)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "GPPortInfoList_lookup_name", 1, 1, &obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPPortInfoList, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PortInfoList_lookup_name" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPPortInfoList_lookup_name" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
   }
   arg1 = (struct _GPPortInfoList *)(argp1);
   res2 = SWIG_AsCharPtrAndSize(obj1, &buf2, NULL, &alloc2);
   if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "PortInfoList_lookup_name" "', argument " "2"" of type '" "char const *""'");
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "GPPortInfoList_lookup_name" "', argument " "2"" of type '" "char const *""'");
   }
   arg2 = (char *)(buf2);
   {
@@ -4694,7 +4694,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_PortInfoList_get_info(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPPortInfoList_get_info(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPPortInfoList *arg1 = (struct _GPPortInfoList *) 0 ;
   int arg2 ;
@@ -4711,15 +4711,15 @@ SWIGINTERN PyObject *_wrap_PortInfoList_get_info(PyObject *self, PyObject *args)
     arg3 = &temp3;
   }
   (void)self;
-  if (!PyArg_UnpackTuple(args, "PortInfoList_get_info", 1, 1, &obj1)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "GPPortInfoList_get_info", 1, 1, &obj1)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPPortInfoList, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "PortInfoList_get_info" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPPortInfoList_get_info" "', argument " "1"" of type '" "struct _GPPortInfoList *""'"); 
   }
   arg1 = (struct _GPPortInfoList *)(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "PortInfoList_get_info" "', argument " "2"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "GPPortInfoList_get_info" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = (int)(val2);
   {
@@ -4737,11 +4737,11 @@ fail:
 }
 
 
-SWIGPY_LENFUNC_CLOSURE(_wrap_PortInfoList___len__) /* defines _wrap_PortInfoList___len___lenfunc_closure */
+SWIGPY_LENFUNC_CLOSURE(_wrap_GPPortInfoList___len__) /* defines _wrap_GPPortInfoList___len___lenfunc_closure */
 
-SWIGPY_SSIZEARGFUNC_CLOSURE(_wrap_PortInfoList___getitem__) /* defines _wrap_PortInfoList___getitem___ssizeargfunc_closure */
+SWIGPY_SSIZEARGFUNC_CLOSURE(_wrap_GPPortInfoList___getitem__) /* defines _wrap_GPPortInfoList___getitem___ssizeargfunc_closure */
 
-SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_PortInfoList) /* defines _wrap_delete_PortInfoList_destructor_closure */
+SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_GPPortInfoList) /* defines _wrap_delete_GPPortInfoList_destructor_closure */
 
 SWIGINTERN PyObject *_wrap_gp_port_info_get_name(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
@@ -5407,7 +5407,7 @@ static PyMethodDef SwigMethods[] = {
 	 { NULL, NULL, 0, NULL }
 };
 
-static SwigPyGetSet PortInfo___dict___getset = { SwigPyObject_get___dict__, 0 };
+static SwigPyGetSet GPPortInfo___dict___getset = { SwigPyObject_get___dict__, 0 };
 SWIGINTERN PyGetSetDef SwigPyBuiltin___GPPortInfo_getset[] = {
     { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"\n"
 		"get_name\n"
@@ -5427,7 +5427,7 @@ SWIGINTERN PyGetSetDef SwigPyBuiltin___GPPortInfo_getset[] = {
 		"a gphoto2 error code\n"
 		"\n"
 		"See also gphoto2.gp_port_info_get_name\n"
-		"", &PortInfo___dict___getset },
+		"", &GPPortInfo___dict___getset },
     { NULL, NULL, NULL, NULL, NULL } /* Sentinel */
 };
 
@@ -5451,7 +5451,7 @@ SwigPyBuiltin___GPPortInfo_richcompare(PyObject *self, PyObject *other, int op) 
 }
 
 SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfo_methods[] = {
-  { "get_name", _wrap_PortInfo_get_name, METH_VARARGS, "\n"
+  { "get_name", _wrap_GPPortInfo_get_name, METH_VARARGS, "\n"
 		"get_name(self)\n"
 		"Get name of a specific port entry.  \n"
 		"\n"
@@ -5470,7 +5470,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfo_methods[] = {
 		"\n"
 		"See also gphoto2.gp_port_info_get_name\n"
 		"" },
-  { "get_path", _wrap_PortInfo_get_path, METH_VARARGS, "\n"
+  { "get_path", _wrap_GPPortInfo_get_path, METH_VARARGS, "\n"
 		"get_path(self)\n"
 		"Get path of a specific port entry.  \n"
 		"\n"
@@ -5489,7 +5489,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfo_methods[] = {
 		"\n"
 		"See also gphoto2.gp_port_info_get_path\n"
 		"" },
-  { "get_type", _wrap_PortInfo_get_type, METH_VARARGS, "\n"
+  { "get_type", _wrap_GPPortInfo_get_type, METH_VARARGS, "\n"
 		"get_type(self)\n"
 		"Get type of a specific port entry.  \n"
 		"\n"
@@ -5519,10 +5519,10 @@ static PyHeapTypeObject SwigPyBuiltin___GPPortInfo_type = {
     PyObject_HEAD_INIT(NULL)
     0,                                        /* ob_size */
 #endif
-    "gphoto2.port_info_list.PortInfo",        /* tp_name */
+    "gphoto2.port_info_list.GPPortInfo",      /* tp_name */
     sizeof(SwigPyObject),                     /* tp_basicsize */
     0,                                        /* tp_itemsize */
-    _wrap_delete_PortInfo_destructor_closure, /* tp_dealloc */
+    _wrap_delete_GPPortInfo_destructor_closure,                   /* tp_dealloc */
 #if PY_VERSION_HEX < 0x030800b4
     (printfunc) 0,                            /* tp_print */
 #else
@@ -5715,9 +5715,9 @@ static PyHeapTypeObject SwigPyBuiltin___GPPortInfo_type = {
 
 SWIGINTERN SwigPyClientData SwigPyBuiltin___GPPortInfo_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin___GPPortInfo_type};
 
-static SwigPyGetSet PortInfoList___dict___getset = { SwigPyObject_get___dict__, 0 };
+static SwigPyGetSet GPPortInfoList___dict___getset = { SwigPyObject_get___dict__, 0 };
 SWIGINTERN PyGetSetDef SwigPyBuiltin___GPPortInfoList_getset[] = {
-    { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"__len__", &PortInfoList___dict___getset },
+    { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"__len__", &GPPortInfoList___dict___getset },
     { NULL, NULL, NULL, NULL, NULL } /* Sentinel */
 };
 
@@ -5741,8 +5741,8 @@ SwigPyBuiltin___GPPortInfoList_richcompare(PyObject *self, PyObject *other, int 
 }
 
 SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfoList_methods[] = {
-  { "__len__", _wrap_PortInfoList___len__, METH_VARARGS, "__len__(self) -> int" },
-  { "__getitem__", _wrap_PortInfoList___getitem__, METH_VARARGS, "\n"
+  { "__len__", _wrap_GPPortInfoList___len__, METH_VARARGS, "__len__(self) -> int" },
+  { "__getitem__", _wrap_GPPortInfoList___getitem__, METH_VARARGS, "\n"
 		"__getitem__(self, idx)\n"
 		"\n"
 		"Parameters\n"
@@ -5750,7 +5750,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfoList_methods[] = {
 		"idx: int\n"
 		"\n"
 		"" },
-  { "append", _wrap_PortInfoList_append, METH_VARARGS, "\n"
+  { "append", _wrap_GPPortInfoList_append, METH_VARARGS, "\n"
 		"append(self, info)\n"
 		"\n"
 		"Parameters\n"
@@ -5759,7 +5759,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfoList_methods[] = {
 		"\n"
 		"This function is deprecated and will be removed in a future release.\n"
 		"" },
-  { "load", _wrap_PortInfoList_load, METH_VARARGS, "\n"
+  { "load", _wrap_GPPortInfoList_load, METH_VARARGS, "\n"
 		"load(self)\n"
 		"Load system ports.  \n"
 		"\n"
@@ -5779,7 +5779,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfoList_methods[] = {
 		"\n"
 		"See also gphoto2.gp_port_info_list_load\n"
 		"" },
-  { "count", _wrap_PortInfoList_count, METH_VARARGS, "\n"
+  { "count", _wrap_GPPortInfoList_count, METH_VARARGS, "\n"
 		"count(self) -> int\n"
 		"Number of ports in the list.  \n"
 		"\n"
@@ -5796,7 +5796,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfoList_methods[] = {
 		"\n"
 		"See also gphoto2.gp_port_info_list_count\n"
 		"" },
-  { "lookup_path", _wrap_PortInfoList_lookup_path, METH_VARARGS, "\n"
+  { "lookup_path", _wrap_GPPortInfoList_lookup_path, METH_VARARGS, "\n"
 		"lookup_path(self, path) -> int\n"
 		"\n"
 		"Parameters\n"
@@ -5822,7 +5822,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfoList_methods[] = {
 		"\n"
 		"See also gphoto2.gp_port_info_list_lookup_path\n"
 		"" },
-  { "lookup_name", _wrap_PortInfoList_lookup_name, METH_VARARGS, "\n"
+  { "lookup_name", _wrap_GPPortInfoList_lookup_name, METH_VARARGS, "\n"
 		"lookup_name(self, name) -> int\n"
 		"\n"
 		"Parameters\n"
@@ -5846,7 +5846,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfoList_methods[] = {
 		"\n"
 		"See also gphoto2.gp_port_info_list_lookup_name\n"
 		"" },
-  { "get_info", _wrap_PortInfoList_get_info, METH_VARARGS, "\n"
+  { "get_info", _wrap_GPPortInfoList_get_info, METH_VARARGS, "\n"
 		"get_info(self, n)\n"
 		"\n"
 		"Parameters\n"
@@ -5883,10 +5883,10 @@ static PyHeapTypeObject SwigPyBuiltin___GPPortInfoList_type = {
     PyObject_HEAD_INIT(NULL)
     0,                                        /* ob_size */
 #endif
-    "gphoto2.port_info_list.PortInfoList",    /* tp_name */
+    "gphoto2.port_info_list.GPPortInfoList",  /* tp_name */
     sizeof(SwigPyObject),                     /* tp_basicsize */
     0,                                        /* tp_itemsize */
-    _wrap_delete_PortInfoList_destructor_closure,                 /* tp_dealloc */
+    _wrap_delete_GPPortInfoList_destructor_closure,               /* tp_dealloc */
 #if PY_VERSION_HEX < 0x030800b4
     (printfunc) 0,                            /* tp_print */
 #else
@@ -5929,7 +5929,7 @@ static PyHeapTypeObject SwigPyBuiltin___GPPortInfoList_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     offsetof(SwigPyObject, dict),             /* tp_dictoffset */
-    _wrap_new_PortInfoList,                   /* tp_init */
+    _wrap_new_GPPortInfoList,                 /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -6031,10 +6031,10 @@ static PyHeapTypeObject SwigPyBuiltin___GPPortInfoList_type = {
     (objobjargproc) 0,                        /* mp_ass_subscript */
   },
   {
-    _wrap_PortInfoList___len___lenfunc_closure,                   /* sq_length */
+    _wrap_GPPortInfoList___len___lenfunc_closure,                 /* sq_length */
     (binaryfunc) 0,                           /* sq_concat */
     (ssizeargfunc) 0,                         /* sq_repeat */
-    _wrap_PortInfoList___getitem___ssizeargfunc_closure,          /* sq_item */
+    _wrap_GPPortInfoList___getitem___ssizeargfunc_closure,        /* sq_item */
 #if PY_VERSION_HEX >= 0x03000000
     (void *) 0,                               /* was_sq_slice */
 #else
@@ -6615,7 +6615,7 @@ SWIG_init(void) {
   PyDict_SetItemString(d, "this", this_descr);
   PyDict_SetItemString(d, "thisown", thisown_descr);
   if (PyType_Ready(builtin_pytype) < 0) {
-    PyErr_SetString(PyExc_TypeError, "Could not create type 'PortInfo'.");
+    PyErr_SetString(PyExc_TypeError, "Could not create type 'GPPortInfo'.");
 #if PY_VERSION_HEX >= 0x03000000
     return NULL;
 #else
@@ -6623,8 +6623,8 @@ SWIG_init(void) {
 #endif
   }
   Py_INCREF(builtin_pytype);
-  PyModule_AddObject(m, "PortInfo", (PyObject *)builtin_pytype);
-  SwigPyBuiltin_AddPublicSymbol(public_interface, "PortInfo");
+  PyModule_AddObject(m, "GPPortInfo", (PyObject *)builtin_pytype);
+  SwigPyBuiltin_AddPublicSymbol(public_interface, "GPPortInfo");
   d = md;
   
   /* type '::_GPPortInfoList' */
@@ -6638,7 +6638,7 @@ SWIG_init(void) {
   PyDict_SetItemString(d, "this", this_descr);
   PyDict_SetItemString(d, "thisown", thisown_descr);
   if (PyType_Ready(builtin_pytype) < 0) {
-    PyErr_SetString(PyExc_TypeError, "Could not create type 'PortInfoList'.");
+    PyErr_SetString(PyExc_TypeError, "Could not create type 'GPPortInfoList'.");
 #if PY_VERSION_HEX >= 0x03000000
     return NULL;
 #else
@@ -6646,8 +6646,8 @@ SWIG_init(void) {
 #endif
   }
   Py_INCREF(builtin_pytype);
-  PyModule_AddObject(m, "PortInfoList", (PyObject *)builtin_pytype);
-  SwigPyBuiltin_AddPublicSymbol(public_interface, "PortInfoList");
+  PyModule_AddObject(m, "GPPortInfoList", (PyObject *)builtin_pytype);
+  SwigPyBuiltin_AddPublicSymbol(public_interface, "GPPortInfoList");
   d = md;
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_PORT_NONE",SWIG_From_int((int)(GP_PORT_NONE)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_PORT_SERIAL",SWIG_From_int((int)(GP_PORT_SERIAL)));

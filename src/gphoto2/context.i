@@ -21,7 +21,10 @@
 
 %include "common/preamble.i"
 
-%rename(Context) _GPContext;
+%rename(GPContext) _GPContext;
+%pythoncode %{
+Context = GPContext
+%}
 
 // Make docstring parameter types more Pythonic
 %typemap(doc) GPContext * "$1_name: gphoto2.$*1_type";

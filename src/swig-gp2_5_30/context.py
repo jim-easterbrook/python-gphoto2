@@ -10,3 +10,8 @@ if __package__ or "." in __name__:
     from ._context import *
 else:
     from _context import *
+
+
+Context = GPContext
+
+

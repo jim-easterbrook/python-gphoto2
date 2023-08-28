@@ -10,3 +10,9 @@ if __package__ or "." in __name__:
     from ._port_info_list import *
 else:
     from _port_info_list import *
+
+
+PortInfoList = GPPortInfoList
+PortInfo = GPPortInfo
+
+

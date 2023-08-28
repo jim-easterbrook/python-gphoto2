@@ -4242,13 +4242,13 @@ fail:
 }
 
 
-SWIGINTERN int _wrap_new_Context(PyObject *self, PyObject *args, PyObject *kwargs) {
+SWIGINTERN int _wrap_new_GPContext(PyObject *self, PyObject *args, PyObject *kwargs) {
   PyObject *resultobj = 0;
   struct _GPContext *result = 0 ;
   
   (void)self;
-  if (!SWIG_Python_CheckNoKeywords(kwargs, "new_Context")) SWIG_fail;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "new_Context takes no arguments");
+  if (!SWIG_Python_CheckNoKeywords(kwargs, "new_GPContext")) SWIG_fail;
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "new_GPContext takes no arguments");
   result = (struct _GPContext *)new__GPContext();
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__GPContext, SWIG_BUILTIN_INIT |  0 );
   return resultobj == Py_None ? -1 : 0;
@@ -4257,17 +4257,17 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_Context(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_delete_GPContext(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPContext *arg1 = (struct _GPContext *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   
   (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_Context takes no arguments");
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_GPContext takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPContext, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Context" "', argument " "1"" of type '" "struct _GPContext *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_GPContext" "', argument " "1"" of type '" "struct _GPContext *""'"); 
   }
   arg1 = (struct _GPContext *)(argp1);
   delete__GPContext(arg1);
@@ -4278,7 +4278,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Context_camera_autodetect(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPContext_camera_autodetect(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPContext *arg1 = (struct _GPContext *) 0 ;
   CameraList *arg2 = (CameraList *) 0 ;
@@ -4296,10 +4296,10 @@ SWIGINTERN PyObject *_wrap_Context_camera_autodetect(PyObject *self, PyObject *a
     }
   }
   (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "Context_camera_autodetect takes no arguments");
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "GPContext_camera_autodetect takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPContext, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Context_camera_autodetect" "', argument " "1"" of type '" "struct _GPContext *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPContext_camera_autodetect" "', argument " "1"" of type '" "struct _GPContext *""'"); 
   }
   arg1 = (struct _GPContext *)(argp1);
   {
@@ -4330,7 +4330,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Context_set_idle_func(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPContext_set_idle_func(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPContext *arg1 = (struct _GPContext *) 0 ;
   GPContextIdleFunc arg2 = (GPContextIdleFunc) 0 ;
@@ -4355,15 +4355,15 @@ SWIGINTERN PyObject *_wrap_Context_set_idle_func(PyObject *self, PyObject *args)
     _global_callbacks->remove = NULL;
   }
   (void)self;
-  if (!PyArg_UnpackTuple(args, "Context_set_idle_func", 2, 2, &obj1, &obj2)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "GPContext_set_idle_func", 2, 2, &obj1, &obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPContext, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Context_set_idle_func" "', argument " "1"" of type '" "struct _GPContext *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPContext_set_idle_func" "', argument " "1"" of type '" "struct _GPContext *""'"); 
   }
   arg1 = (struct _GPContext *)(argp1);
   {
     if (!PyCallable_Check(obj1)) {
-      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_idle_func" "', argument " "2"" of type '" "callable""'");
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "GPContext_set_idle_func" "', argument " "2"" of type '" "callable""'");
     }
     Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
@@ -4398,7 +4398,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Context_set_error_func(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPContext_set_error_func(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPContext *arg1 = (struct _GPContext *) 0 ;
   GPContextErrorFunc arg2 = (GPContextErrorFunc) 0 ;
@@ -4423,15 +4423,15 @@ SWIGINTERN PyObject *_wrap_Context_set_error_func(PyObject *self, PyObject *args
     _global_callbacks->remove = NULL;
   }
   (void)self;
-  if (!PyArg_UnpackTuple(args, "Context_set_error_func", 2, 2, &obj1, &obj2)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "GPContext_set_error_func", 2, 2, &obj1, &obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPContext, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Context_set_error_func" "', argument " "1"" of type '" "struct _GPContext *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPContext_set_error_func" "', argument " "1"" of type '" "struct _GPContext *""'"); 
   }
   arg1 = (struct _GPContext *)(argp1);
   {
     if (!PyCallable_Check(obj1)) {
-      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_error_func" "', argument " "2"" of type '" "callable""'");
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "GPContext_set_error_func" "', argument " "2"" of type '" "callable""'");
     }
     Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
@@ -4466,7 +4466,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Context_set_message_func(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPContext_set_message_func(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPContext *arg1 = (struct _GPContext *) 0 ;
   GPContextMessageFunc arg2 = (GPContextMessageFunc) 0 ;
@@ -4491,15 +4491,15 @@ SWIGINTERN PyObject *_wrap_Context_set_message_func(PyObject *self, PyObject *ar
     _global_callbacks->remove = NULL;
   }
   (void)self;
-  if (!PyArg_UnpackTuple(args, "Context_set_message_func", 2, 2, &obj1, &obj2)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "GPContext_set_message_func", 2, 2, &obj1, &obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPContext, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Context_set_message_func" "', argument " "1"" of type '" "struct _GPContext *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPContext_set_message_func" "', argument " "1"" of type '" "struct _GPContext *""'"); 
   }
   arg1 = (struct _GPContext *)(argp1);
   {
     if (!PyCallable_Check(obj1)) {
-      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_message_func" "', argument " "2"" of type '" "callable""'");
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "GPContext_set_message_func" "', argument " "2"" of type '" "callable""'");
     }
     Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
@@ -4534,7 +4534,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Context_set_question_func(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPContext_set_question_func(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPContext *arg1 = (struct _GPContext *) 0 ;
   GPContextQuestionFunc arg2 = (GPContextQuestionFunc) 0 ;
@@ -4559,15 +4559,15 @@ SWIGINTERN PyObject *_wrap_Context_set_question_func(PyObject *self, PyObject *a
     _global_callbacks->remove = NULL;
   }
   (void)self;
-  if (!PyArg_UnpackTuple(args, "Context_set_question_func", 2, 2, &obj1, &obj2)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "GPContext_set_question_func", 2, 2, &obj1, &obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPContext, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Context_set_question_func" "', argument " "1"" of type '" "struct _GPContext *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPContext_set_question_func" "', argument " "1"" of type '" "struct _GPContext *""'"); 
   }
   arg1 = (struct _GPContext *)(argp1);
   {
     if (!PyCallable_Check(obj1)) {
-      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_question_func" "', argument " "2"" of type '" "callable""'");
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "GPContext_set_question_func" "', argument " "2"" of type '" "callable""'");
     }
     Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
@@ -4602,7 +4602,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Context_set_cancel_func(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPContext_set_cancel_func(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPContext *arg1 = (struct _GPContext *) 0 ;
   GPContextCancelFunc arg2 = (GPContextCancelFunc) 0 ;
@@ -4627,15 +4627,15 @@ SWIGINTERN PyObject *_wrap_Context_set_cancel_func(PyObject *self, PyObject *arg
     _global_callbacks->remove = NULL;
   }
   (void)self;
-  if (!PyArg_UnpackTuple(args, "Context_set_cancel_func", 2, 2, &obj1, &obj2)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "GPContext_set_cancel_func", 2, 2, &obj1, &obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPContext, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Context_set_cancel_func" "', argument " "1"" of type '" "struct _GPContext *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPContext_set_cancel_func" "', argument " "1"" of type '" "struct _GPContext *""'"); 
   }
   arg1 = (struct _GPContext *)(argp1);
   {
     if (!PyCallable_Check(obj1)) {
-      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_cancel_func" "', argument " "2"" of type '" "callable""'");
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "GPContext_set_cancel_func" "', argument " "2"" of type '" "callable""'");
     }
     Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
@@ -4670,7 +4670,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Context_set_progress_funcs(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPContext_set_progress_funcs(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPContext *arg1 = (struct _GPContext *) 0 ;
   GPContextProgressStartFunc arg2 = (GPContextProgressStartFunc) 0 ;
@@ -4699,15 +4699,15 @@ SWIGINTERN PyObject *_wrap_Context_set_progress_funcs(PyObject *self, PyObject *
     _global_callbacks->remove = NULL;
   }
   (void)self;
-  if (!PyArg_UnpackTuple(args, "Context_set_progress_funcs", 4, 4, &obj1, &obj2, &obj3, &obj4)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "GPContext_set_progress_funcs", 4, 4, &obj1, &obj2, &obj3, &obj4)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPContext, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Context_set_progress_funcs" "', argument " "1"" of type '" "struct _GPContext *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPContext_set_progress_funcs" "', argument " "1"" of type '" "struct _GPContext *""'"); 
   }
   arg1 = (struct _GPContext *)(argp1);
   {
     if (!PyCallable_Check(obj1)) {
-      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_progress_funcs" "', argument " "2"" of type '" "callable""'");
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "GPContext_set_progress_funcs" "', argument " "2"" of type '" "callable""'");
     }
     Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
@@ -4716,7 +4716,7 @@ SWIGINTERN PyObject *_wrap_Context_set_progress_funcs(PyObject *self, PyObject *
   }
   {
     if (!PyCallable_Check(obj2)) {
-      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_progress_funcs" "', argument " "3"" of type '" "callable""'");
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "GPContext_set_progress_funcs" "', argument " "3"" of type '" "callable""'");
     }
     _global_callbacks->func_2 = obj2;
     Py_INCREF(_global_callbacks->func_2);
@@ -4724,7 +4724,7 @@ SWIGINTERN PyObject *_wrap_Context_set_progress_funcs(PyObject *self, PyObject *
   }
   {
     if (!PyCallable_Check(obj3)) {
-      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_progress_funcs" "', argument " "4"" of type '" "callable""'");
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "GPContext_set_progress_funcs" "', argument " "4"" of type '" "callable""'");
     }
     _global_callbacks->func_3 = obj3;
     Py_INCREF(_global_callbacks->func_3);
@@ -4758,7 +4758,7 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_Context_set_status_func(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_GPContext_set_status_func(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _GPContext *arg1 = (struct _GPContext *) 0 ;
   GPContextStatusFunc arg2 = (GPContextStatusFunc) 0 ;
@@ -4783,15 +4783,15 @@ SWIGINTERN PyObject *_wrap_Context_set_status_func(PyObject *self, PyObject *arg
     _global_callbacks->remove = NULL;
   }
   (void)self;
-  if (!PyArg_UnpackTuple(args, "Context_set_status_func", 2, 2, &obj1, &obj2)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "GPContext_set_status_func", 2, 2, &obj1, &obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPContext, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Context_set_status_func" "', argument " "1"" of type '" "struct _GPContext *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPContext_set_status_func" "', argument " "1"" of type '" "struct _GPContext *""'"); 
   }
   arg1 = (struct _GPContext *)(argp1);
   {
     if (!PyCallable_Check(obj1)) {
-      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Context_set_status_func" "', argument " "2"" of type '" "callable""'");
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "GPContext_set_status_func" "', argument " "2"" of type '" "callable""'");
     }
     Py_INCREF(obj1);
     _global_callbacks->func_1 = obj1;
@@ -4826,7 +4826,7 @@ fail:
 }
 
 
-SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_Context) /* defines _wrap_delete_Context_destructor_closure */
+SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_GPContext) /* defines _wrap_delete_GPContext_destructor_closure */
 
 SWIGINTERN PyObject *_wrap_gp_context_new(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
@@ -5357,7 +5357,7 @@ static PyMethodDef SwigMethods[] = {
 		"\n"
 		""},
 	 { "gp_context_new", _wrap_gp_context_new, METH_VARARGS, "\n"
-		"gp_context_new() -> Context\n"
+		"gp_context_new() -> GPContext\n"
 		"Creates a new context.  \n"
 		"\n"
 		"To be used by the frontend.  \n"
@@ -5676,9 +5676,9 @@ static PyHeapTypeObject SwigPyBuiltin__CallbackDetails_type = {
 
 SWIGINTERN SwigPyClientData SwigPyBuiltin__CallbackDetails_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__CallbackDetails_type};
 
-static SwigPyGetSet Context___dict___getset = { SwigPyObject_get___dict__, 0 };
+static SwigPyGetSet GPContext___dict___getset = { SwigPyObject_get___dict__, 0 };
 SWIGINTERN PyGetSetDef SwigPyBuiltin___GPContext_getset[] = {
-    { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"unset_progress_funcs", &Context___dict___getset },
+    { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"unset_progress_funcs", &GPContext___dict___getset },
     { NULL, NULL, NULL, NULL, NULL } /* Sentinel */
 };
 
@@ -5702,8 +5702,8 @@ SwigPyBuiltin___GPContext_richcompare(PyObject *self, PyObject *other, int op) {
 }
 
 SWIGINTERN PyMethodDef SwigPyBuiltin___GPContext_methods[] = {
-  { "camera_autodetect", _wrap_Context_camera_autodetect, METH_VARARGS, "camera_autodetect(self)" },
-  { "set_idle_func", _wrap_Context_set_idle_func, METH_VARARGS, "\n"
+  { "camera_autodetect", _wrap_GPContext_camera_autodetect, METH_VARARGS, "camera_autodetect(self)" },
+  { "set_idle_func", _wrap_GPContext_set_idle_func, METH_VARARGS, "\n"
 		"set_idle_func(self, func, data)\n"
 		"\n"
 		"Parameters\n"
@@ -5712,7 +5712,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPContext_methods[] = {
 		"data: object\n"
 		"\n"
 		"" },
-  { "set_error_func", _wrap_Context_set_error_func, METH_VARARGS, "\n"
+  { "set_error_func", _wrap_GPContext_set_error_func, METH_VARARGS, "\n"
 		"set_error_func(self, func, data)\n"
 		"\n"
 		"Parameters\n"
@@ -5721,7 +5721,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPContext_methods[] = {
 		"data: object\n"
 		"\n"
 		"" },
-  { "set_message_func", _wrap_Context_set_message_func, METH_VARARGS, "\n"
+  { "set_message_func", _wrap_GPContext_set_message_func, METH_VARARGS, "\n"
 		"set_message_func(self, func, data)\n"
 		"\n"
 		"Parameters\n"
@@ -5730,7 +5730,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPContext_methods[] = {
 		"data: object\n"
 		"\n"
 		"" },
-  { "set_question_func", _wrap_Context_set_question_func, METH_VARARGS, "\n"
+  { "set_question_func", _wrap_GPContext_set_question_func, METH_VARARGS, "\n"
 		"set_question_func(self, func, data)\n"
 		"\n"
 		"Parameters\n"
@@ -5739,7 +5739,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPContext_methods[] = {
 		"data: object\n"
 		"\n"
 		"" },
-  { "set_cancel_func", _wrap_Context_set_cancel_func, METH_VARARGS, "\n"
+  { "set_cancel_func", _wrap_GPContext_set_cancel_func, METH_VARARGS, "\n"
 		"set_cancel_func(self, func, data)\n"
 		"\n"
 		"Parameters\n"
@@ -5748,7 +5748,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPContext_methods[] = {
 		"data: object\n"
 		"\n"
 		"" },
-  { "set_progress_funcs", _wrap_Context_set_progress_funcs, METH_VARARGS, "\n"
+  { "set_progress_funcs", _wrap_GPContext_set_progress_funcs, METH_VARARGS, "\n"
 		"set_progress_funcs(self, start_func, update_func, stop_func, data)\n"
 		"\n"
 		"Parameters\n"
@@ -5759,7 +5759,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPContext_methods[] = {
 		"data: object\n"
 		"\n"
 		"" },
-  { "set_status_func", _wrap_Context_set_status_func, METH_VARARGS, "\n"
+  { "set_status_func", _wrap_GPContext_set_status_func, METH_VARARGS, "\n"
 		"set_status_func(self, func, data)\n"
 		"\n"
 		"Parameters\n"
@@ -5779,10 +5779,10 @@ static PyHeapTypeObject SwigPyBuiltin___GPContext_type = {
     PyObject_HEAD_INIT(NULL)
     0,                                        /* ob_size */
 #endif
-    "gphoto2.context.Context",                /* tp_name */
+    "gphoto2.context.GPContext",              /* tp_name */
     sizeof(SwigPyObject),                     /* tp_basicsize */
     0,                                        /* tp_itemsize */
-    _wrap_delete_Context_destructor_closure,  /* tp_dealloc */
+    _wrap_delete_GPContext_destructor_closure,/* tp_dealloc */
 #if PY_VERSION_HEX < 0x030800b4
     (printfunc) 0,                            /* tp_print */
 #else
@@ -5825,7 +5825,7 @@ static PyHeapTypeObject SwigPyBuiltin___GPContext_type = {
     (descrgetfunc) 0,                         /* tp_descr_get */
     (descrsetfunc) 0,                         /* tp_descr_set */
     offsetof(SwigPyObject, dict),             /* tp_dictoffset */
-    _wrap_new_Context,                        /* tp_init */
+    _wrap_new_GPContext,                      /* tp_init */
     (allocfunc) 0,                            /* tp_alloc */
     (newfunc) 0,                              /* tp_new */
     (freefunc) 0,                             /* tp_free */
@@ -6554,7 +6554,7 @@ SWIG_init(void) {
   PyDict_SetItemString(d, "this", this_descr);
   PyDict_SetItemString(d, "thisown", thisown_descr);
   if (PyType_Ready(builtin_pytype) < 0) {
-    PyErr_SetString(PyExc_TypeError, "Could not create type 'Context'.");
+    PyErr_SetString(PyExc_TypeError, "Could not create type 'GPContext'.");
 #if PY_VERSION_HEX >= 0x03000000
     return NULL;
 #else
@@ -6562,8 +6562,8 @@ SWIG_init(void) {
 #endif
   }
   Py_INCREF(builtin_pytype);
-  PyModule_AddObject(m, "Context", (PyObject *)builtin_pytype);
-  SwigPyBuiltin_AddPublicSymbol(public_interface, "Context");
+  PyModule_AddObject(m, "GPContext", (PyObject *)builtin_pytype);
+  SwigPyBuiltin_AddPublicSymbol(public_interface, "GPContext");
   d = md;
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_CONTEXT_FEEDBACK_OK",SWIG_From_int((int)(GP_CONTEXT_FEEDBACK_OK)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_CONTEXT_FEEDBACK_CANCEL",SWIG_From_int((int)(GP_CONTEXT_FEEDBACK_CANCEL)));

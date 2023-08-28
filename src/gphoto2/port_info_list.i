@@ -21,8 +21,12 @@
 
 %include "common/preamble.i"
 
-%rename(PortInfoList) _GPPortInfoList;
-%rename(PortInfo) _GPPortInfo;
+%rename(GPPortInfoList) _GPPortInfoList;
+%rename(GPPortInfo) _GPPortInfo;
+%pythoncode %{
+PortInfoList = GPPortInfoList
+PortInfo = GPPortInfo
+%}
 
 // Deprecate some functions intended for camera drivers
 DEPRECATED(gp_port_info_list_append,)

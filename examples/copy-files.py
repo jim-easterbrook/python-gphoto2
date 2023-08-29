@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This file is part of python-gphoto2.
 #
@@ -50,25 +50,18 @@ def list_computer_files():
 def list_camera_files(camera, path='/'):
     result = []
     # get files
-    gp_list = gp.check_result(
-        gp.gp_camera_folder_list_files(camera, path))
-    for name, value in gp_list:
+    gp_list = camera.folder_list_files(path)
+    for name in gp_list.keys():
         result.append(os.path.join(path, name))
     # read folders
     folders = []
-    gp_list = gp.check_result(
-        gp.gp_camera_folder_list_folders(camera, path))
-    for name, value in gp_list:
+    gp_list = camera.folder_list_folders(path)
+    for name in gp_list.keys():
         folders.append(name)
     # recurse over subfolders
     for name in folders:
         result.extend(list_camera_files(camera, os.path.join(path, name)))
     return result
-
-def get_camera_file_info(camera, path):
-    folder, name = os.path.split(path)
-    return gp.check_result(
-        gp.gp_camera_file_get_info(camera, folder, name))
 
 def main():
     locale.setlocale(locale.LC_ALL, '')
@@ -76,8 +69,8 @@ def main():
         format='%(levelname)s: %(name)s: %(message)s', level=logging.WARNING)
     callback_obj = gp.check_result(gp.use_python_logging())
     computer_files = list_computer_files()
-    camera = gp.check_result(gp.gp_camera_new())
-    gp.check_result(gp.gp_camera_init(camera))
+    camera = gp.Camera()
+    camera.init()
     print('Getting list of files from camera...')
     camera_files = list_camera_files(camera)
     if not camera_files:
@@ -85,9 +78,9 @@ def main():
         return 1
     print('Copying files...')
     for path in camera_files:
-        info = get_camera_file_info(camera, path)
-        timestamp = datetime.fromtimestamp(info.file.mtime)
         folder, name = os.path.split(path)
+        info = camera.file_get_info(folder, name)
+        timestamp = datetime.fromtimestamp(info.file.mtime)
         dest_dir = get_target_dir(timestamp)
         dest = os.path.join(dest_dir, name)
         if dest in computer_files:
@@ -95,10 +88,9 @@ def main():
         print('%s -> %s' % (path, dest_dir))
         if not os.path.isdir(dest_dir):
             os.makedirs(dest_dir)
-        camera_file = gp.check_result(gp.gp_camera_file_get(
-            camera, folder, name, gp.GP_FILE_TYPE_NORMAL))
-        gp.check_result(gp.gp_file_save(camera_file, dest))
-    gp.check_result(gp.gp_camera_exit(camera))
+        camera_file = camera.file_get(folder, name, gp.GP_FILE_TYPE_NORMAL)
+        camera_file.save(dest)
+    camera.exit()
     return 0
 
 if __name__ == "__main__":

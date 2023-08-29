@@ -72,8 +72,34 @@ CALLOC_ARGOUT(CameraText *about)
 // gp_camera_folder_list_files() etc. return a pointer in an output parameter
 NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
-// gp_camera_capture_preview() & gp_camera_file_get() return a pointer
-NEW_ARGOUT(CameraFile *camera_file, gp_file_new, gp_file_unref)
+// gp_camera_capture_preview() & gp_camera_file_get() return a new CameraFile
+// in old versions of python-gphoto2
+%typemap(default) CameraFile *camera_file (int new_file = 0) %{
+  $1 = NULL;
+%}
+%typemap(check) CameraFile *camera_file {
+  if (!$1) {
+    int error = gp_file_new(&$1);
+    if (error < GP_OK) {
+      GPHOTO2_ERROR(error)
+      SWIG_fail;
+    }
+    new_file$argnum = 1;
+  }
+}
+%typemap(argout) CameraFile *camera_file %{
+  if (new_file$argnum) {
+    $result = SWIG_Python_AppendOutput(
+      $result, SWIG_NewPointerObj($1, $1_descriptor, SWIG_POINTER_OWN));
+    new_file$argnum = 0;
+  }
+%}
+%typemap(freearg) CameraFile *camera_file %{
+  if (new_file$argnum) gp_file_unref($1);
+%}
+%typemap(doc) CameraFile *camera_file
+  "$1_name: gphoto2.CameraFile (default=None)";
+
 // Redefine signature as gp_camera_folder_put_file() also uses *file
 %noexception gp_camera_capture_preview;
 int gp_camera_capture_preview(Camera *camera, CameraFile *camera_file, GPContext *context);

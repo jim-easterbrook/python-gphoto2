@@ -4785,40 +4785,56 @@ SWIGINTERN PyObject *_wrap_gp_camera_capture_preview(PyObject *self, PyObject *a
   Camera *arg1 = (Camera *) 0 ;
   CameraFile *arg2 = (CameraFile *) 0 ;
   GPContext *arg3 = (GPContext *) 0 ;
+  int new_file2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
   void *argp3 = 0 ;
   int res3 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
   int result;
+  
+  
+  arg2 = NULL;
   
   {
     arg3 = NULL;
   }
-  {
-    int error = gp_file_new(&arg2);
-    if (error < GP_OK) {
-      arg2 = NULL;
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-      PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-      /*@SWIG@*/
-      SWIG_fail;
-    }
-  }
   (void)self;
-  if (!PyArg_UnpackTuple(args, "gp_camera_capture_preview", 1, 2, &obj0, &obj1)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "gp_camera_capture_preview", 1, 3, &obj0, &obj1, &obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__Camera, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gp_camera_capture_preview" "', argument " "1"" of type '" "Camera *""'"); 
   }
   arg1 = (Camera *)(argp1);
   if (obj1) {
-    res3 = SWIG_ConvertPtr(obj1, &argp3,SWIGTYPE_p__GPContext, 0 |  0 );
+    res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p__CameraFile, 0 |  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "gp_camera_capture_preview" "', argument " "2"" of type '" "CameraFile *""'"); 
+    }
+    arg2 = (CameraFile *)(argp2);
+  }
+  if (obj2) {
+    res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p__GPContext, 0 |  0 );
     if (!SWIG_IsOK(res3)) {
       SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gp_camera_capture_preview" "', argument " "3"" of type '" "GPContext *""'"); 
     }
     arg3 = (GPContext *)(argp3);
+  }
+  {
+    if (!arg2) {
+      int error = gp_file_new(&arg2);
+      if (error < GP_OK) {
+        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
+        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+        /*@SWIG@*/
+        SWIG_fail;
+      }
+      new_file2 = 1;
+    }
   }
   {
     SWIG_PYTHON_THREAD_BEGIN_ALLOW;
@@ -4826,23 +4842,21 @@ SWIGINTERN PyObject *_wrap_gp_camera_capture_preview(PyObject *self, PyObject *a
     SWIG_PYTHON_THREAD_END_ALLOW;
   }
   resultobj = SWIG_From_int((int)(result));
-  {
+  
+  if (new_file2) {
     resultobj = SWIG_Python_AppendOutput(
       resultobj, SWIG_NewPointerObj(arg2, SWIGTYPE_p__CameraFile, SWIG_POINTER_OWN));
-    arg2 = NULL;
+    new_file2 = 0;
   }
-  {
-    if (arg2 != NULL) {
-      gp_file_unref(arg2);
-    }
-  }
+  
+  
+  if (new_file2) gp_file_unref(arg2);
+  
   return resultobj;
 fail:
-  {
-    if (arg2 != NULL) {
-      gp_file_unref(arg2);
-    }
-  }
+  
+  if (new_file2) gp_file_unref(arg2);
+  
   return NULL;
 }
 
@@ -5942,61 +5956,75 @@ SWIGINTERN PyObject *_wrap_Camera_capture_preview(PyObject *self, PyObject *args
   struct _Camera *arg1 = (struct _Camera *) 0 ;
   CameraFile *arg2 = (CameraFile *) 0 ;
   GPContext *arg3 = (GPContext *) 0 ;
+  int new_file2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
   void *argp3 = 0 ;
   int res3 = 0 ;
   PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  
+  arg2 = NULL;
   
   {
     arg3 = NULL;
   }
-  {
-    int error = gp_file_new(&arg2);
-    if (error < GP_OK) {
-      arg2 = NULL;
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-      PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-      /*@SWIG@*/
-      SWIG_fail;
-    }
-  }
   (void)self;
-  if (!PyArg_UnpackTuple(args, "Camera_capture_preview", 0, 1, &obj1)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "Camera_capture_preview", 0, 2, &obj1, &obj2)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__Camera, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Camera_capture_preview" "', argument " "1"" of type '" "struct _Camera *""'"); 
   }
   arg1 = (struct _Camera *)(argp1);
   if (obj1) {
-    res3 = SWIG_ConvertPtr(obj1, &argp3,SWIGTYPE_p__GPContext, 0 |  0 );
+    res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p__CameraFile, 0 |  0 );
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Camera_capture_preview" "', argument " "2"" of type '" "CameraFile *""'"); 
+    }
+    arg2 = (CameraFile *)(argp2);
+  }
+  if (obj2) {
+    res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p__GPContext, 0 |  0 );
     if (!SWIG_IsOK(res3)) {
       SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Camera_capture_preview" "', argument " "3"" of type '" "GPContext *""'"); 
     }
     arg3 = (GPContext *)(argp3);
   }
   {
+    if (!arg2) {
+      int error = gp_file_new(&arg2);
+      if (error < GP_OK) {
+        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
+        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+        /*@SWIG@*/
+        SWIG_fail;
+      }
+      new_file2 = 1;
+    }
+  }
+  {
     _Camera_capture_preview(arg1,arg2,arg3);
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  {
+  
+  if (new_file2) {
     resultobj = SWIG_Python_AppendOutput(
       resultobj, SWIG_NewPointerObj(arg2, SWIGTYPE_p__CameraFile, SWIG_POINTER_OWN));
-    arg2 = NULL;
+    new_file2 = 0;
   }
-  {
-    if (arg2 != NULL) {
-      gp_file_unref(arg2);
-    }
-  }
+  
+  
+  if (new_file2) gp_file_unref(arg2);
+  
   return resultobj;
 fail:
-  {
-    if (arg2 != NULL) {
-      gp_file_unref(arg2);
-    }
-  }
+  
+  if (new_file2) gp_file_unref(arg2);
+  
   return NULL;
 }
 
@@ -6720,6 +6748,7 @@ SWIGINTERN PyObject *_wrap_Camera_file_get(PyObject *self, PyObject *args) {
   CameraFileType arg4 ;
   CameraFile *arg5 = (CameraFile *) 0 ;
   GPContext *arg6 = (GPContext *) 0 ;
+  int new_file5 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res2 ;
@@ -6730,28 +6759,24 @@ SWIGINTERN PyObject *_wrap_Camera_file_get(PyObject *self, PyObject *args) {
   int alloc3 = 0 ;
   int val4 ;
   int ecode4 = 0 ;
+  void *argp5 = 0 ;
+  int res5 = 0 ;
   void *argp6 = 0 ;
   int res6 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  
+  
+  arg5 = NULL;
   
   {
     arg6 = NULL;
   }
-  {
-    int error = gp_file_new(&arg5);
-    if (error < GP_OK) {
-      arg5 = NULL;
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-      PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-      /*@SWIG@*/
-      SWIG_fail;
-    }
-  }
   (void)self;
-  if (!PyArg_UnpackTuple(args, "Camera_file_get", 3, 4, &obj1, &obj2, &obj3, &obj4)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "Camera_file_get", 3, 5, &obj1, &obj2, &obj3, &obj4, &obj5)) SWIG_fail;
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__Camera, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Camera_file_get" "', argument " "1"" of type '" "struct _Camera *""'"); 
@@ -6773,38 +6798,55 @@ SWIGINTERN PyObject *_wrap_Camera_file_get(PyObject *self, PyObject *args) {
   } 
   arg4 = (CameraFileType)(val4);
   if (obj4) {
-    res6 = SWIG_ConvertPtr(obj4, &argp6,SWIGTYPE_p__GPContext, 0 |  0 );
+    res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p__CameraFile, 0 |  0 );
+    if (!SWIG_IsOK(res5)) {
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "Camera_file_get" "', argument " "5"" of type '" "CameraFile *""'"); 
+    }
+    arg5 = (CameraFile *)(argp5);
+  }
+  if (obj5) {
+    res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p__GPContext, 0 |  0 );
     if (!SWIG_IsOK(res6)) {
       SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "Camera_file_get" "', argument " "6"" of type '" "GPContext *""'"); 
     }
     arg6 = (GPContext *)(argp6);
   }
   {
+    if (!arg5) {
+      int error = gp_file_new(&arg5);
+      if (error < GP_OK) {
+        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
+        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+        /*@SWIG@*/
+        SWIG_fail;
+      }
+      new_file5 = 1;
+    }
+  }
+  {
     _Camera_file_get(arg1,(char const *)arg2,(char const *)arg3,arg4,arg5,arg6);
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  {
+  
+  if (new_file5) {
     resultobj = SWIG_Python_AppendOutput(
       resultobj, SWIG_NewPointerObj(arg5, SWIGTYPE_p__CameraFile, SWIG_POINTER_OWN));
-    arg5 = NULL;
+    new_file5 = 0;
   }
+  
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
-  {
-    if (arg5 != NULL) {
-      gp_file_unref(arg5);
-    }
-  }
+  
+  if (new_file5) gp_file_unref(arg5);
+  
   return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
-  {
-    if (arg5 != NULL) {
-      gp_file_unref(arg5);
-    }
-  }
+  
+  if (new_file5) gp_file_unref(arg5);
+  
   return NULL;
 }
 
@@ -8637,6 +8679,7 @@ SWIGINTERN PyObject *_wrap_gp_camera_file_get(PyObject *self, PyObject *args) {
   CameraFileType arg4 ;
   CameraFile *arg5 = (CameraFile *) 0 ;
   GPContext *arg6 = (GPContext *) 0 ;
+  int new_file5 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int res2 ;
@@ -8647,6 +8690,8 @@ SWIGINTERN PyObject *_wrap_gp_camera_file_get(PyObject *self, PyObject *args) {
   int alloc3 = 0 ;
   int val4 ;
   int ecode4 = 0 ;
+  void *argp5 = 0 ;
+  int res5 = 0 ;
   void *argp6 = 0 ;
   int res6 = 0 ;
   PyObject * obj0 = 0 ;
@@ -8654,23 +8699,17 @@ SWIGINTERN PyObject *_wrap_gp_camera_file_get(PyObject *self, PyObject *args) {
   PyObject * obj2 = 0 ;
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
   int result;
+  
+  
+  arg5 = NULL;
   
   {
     arg6 = NULL;
   }
-  {
-    int error = gp_file_new(&arg5);
-    if (error < GP_OK) {
-      arg5 = NULL;
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-      PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-      /*@SWIG@*/
-      SWIG_fail;
-    }
-  }
   (void)self;
-  if (!PyArg_UnpackTuple(args, "gp_camera_file_get", 4, 5, &obj0, &obj1, &obj2, &obj3, &obj4)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "gp_camera_file_get", 4, 6, &obj0, &obj1, &obj2, &obj3, &obj4, &obj5)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__Camera, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gp_camera_file_get" "', argument " "1"" of type '" "Camera *""'"); 
@@ -8692,11 +8731,30 @@ SWIGINTERN PyObject *_wrap_gp_camera_file_get(PyObject *self, PyObject *args) {
   } 
   arg4 = (CameraFileType)(val4);
   if (obj4) {
-    res6 = SWIG_ConvertPtr(obj4, &argp6,SWIGTYPE_p__GPContext, 0 |  0 );
+    res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p__CameraFile, 0 |  0 );
+    if (!SWIG_IsOK(res5)) {
+      SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "gp_camera_file_get" "', argument " "5"" of type '" "CameraFile *""'"); 
+    }
+    arg5 = (CameraFile *)(argp5);
+  }
+  if (obj5) {
+    res6 = SWIG_ConvertPtr(obj5, &argp6,SWIGTYPE_p__GPContext, 0 |  0 );
     if (!SWIG_IsOK(res6)) {
       SWIG_exception_fail(SWIG_ArgError(res6), "in method '" "gp_camera_file_get" "', argument " "6"" of type '" "GPContext *""'"); 
     }
     arg6 = (GPContext *)(argp6);
+  }
+  {
+    if (!arg5) {
+      int error = gp_file_new(&arg5);
+      if (error < GP_OK) {
+        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
+        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+        /*@SWIG@*/
+        SWIG_fail;
+      }
+      new_file5 = 1;
+    }
   }
   {
     SWIG_PYTHON_THREAD_BEGIN_ALLOW;
@@ -8704,27 +8762,25 @@ SWIGINTERN PyObject *_wrap_gp_camera_file_get(PyObject *self, PyObject *args) {
     SWIG_PYTHON_THREAD_END_ALLOW;
   }
   resultobj = SWIG_From_int((int)(result));
-  {
+  
+  if (new_file5) {
     resultobj = SWIG_Python_AppendOutput(
       resultobj, SWIG_NewPointerObj(arg5, SWIGTYPE_p__CameraFile, SWIG_POINTER_OWN));
-    arg5 = NULL;
+    new_file5 = 0;
   }
+  
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
-  {
-    if (arg5 != NULL) {
-      gp_file_unref(arg5);
-    }
-  }
+  
+  if (new_file5) gp_file_unref(arg5);
+  
   return resultobj;
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
-  {
-    if (arg5 != NULL) {
-      gp_file_unref(arg5);
-    }
-  }
+  
+  if (new_file5) gp_file_unref(arg5);
+  
   return NULL;
 }
 
@@ -8901,11 +8957,12 @@ fail:
 
 static PyMethodDef SwigMethods[] = {
 	 { "gp_camera_capture_preview", _wrap_gp_camera_capture_preview, METH_VARARGS, "\n"
-		"gp_camera_capture_preview(camera, context) -> int\n"
+		"gp_camera_capture_preview(camera, camera_file, context) -> int\n"
 		"\n"
 		"Parameters\n"
 		"----------\n"
 		"camera: gphoto2.Camera\n"
+		"camera_file: gphoto2.CameraFile (default=None)\n"
 		"context: gphoto2.Context (default=None)\n"
 		"\n"
 		"Captures a preview that won't be stored on the camera but returned in\n"
@@ -9735,7 +9792,7 @@ static PyMethodDef SwigMethods[] = {
 		"See also gphoto2.Camera.file_set_info\n"
 		""},
 	 { "gp_camera_file_get", _wrap_gp_camera_file_get, METH_VARARGS, "\n"
-		"gp_camera_file_get(camera, folder, file, type, context) -> int\n"
+		"gp_camera_file_get(camera, folder, file, type, camera_file, context) -> int\n"
 		"\n"
 		"Parameters\n"
 		"----------\n"
@@ -9743,6 +9800,7 @@ static PyMethodDef SwigMethods[] = {
 		"folder: str\n"
 		"file: str\n"
 		"type: CameraFileType (gphoto2.GP_FILE_TYPE_PREVIEW etc.)\n"
+		"camera_file: gphoto2.CameraFile (default=None)\n"
 		"context: gphoto2.Context (default=None)\n"
 		"\n"
 		"Retrieves a file from the Camera.  \n"
@@ -10823,10 +10881,11 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___Camera_methods[] = {
 		"See also gphoto2.gp_camera_trigger_capture\n"
 		"" },
   { "capture_preview", _wrap_Camera_capture_preview, METH_VARARGS, "\n"
-		"capture_preview(self, context)\n"
+		"capture_preview(self, camera_file, context)\n"
 		"\n"
 		"Parameters\n"
 		"----------\n"
+		"camera_file: gphoto2.CameraFile (default=None)\n"
 		"context: gphoto2.Context (default=None)\n"
 		"\n"
 		"Captures a preview that won't be stored on the camera but returned in\n"
@@ -11154,13 +11213,14 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___Camera_methods[] = {
 		"See also gphoto2.gp_camera_file_set_info\n"
 		"" },
   { "file_get", _wrap_Camera_file_get, METH_VARARGS, "\n"
-		"file_get(self, folder, file, type, context)\n"
+		"file_get(self, folder, file, type, camera_file, context)\n"
 		"\n"
 		"Parameters\n"
 		"----------\n"
 		"folder: str\n"
 		"file: str\n"
 		"type: CameraFileType (gphoto2.GP_FILE_TYPE_PREVIEW etc.)\n"
+		"camera_file: gphoto2.CameraFile (default=None)\n"
 		"context: gphoto2.Context (default=None)\n"
 		"\n"
 		"Retrieves a file from the Camera.  \n"

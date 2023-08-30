@@ -19,6 +19,14 @@ License along with python-gphoto2.  If not, see
 <https://www.gnu.org/licenses/>.
 
 
+Changes in 2.5.0:
+  */ Add some GPPort methods. This allows a port to be reset when an error
+     occurs.
+  */ Pass CameraFile to gp_camera_capture_preview & gp_camera_file_get.
+     Optional - one will be created if needed.
+  */ Remove Context::camera_autodetect method deprecated 3 years ago.
+  */ Rename Context, PortInfo & PortInfoList. Add aliases of old names.
+
 Changes in 2.4.0:
   1/ API change! gp_file_open no longer creates CameraFile object. It is now
      consistent with the C API.

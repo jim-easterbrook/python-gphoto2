@@ -29,9 +29,6 @@ Context = GPContext
 // Make docstring parameter types more Pythonic
 %typemap(doc) GPContext * "$1_name: gphoto2.$*1_type";
 
-// gp_camera_autodetect() returns a pointer in an output parameter
-NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
-
 // Ignore "backend" functions
 %ignore gp_context_cancel;
 %ignore gp_context_error;
@@ -286,18 +283,6 @@ struct _GPContext {};
 %delobject gp_context_unref;
 
 // Add member methods to _GPContext
-%exception _GPContext::camera_autodetect {
-  if (PyErr_WarnEx(PyExc_DeprecationWarning,
-      "Camera.autodetect replaces Context().camera_autodetect", 1) < 0) SWIG_fail;
-  $action
-  if (PyErr_Occurred() != NULL) SWIG_fail;
-}
-%extend _GPContext {
-  void camera_autodetect(CameraList *list) {
-    int error = gp_camera_autodetect(list, $self);
-    if (error < GP_OK) GPHOTO2_ERROR(error)
-  }
-};
 VOID_MEMBER_FUNCTION(_GPContext,
     set_idle_func, (GPContextIdleFunc func, void *data),
     gp_context_set_idle_func, ($self, func, data))

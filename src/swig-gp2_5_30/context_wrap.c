@@ -3746,20 +3746,19 @@ SwigPyBuiltin_iternextfunc_closure(SwigPyWrapperFunction wrapper, PyObject *a) {
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_CallbackDetails swig_types[0]
-#define SWIGTYPE_p_CameraList swig_types[1]
-#define SWIGTYPE_p_SwigPyObject swig_types[2]
-#define SWIGTYPE_p__GPContext swig_types[3]
-#define SWIGTYPE_p__GPContextFeedback swig_types[4]
-#define SWIGTYPE_p_char swig_types[5]
-#define SWIGTYPE_p_f_p_struct__GPContext_float_p_q_const__char_p_void__unsigned_int swig_types[6]
-#define SWIGTYPE_p_f_p_struct__GPContext_p_q_const__char_p_void___GPContextFeedback swig_types[7]
-#define SWIGTYPE_p_f_p_struct__GPContext_p_q_const__char_p_void__void swig_types[8]
-#define SWIGTYPE_p_f_p_struct__GPContext_p_void___GPContextFeedback swig_types[9]
-#define SWIGTYPE_p_f_p_struct__GPContext_p_void__void swig_types[10]
-#define SWIGTYPE_p_f_p_struct__GPContext_unsigned_int_float_p_void__void swig_types[11]
-#define SWIGTYPE_p_f_p_struct__GPContext_unsigned_int_p_void__void swig_types[12]
-static swig_type_info *swig_types[14];
-static swig_module_info swig_module = {swig_types, 13, 0, 0, 0, 0};
+#define SWIGTYPE_p_SwigPyObject swig_types[1]
+#define SWIGTYPE_p__GPContext swig_types[2]
+#define SWIGTYPE_p__GPContextFeedback swig_types[3]
+#define SWIGTYPE_p_char swig_types[4]
+#define SWIGTYPE_p_f_p_struct__GPContext_float_p_q_const__char_p_void__unsigned_int swig_types[5]
+#define SWIGTYPE_p_f_p_struct__GPContext_p_q_const__char_p_void___GPContextFeedback swig_types[6]
+#define SWIGTYPE_p_f_p_struct__GPContext_p_q_const__char_p_void__void swig_types[7]
+#define SWIGTYPE_p_f_p_struct__GPContext_p_void___GPContextFeedback swig_types[8]
+#define SWIGTYPE_p_f_p_struct__GPContext_p_void__void swig_types[9]
+#define SWIGTYPE_p_f_p_struct__GPContext_unsigned_int_float_p_void__void swig_types[10]
+#define SWIGTYPE_p_f_p_struct__GPContext_unsigned_int_p_void__void swig_types[11]
+static swig_type_info *swig_types[13];
+static swig_module_info swig_module = {swig_types, 12, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -4145,12 +4144,6 @@ SWIGINTERN struct _GPContext *new__GPContext(void){
 SWIGINTERN void delete__GPContext(struct _GPContext *self){
     gp_context_unref(self);
   }
-SWIGINTERN void _GPContext_camera_autodetect(struct _GPContext *self,CameraList *list){
-    int error = gp_camera_autodetect(list, self);
-    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
-  }
 SWIGINTERN void _GPContext_set_idle_func(struct _GPContext *self,GPContextIdleFunc func,void *data){
     gp_context_set_idle_func (self, func, data);
   }
@@ -4274,58 +4267,6 @@ SWIGINTERN PyObject *_wrap_delete_GPContext(PyObject *self, PyObject *args) {
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_GPContext_camera_autodetect(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _GPContext *arg1 = (struct _GPContext *) 0 ;
-  CameraList *arg2 = (CameraList *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  {
-    int error = gp_list_new(&arg2);
-    if (error < GP_OK) {
-      arg2 = NULL;
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-      PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-      /*@SWIG@*/
-      SWIG_fail;
-    }
-  }
-  (void)self;
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "GPContext_camera_autodetect takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPContext, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "GPContext_camera_autodetect" "', argument " "1"" of type '" "struct _GPContext *""'"); 
-  }
-  arg1 = (struct _GPContext *)(argp1);
-  {
-    if (PyErr_WarnEx(PyExc_DeprecationWarning,
-        "Camera.autodetect replaces Context().camera_autodetect", 1) < 0) SWIG_fail;
-    _GPContext_camera_autodetect(arg1,arg2);
-    if (PyErr_Occurred() != NULL) SWIG_fail;
-  }
-  resultobj = SWIG_Py_Void();
-  {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(arg2, SWIGTYPE_p_CameraList, SWIG_POINTER_OWN));
-    arg2 = NULL;
-  }
-  {
-    if (arg2 != NULL) {
-      gp_list_unref(arg2);
-    }
-  }
-  return resultobj;
-fail:
-  {
-    if (arg2 != NULL) {
-      gp_list_unref(arg2);
-    }
-  }
   return NULL;
 }
 
@@ -5702,7 +5643,6 @@ SwigPyBuiltin___GPContext_richcompare(PyObject *self, PyObject *other, int op) {
 }
 
 SWIGINTERN PyMethodDef SwigPyBuiltin___GPContext_methods[] = {
-  { "camera_autodetect", _wrap_GPContext_camera_autodetect, METH_VARARGS, "camera_autodetect(self)" },
   { "set_idle_func", _wrap_GPContext_set_idle_func, METH_VARARGS, "\n"
 		"set_idle_func(self, func, data)\n"
 		"\n"
@@ -5979,7 +5919,6 @@ SWIGINTERN SwigPyClientData SwigPyBuiltin___GPContext_clientdata = {0, 0, 0, 0, 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_CallbackDetails = {"_p_CallbackDetails", "CallbackDetails *|struct CallbackDetails *", 0, 0, (void*)&SwigPyBuiltin__CallbackDetails_clientdata, 0};
-static swig_type_info _swigt__p_CameraList = {"_p_CameraList", "CameraList *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_SwigPyObject = {"_p_SwigPyObject", "SwigPyObject *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__GPContext = {"_p__GPContext", "GPContext *|struct _GPContext *|_GPContext *", 0, 0, (void*)&SwigPyBuiltin___GPContext_clientdata, 0};
 static swig_type_info _swigt__p__GPContextFeedback = {"_p__GPContextFeedback", "GPContextFeedback *|enum _GPContextFeedback *", 0, 0, (void*)0, 0};
@@ -5994,7 +5933,6 @@ static swig_type_info _swigt__p_f_p_struct__GPContext_unsigned_int_p_void__void 
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_CallbackDetails,
-  &_swigt__p_CameraList,
   &_swigt__p_SwigPyObject,
   &_swigt__p__GPContext,
   &_swigt__p__GPContextFeedback,
@@ -6009,7 +5947,6 @@ static swig_type_info *swig_type_initial[] = {
 };
 
 static swig_cast_info _swigc__p_CallbackDetails[] = {  {&_swigt__p_CallbackDetails, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_CameraList[] = {  {&_swigt__p_CameraList, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SwigPyObject[] = {  {&_swigt__p_SwigPyObject, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__GPContext[] = {  {&_swigt__p__GPContext, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__GPContextFeedback[] = {  {&_swigt__p__GPContextFeedback, 0, 0, 0},{0, 0, 0, 0}};
@@ -6024,7 +5961,6 @@ static swig_cast_info _swigc__p_f_p_struct__GPContext_unsigned_int_p_void__void[
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_CallbackDetails,
-  _swigc__p_CameraList,
   _swigc__p_SwigPyObject,
   _swigc__p__GPContext,
   _swigc__p__GPContextFeedback,

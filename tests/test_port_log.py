@@ -27,7 +27,27 @@ from gphoto2.port_log import _gphoto2_logger_cb
 
 
 class TestPortLog(unittest.TestCase):
-    def test_port_log(self):
+    def callback(self, level, domain, string, data):
+        self.assertEqual(level, gp.GP_LOG_DEBUG)
+        self.assertEqual(domain, b'domain')
+        self.assertEqual(string, b'string')
+        self.assertEqual(data, 'data')
+
+    def test_oo_style(self):
+        callback = gp.Log.add_func(gp.GP_LOG_DEBUG, self.callback, 'data')
+        gp.gp_log(gp.GP_LOG_DEBUG, 'domain', 'string')
+        del callback
+        gp.gp_log(gp.GP_LOG_DEBUG, 'wrong', 'wrong')
+
+    def test_c_style(self):
+        OK, callback = gp.gp_log_add_func(
+            gp.GP_LOG_DEBUG, self.callback, 'data')
+        self.assertGreaterEqual(OK, gp.GP_OK)
+        gp.gp_log(gp.GP_LOG_DEBUG, 'domain', 'string')
+        del callback
+        gp.gp_log(gp.GP_LOG_DEBUG, 'wrong', 'wrong')
+
+    def test_use_python_logging(self):
         self.assertEqual(sys.getrefcount(_gphoto2_logger_cb), 3)
         # test default mapping
         # GP_LOG_DATA maps to DEBUG - 5 which self.assertLogs doesn't handle

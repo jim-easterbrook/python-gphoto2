@@ -137,6 +137,14 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
 }
 %typemap(doc) void *data "$1_name: object (default=None)";
 
+// Add static member methods to hypothetical Log object
+%nodefaultdtor Log;
+struct Log {};
+MEMBER_FUNCTION(Log,
+    static int, add_func, (GPLogLevel level, GPLogFunc func, void *data),
+    gp_log_add_func, (level, func, data), )
+
+
 // define use_python_logging function
 %pythoncode %{
 import logging

@@ -126,7 +126,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
     SWIG_PYTHON_THREAD_END_ALLOW;
 #endif
     if (result < GP_OK) GPHOTO2_ERROR(result)
-#if #member_rtn == "int"
+#if #member_rtn == "int" || #member_rtn == "static int"
     return result;
 #endif
   }

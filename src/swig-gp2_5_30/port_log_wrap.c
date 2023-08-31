@@ -3746,12 +3746,13 @@ SwigPyBuiltin_iternextfunc_closure(SwigPyWrapperFunction wrapper, PyObject *a) {
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_GPLogLevel swig_types[0]
-#define SWIGTYPE_p_LogFuncItem swig_types[1]
-#define SWIGTYPE_p_SwigPyObject swig_types[2]
-#define SWIGTYPE_p_char swig_types[3]
-#define SWIGTYPE_p_f_enum_GPLogLevel_p_q_const__char_p_q_const__char_p_void__void swig_types[4]
-static swig_type_info *swig_types[6];
-static swig_module_info swig_module = {swig_types, 5, 0, 0, 0, 0};
+#define SWIGTYPE_p_Log swig_types[1]
+#define SWIGTYPE_p_LogFuncItem swig_types[2]
+#define SWIGTYPE_p_SwigPyObject swig_types[3]
+#define SWIGTYPE_p_char swig_types[4]
+#define SWIGTYPE_p_f_enum_GPLogLevel_p_q_const__char_p_q_const__char_p_void__void swig_types[5]
+static swig_type_info *swig_types[7];
+static swig_module_info swig_module = {swig_types, 6, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3838,13 +3839,6 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
     }
     PyGILState_Release(gstate);
 };
-
-
-SWIGINTERNINLINE PyObject*
-  SWIG_From_int  (int value)
-{
-  return PyInt_FromLong((long) value);
-}
 
 
 #include <limits.h>
@@ -3995,6 +3989,28 @@ SWIG_AsVal_int (PyObject * obj, int *val)
     }
   }  
   return res;
+}
+
+SWIGINTERN int Log_add_func(GPLogLevel level,GPLogFunc func,void *data){
+
+
+
+    int result = gp_log_add_func (level, func, data);
+
+
+
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
+/*@SWIG@*/
+
+    return result;
+
+  }
+
+SWIGINTERNINLINE PyObject*
+  SWIG_From_int  (int value)
+{
+  return PyInt_FromLong((long) value);
 }
 
 
@@ -4150,6 +4166,78 @@ fail:
 
 
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_LogFuncItem) /* defines _wrap_delete_LogFuncItem_destructor_closure */
+
+SWIGINTERN PyObject *_wrap_Log_add_func(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  GPLogLevel arg1 ;
+  GPLogFunc arg2 = (GPLogFunc) 0 ;
+  void *arg3 = (void *) 0 ;
+  LogFuncItem *_global_callback ;
+  int val1 ;
+  int ecode1 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  int result;
+  
+  {
+    _global_callback = malloc(sizeof(LogFuncItem));
+    if (!_global_callback) {
+      PyErr_SetNone(PyExc_MemoryError);
+      SWIG_fail;
+    }
+    _global_callback->id = GP_ERROR;
+    _global_callback->func = NULL;
+    _global_callback->data = NULL;
+  }
+  {
+    arg3 = _global_callback;
+  }
+  (void)self;
+  if (!PyArg_UnpackTuple(args, "Log_add_func", 2, 3, &obj0, &obj1, &obj2)) SWIG_fail;
+  ecode1 = SWIG_AsVal_int(obj0, &val1);
+  if (!SWIG_IsOK(ecode1)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "Log_add_func" "', argument " "1"" of type '" "GPLogLevel""'");
+  } 
+  arg1 = (GPLogLevel)(val1);
+  {
+    if (!PyCallable_Check(obj1)) {
+      SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Log_add_func" "', argument " "2"" of type '" "callable""'");
+    }
+    _global_callback->func = obj1;
+    Py_INCREF(_global_callback->func);
+    arg2 = gp_log_call_python;
+  }
+  if (obj2) {
+    {
+      _global_callback->data = obj2;
+      Py_INCREF(_global_callback->data);
+    }
+  }
+  {
+    result = (int)Log_add_func(arg1,arg2,arg3);
+    if (PyErr_Occurred()) SWIG_fail;
+  }
+  resultobj = SWIG_From_int((int)(result));
+  {
+    _global_callback->id = result;
+    resultobj = SWIG_Python_AppendOutput(resultobj,
+      SWIG_NewPointerObj(_global_callback, SWIGTYPE_p_LogFuncItem, SWIG_POINTER_OWN));
+    _global_callback = NULL;
+  }
+  {
+    if (_global_callback)
+    del_LogFuncItem(_global_callback);
+  }
+  return resultobj;
+fail:
+  {
+    if (_global_callback)
+    del_LogFuncItem(_global_callback);
+  }
+  return NULL;
+}
+
 
 SWIGINTERN PyObject *_wrap_gp_log_add_func(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
@@ -4573,10 +4661,254 @@ static PyHeapTypeObject SwigPyBuiltin__LogFuncItem_type = {
 
 SWIGINTERN SwigPyClientData SwigPyBuiltin__LogFuncItem_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__LogFuncItem_type};
 
+static SwigPyGetSet Log___dict___getset = { SwigPyObject_get___dict__, 0 };
+SWIGINTERN PyGetSetDef SwigPyBuiltin__Log_getset[] = {
+    { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"Log_add_func", &Log___dict___getset },
+    { NULL, NULL, NULL, NULL, NULL } /* Sentinel */
+};
+
+SWIGINTERN PyObject *
+SwigPyBuiltin__Log_richcompare(PyObject *self, PyObject *other, int op) {
+  PyObject *result = NULL;
+  PyObject *tuple = PyTuple_New(1);
+  assert(tuple);
+  PyTuple_SET_ITEM(tuple, 0, other);
+  Py_XINCREF(other);
+  if (!result) {
+    if (SwigPyObject_Check(self) && SwigPyObject_Check(other)) {
+      result = SwigPyObject_richcompare((SwigPyObject *)self, (SwigPyObject *)other, op);
+    } else {
+      result = Py_NotImplemented;
+      Py_INCREF(result);
+    }
+  }
+  Py_DECREF(tuple);
+  return result;
+}
+
+SWIGINTERN PyMethodDef SwigPyBuiltin__Log_methods[] = {
+  { "add_func", (PyCFunction)(void(*)(void))_wrap_Log_add_func, METH_STATIC|METH_VARARGS, "\n"
+		"Log_add_func(level, func, data) -> int\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"level: GPLogLevel (gphoto2.GP_LOG_ERROR etc.)\n"
+		"func: callable function\n"
+		"data: object (default=None)\n"
+		"\n"
+		"" },
+  { NULL, NULL, 0, NULL } /* Sentinel */
+};
+
+static PyHeapTypeObject SwigPyBuiltin__Log_type = {
+  {
+#if PY_VERSION_HEX >= 0x03000000
+    PyVarObject_HEAD_INIT(NULL, 0)
+#else
+    PyObject_HEAD_INIT(NULL)
+    0,                                        /* ob_size */
+#endif
+    "gphoto2.port_log.Log",                   /* tp_name */
+    sizeof(SwigPyObject),                     /* tp_basicsize */
+    0,                                        /* tp_itemsize */
+    SwigPyBuiltin_BadDealloc,                 /* tp_dealloc */
+#if PY_VERSION_HEX < 0x030800b4
+    (printfunc) 0,                            /* tp_print */
+#else
+    (Py_ssize_t) 0,                           /* tp_vectorcall_offset */
+#endif
+    (getattrfunc) 0,                          /* tp_getattr */
+    (setattrfunc) 0,                          /* tp_setattr */
+#if PY_VERSION_HEX >= 0x03000000
+    0,                                        /* tp_compare */
+#else
+    (cmpfunc) 0,                              /* tp_compare */
+#endif
+    (reprfunc) 0,                             /* tp_repr */
+    &SwigPyBuiltin__Log_type.as_number,       /* tp_as_number */
+    &SwigPyBuiltin__Log_type.as_sequence,     /* tp_as_sequence */
+    &SwigPyBuiltin__Log_type.as_mapping,      /* tp_as_mapping */
+    SwigPyObject_hash,                        /* tp_hash */
+    (ternaryfunc) 0,                          /* tp_call */
+    (reprfunc) 0,                             /* tp_str */
+    (getattrofunc) 0,                         /* tp_getattro */
+    (setattrofunc) 0,                         /* tp_setattro */
+    &SwigPyBuiltin__Log_type.as_buffer,       /* tp_as_buffer */
+#if PY_VERSION_HEX >= 0x03000000
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,   /* tp_flags */
+#else
+    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES, /* tp_flags */
+#endif
+    "::Log",                                  /* tp_doc */
+    (traverseproc) 0,                         /* tp_traverse */
+    (inquiry) 0,                              /* tp_clear */
+    SwigPyBuiltin__Log_richcompare,           /* tp_richcompare */
+    0,                                        /* tp_weaklistoffset */
+    (getiterfunc) 0,                          /* tp_iter */
+    (iternextfunc) 0,                         /* tp_iternext */
+    SwigPyBuiltin__Log_methods,               /* tp_methods */
+    0,                                        /* tp_members */
+    SwigPyBuiltin__Log_getset,                /* tp_getset */
+    0,                                        /* tp_base */
+    0,                                        /* tp_dict */
+    (descrgetfunc) 0,                         /* tp_descr_get */
+    (descrsetfunc) 0,                         /* tp_descr_set */
+    offsetof(SwigPyObject, dict),             /* tp_dictoffset */
+    SwigPyBuiltin_BadInit,                    /* tp_init */
+    (allocfunc) 0,                            /* tp_alloc */
+    (newfunc) 0,                              /* tp_new */
+    (freefunc) 0,                             /* tp_free */
+    (inquiry) 0,                              /* tp_is_gc */
+    (PyObject *) 0,                           /* tp_bases */
+    (PyObject *) 0,                           /* tp_mro */
+    (PyObject *) 0,                           /* tp_cache */
+    (PyObject *) 0,                           /* tp_subclasses */
+    (PyObject *) 0,                           /* tp_weaklist */
+    (destructor) 0,                           /* tp_del */
+    (int) 0,                                  /* tp_version_tag */
+#if PY_VERSION_HEX >= 0x03040000
+    (destructor) 0,                           /* tp_finalize */
+#endif
+#if PY_VERSION_HEX >= 0x03080000
+    (vectorcallfunc) 0,                       /* tp_vectorcall */
+#endif
+#if (PY_VERSION_HEX >= 0x03080000) && (PY_VERSION_HEX < 0x03090000)
+    0,                                        /* tp_print */
+#endif
+#ifdef COUNT_ALLOCS
+    (Py_ssize_t) 0,                           /* tp_allocs */
+    (Py_ssize_t) 0,                           /* tp_frees */
+    (Py_ssize_t) 0,                           /* tp_maxalloc */
+    0,                                        /* tp_prev */
+    0,                                        /* tp_next */
+#endif
+  },
+#if PY_VERSION_HEX >= 0x03050000
+  {
+    (unaryfunc) 0,                            /* am_await */
+    (unaryfunc) 0,                            /* am_aiter */
+    (unaryfunc) 0,                            /* am_anext */
+# if PY_VERSION_HEX >= 0x030a0000
+    (sendfunc) 0,                             /* am_send */
+# endif
+  },
+#endif
+  {
+    (binaryfunc) 0,                           /* nb_add */
+    (binaryfunc) 0,                           /* nb_subtract */
+    (binaryfunc) 0,                           /* nb_multiply */
+#if PY_VERSION_HEX < 0x03000000
+    (binaryfunc) 0,                           /* nb_divide */
+#endif
+    (binaryfunc) 0,                           /* nb_remainder */
+    (binaryfunc) 0,                           /* nb_divmod */
+    (ternaryfunc) 0,                          /* nb_power */
+    (unaryfunc) 0,                            /* nb_negative */
+    (unaryfunc) 0,                            /* nb_positive */
+    (unaryfunc) 0,                            /* nb_absolute */
+    (inquiry) 0,                              /* nb_nonzero */
+    (unaryfunc) 0,                            /* nb_invert */
+    (binaryfunc) 0,                           /* nb_lshift */
+    (binaryfunc) 0,                           /* nb_rshift */
+    (binaryfunc) 0,                           /* nb_and */
+    (binaryfunc) 0,                           /* nb_xor */
+    (binaryfunc) 0,                           /* nb_or */
+#if PY_VERSION_HEX < 0x03000000
+    (coercion) 0,                             /* nb_coerce */
+#endif
+    (unaryfunc) 0,                            /* nb_int */
+#if PY_VERSION_HEX >= 0x03000000
+    (void *) 0,                               /* nb_reserved */
+#else
+    (unaryfunc) 0,                            /* nb_long */
+#endif
+    (unaryfunc) 0,                            /* nb_float */
+#if PY_VERSION_HEX < 0x03000000
+    (unaryfunc) 0,                            /* nb_oct */
+    (unaryfunc) 0,                            /* nb_hex */
+#endif
+    (binaryfunc) 0,                           /* nb_inplace_add */
+    (binaryfunc) 0,                           /* nb_inplace_subtract */
+    (binaryfunc) 0,                           /* nb_inplace_multiply */
+#if PY_VERSION_HEX < 0x03000000
+    (binaryfunc) 0,                           /* nb_inplace_divide */
+#endif
+    (binaryfunc) 0,                           /* nb_inplace_remainder */
+    (ternaryfunc) 0,                          /* nb_inplace_power */
+    (binaryfunc) 0,                           /* nb_inplace_lshift */
+    (binaryfunc) 0,                           /* nb_inplace_rshift */
+    (binaryfunc) 0,                           /* nb_inplace_and */
+    (binaryfunc) 0,                           /* nb_inplace_xor */
+    (binaryfunc) 0,                           /* nb_inplace_or */
+    (binaryfunc) 0,                           /* nb_floor_divide */
+    (binaryfunc) 0,                           /* nb_true_divide */
+    (binaryfunc) 0,                           /* nb_inplace_floor_divide */
+    (binaryfunc) 0,                           /* nb_inplace_true_divide */
+    (unaryfunc) 0,                            /* nb_index */
+#if PY_VERSION_HEX >= 0x03050000
+    (binaryfunc) 0,                           /* nb_matrix_multiply */
+    (binaryfunc) 0,                           /* nb_inplace_matrix_multiply */
+#endif
+  },
+  {
+    (lenfunc) 0,                              /* mp_length */
+    (binaryfunc) 0,                           /* mp_subscript */
+    (objobjargproc) 0,                        /* mp_ass_subscript */
+  },
+  {
+    (lenfunc) 0,                              /* sq_length */
+    (binaryfunc) 0,                           /* sq_concat */
+    (ssizeargfunc) 0,                         /* sq_repeat */
+    (ssizeargfunc) 0,                         /* sq_item */
+#if PY_VERSION_HEX >= 0x03000000
+    (void *) 0,                               /* was_sq_slice */
+#else
+    (ssizessizeargfunc) 0,                    /* sq_slice */
+#endif
+    (ssizeobjargproc) 0,                      /* sq_ass_item */
+#if PY_VERSION_HEX >= 0x03000000
+    (void *) 0,                               /* was_sq_ass_slice */
+#else
+    (ssizessizeobjargproc) 0,                 /* sq_ass_slice */
+#endif
+    (objobjproc) 0,                           /* sq_contains */
+    (binaryfunc) 0,                           /* sq_inplace_concat */
+    (ssizeargfunc) 0,                         /* sq_inplace_repeat */
+  },
+  {
+#if PY_VERSION_HEX < 0x03000000
+    (readbufferproc) 0,                       /* bf_getreadbuffer */
+    (writebufferproc) 0,                      /* bf_getwritebuffer */
+    (segcountproc) 0,                         /* bf_getsegcount */
+    (charbufferproc) 0,                       /* bf_getcharbuffer */
+#endif
+    (getbufferproc) 0,                        /* bf_getbuffer */
+    (releasebufferproc) 0,                    /* bf_releasebuffer */
+  },
+    (PyObject *) 0,                           /* ht_name */
+    (PyObject *) 0,                           /* ht_slots */
+#if PY_VERSION_HEX >= 0x03030000
+    (PyObject *) 0,                           /* ht_qualname */
+    0,                                        /* ht_cached_keys */
+#endif
+#if PY_VERSION_HEX >= 0x03090000
+    (PyObject *) 0,                           /* ht_module */
+#endif
+#if PY_VERSION_HEX >= 0x030b0000
+    (char *) 0,                               /* _ht_tpname */
+  {
+    (PyObject *) 0,                           /* getitem */
+  }
+#endif
+};
+
+SWIGINTERN SwigPyClientData SwigPyBuiltin__Log_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__Log_type};
+
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_GPLogLevel = {"_p_GPLogLevel", "GPLogLevel *|enum GPLogLevel *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_Log = {"_p_Log", "Log *", 0, 0, (void*)&SwigPyBuiltin__Log_clientdata, 0};
 static swig_type_info _swigt__p_LogFuncItem = {"_p_LogFuncItem", "LogFuncItem *|struct LogFuncItem *", 0, 0, (void*)&SwigPyBuiltin__LogFuncItem_clientdata, 0};
 static swig_type_info _swigt__p_SwigPyObject = {"_p_SwigPyObject", "SwigPyObject *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
@@ -4584,6 +4916,7 @@ static swig_type_info _swigt__p_f_enum_GPLogLevel_p_q_const__char_p_q_const__cha
 
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_GPLogLevel,
+  &_swigt__p_Log,
   &_swigt__p_LogFuncItem,
   &_swigt__p_SwigPyObject,
   &_swigt__p_char,
@@ -4591,6 +4924,7 @@ static swig_type_info *swig_type_initial[] = {
 };
 
 static swig_cast_info _swigc__p_GPLogLevel[] = {  {&_swigt__p_GPLogLevel, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_Log[] = {  {&_swigt__p_Log, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_LogFuncItem[] = {  {&_swigt__p_LogFuncItem, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SwigPyObject[] = {  {&_swigt__p_SwigPyObject, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
@@ -4598,6 +4932,7 @@ static swig_cast_info _swigc__p_f_enum_GPLogLevel_p_q_const__char_p_q_const__cha
 
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_GPLogLevel,
+  _swigc__p_Log,
   _swigc__p_LogFuncItem,
   _swigc__p_SwigPyObject,
   _swigc__p_char,
@@ -5107,6 +5442,29 @@ SWIG_init(void) {
   Py_INCREF(builtin_pytype);
   PyModule_AddObject(m, "LogFuncItem", (PyObject *)builtin_pytype);
   SwigPyBuiltin_AddPublicSymbol(public_interface, "LogFuncItem");
+  d = md;
+  
+  /* type '::Log' */
+  builtin_pytype = (PyTypeObject *)&SwigPyBuiltin__Log_type;
+  builtin_pytype->tp_dict = d = PyDict_New();
+  SwigPyBuiltin_SetMetaType(builtin_pytype, metatype);
+  builtin_pytype->tp_new = PyType_GenericNew;
+  builtin_base_count = 0;
+  builtin_bases[builtin_base_count] = NULL;
+  SwigPyBuiltin_InitBases(builtin_pytype, builtin_bases);
+  PyDict_SetItemString(d, "this", this_descr);
+  PyDict_SetItemString(d, "thisown", thisown_descr);
+  if (PyType_Ready(builtin_pytype) < 0) {
+    PyErr_SetString(PyExc_TypeError, "Could not create type 'Log'.");
+#if PY_VERSION_HEX >= 0x03000000
+    return NULL;
+#else
+    return;
+#endif
+  }
+  Py_INCREF(builtin_pytype);
+  PyModule_AddObject(m, "Log", (PyObject *)builtin_pytype);
+  SwigPyBuiltin_AddPublicSymbol(public_interface, "Log");
   d = md;
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_LOG_ERROR",SWIG_From_int((int)(GP_LOG_ERROR)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_LOG_VERBOSE",SWIG_From_int((int)(GP_LOG_VERBOSE)));

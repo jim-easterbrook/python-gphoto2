@@ -20,6 +20,7 @@ License along with python-gphoto2.  If not, see
 
 
 Changes in 2.5.0:
+  */ API change: gp_log_add_func callback is passed str instead of bytes
   */ Add some GPPort methods. This allows a port to be reset when an error
      occurs.
   */ Pass CameraFile to gp_camera_capture_preview & gp_camera_file_get.

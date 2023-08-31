@@ -16,11 +16,6 @@ import logging
 
 def _gphoto2_logger_cb(level, domain, msg, data):
     log_func, mapping = data
-# decode bytes to str
-    if domain:
-        domain = domain.decode(errors='replace')
-    if msg:
-        msg = msg.decode(errors='replace')
     if level in mapping:
         log_func(mapping[level], '(%s) %s', domain, msg)
     else:

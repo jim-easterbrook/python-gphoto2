@@ -29,8 +29,8 @@ from gphoto2.port_log import _gphoto2_logger_cb
 class TestPortLog(unittest.TestCase):
     def callback(self, level, domain, string, data):
         self.assertEqual(level, gp.GP_LOG_DEBUG)
-        self.assertEqual(domain, b'domain')
-        self.assertEqual(string, b'string')
+        self.assertEqual(domain, 'domain')
+        self.assertEqual(string, 'string')
         self.assertEqual(data, 'data')
 
     def test_oo_style(self):

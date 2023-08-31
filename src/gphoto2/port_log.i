@@ -27,6 +27,15 @@
 // Turn on default exception handling
 DEFAULT_EXCEPTION
 
+// Disallow varargs input to gp_log
+%typemap(in) (...) %{
+    if (PyTuple_Size(varargs) > 0) {
+        PyErr_SetString(PyExc_ValueError,
+                        "Too many arguments in function '$symname'.");
+        SWIG_fail;
+    }
+%}
+
 // SWIG can't wrap functions with var args
 %ignore gp_logv;
 
@@ -77,9 +86,13 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
     PyObject *result = NULL;
     PyObject *arglist = NULL;
     if (this->data) {
-        arglist = Py_BuildValue("(iyyO)", level, domain, str, this->data);
+        arglist = Py_BuildValue("(iNNO)", level,
+            PyUnicode_DecodeUTF8(domain, strlen(domain), "replace"),
+            PyUnicode_DecodeUTF8(str, strlen(str), "replace"), this->data);
     } else {
-        arglist = Py_BuildValue("(iyy)", level, domain, str);
+        arglist = Py_BuildValue("(iNN)", level,
+            PyUnicode_DecodeUTF8(domain, strlen(domain), "replace"),
+            PyUnicode_DecodeUTF8(str, strlen(str), "replace"));
     }
     if (arglist == NULL) {
         PyErr_Print();
@@ -151,11 +164,6 @@ import logging
 
 def _gphoto2_logger_cb(level, domain, msg, data):
     log_func, mapping = data
-    # decode bytes to str
-    if domain:
-        domain = domain.decode(errors='replace')
-    if msg:
-        msg = msg.decode(errors='replace')
     if level in mapping:
         log_func(mapping[level], '(%s) %s', domain, msg)
     else:

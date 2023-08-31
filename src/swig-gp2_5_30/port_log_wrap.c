@@ -3822,9 +3822,13 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
     PyObject *result = NULL;
     PyObject *arglist = NULL;
     if (this->data) {
-        arglist = Py_BuildValue("(iyyO)", level, domain, str, this->data);
+        arglist = Py_BuildValue("(iNNO)", level,
+            PyUnicode_DecodeUTF8(domain, strlen(domain), "replace"),
+            PyUnicode_DecodeUTF8(str, strlen(str), "replace"), this->data);
     } else {
-        arglist = Py_BuildValue("(iyy)", level, domain, str);
+        arglist = Py_BuildValue("(iNN)", level,
+            PyUnicode_DecodeUTF8(domain, strlen(domain), "replace"),
+            PyUnicode_DecodeUTF8(str, strlen(str), "replace"));
     }
     if (arglist == NULL) {
         PyErr_Print();
@@ -4327,7 +4331,7 @@ SWIGINTERN PyObject *_wrap_gp_log__varargs__(PyObject *self, PyObject *args, PyO
   PyObject * obj2 = 0 ;
   
   (void)self;
-  if (!PyArg_UnpackTuple(args, "gp_log", 3, 3, &obj0, &obj1, &obj2)) SWIG_fail;
+  if (!PyArg_UnpackTuple(args, "gp_log", 3, 4, &obj0, &obj1, &obj2)) SWIG_fail;
   ecode1 = SWIG_AsVal_int(obj0, &val1);
   if (!SWIG_IsOK(ecode1)) {
     SWIG_exception_fail(SWIG_ArgError(ecode1), "in method '" "gp_log" "', argument " "1"" of type '" "GPLogLevel""'");
@@ -4343,6 +4347,13 @@ SWIGINTERN PyObject *_wrap_gp_log__varargs__(PyObject *self, PyObject *args, PyO
     SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "gp_log" "', argument " "3"" of type '" "char const *""'");
   }
   arg3 = (char *)(buf3);
+  
+  if (PyTuple_Size(varargs) > 0) {
+    PyErr_SetString(PyExc_ValueError,
+      "Too many arguments in function 'gp_log'.");
+    SWIG_fail;
+  }
+  
   gp_log(arg1,(char const *)arg2,(char const *)arg3,arg4);
   resultobj = SWIG_Py_Void();
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);

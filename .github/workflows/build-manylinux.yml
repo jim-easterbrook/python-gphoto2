@@ -10,7 +10,7 @@ jobs:
 
       - name: Download libgphoto2
         run: wget -nv
-          https://github.com/gphoto/libgphoto2/releases/download/v2.5.30/libgphoto2-2.5.30.tar.xz
+          https://github.com/gphoto/libgphoto2/releases/download/v2.5.31/libgphoto2-2.5.31.tar.xz
           -O libgphoto2.tar.xz
 
       - name: Extract libgphoto2
@@ -30,7 +30,7 @@ jobs:
               gd-devel libcurl-devel libxml2-devel libtool-ltdl-devel &&
             pushd $PWD/libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs \
-              --enable-vusb CFLAGS="-std=gnu99 -g -O2" &&
+              --enable-vusb &&
             make &&
             make install &&
             popd

@@ -52,6 +52,7 @@ Differences found so far::
     2.5.28    Add gp_filesystem_set_info_dirty
     2.5.29    No change
     2.5.30    Add gp_init_localedir & gp_port_init_localedir functions
+    2.5.31    No change
 
 Documentation
 -------------

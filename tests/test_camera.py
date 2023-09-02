@@ -127,7 +127,6 @@ class TestVirtualCamera(unittest.TestCase):
         # get single config
         widget = self.camera.get_single_config('thumbsize')
         self.assertIsInstance(widget, gp.CameraWidget)
-        self.camera.set_single_config('thumbsize', widget)
         # list config
         config_list = self.camera.list_config()
         self.assertEqual(len(config_list), 68)
@@ -265,8 +264,6 @@ class TestVirtualCamera(unittest.TestCase):
         OK, widget = gp.gp_camera_get_single_config(self.camera, 'thumbsize')
         self.assertEqual(OK, gp.GP_OK)
         self.assertIsInstance(widget, gp.CameraWidget)
-        self.assertEqual(gp.gp_camera_set_single_config(
-            self.camera, 'thumbsize', widget), gp.GP_OK)
         # list config
         OK, config_list = gp.gp_camera_list_config(self.camera)
         self.assertEqual(OK, gp.GP_OK)

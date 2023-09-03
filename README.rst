@@ -296,6 +296,15 @@ Another reader of the mailing list may have the same camera model and already kn
 Notes on some gphoto2 functions
 -------------------------------
 
+gp_camera_capture_preview / gp_camera_file_get
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Before python-gphoto2 version 2.5.0 these functions (and their corresponding "object oriented" methods) always allocated and returned a new ``CameraFile`` object.
+Now you can pass in a previously allocated ``CameraFile`` for them to use.
+In this case it is not returned by the function.
+
+If you need to use a ``Context`` value with these functions without passing in a ``CameraFile``, then pass ``None`` in place of the ``CameraFile`` object.
+
 gp_log_add_func / use_python_logging
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 

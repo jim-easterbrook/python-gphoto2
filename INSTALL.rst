@@ -42,7 +42,7 @@ Binary wheels for the Raspberry Pi are available from piwheels_.
 You still need to install some system packages to use these::
 
     $ sudo apt install libgphoto2-6 libgphoto2-port12 libexif12 libltdl7
-    $ sudo pip3 install gphoto2
+    $ pip3 install gphoto2 --user --only-binary :all:
 
 See the piwheels site for more information.
 

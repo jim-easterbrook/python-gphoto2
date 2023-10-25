@@ -20,7 +20,7 @@ jobs:
             --directory $PWD/libgphoto2 --strip-components=1
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.14.1
+        uses: pypa/cibuildwheel@v2.16.2
         env:
           CIBW_ARCHS: auto64
           CIBW_BUILD: cp*-manylinux_x86_64
@@ -45,7 +45,7 @@ jobs:
     needs: build
     strategy:
       matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11']
+        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
         os: [ubuntu-latest]
         include:
           - python-version: '3.6'

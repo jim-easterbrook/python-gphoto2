@@ -173,7 +173,7 @@ setup_kwds = {
     'include_package_data': False,
     }
 
-if tuple(map(int, setuptools_version.split('.'))) < (61, 0):
+if tuple(map(int, setuptools_version.split('.')[:2])) < (61, 0):
     # get metadata from pyproject.toml
     import toml
     metadata = toml.load('pyproject.toml')

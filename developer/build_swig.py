@@ -101,8 +101,11 @@ def main(argv=None):
     # create init module
     init_file = os.path.join(output_dir, '__init__.py')
     with open(init_file, 'w') as im:
-        im.write('__version__ = "{}"\n\n'.format(version))
+        im.write('__version__ = "{}"\n'.format(version))
+        im.write('__version_tuple__ = tuple(({}))\n'.format(
+            ', '.join(version.split('.'))))
         im.write('''
+
 import os
 
 _dir = os.path.dirname(__file__)

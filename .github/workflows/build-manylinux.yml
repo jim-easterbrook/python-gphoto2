@@ -1,4 +1,4 @@
-name: Build manylinux binary wheels
+name: build gphoto2 linux x86_64
 on: workflow_dispatch
 
 jobs:
@@ -6,7 +6,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download libgphoto2
         run: wget -nv
@@ -20,60 +20,27 @@ jobs:
             --directory $PWD/libgphoto2 --strip-components=1
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
+        uses: pypa/cibuildwheel@v2.21.3
         env:
           CIBW_ARCHS: auto64
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux_2_28
           CIBW_BUILD: cp*-manylinux_x86_64
           CIBW_ENVIRONMENT: GPHOTO2_ROOT=$PWD/libgphoto2/local_install
+          CIBW_TEST_COMMAND: >
+            python3 -m gphoto2 -v &&
+            python3 -m unittest discover {project}/tests -v
           CIBW_BEFORE_ALL: >
-            yum install -y libusbx-devel libexif-devel libjpeg-turbo-devel \
-              gd-devel libcurl-devel libxml2-devel libtool-ltdl-devel &&
+            yum install -y libusbx-devel libexif-devel libjpeg-turbo-devel
+            gd-devel libcurl-devel libxml2-devel libtool-ltdl-devel &&
             pushd $PWD/libgphoto2 &&
-            ./configure --prefix=$PWD/local_install --disable-internal-docs \
-              --enable-vusb &&
+            ./configure --prefix=$PWD/local_install --disable-internal-docs
+            --enable-vusb &&
             make &&
             make install &&
             popd
 
       - name: Store results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: manylinux-wheels
           path: wheelhouse/*.whl
-
-  test:
-    needs: build
-    strategy:
-      matrix:
-        python-version: ['3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
-        os: [ubuntu-latest]
-        include:
-          - python-version: '3.6'
-            os: ubuntu-20.04
-    runs-on: ${{ matrix.os }}
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-
-      - name: Fetch wheel files
-        uses: actions/download-artifact@v4.1.7
-        with:
-          name: manylinux-wheels
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: 'x64'
-
-      - name: Install locales
-        run: |
-          sudo apt-get install locales
-          sudo locale-gen de
-
-      - name: Install wheel
-        run: pip3 install --disable-pip-version-check --no-index
-          --find-links=. gphoto2
-
-      - name: Test installation
-        run: python3 -m unittest discover tests -v

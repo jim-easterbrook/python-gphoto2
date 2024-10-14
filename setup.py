@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This file is part of python-gphoto2.
 #
@@ -92,7 +92,7 @@ if 'GPHOTO2_ROOT' in os.environ:
                 'gphoto2.libgphoto2.locale.' + name + '.LC_MESSAGES')
     # module compile options
     extra_link_args = ['-Wl,-rpath,$ORIGIN/libgphoto2']
-    if sys.platform =='linux':
+    if sys.platform == 'linux':
         extra_link_args += ['-Wl,--disable-new-dtags']
 
 cmd = ['pkg-config', '--modversion', 'libgphoto2']

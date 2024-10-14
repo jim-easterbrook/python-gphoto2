@@ -87,13 +87,13 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
     new_file$argnum = 1;
   }
 }
-%typemap(argout) CameraFile *camera_file %{
+%typemap(argout) CameraFile *camera_file {
   if (new_file$argnum) {
-    $result = SWIG_Python_AppendOutput(
+    $result = SWIG_AppendOutput(
       $result, SWIG_NewPointerObj($1, $1_descriptor, SWIG_POINTER_OWN));
     new_file$argnum = 0;
   }
-%}
+}
 %typemap(freearg) CameraFile *camera_file %{
   if (new_file$argnum) gp_file_unref($1);
 %}
@@ -130,7 +130,7 @@ CALLOC_ARGOUT(CameraFilePath *path)
   PyBuffer_Release(&view);
 }
 %typemap(argout) (char * buf, uint64_t * size) {
-  $result = SWIG_Python_AppendOutput($result, PyLong_FromUnsignedLongLong(*$2));
+  $result = SWIG_AppendOutput($result, PyLong_FromUnsignedLongLong(*$2));
 }
 
 // Add default constructor and destructor to _Camera
@@ -267,7 +267,7 @@ MEMBER_FUNCTION(_Camera,
     PyList_SetItem(out_list, n,
         SWIG_NewPointerObj(new_sif, $descriptor(CameraStorageInformation*), SWIG_POINTER_OWN));
   }
-  $result = SWIG_Python_AppendOutput($result, out_list);
+  $result = SWIG_AppendOutput($result, out_list);
 }
 %typemap(freearg) (CameraStorageInformation **, int *),
                   (CameraStorageInformation **sifs, int *nrofsifs) {
@@ -291,19 +291,19 @@ MEMBER_FUNCTION(_Camera,
   $2 = &temp_data;
 }
 %typemap(argout) (CameraEventType * eventtype, void ** eventdata) {
-  $result = SWIG_Python_AppendOutput($result, PyInt_FromLong(*$1));
+  $result = SWIG_AppendOutput($result, PyInt_FromLong(*$1));
   if (*$1 == GP_EVENT_FILE_ADDED || *$1 == GP_EVENT_FOLDER_ADDED
                                  || *$1 == GP_EVENT_FILE_CHANGED) {
-    $result = SWIG_Python_AppendOutput(
+    $result = SWIG_AppendOutput(
       $result, SWIG_NewPointerObj(*$2, $descriptor(CameraFilePath*), SWIG_POINTER_OWN));
   }
   else if (*$1 == GP_EVENT_UNKNOWN && *$2 != NULL) {
-    $result = SWIG_Python_AppendOutput($result, PyString_FromString(*$2));
+    $result = SWIG_AppendOutput($result, PyString_FromString(*$2));
     free(*$2);
   }
   else {
     Py_INCREF(Py_None);
-    $result = SWIG_Python_AppendOutput($result, Py_None);
+    $result = SWIG_AppendOutput($result, Py_None);
     if (*$2 != NULL)
       free(*$2);
   }

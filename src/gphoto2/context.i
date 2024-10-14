@@ -207,7 +207,7 @@ CB_WRAPPER(void, py_progress_stop,
 %typemap(doc) void *data "$1_name: object"
 
 %typemap(argout) void *data {
-    $result = SWIG_Python_AppendOutput($result,
+    $result = SWIG_AppendOutput($result,
         SWIG_NewPointerObj(_global_callbacks, $descriptor(CallbackDetails*), SWIG_POINTER_OWN));
     _global_callbacks = NULL;
 }

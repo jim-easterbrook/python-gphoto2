@@ -43,10 +43,10 @@
   temp = NULL;
   $1 = &temp;
 }
-%typemap(argout) char ** %{
-  $result = SWIG_Python_AppendOutput($result,
+%typemap(argout) char ** {
+  $result = SWIG_AppendOutput($result,
     *$1 ? PyString_FromString(*$1) : SWIG_Py_Void());
-%}
+}
 
 // Get PyExc_GPhoto2Error object
 %{

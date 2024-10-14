@@ -4748,10 +4748,10 @@ SWIGINTERN PyObject *_wrap_CameraFile_get_name(PyObject *self, PyObject *args) {
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -4816,10 +4816,10 @@ SWIGINTERN PyObject *_wrap_CameraFile_get_mime_type(PyObject *self, PyObject *ar
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -4979,10 +4979,10 @@ SWIGINTERN PyObject *_wrap_CameraFile_get_name_by_type(PyObject *self, PyObject 
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg4 ? PyString_FromString(*arg4) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg4 ? PyString_FromString(*arg4) : SWIG_Py_Void())
+    ;
+  }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
 fail:
@@ -5069,10 +5069,10 @@ SWIGINTERN PyObject *_wrap_CameraFile_get_data_and_size(PyObject *self, PyObject
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  
-  resultobj = SWIG_Python_AppendOutput(
-    resultobj, PyMemoryView_FromMemory(*arg2, *arg3, PyBUF_READ));
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, PyMemoryView_FromMemory(*arg2, *arg3, PyBUF_READ))
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -5220,8 +5220,8 @@ SWIGINTERN PyObject *_wrap_gp_file_new(PyObject *self, PyObject *args) {
   result = (int)gp_file_new(arg1);
   resultobj = SWIG_From_int((int)(result));
   {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg1, SWIGTYPE_p__CameraFile, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg1, SWIGTYPE_p__CameraFile, SWIG_POINTER_OWN))
+    ;
   }
   return resultobj;
 fail:
@@ -5252,8 +5252,8 @@ SWIGINTERN PyObject *_wrap_gp_file_new_from_fd(PyObject *self, PyObject *args) {
   result = (int)gp_file_new_from_fd(arg1,arg2);
   resultobj = SWIG_From_int((int)(result));
   {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg1, SWIGTYPE_p__CameraFile, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg1, SWIGTYPE_p__CameraFile, SWIG_POINTER_OWN))
+    ;
   }
   return resultobj;
 fail:
@@ -5317,10 +5317,10 @@ SWIGINTERN PyObject *_wrap_gp_file_get_name(PyObject *self, PyObject *args) {
   arg1 = (CameraFile *)(argp1);
   result = (int)gp_file_get_name(arg1,(char const **)arg2);
   resultobj = SWIG_From_int((int)(result));
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -5383,10 +5383,10 @@ SWIGINTERN PyObject *_wrap_gp_file_get_mime_type(PyObject *self, PyObject *args)
   arg1 = (CameraFile *)(argp1);
   result = (int)gp_file_get_mime_type(arg1,(char const **)arg2);
   resultobj = SWIG_From_int((int)(result));
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -5541,10 +5541,10 @@ SWIGINTERN PyObject *_wrap_gp_file_get_name_by_type(PyObject *self, PyObject *ar
   arg3 = (CameraFileType)(val3);
   result = (int)gp_file_get_name_by_type(arg1,(char const *)arg2,arg3,arg4);
   resultobj = SWIG_From_int((int)(result));
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg4 ? PyString_FromString(*arg4) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg4 ? PyString_FromString(*arg4) : SWIG_Py_Void())
+    ;
+  }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
 fail:
@@ -5637,10 +5637,10 @@ SWIGINTERN PyObject *_wrap_gp_file_get_data_and_size(PyObject *self, PyObject *a
     SWIG_PYTHON_THREAD_END_ALLOW;
   }
   resultobj = SWIG_From_int((int)(result));
-  
-  resultobj = SWIG_Python_AppendOutput(
-    resultobj, PyMemoryView_FromMemory(*arg2, *arg3, PyBUF_READ));
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, PyMemoryView_FromMemory(*arg2, *arg3, PyBUF_READ))
+    ;
+  }
   return resultobj;
 fail:
   return NULL;

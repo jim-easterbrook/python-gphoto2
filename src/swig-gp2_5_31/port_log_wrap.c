@@ -4395,8 +4395,8 @@ SWIGINTERN PyObject *_wrap_Log_add_func(PyObject *self, PyObject *args) {
   resultobj = SWIG_From_int((int)(result));
   {
     _global_callback->id = result;
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callback, SWIGTYPE_p_LogFuncItem, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callback, SWIGTYPE_p_LogFuncItem, SWIG_POINTER_OWN))
+    ;
     _global_callback = NULL;
   }
   {
@@ -4463,8 +4463,8 @@ SWIGINTERN PyObject *_wrap_gp_log_add_func(PyObject *self, PyObject *args) {
   resultobj = SWIG_From_int((int)(result));
   {
     _global_callback->id = result;
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callback, SWIGTYPE_p_LogFuncItem, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callback, SWIGTYPE_p_LogFuncItem, SWIG_POINTER_OWN))
+    ;
     _global_callback = NULL;
   }
   {

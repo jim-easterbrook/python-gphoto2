@@ -4993,8 +4993,8 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_children(PyObject *self, PyObject *args
   result = (int)gp_widget_get_children(arg1,arg2);
   resultobj = SWIG_From_int((int)(result));
   {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(arg2, SWIGTYPE_p_CameraWidgetChildIter, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(arg2, SWIGTYPE_p_CameraWidgetChildIter, SWIG_POINTER_OWN))
+    ;
     arg2 = NULL;
   }
   {
@@ -5082,8 +5082,8 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_choices(PyObject *self, PyObject *args)
   result = (int)gp_widget_get_choices(arg1,arg2);
   resultobj = SWIG_From_int((int)(result));
   {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(arg2, SWIGTYPE_p_CameraWidgetChoiceIter, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(arg2, SWIGTYPE_p_CameraWidgetChoiceIter, SWIG_POINTER_OWN))
+    ;
     arg2 = NULL;
   }
   {
@@ -5197,8 +5197,8 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child(PyObject *self, PyObject *args
       }
     }
     // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
+    ;
   }
   return resultobj;
 fail:
@@ -5232,8 +5232,8 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_children(PyObject *self, PyObject *a
   }
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(arg2, SWIGTYPE_p_CameraWidgetChildIter, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(arg2, SWIGTYPE_p_CameraWidgetChildIter, SWIG_POINTER_OWN))
+    ;
     arg2 = NULL;
   }
   {
@@ -5301,8 +5301,8 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_label(PyObject *self, PyObj
       }
     }
     // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
+    ;
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
@@ -5364,8 +5364,8 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_id(PyObject *self, PyObject
       }
     }
     // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
+    ;
   }
   return resultobj;
 fail:
@@ -5426,8 +5426,8 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_name(PyObject *self, PyObje
       }
     }
     // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
+    ;
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
@@ -5480,8 +5480,8 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_root(PyObject *self, PyObject *args)
       }
     }
     // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
+    ;
   }
   return resultobj;
 fail:
@@ -5532,8 +5532,8 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_parent(PyObject *self, PyObject *arg
       }
     }
     // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
+    ;
   }
   return resultobj;
 fail:
@@ -5740,10 +5740,10 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_name(PyObject *self, PyObject *args)
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -5812,10 +5812,10 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_info(PyObject *self, PyObject *args)
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -5911,10 +5911,10 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_label(PyObject *self, PyObject *args
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -6117,8 +6117,8 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_choices(PyObject *self, PyObject *ar
   }
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(arg2, SWIGTYPE_p_CameraWidgetChoiceIter, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(arg2, SWIGTYPE_p_CameraWidgetChoiceIter, SWIG_POINTER_OWN))
+    ;
     arg2 = NULL;
   }
   {
@@ -6165,10 +6165,10 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_choice(PyObject *self, PyObject *arg
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg3 ? PyString_FromString(*arg3) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg3 ? PyString_FromString(*arg3) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -6437,8 +6437,8 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child(PyObject *self, PyObject *args) {
       }
     }
     // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
+    ;
   }
   return resultobj;
 fail:
@@ -6498,8 +6498,8 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_label(PyObject *self, PyObject
       }
     }
     // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
+    ;
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
@@ -6560,8 +6560,8 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_id(PyObject *self, PyObject *a
       }
     }
     // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
+    ;
   }
   return resultobj;
 fail:
@@ -6621,8 +6621,8 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_name(PyObject *self, PyObject 
       }
     }
     // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
+    ;
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
@@ -6674,8 +6674,8 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_root(PyObject *self, PyObject *args) {
       }
     }
     // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
+    ;
   }
   return resultobj;
 fail:
@@ -6725,8 +6725,8 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_parent(PyObject *self, PyObject *args) 
       }
     }
     // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
+    ;
   }
   return resultobj;
 fail:
@@ -6869,10 +6869,10 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_name(PyObject *self, PyObject *args) {
   arg1 = (CameraWidget *)(argp1);
   result = (int)gp_widget_get_name(arg1,(char const **)arg2);
   resultobj = SWIG_From_int((int)(result));
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -6942,10 +6942,10 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_info(PyObject *self, PyObject *args) {
   arg1 = (CameraWidget *)(argp1);
   result = (int)gp_widget_get_info(arg1,(char const **)arg2);
   resultobj = SWIG_From_int((int)(result));
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -7038,10 +7038,10 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_label(PyObject *self, PyObject *args) {
   arg1 = (CameraWidget *)(argp1);
   result = (int)gp_widget_get_label(arg1,(char const **)arg2);
   resultobj = SWIG_From_int((int)(result));
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -7250,10 +7250,10 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_choice(PyObject *self, PyObject *args) 
   arg2 = (int)(val2);
   result = (int)gp_widget_get_choice(arg1,arg2,(char const **)arg3);
   resultobj = SWIG_From_int((int)(result));
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg3 ? PyString_FromString(*arg3) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg3 ? PyString_FromString(*arg3) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;

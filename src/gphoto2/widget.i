@@ -61,7 +61,7 @@ Beware of changes in the libgphoto2 definitions though.
 }
 %typemap(argout) CameraWidget **window, CameraWidget **widget {
   // Append result to output object
-  $result = SWIG_Python_AppendOutput(
+  $result = SWIG_AppendOutput(
     $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
 }
 %typemap(argout) CameraWidget **child, CameraWidget **root, CameraWidget **parent {
@@ -80,7 +80,7 @@ Beware of changes in the libgphoto2 definitions though.
     }
   }
   // Append result to output object
-  $result = SWIG_Python_AppendOutput(
+  $result = SWIG_AppendOutput(
     $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
 }
 
@@ -135,7 +135,7 @@ typedef union {
       PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
       SWIG_fail;
   }
-  $result = SWIG_Python_AppendOutput($result, py_value);
+  $result = SWIG_AppendOutput($result, py_value);
 }
 %typemap(doc) (void *value) "$1_name: int/float/str"
 

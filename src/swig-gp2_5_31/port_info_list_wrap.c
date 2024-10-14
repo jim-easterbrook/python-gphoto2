@@ -4492,10 +4492,10 @@ SWIGINTERN PyObject *_wrap_GPPortInfo_get_name(PyObject *self, PyObject *args) {
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -4525,10 +4525,10 @@ SWIGINTERN PyObject *_wrap_GPPortInfo_get_path(PyObject *self, PyObject *args) {
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -4649,8 +4649,8 @@ SWIGINTERN PyObject *_wrap_GPPortInfoList___getitem__(PyObject *self, PyObject *
   }
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__GPPortInfo, 0));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__GPPortInfo, 0))
+    ;
   }
   return resultobj;
 fail:
@@ -4886,8 +4886,8 @@ SWIGINTERN PyObject *_wrap_GPPortInfoList_get_info(PyObject *self, PyObject *arg
   }
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__GPPortInfo, 0));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__GPPortInfo, 0))
+    ;
   }
   return resultobj;
 fail:
@@ -4923,10 +4923,10 @@ SWIGINTERN PyObject *_wrap_gp_port_info_get_name(PyObject *self, PyObject *args)
   arg1 = (GPPortInfo)(argp1);
   result = (int)gp_port_info_get_name(arg1,arg2);
   resultobj = SWIG_From_int((int)(result));
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -4955,10 +4955,10 @@ SWIGINTERN PyObject *_wrap_gp_port_info_get_path(PyObject *self, PyObject *args)
   arg1 = (GPPortInfo)(argp1);
   result = (int)gp_port_info_get_path(arg1,arg2);
   resultobj = SWIG_From_int((int)(result));
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2 ? PyString_FromString(*arg2) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -5011,8 +5011,8 @@ SWIGINTERN PyObject *_wrap_gp_port_info_list_new(PyObject *self, PyObject *args)
   result = (int)gp_port_info_list_new(arg1);
   resultobj = SWIG_From_int((int)(result));
   {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg1, SWIGTYPE_p__GPPortInfoList, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg1, SWIGTYPE_p__GPPortInfoList, SWIG_POINTER_OWN))
+    ;
   }
   return resultobj;
 fail:
@@ -5202,8 +5202,8 @@ SWIGINTERN PyObject *_wrap_gp_port_info_list_get_info(PyObject *self, PyObject *
   result = (int)gp_port_info_list_get_info(arg1,arg2,arg3);
   resultobj = SWIG_From_int((int)(result));
   {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__GPPortInfo, 0));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__GPPortInfo, 0))
+    ;
   }
   return resultobj;
 fail:

@@ -37,7 +37,7 @@ DEPRECATED(_GPPortInfoList::append, 1)
   $1 = &temp;
 }
 %typemap(argout) GPPortInfo * {
-  $result = SWIG_Python_AppendOutput(
+  $result = SWIG_AppendOutput(
     $result, SWIG_NewPointerObj(*$1, $descriptor(_GPPortInfo*), 0));
 }
 

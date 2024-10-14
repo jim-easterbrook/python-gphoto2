@@ -40,9 +40,9 @@ PLAIN_ARGOUT(CameraList **)
 %typemap(in, numinputs=0) int *index (int temp=0) %{
   $1 = &temp;
 %}
-%typemap(argout) int *index %{
-  $result = SWIG_Python_AppendOutput($result, PyInt_FromLong(*$1));
-%}
+%typemap(argout) int *index {
+  $result = SWIG_AppendOutput($result, PyInt_FromLong(*$1));
+}
 
 // Add constructor and destructor to _CameraList
 struct _CameraList {};

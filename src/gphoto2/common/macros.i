@@ -47,7 +47,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
   $1 = &temp;
 }
 %typemap(argout) typepattern {
-  $result = SWIG_Python_AppendOutput(
+  $result = SWIG_AppendOutput(
     $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
 }
 %enddef
@@ -64,7 +64,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
   free($1);
 }
 %typemap(argout) typepattern {
-  $result = SWIG_Python_AppendOutput(
+  $result = SWIG_AppendOutput(
     $result, SWIG_NewPointerObj($1, $1_descriptor, SWIG_POINTER_OWN));
   $1 = NULL;
 }
@@ -85,7 +85,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
   }
 }
 %typemap(argout) typepattern {
-  $result = SWIG_Python_AppendOutput(
+  $result = SWIG_AppendOutput(
     $result, SWIG_NewPointerObj($1, $1_descriptor, SWIG_POINTER_OWN));
   $1 = NULL;
 }

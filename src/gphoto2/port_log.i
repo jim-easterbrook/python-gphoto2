@@ -134,7 +134,7 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
 }
 %typemap(argout) GPLogFunc {
     _global_callback->id = result;
-    $result = SWIG_Python_AppendOutput($result,
+    $result = SWIG_AppendOutput($result,
         SWIG_NewPointerObj(_global_callback, $descriptor(LogFuncItem*), SWIG_POINTER_OWN));
     _global_callback = NULL;
 }

@@ -4968,9 +4968,9 @@ SWIGINTERN PyObject *_wrap_CameraList_find_by_name(PyObject *self, PyObject *arg
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj, PyInt_FromLong(*arg2));
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, PyInt_FromLong(*arg2));
+  }
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return resultobj;
 fail:
@@ -5011,10 +5011,10 @@ SWIGINTERN PyObject *_wrap_CameraList_get_name(PyObject *self, PyObject *args) {
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg3 ? PyString_FromString(*arg3) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg3 ? PyString_FromString(*arg3) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -5053,10 +5053,10 @@ SWIGINTERN PyObject *_wrap_CameraList_get_value(PyObject *self, PyObject *args) 
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg3 ? PyString_FromString(*arg3) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg3 ? PyString_FromString(*arg3) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -5359,8 +5359,8 @@ SWIGINTERN PyObject *_wrap_gp_list_new(PyObject *self, PyObject *args) {
   result = (int)gp_list_new(arg1);
   resultobj = SWIG_From_int((int)(result));
   {
-    resultobj = SWIG_Python_AppendOutput(
-      resultobj, SWIG_NewPointerObj(*arg1, SWIGTYPE_p__CameraList, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg1, SWIGTYPE_p__CameraList, SWIG_POINTER_OWN))
+    ;
   }
   return resultobj;
 fail:
@@ -5511,9 +5511,9 @@ SWIGINTERN PyObject *_wrap_gp_list_find_by_name(PyObject *self, PyObject *args) 
   arg3 = (char *)(buf3);
   result = (int)gp_list_find_by_name(arg1,arg2,(char const *)arg3);
   resultobj = SWIG_From_int((int)(result));
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj, PyInt_FromLong(*arg2));
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, PyInt_FromLong(*arg2));
+  }
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
   return resultobj;
 fail:
@@ -5553,10 +5553,10 @@ SWIGINTERN PyObject *_wrap_gp_list_get_name(PyObject *self, PyObject *args) {
   arg2 = (int)(val2);
   result = (int)gp_list_get_name(arg1,arg2,(char const **)arg3);
   resultobj = SWIG_From_int((int)(result));
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg3 ? PyString_FromString(*arg3) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg3 ? PyString_FromString(*arg3) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;
@@ -5594,10 +5594,10 @@ SWIGINTERN PyObject *_wrap_gp_list_get_value(PyObject *self, PyObject *args) {
   arg2 = (int)(val2);
   result = (int)gp_list_get_value(arg1,arg2,(char const **)arg3);
   resultobj = SWIG_From_int((int)(result));
-  
-  resultobj = SWIG_Python_AppendOutput(resultobj,
-    *arg3 ? PyString_FromString(*arg3) : SWIG_Py_Void());
-  
+  {
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg3 ? PyString_FromString(*arg3) : SWIG_Py_Void())
+    ;
+  }
   return resultobj;
 fail:
   return NULL;

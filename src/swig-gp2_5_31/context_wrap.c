@@ -4503,8 +4503,8 @@ SWIGINTERN PyObject *_wrap_GPContext_set_idle_func(PyObject *self, PyObject *arg
   _GPContext_set_idle_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {
@@ -4570,8 +4570,8 @@ SWIGINTERN PyObject *_wrap_GPContext_set_error_func(PyObject *self, PyObject *ar
   _GPContext_set_error_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {
@@ -4637,8 +4637,8 @@ SWIGINTERN PyObject *_wrap_GPContext_set_message_func(PyObject *self, PyObject *
   _GPContext_set_message_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {
@@ -4704,8 +4704,8 @@ SWIGINTERN PyObject *_wrap_GPContext_set_question_func(PyObject *self, PyObject 
   _GPContext_set_question_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {
@@ -4771,8 +4771,8 @@ SWIGINTERN PyObject *_wrap_GPContext_set_cancel_func(PyObject *self, PyObject *a
   _GPContext_set_cancel_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {
@@ -4858,8 +4858,8 @@ SWIGINTERN PyObject *_wrap_GPContext_set_progress_funcs(PyObject *self, PyObject
   _GPContext_set_progress_funcs(arg1,arg2,arg3,arg4,arg5);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {
@@ -4925,8 +4925,8 @@ SWIGINTERN PyObject *_wrap_GPContext_set_status_func(PyObject *self, PyObject *a
   _GPContext_set_status_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {
@@ -5008,8 +5008,8 @@ SWIGINTERN PyObject *_wrap_gp_context_set_idle_func(PyObject *self, PyObject *ar
   gp_context_set_idle_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {
@@ -5096,8 +5096,8 @@ SWIGINTERN PyObject *_wrap_gp_context_set_progress_funcs(PyObject *self, PyObjec
   gp_context_set_progress_funcs(arg1,arg2,arg3,arg4,arg5);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {
@@ -5164,8 +5164,8 @@ SWIGINTERN PyObject *_wrap_gp_context_set_error_func(PyObject *self, PyObject *a
   gp_context_set_error_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {
@@ -5232,8 +5232,8 @@ SWIGINTERN PyObject *_wrap_gp_context_set_status_func(PyObject *self, PyObject *
   gp_context_set_status_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {
@@ -5300,8 +5300,8 @@ SWIGINTERN PyObject *_wrap_gp_context_set_question_func(PyObject *self, PyObject
   gp_context_set_question_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {
@@ -5368,8 +5368,8 @@ SWIGINTERN PyObject *_wrap_gp_context_set_cancel_func(PyObject *self, PyObject *
   gp_context_set_cancel_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {
@@ -5436,8 +5436,8 @@ SWIGINTERN PyObject *_wrap_gp_context_set_message_func(PyObject *self, PyObject 
   gp_context_set_message_func(arg1,arg2,arg3);
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj,
-      SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN));
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(_global_callbacks, SWIGTYPE_p_CallbackDetails, SWIG_POINTER_OWN))
+    ;
     _global_callbacks = NULL;
   }
   {

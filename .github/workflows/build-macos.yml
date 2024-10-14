@@ -1,12 +1,12 @@
-name: Build MacOS binary wheels
+name: build gphoto2 macOS x86_64
 on: workflow_dispatch
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-13
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Download libgphoto2
         run: wget -nv
@@ -20,13 +20,19 @@ jobs:
             --directory $PWD/libgphoto2 --strip-components=1
 
       - name: Build wheels
-        uses: pypa/cibuildwheel@v2.16.2
+        uses: pypa/cibuildwheel@v2.21.3
         env:
           CIBW_ARCHS: x86_64
           CIBW_SKIP: pp3*
-          CIBW_ENVIRONMENT: GPHOTO2_ROOT=$PWD/libgphoto2/local_install
+          CIBW_ENVIRONMENT: >
+            GPHOTO2_ROOT=$PWD/libgphoto2/local_install
+            MACOSX_DEPLOYMENT_TARGET="13.0"
+            SYSTEM_VERSION_COMPAT=0
+          CIBW_TEST_COMMAND: >
+            python3 -m gphoto2 -v &&
+            python3 -m unittest discover {project}/tests -v
           CIBW_BEFORE_ALL: >
-            brew install libexif jpeg-turbo libtool libusb gd gettext &&
+            brew install libexif &&
             pushd $PWD/libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs \
                 --enable-vusb \
@@ -36,35 +42,7 @@ jobs:
             popd
 
       - name: Store results
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: macos-wheels
           path: wheelhouse/*.whl
-
-  test:
-    needs: build
-    runs-on: macos-latest
-    strategy:
-      matrix:
-        python-version: ['3.6', '3.7', '3.8', '3.9', '3.10', '3.11', '3.12']
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v3
-
-      - name: Fetch wheel files
-        uses: actions/download-artifact@v4.1.7
-        with:
-          name: macos-wheels
-
-      - name: Setup Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: ${{ matrix.python-version }}
-          architecture: 'x64'
-
-      - name: Install wheel
-        run: pip3 install --disable-pip-version-check --no-index
-          --find-links=. gphoto2
-
-      - name: Test installation
-        run: python3 -m unittest discover tests -v

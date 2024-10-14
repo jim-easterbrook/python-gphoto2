@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2023  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2023-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This file is part of python-gphoto2.
 #
@@ -19,10 +19,14 @@
 # <https://www.gnu.org/licenses/>.
 
 import os
+import sys
 import unittest
 
 import gphoto2 as gp
 
+path = os.path.dirname(os.path.dirname(__file__))
+if path not in sys.path:
+    sys.path.insert(0, path)
 from tests.vcamera import use_vcam
 
 

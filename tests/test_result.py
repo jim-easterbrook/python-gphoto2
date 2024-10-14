@@ -36,8 +36,10 @@ class TestResult(unittest.TestCase):
             self.assertEqual(ex.string, gp.gp_result_as_string(error))
 
     def set_lang(self, lang):
-        # setting LANGUAGE works on Ubuntu, setlocale works on openSUSE
+        # setting environ works on Ubuntu, setlocale works on openSUSE
         # using both seems to be harmless
+        os.environ['LC_ALL'] = lang
+        os.environ['LANG'] = lang
         os.environ['LANGUAGE'] = lang
         # try default locale first
         try:

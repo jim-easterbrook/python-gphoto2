@@ -243,8 +243,6 @@ CALLOC_ARGOUT(iter_type*)
 %enddef
 
 // Add gp_widget_get_children() method that returns an iterator
-ITERATOR(CameraWidgetChildIter, gp_widget_get_child, CameraWidget)
-
 %feature("docstring") gp_widget_get_children "Gets all the child widgets of a CameraWidget. The return value is a list
 containing a gphoto2 error code and a Python iterator. The iterator can
 be used to get each child in sequence.
@@ -271,13 +269,15 @@ See also gphoto2.gp_widget_get_children"
 
 %noexception gp_widget_get_children;
 %inline %{
-int gp_widget_get_children(CameraWidget* widget, CameraWidgetChildIter* iter) {
-  iter->parent = widget;
-  iter->idx = 0;
-  iter->len = gp_widget_count_children(widget);
-  if (iter->len < GP_OK)
-    return iter->len;
-  return GP_OK;
+PyObject* gp_widget_get_children(CameraWidget* widget) {
+    PyObject* py_self = SWIG_Python_NewPointerObj(
+        NULL, widget, SWIGTYPE_p__CameraWidget, 0);
+    PyObject* iter = PySeqIter_New(py_self);
+    Py_DECREF(py_self);
+    PyObject* result = PyList_New(2);
+    PyList_SET_ITEM(result, 0, SWIG_From_int(GP_OK));
+    PyList_SET_ITEM(result, 01, iter);
+    return result;
 };
 %}
 
@@ -354,6 +354,13 @@ DEFAULT_DTOR(_CameraWidget, widget_dtor)
         int result = gp_widget_get_child($self, child_number, child);
         if (result < GP_OK) GPHOTO2_ERROR(result)
     }
+    PyObject* get_children() {
+        PyObject* py_self = SWIG_Python_NewPointerObj(
+            NULL, $self, $descriptor(_CameraWidget*), 0);
+        PyObject* result = PySeqIter_New(py_self);
+        Py_DECREF(py_self);
+        return result;
+    }
 };
 
 // Add member methods to _CameraWidget
@@ -364,9 +371,6 @@ MEMBER_FUNCTION(_CameraWidget,
 MEMBER_FUNCTION(_CameraWidget,
     void, get_child, (int child_number, CameraWidget **child),
     gp_widget_get_child, ($self, child_number, child), )
-MEMBER_FUNCTION(_CameraWidget,
-    void, get_children, (CameraWidgetChildIter* iter),
-    gp_widget_get_children, ($self, iter), )
 MEMBER_FUNCTION(_CameraWidget,
     void, get_child_by_label, (const char *label, CameraWidget **child),
     gp_widget_get_child_by_label, ($self, label, child), )

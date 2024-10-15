@@ -52,6 +52,9 @@ class TestWidget(unittest.TestCase):
         self.assertIsInstance(config.get_id(), int)
         self.assertEqual(config.get_info(), '')
         self.assertEqual(config.count_children(), 6)
+        # test iteration over children
+        for idx, child in enumerate(config.get_children()):
+            self.assertEqual(child, config.get_child(idx))
         # test section widgets
         actions = config.get_child_by_name('actions')
         self.assertEqual(actions.get_parent(), config)
@@ -98,6 +101,9 @@ class TestWidget(unittest.TestCase):
         self.assertEqual(widget.changed(), 1)
         widget.set_changed(0)
         self.assertEqual(widget.changed(), 0)
+        # test iteration over choices
+        for idx, choice in enumerate(widget.get_choices()):
+            self.assertEqual(choice, choices[idx])
         # test date widget
         widget = settings.get_child_by_name('datetime')
         self.assertEqual(widget.get_type(), gp.GP_WIDGET_DATE)
@@ -142,6 +148,11 @@ class TestWidget(unittest.TestCase):
         self.assertIsInstance(config_id, int)
         self.assertEqual(gp.gp_widget_get_info(config), [gp.GP_OK, ''])
         self.assertEqual(gp.gp_widget_count_children(config), 6)
+        # test iteration over children
+        OK, iterator = gp.gp_widget_get_children(config)
+        self.assertEqual(OK, gp.GP_OK)
+        for idx, child in enumerate(iterator):
+            self.assertEqual(child, config.get_child(idx))
         # test section widgets
         OK, actions = gp.gp_widget_get_child_by_name(config, 'actions')
         self.assertEqual(OK, gp.GP_OK)
@@ -207,6 +218,11 @@ class TestWidget(unittest.TestCase):
         self.assertEqual(gp.gp_widget_changed(widget), 1)
         self.assertEqual(gp.gp_widget_set_changed(widget, 0), gp.GP_OK)
         self.assertEqual(gp.gp_widget_changed(widget), 0)
+        # test iteration over choices
+        OK, iterator = gp.gp_widget_get_choices(widget)
+        self.assertEqual(OK, gp.GP_OK)
+        for idx, choice in enumerate(iterator):
+            self.assertEqual(choice, choices[idx])
         # test date widget
         OK, widget = gp.gp_widget_get_child_by_name(settings, 'datetime')
         self.assertEqual(OK, gp.GP_OK)

@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -134,9 +134,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %enddef
 
 %define LEN_MEMBER_FUNCTION(type, function)
-#if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "sq_length", functype="lenfunc") type::__len__;
-#endif
 MEMBER_FUNCTION(type, int, __len__, (), function, ($self), )
 %enddef
 

@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -313,9 +313,7 @@ MEMBER_FUNCTION(_Camera,
 %noexception;
 
 // Add __str__ method to CameraText
-#if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "tp_str", functype="reprfunc") CameraText::__str__;
-#endif // SWIGPYTHON_BUILTIN
 %extend CameraText {
   char *__str__() {
     return $self->text;

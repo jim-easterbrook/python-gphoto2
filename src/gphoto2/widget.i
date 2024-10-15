@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -193,7 +193,6 @@ DEFAULT_EXCEPTION
 #ifndef SWIGIMPORTED
 
 // function to allow python iter() to be called with python object
-#if defined(SWIGPYTHON_BUILTIN)
 %ignore make_iterator;
 %inline %{
 static PyObject* make_iterator(PyObject* self)
@@ -202,24 +201,12 @@ static PyObject* make_iterator(PyObject* self)
   return self;
 }
 %}
-#endif
 
 // macro to implement iterator objects
 %define ITERATOR(iter_type, function, result_type)
 
-#if defined(SWIGPYTHON_BUILTIN)
-  %feature("python:tp_iter") iter_type "make_iterator";
-  %feature("python:slot", "tp_iternext", functype="iternextfunc") iter_type::__next__;
-#else
-  %extend iter_type {
-    %pythoncode {
-      def __iter__(self):
-          return self
-      def next(self):
-          return self.__next__()
-    }
-  }
-#endif
+%feature("python:tp_iter") iter_type "make_iterator";
+%feature("python:slot", "tp_iternext", functype="iternextfunc") iter_type::__next__;
 
 %ignore iter_type::parent;
 %ignore iter_type::idx;

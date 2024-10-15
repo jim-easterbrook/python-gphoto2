@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -58,10 +58,8 @@ DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
 
 // Make CameraAbilitiesList more like a Python list
 LEN_MEMBER_FUNCTION(_CameraAbilitiesList, gp_abilities_list_count)
-#if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "sq_item",   functype="ssizeargfunc")
     _CameraAbilitiesList::__getitem__;
-#endif
 %exception __getitem__ {
   $action
   if (PyErr_Occurred() != NULL) goto fail;

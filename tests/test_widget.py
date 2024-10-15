@@ -52,9 +52,11 @@ class TestWidget(unittest.TestCase):
         self.assertIsInstance(config.get_id(), int)
         self.assertEqual(config.get_info(), '')
         self.assertEqual(config.count_children(), 6)
+        self.assertEqual(len(config), 6)
         # test iteration over children
         for idx, child in enumerate(config.get_children()):
             self.assertEqual(child, config.get_child(idx))
+            self.assertEqual(child, config[idx])
         # test section widgets
         actions = config.get_child_by_name('actions')
         self.assertEqual(actions.get_parent(), config)

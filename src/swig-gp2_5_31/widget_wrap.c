@@ -4135,21 +4135,6 @@ SWIGINTERN void delete__CameraWidget(struct _CameraWidget *self){
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
   }
-SWIGINTERN int _CameraWidget_count_children(struct _CameraWidget *self){
-
-
-
-    int result = gp_widget_count_children (self);
-
-
-
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
-
-    return result;
-
-  }
 
 #include <limits.h>
 #if !defined(SWIG_NO_LLONG_MAX)
@@ -4308,6 +4293,47 @@ SWIG_AsVal_int (PyObject * obj, int *val)
   return res;
 }
 
+SWIGINTERN void _CameraWidget___getitem__(struct _CameraWidget *self,int child_number,CameraWidget **child){
+        if ((child_number < 0) ||
+            (child_number >= gp_widget_count_children(self))) {
+            PyErr_SetNone(PyExc_IndexError);
+            return;
+        }
+        int result = gp_widget_get_child(self, child_number, child);
+        if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
+/*@SWIG@*/
+    }
+SWIGINTERN int _CameraWidget___len__(struct _CameraWidget *self){
+
+
+
+    int result = gp_widget_count_children (self);
+
+
+
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
+/*@SWIG@*/
+
+    return result;
+
+  }
+SWIGINTERN int _CameraWidget_count_children(struct _CameraWidget *self){
+
+
+
+    int result = gp_widget_count_children (self);
+
+
+
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
+/*@SWIG@*/
+
+    return result;
+
+  }
 SWIGINTERN void _CameraWidget_get_child(struct _CameraWidget *self,int child_number,CameraWidget **child){
 
 
@@ -5115,6 +5141,91 @@ SWIGINTERN PyObject *_wrap_delete_CameraWidget(PyObject *self, PyObject *args) {
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraWidget___getitem__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraWidget *arg1 = (struct _CameraWidget *) 0 ;
+  int arg2 ;
+  CameraWidget **arg3 = (CameraWidget **) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  CameraWidget *temp3 ;
+  PyObject * obj1 = 0 ;
+  
+  {
+    temp3 = NULL;
+    arg3 = &temp3;
+  }
+  if (!PyArg_UnpackTuple(args, "CameraWidget___getitem__", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraWidget, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraWidget___getitem__" "', argument " "1"" of type '" "struct _CameraWidget *""'"); 
+  }
+  arg1 = (struct _CameraWidget *)(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraWidget___getitem__" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = (int)(val2);
+  {
+    _CameraWidget___getitem__(arg1,arg2,arg3);
+    if (PyErr_Occurred()) SWIG_fail;
+  }
+  resultobj = SWIG_Py_Void();
+  {
+    if (*arg3 != NULL) {
+      // Increment refcount on root widget
+      CameraWidget *root;
+      int error = gp_widget_get_root(*arg3, &root);
+      if (error < GP_OK) {
+        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
+        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+        /*@SWIG@*/;
+        SWIG_fail;
+      }
+      error = gp_widget_ref(root);
+      if (error < GP_OK) {
+        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
+        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+        /*@SWIG@*/;
+        SWIG_fail;
+      }
+    }
+    // Append result to output object
+    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
+    ;
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraWidget___len__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraWidget *arg1 = (struct _CameraWidget *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int result;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraWidget___len__ takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraWidget, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraWidget___len__" "', argument " "1"" of type '" "struct _CameraWidget *""'"); 
+  }
+  arg1 = (struct _CameraWidget *)(argp1);
+  {
+    result = (int)_CameraWidget___len__(arg1);
+    if (PyErr_Occurred()) SWIG_fail;
+  }
+  resultobj = SWIG_From_int((int)(result));
   return resultobj;
 fail:
   return NULL;
@@ -6301,6 +6412,10 @@ fail:
 
 
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraWidget) /* defines _wrap_delete_CameraWidget_destructor_closure */
+
+SWIGPY_SSIZEARGFUNC_CLOSURE(_wrap_CameraWidget___getitem__) /* defines _wrap_CameraWidget___getitem___ssizeargfunc_closure */
+
+SWIGPY_LENFUNC_CLOSURE(_wrap_CameraWidget___len__) /* defines _wrap_CameraWidget___len___lenfunc_closure */
 
 SWIGINTERN PyObject *_wrap_gp_widget_append(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
@@ -8530,6 +8645,15 @@ SwigPyBuiltin___CameraWidget_richcompare(PyObject *self, PyObject *other, int op
 }
 
 SWIGINTERN PyMethodDef SwigPyBuiltin___CameraWidget_methods[] = {
+  { "__getitem__", _wrap_CameraWidget___getitem__, METH_VARARGS, "\n"
+		"__getitem__(self, child_number)\n"
+		"\n"
+		"Parameters\n"
+		"----------\n"
+		"child_number: int\n"
+		"\n"
+		"" },
+  { "__len__", _wrap_CameraWidget___len__, METH_VARARGS, "__len__(self) -> int" },
   { "count_children", _wrap_CameraWidget_count_children, METH_VARARGS, "\n"
 		"count_children(self) -> int\n"
 		"Counts the children of the CameraWidget.  \n"
@@ -9142,10 +9266,10 @@ static PyHeapTypeObject SwigPyBuiltin___CameraWidget_type = {
     (objobjargproc) 0,                        /* mp_ass_subscript */
   },
   {
-    (lenfunc) 0,                              /* sq_length */
+    _wrap_CameraWidget___len___lenfunc_closure,                   /* sq_length */
     (binaryfunc) 0,                           /* sq_concat */
     (ssizeargfunc) 0,                         /* sq_repeat */
-    (ssizeargfunc) 0,                         /* sq_item */
+    _wrap_CameraWidget___getitem___ssizeargfunc_closure,          /* sq_item */
 #if PY_VERSION_HEX >= 0x03000000
     (void *) 0,                               /* was_sq_slice */
 #else

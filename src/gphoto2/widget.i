@@ -340,7 +340,24 @@ static int widget_dtor(CameraWidget *widget) {
 struct _CameraWidget {};
 DEFAULT_DTOR(_CameraWidget, widget_dtor)
 
+
+// Make _CameraWidget more like a list
+%feature("python:slot", "sq_item", functype="ssizeargfunc")
+    _CameraWidget::__getitem__;
+%extend _CameraWidget {
+    void __getitem__(int child_number, CameraWidget **child) {
+        if ((child_number < 0) ||
+            (child_number >= gp_widget_count_children($self))) {
+            PyErr_SetNone(PyExc_IndexError);
+            return;
+        }
+        int result = gp_widget_get_child($self, child_number, child);
+        if (result < GP_OK) GPHOTO2_ERROR(result)
+    }
+};
+
 // Add member methods to _CameraWidget
+LEN_MEMBER_FUNCTION(_CameraWidget, gp_widget_count_children)
 MEMBER_FUNCTION(_CameraWidget,
     int, count_children, (),
     gp_widget_count_children, ($self), )

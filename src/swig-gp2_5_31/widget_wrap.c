@@ -3939,10 +3939,11 @@ SwigPyBuiltin_iternextfunc_closure(SwigPyWrapperFunction wrapper, PyObject *a) {
 #define SWIGTYPE_p_char swig_types[4]
 #define SWIGTYPE_p_float swig_types[5]
 #define SWIGTYPE_p_int swig_types[6]
-#define SWIGTYPE_p_p__CameraWidget swig_types[7]
-#define SWIGTYPE_p_p_char swig_types[8]
-static swig_type_info *swig_types[10];
-static swig_module_info swig_module = {swig_types, 9, 0, 0, 0, 0};
+#define SWIGTYPE_p_p_PyObject swig_types[7]
+#define SWIGTYPE_p_p__CameraWidget swig_types[8]
+#define SWIGTYPE_p_p_char swig_types[9]
+static swig_type_info *swig_types[11];
+static swig_module_info swig_module = {swig_types, 10, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3999,15 +4000,12 @@ static PyObject* make_iterator(PyObject* self)
 }
 
 
-PyObject* gp_widget_get_children(CameraWidget* widget) {
+static int gp_widget_get_children(CameraWidget* widget, PyObject **iter) {
     PyObject* py_self = SWIG_Python_NewPointerObj(
         NULL, widget, SWIGTYPE_p__CameraWidget, 0);
-    PyObject* iter = PySeqIter_New(py_self);
+    *iter = PySeqIter_New(py_self);
     Py_DECREF(py_self);
-    PyObject* result = PyList_New(2);
-    PyList_SET_ITEM(result, 0, SWIG_From_int(GP_OK));
-    PyList_SET_ITEM(result, 01, iter);
-    return result;
+    return GP_OK;
 };
 
 
@@ -4279,13 +4277,6 @@ SWIGINTERN void _CameraWidget___getitem__(struct _CameraWidget *self,int child_n
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 /*@SWIG@*/
     }
-SWIGINTERN PyObject *_CameraWidget_get_children(struct _CameraWidget *self){
-        PyObject* py_self = SWIG_Python_NewPointerObj(
-            NULL, self, SWIGTYPE_p__CameraWidget, 0);
-        PyObject* result = PySeqIter_New(py_self);
-        Py_DECREF(py_self);
-        return result;
-    }
 SWIGINTERN int _CameraWidget___len__(struct _CameraWidget *self){
 
 
@@ -4321,6 +4312,21 @@ SWIGINTERN void _CameraWidget_get_child(struct _CameraWidget *self,int child_num
 
 
     int result = gp_widget_get_child (self, child_number, child);
+
+
+
+    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
+/*@SWIG@*/
+
+
+
+  }
+SWIGINTERN void _CameraWidget_get_children(struct _CameraWidget *self,PyObject **iter){
+
+
+
+    int result = gp_widget_get_children (self, iter);
 
 
 
@@ -4916,19 +4922,29 @@ fail:
 SWIGINTERN PyObject *_wrap_gp_widget_get_children(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CameraWidget *arg1 = (CameraWidget *) 0 ;
+  PyObject **arg2 = (PyObject **) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  PyObject *temp2 = NULL ;
   PyObject * obj0 = 0 ;
-  PyObject *result = 0 ;
+  int result;
   
+  {
+    arg2 = &temp2;
+  }
   if (!PyArg_UnpackTuple(args, "gp_widget_get_children", 1, 1, &obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__CameraWidget, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "gp_widget_get_children" "', argument " "1"" of type '" "CameraWidget *""'"); 
   }
   arg1 = (CameraWidget *)(argp1);
-  result = (PyObject *)gp_widget_get_children(arg1);
-  resultobj = result;
+  result = (int)gp_widget_get_children(arg1,arg2);
+  resultobj = SWIG_From_int((int)(result));
+  {
+    if (!*arg2)
+    *arg2 = SWIG_Py_Void();
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2);
+  }
   return resultobj;
 fail:
   return NULL;
@@ -5108,30 +5124,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CameraWidget_get_children(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _CameraWidget *arg1 = (struct _CameraWidget *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject *result = 0 ;
-  
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraWidget_get_children takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraWidget, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraWidget_get_children" "', argument " "1"" of type '" "struct _CameraWidget *""'"); 
-  }
-  arg1 = (struct _CameraWidget *)(argp1);
-  {
-    result = (PyObject *)_CameraWidget_get_children(arg1);
-    if (PyErr_Occurred()) SWIG_fail;
-  }
-  resultobj = result;
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_CameraWidget___len__(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _CameraWidget *arg1 = (struct _CameraWidget *) 0 ;
@@ -5234,6 +5226,39 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child(PyObject *self, PyObject *args
     // Append result to output object
     resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN))
     ;
+  }
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraWidget_get_children(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraWidget *arg1 = (struct _CameraWidget *) 0 ;
+  PyObject **arg2 = (PyObject **) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *temp2 = NULL ;
+  
+  {
+    arg2 = &temp2;
+  }
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraWidget_get_children takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraWidget, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraWidget_get_children" "', argument " "1"" of type '" "struct _CameraWidget *""'"); 
+  }
+  arg1 = (struct _CameraWidget *)(argp1);
+  {
+    _CameraWidget_get_children(arg1,arg2);
+    if (PyErr_Occurred()) SWIG_fail;
+  }
+  resultobj = SWIG_Py_Void();
+  {
+    if (!*arg2)
+    *arg2 = SWIG_Py_Void();
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2);
   }
   return resultobj;
 fail:
@@ -7403,7 +7428,7 @@ static PyMethodDef SwigMethods[] = {
 		"See also gphoto2.CameraWidget.get_value\n"
 		""},
 	 { "gp_widget_get_children", _wrap_gp_widget_get_children, METH_VARARGS, "\n"
-		"gp_widget_get_children(widget) -> PyObject *\n"
+		"gp_widget_get_children(widget) -> int\n"
 		"\n"
 		"Parameters\n"
 		"----------\n"
@@ -8279,17 +8304,6 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___CameraWidget_methods[] = {
 		"child_number: int\n"
 		"\n"
 		"" },
-  { "get_children", _wrap_CameraWidget_get_children, METH_VARARGS, "\n"
-		"get_children(self) -> PyObject *\n"
-		"Gets all the child widgets of a CameraWidget. The return value is a\n"
-		"Python iterator which can be used to get each child in sequence.\n"
-		"\n"
-		"Returns\n"
-		"-------\n"
-		"a Python iterator.\n"
-		"\n"
-		"See also gphoto2.gp_widget_get_children\n"
-		"" },
   { "__len__", _wrap_CameraWidget___len__, METH_VARARGS, "__len__(self) -> int" },
   { "count_children", _wrap_CameraWidget_count_children, METH_VARARGS, "\n"
 		"count_children(self) -> int\n"
@@ -8328,6 +8342,17 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___CameraWidget_methods[] = {
 		"a gphoto2 error code.\n"
 		"\n"
 		"See also gphoto2.gp_widget_get_child\n"
+		"" },
+  { "get_children", _wrap_CameraWidget_get_children, METH_VARARGS, "\n"
+		"get_children(self)\n"
+		"Gets all the child widgets of a CameraWidget. The return value is a\n"
+		"Python iterator which can be used to get each child in sequence.\n"
+		"\n"
+		"Returns\n"
+		"-------\n"
+		"a Python iterator.\n"
+		"\n"
+		"See also gphoto2.gp_widget_get_children\n"
 		"" },
   { "get_child_by_label", _wrap_CameraWidget_get_child_by_label, METH_VARARGS, "\n"
 		"get_child_by_label(self, label)\n"
@@ -8953,6 +8978,7 @@ static swig_type_info _swigt__p__CameraWidget = {"_p__CameraWidget", "CameraWidg
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_float = {"_p_float", "float *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_p_PyObject = {"_p_p_PyObject", "PyObject **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p__CameraWidget = {"_p_p__CameraWidget", "CameraWidget **|struct _CameraWidget **", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p_char = {"_p_p_char", "char **", 0, 0, (void*)0, 0};
 
@@ -8964,6 +8990,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_char,
   &_swigt__p_float,
   &_swigt__p_int,
+  &_swigt__p_p_PyObject,
   &_swigt__p_p__CameraWidget,
   &_swigt__p_p_char,
 };
@@ -8975,6 +9002,7 @@ static swig_cast_info _swigc__p__CameraWidget[] = {  {&_swigt__p__CameraWidget, 
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_p_PyObject[] = {  {&_swigt__p_p_PyObject, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p__CameraWidget[] = {  {&_swigt__p_p__CameraWidget, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p_char[] = {  {&_swigt__p_p_char, 0, 0, 0},{0, 0, 0, 0}};
 
@@ -8986,6 +9014,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_char,
   _swigc__p_float,
   _swigc__p_int,
+  _swigc__p_p_PyObject,
   _swigc__p_p__CameraWidget,
   _swigc__p_p_char,
 };

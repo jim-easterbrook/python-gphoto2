@@ -192,6 +192,16 @@ DEFAULT_EXCEPTION
 
 #ifndef SWIGIMPORTED
 
+// Typemaps for iterator return values
+%typemap(in, numinputs=0) PyObject **iter (PyObject* temp=NULL) {
+    $1 = &temp;
+}
+%typemap(argout) PyObject **iter {
+    if (!*$1)
+        *$1 = SWIG_Py_Void();
+    $result = SWIG_AppendOutput($result, *$1);
+}
+
 // function to allow python iter() to be called with python object
 %ignore make_iterator;
 %inline %{
@@ -269,15 +279,12 @@ See also gphoto2.gp_widget_get_children"
 
 %noexception gp_widget_get_children;
 %inline %{
-PyObject* gp_widget_get_children(CameraWidget* widget) {
+static int gp_widget_get_children(CameraWidget* widget, PyObject **iter) {
     PyObject* py_self = SWIG_Python_NewPointerObj(
         NULL, widget, SWIGTYPE_p__CameraWidget, 0);
-    PyObject* iter = PySeqIter_New(py_self);
+    *iter = PySeqIter_New(py_self);
     Py_DECREF(py_self);
-    PyObject* result = PyList_New(2);
-    PyList_SET_ITEM(result, 0, SWIG_From_int(GP_OK));
-    PyList_SET_ITEM(result, 01, iter);
-    return result;
+    return GP_OK;
 };
 %}
 
@@ -354,13 +361,6 @@ DEFAULT_DTOR(_CameraWidget, widget_dtor)
         int result = gp_widget_get_child($self, child_number, child);
         if (result < GP_OK) GPHOTO2_ERROR(result)
     }
-    PyObject* get_children() {
-        PyObject* py_self = SWIG_Python_NewPointerObj(
-            NULL, $self, $descriptor(_CameraWidget*), 0);
-        PyObject* result = PySeqIter_New(py_self);
-        Py_DECREF(py_self);
-        return result;
-    }
 };
 
 // Add member methods to _CameraWidget
@@ -371,6 +371,9 @@ MEMBER_FUNCTION(_CameraWidget,
 MEMBER_FUNCTION(_CameraWidget,
     void, get_child, (int child_number, CameraWidget **child),
     gp_widget_get_child, ($self, child_number, child), )
+MEMBER_FUNCTION(_CameraWidget,
+    void, get_children, (PyObject** iter),
+    gp_widget_get_children, ($self, iter), )
 MEMBER_FUNCTION(_CameraWidget,
     void, get_child_by_label, (const char *label, CameraWidget **child),
     gp_widget_get_child_by_label, ($self, label, child), )

@@ -3932,18 +3932,17 @@ SwigPyBuiltin_iternextfunc_closure(SwigPyWrapperFunction wrapper, PyObject *a) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_CameraWidgetChoiceIter swig_types[0]
-#define SWIGTYPE_p_CameraWidgetType swig_types[1]
-#define SWIGTYPE_p_SwigPyObject swig_types[2]
-#define SWIGTYPE_p__CameraWidget swig_types[3]
-#define SWIGTYPE_p_char swig_types[4]
-#define SWIGTYPE_p_float swig_types[5]
-#define SWIGTYPE_p_int swig_types[6]
-#define SWIGTYPE_p_p_PyObject swig_types[7]
-#define SWIGTYPE_p_p__CameraWidget swig_types[8]
-#define SWIGTYPE_p_p_char swig_types[9]
-static swig_type_info *swig_types[11];
-static swig_module_info swig_module = {swig_types, 10, 0, 0, 0, 0};
+#define SWIGTYPE_p_CameraWidgetType swig_types[0]
+#define SWIGTYPE_p_SwigPyObject swig_types[1]
+#define SWIGTYPE_p__CameraWidget swig_types[2]
+#define SWIGTYPE_p_char swig_types[3]
+#define SWIGTYPE_p_float swig_types[4]
+#define SWIGTYPE_p_int swig_types[5]
+#define SWIGTYPE_p_p_PyObject swig_types[6]
+#define SWIGTYPE_p_p__CameraWidget swig_types[7]
+#define SWIGTYPE_p_p_char swig_types[8]
+static swig_type_info *swig_types[10];
+static swig_module_info swig_module = {swig_types, 9, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3993,13 +3992,6 @@ SWIGINTERNINLINE PyObject*
 }
 
 
-static PyObject* make_iterator(PyObject* self)
-{
-  Py_INCREF(self);
-  return self;
-}
-
-
 static int gp_widget_get_children(CameraWidget* widget, PyObject **iter) {
     PyObject* py_self = SWIG_Python_NewPointerObj(
         NULL, widget, SWIGTYPE_p__CameraWidget, 0);
@@ -4009,84 +4001,24 @@ static int gp_widget_get_children(CameraWidget* widget, PyObject **iter) {
 };
 
 
-typedef struct CameraWidgetChoiceIter {
-  CameraWidget* parent;
-  int           idx;
-  int           len;
-} CameraWidgetChoiceIter;
-
-SWIGINTERN char const *CameraWidgetChoiceIter___next__(struct CameraWidgetChoiceIter *self){
-    const char* result;
-    int error;
-    if (self->idx >= self->len)
-    {
-      PyErr_SetString(PyExc_StopIteration, "End of iteration");
-      return NULL;
+int gp_widget_get_choices(CameraWidget* widget, PyObject **iter) {
+    int result = GP_OK;
+    int len = gp_widget_count_choices(widget);
+    if (len < GP_OK)
+        return len;
+    PyObject* list = PyTuple_New(len);
+    const char *choice = NULL;
+    for (int idx = 0; idx < len; idx++) {
+        result = gp_widget_get_choice(widget, idx, &choice);
+        if (result != GP_OK) {
+            Py_DECREF(list);
+            return result;
+        }
+        PyTuple_SET_ITEM(list, idx, PyUnicode_FromString(choice));
     }
-    error = gp_widget_get_choice(self->parent, self->idx, &result);
-    self->idx++;
-    if (error < GP_OK)
-    {
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
-      return NULL;
-    }
+    *iter = PySeqIter_New(list);
+    Py_DECREF(list);
     return result;
-  }
-
-SWIGINTERN swig_type_info*
-SWIG_pchar_descriptor(void)
-{
-  static int init = 0;
-  static swig_type_info* info = 0;
-  if (!init) {
-    info = SWIG_TypeQuery("_p_char");
-    init = 1;
-  }
-  return info;
-}
-
-
-SWIGINTERNINLINE PyObject *
-SWIG_FromCharPtrAndSize(const char* carray, size_t size)
-{
-  if (carray) {
-    if (size > INT_MAX) {
-      swig_type_info* pchar_descriptor = SWIG_pchar_descriptor();
-      return pchar_descriptor ? 
-	SWIG_InternalNewPointerObj((char *)(carray), pchar_descriptor, 0) : SWIG_Py_Void();
-    } else {
-#if PY_VERSION_HEX >= 0x03000000
-#if defined(SWIG_PYTHON_STRICT_BYTE_CHAR)
-      return PyBytes_FromStringAndSize(carray, (Py_ssize_t)(size));
-#else
-      return PyUnicode_DecodeUTF8(carray, (Py_ssize_t)(size), "surrogateescape");
-#endif
-#else
-      return PyString_FromStringAndSize(carray, (Py_ssize_t)(size));
-#endif
-    }
-  } else {
-    return SWIG_Py_Void();
-  }
-}
-
-
-SWIGINTERNINLINE PyObject * 
-SWIG_FromCharPtr(const char *cptr)
-{ 
-  return SWIG_FromCharPtrAndSize(cptr, (cptr ? strlen(cptr) : 0));
-}
-
-
-int gp_widget_get_choices(CameraWidget* widget, CameraWidgetChoiceIter* iter) {
-  iter->parent = widget;
-  iter->idx = 0;
-  iter->len = gp_widget_count_choices(widget);
-  if (iter->len < GP_OK)
-    return iter->len;
-  return GP_OK;
 };
 
 
@@ -4337,6 +4269,19 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 
 
   }
+
+SWIGINTERN swig_type_info*
+SWIG_pchar_descriptor(void)
+{
+  static int init = 0;
+  static swig_type_info* info = 0;
+  if (!init) {
+    info = SWIG_TypeQuery("_p_char");
+    init = 1;
+  }
+  return info;
+}
+
 
 /* Return string from Python obj. NOTE: obj must remain in scope in order
    to use the returned cptr (but only when alloc is set to SWIG_OLDOBJ) */
@@ -4763,7 +4708,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
     return result;
 
   }
-SWIGINTERN void _CameraWidget_get_choices(struct _CameraWidget *self,CameraWidgetChoiceIter *iter){
+SWIGINTERN void _CameraWidget_get_choices(struct _CameraWidget *self,PyObject **iter){
 
 
 
@@ -4951,69 +4896,18 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CameraWidgetChoiceIter___next__(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct CameraWidgetChoiceIter *arg1 = (struct CameraWidgetChoiceIter *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  char *result = 0 ;
-  
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraWidgetChoiceIter___next__ takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CameraWidgetChoiceIter, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraWidgetChoiceIter___next__" "', argument " "1"" of type '" "struct CameraWidgetChoiceIter *""'"); 
-  }
-  arg1 = (struct CameraWidgetChoiceIter *)(argp1);
-  {
-    result = (char *)CameraWidgetChoiceIter___next__(arg1);
-    if (PyErr_Occurred()) SWIG_fail;
-  }
-  resultobj = SWIG_FromCharPtr((const char *)result);
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_CameraWidgetChoiceIter(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct CameraWidgetChoiceIter *arg1 = (struct CameraWidgetChoiceIter *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_CameraWidgetChoiceIter takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p_CameraWidgetChoiceIter, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_CameraWidgetChoiceIter" "', argument " "1"" of type '" "struct CameraWidgetChoiceIter *""'"); 
-  }
-  arg1 = (struct CameraWidgetChoiceIter *)(argp1);
-  free((char *) arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGPY_ITERNEXTFUNC_CLOSURE(_wrap_CameraWidgetChoiceIter___next__) /* defines _wrap_CameraWidgetChoiceIter___next___iternextfunc_closure */
-
-SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraWidgetChoiceIter) /* defines _wrap_delete_CameraWidgetChoiceIter_destructor_closure */
-
 SWIGINTERN PyObject *_wrap_gp_widget_get_choices(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CameraWidget *arg1 = (CameraWidget *) 0 ;
-  CameraWidgetChoiceIter *arg2 = (CameraWidgetChoiceIter *) 0 ;
+  PyObject **arg2 = (PyObject **) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  PyObject *temp2 = NULL ;
   PyObject * obj0 = 0 ;
   int result;
   
   {
-    arg2 = (CameraWidgetChoiceIter *)calloc(1, sizeof(CameraWidgetChoiceIter));
-    if (arg2 == NULL) {
-      PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraWidgetChoiceIter");
-      SWIG_fail;
-    }
+    arg2 = &temp2;
   }
   if (!PyArg_UnpackTuple(args, "gp_widget_get_choices", 1, 1, &obj0)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p__CameraWidget, 0 |  0 );
@@ -5024,18 +4918,12 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_choices(PyObject *self, PyObject *args)
   result = (int)gp_widget_get_choices(arg1,arg2);
   resultobj = SWIG_From_int((int)(result));
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(arg2, SWIGTYPE_p_CameraWidgetChoiceIter, SWIG_POINTER_OWN))
-    ;
-    arg2 = NULL;
-  }
-  {
-    free(arg2);
+    if (!*arg2)
+    *arg2 = SWIG_Py_Void();
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2);
   }
   return resultobj;
 fail:
-  {
-    free(arg2);
-  }
   return NULL;
 }
 
@@ -6112,16 +6000,13 @@ fail:
 SWIGINTERN PyObject *_wrap_CameraWidget_get_choices(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _CameraWidget *arg1 = (struct _CameraWidget *) 0 ;
-  CameraWidgetChoiceIter *arg2 = (CameraWidgetChoiceIter *) 0 ;
+  PyObject **arg2 = (PyObject **) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  PyObject *temp2 = NULL ;
   
   {
-    arg2 = (CameraWidgetChoiceIter *)calloc(1, sizeof(CameraWidgetChoiceIter));
-    if (arg2 == NULL) {
-      PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraWidgetChoiceIter");
-      SWIG_fail;
-    }
+    arg2 = &temp2;
   }
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraWidget_get_choices takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraWidget, 0 |  0 );
@@ -6135,18 +6020,12 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_choices(PyObject *self, PyObject *ar
   }
   resultobj = SWIG_Py_Void();
   {
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(arg2, SWIGTYPE_p_CameraWidgetChoiceIter, SWIG_POINTER_OWN))
-    ;
-    arg2 = NULL;
-  }
-  {
-    free(arg2);
+    if (!*arg2)
+    *arg2 = SWIG_Py_Void();
+    resultobj = SWIG_Python_AppendOutput(resultobj, *arg2);
   }
   return resultobj;
 fail:
-  {
-    free(arg2);
-  }
   return NULL;
 }
 
@@ -7999,8 +7878,8 @@ static PyMethodDef SwigMethods[] = {
 	 { NULL, NULL, 0, NULL }
 };
 
-static SwigPyGetSet CameraWidgetChoiceIter___dict___getset = { SwigPyObject_get___dict__, 0 };
-SWIGINTERN PyGetSetDef SwigPyBuiltin__CameraWidgetChoiceIter_getset[] = {
+static SwigPyGetSet CameraWidget___dict___getset = { SwigPyObject_get___dict__, 0 };
+SWIGINTERN PyGetSetDef SwigPyBuiltin___CameraWidget_getset[] = {
     { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"\n"
 		"gp_widget_get_value\n"
 		"Retrieves the value of the CameraWidget.  \n"
@@ -8016,262 +7895,6 @@ SWIGINTERN PyGetSetDef SwigPyBuiltin__CameraWidgetChoiceIter_getset[] = {
 		"a gphoto2 error code.\n"
 		"\n"
 		"See also gphoto2.CameraWidget.get_value\n"
-		"", &CameraWidgetChoiceIter___dict___getset },
-    { NULL, NULL, NULL, NULL, NULL } /* Sentinel */
-};
-
-SWIGINTERN PyObject *
-SwigPyBuiltin__CameraWidgetChoiceIter_richcompare(PyObject *self, PyObject *other, int op) {
-  PyObject *result = NULL;
-  PyObject *tuple = PyTuple_New(1);
-  assert(tuple);
-  PyTuple_SET_ITEM(tuple, 0, other);
-  Py_XINCREF(other);
-  if (!result && !PyErr_Occurred()) {
-    if (SwigPyObject_Check(self) && SwigPyObject_Check(other)) {
-      result = SwigPyObject_richcompare((SwigPyObject *)self, (SwigPyObject *)other, op);
-    } else {
-      result = Py_NotImplemented;
-      Py_INCREF(result);
-    }
-  }
-  Py_DECREF(tuple);
-  return result;
-}
-
-SWIGINTERN PyMethodDef SwigPyBuiltin__CameraWidgetChoiceIter_methods[] = {
-  { "__next__", _wrap_CameraWidgetChoiceIter___next__, METH_VARARGS, "__next__(self) -> char const *" },
-  { NULL, NULL, 0, NULL } /* Sentinel */
-};
-
-static PyHeapTypeObject SwigPyBuiltin__CameraWidgetChoiceIter_type = {
-  {
-#if PY_VERSION_HEX >= 0x03000000
-    PyVarObject_HEAD_INIT(NULL, 0)
-#else
-    PyObject_HEAD_INIT(NULL)
-    0,                                        /* ob_size */
-#endif
-    "gphoto2.widget.CameraWidgetChoiceIter",  /* tp_name */
-    sizeof(SwigPyObject),                     /* tp_basicsize */
-    0,                                        /* tp_itemsize */
-    _wrap_delete_CameraWidgetChoiceIter_destructor_closure,       /* tp_dealloc */
-#if PY_VERSION_HEX < 0x030800b4
-    (printfunc) 0,                            /* tp_print */
-#else
-    (Py_ssize_t) 0,                           /* tp_vectorcall_offset */
-#endif
-    (getattrfunc) 0,                          /* tp_getattr */
-    (setattrfunc) 0,                          /* tp_setattr */
-#if PY_VERSION_HEX >= 0x03000000
-    0,                                        /* tp_compare */
-#else
-    (cmpfunc) 0,                              /* tp_compare */
-#endif
-    (reprfunc) 0,                             /* tp_repr */
-    &SwigPyBuiltin__CameraWidgetChoiceIter_type.as_number,        /* tp_as_number */
-    &SwigPyBuiltin__CameraWidgetChoiceIter_type.as_sequence,      /* tp_as_sequence */
-    &SwigPyBuiltin__CameraWidgetChoiceIter_type.as_mapping,       /* tp_as_mapping */
-    SwigPyObject_hash,                        /* tp_hash */
-    (ternaryfunc) 0,                          /* tp_call */
-    (reprfunc) 0,                             /* tp_str */
-    (getattrofunc) 0,                         /* tp_getattro */
-    (setattrofunc) 0,                         /* tp_setattro */
-    &SwigPyBuiltin__CameraWidgetChoiceIter_type.as_buffer,        /* tp_as_buffer */
-#if PY_VERSION_HEX >= 0x03000000
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,   /* tp_flags */
-#else
-    Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES, /* tp_flags */
-#endif
-    "::CameraWidgetChoiceIter",               /* tp_doc */
-    (traverseproc) 0,                         /* tp_traverse */
-    (inquiry) 0,                              /* tp_clear */
-    SwigPyBuiltin__CameraWidgetChoiceIter_richcompare,            /* tp_richcompare */
-    0,                                        /* tp_weaklistoffset */
-    make_iterator,                            /* tp_iter */
-    _wrap_CameraWidgetChoiceIter___next___iternextfunc_closure,   /* tp_iternext */
-    SwigPyBuiltin__CameraWidgetChoiceIter_methods,                /* tp_methods */
-    0,                                        /* tp_members */
-    SwigPyBuiltin__CameraWidgetChoiceIter_getset,                 /* tp_getset */
-    0,                                        /* tp_base */
-    0,                                        /* tp_dict */
-    (descrgetfunc) 0,                         /* tp_descr_get */
-    (descrsetfunc) 0,                         /* tp_descr_set */
-    offsetof(SwigPyObject, dict),             /* tp_dictoffset */
-    SwigPyBuiltin_BadInit,                    /* tp_init */
-    (allocfunc) 0,                            /* tp_alloc */
-    (newfunc) 0,                              /* tp_new */
-    (freefunc) 0,                             /* tp_free */
-    (inquiry) 0,                              /* tp_is_gc */
-    (PyObject *) 0,                           /* tp_bases */
-    (PyObject *) 0,                           /* tp_mro */
-    (PyObject *) 0,                           /* tp_cache */
-    (PyObject *) 0,                           /* tp_subclasses */
-    (PyObject *) 0,                           /* tp_weaklist */
-    (destructor) 0,                           /* tp_del */
-    (int) 0,                                  /* tp_version_tag */
-#if PY_VERSION_HEX >= 0x03040000
-    (destructor) 0,                           /* tp_finalize */
-#endif
-#if PY_VERSION_HEX >= 0x03080000
-    (vectorcallfunc) 0,                       /* tp_vectorcall */
-#endif
-#if (PY_VERSION_HEX >= 0x03080000) && (PY_VERSION_HEX < 0x03090000)
-    0,                                        /* tp_print */
-#endif
-#if PY_VERSION_HEX >= 0x030c0000
-    (char) 0,                                 /* tp_watched */
-#endif
-#ifdef COUNT_ALLOCS
-    (Py_ssize_t) 0,                           /* tp_allocs */
-    (Py_ssize_t) 0,                           /* tp_frees */
-    (Py_ssize_t) 0,                           /* tp_maxalloc */
-    0,                                        /* tp_prev */
-    0,                                        /* tp_next */
-#endif
-  },
-#if PY_VERSION_HEX >= 0x03050000
-  {
-    (unaryfunc) 0,                            /* am_await */
-    (unaryfunc) 0,                            /* am_aiter */
-    (unaryfunc) 0,                            /* am_anext */
-# if PY_VERSION_HEX >= 0x030a0000
-    (sendfunc) 0,                             /* am_send */
-# endif
-  },
-#endif
-  {
-    (binaryfunc) 0,                           /* nb_add */
-    (binaryfunc) 0,                           /* nb_subtract */
-    (binaryfunc) 0,                           /* nb_multiply */
-#if PY_VERSION_HEX < 0x03000000
-    (binaryfunc) 0,                           /* nb_divide */
-#endif
-    (binaryfunc) 0,                           /* nb_remainder */
-    (binaryfunc) 0,                           /* nb_divmod */
-    (ternaryfunc) 0,                          /* nb_power */
-    (unaryfunc) 0,                            /* nb_negative */
-    (unaryfunc) 0,                            /* nb_positive */
-    (unaryfunc) 0,                            /* nb_absolute */
-    (inquiry) 0,                              /* nb_nonzero */
-    (unaryfunc) 0,                            /* nb_invert */
-    (binaryfunc) 0,                           /* nb_lshift */
-    (binaryfunc) 0,                           /* nb_rshift */
-    (binaryfunc) 0,                           /* nb_and */
-    (binaryfunc) 0,                           /* nb_xor */
-    (binaryfunc) 0,                           /* nb_or */
-#if PY_VERSION_HEX < 0x03000000
-    (coercion) 0,                             /* nb_coerce */
-#endif
-    (unaryfunc) 0,                            /* nb_int */
-#if PY_VERSION_HEX >= 0x03000000
-    (void *) 0,                               /* nb_reserved */
-#else
-    (unaryfunc) 0,                            /* nb_long */
-#endif
-    (unaryfunc) 0,                            /* nb_float */
-#if PY_VERSION_HEX < 0x03000000
-    (unaryfunc) 0,                            /* nb_oct */
-    (unaryfunc) 0,                            /* nb_hex */
-#endif
-    (binaryfunc) 0,                           /* nb_inplace_add */
-    (binaryfunc) 0,                           /* nb_inplace_subtract */
-    (binaryfunc) 0,                           /* nb_inplace_multiply */
-#if PY_VERSION_HEX < 0x03000000
-    (binaryfunc) 0,                           /* nb_inplace_divide */
-#endif
-    (binaryfunc) 0,                           /* nb_inplace_remainder */
-    (ternaryfunc) 0,                          /* nb_inplace_power */
-    (binaryfunc) 0,                           /* nb_inplace_lshift */
-    (binaryfunc) 0,                           /* nb_inplace_rshift */
-    (binaryfunc) 0,                           /* nb_inplace_and */
-    (binaryfunc) 0,                           /* nb_inplace_xor */
-    (binaryfunc) 0,                           /* nb_inplace_or */
-    (binaryfunc) 0,                           /* nb_floor_divide */
-    (binaryfunc) 0,                           /* nb_true_divide */
-    (binaryfunc) 0,                           /* nb_inplace_floor_divide */
-    (binaryfunc) 0,                           /* nb_inplace_true_divide */
-    (unaryfunc) 0,                            /* nb_index */
-#if PY_VERSION_HEX >= 0x03050000
-    (binaryfunc) 0,                           /* nb_matrix_multiply */
-    (binaryfunc) 0,                           /* nb_inplace_matrix_multiply */
-#endif
-  },
-  {
-    (lenfunc) 0,                              /* mp_length */
-    (binaryfunc) 0,                           /* mp_subscript */
-    (objobjargproc) 0,                        /* mp_ass_subscript */
-  },
-  {
-    (lenfunc) 0,                              /* sq_length */
-    (binaryfunc) 0,                           /* sq_concat */
-    (ssizeargfunc) 0,                         /* sq_repeat */
-    (ssizeargfunc) 0,                         /* sq_item */
-#if PY_VERSION_HEX >= 0x03000000
-    (void *) 0,                               /* was_sq_slice */
-#else
-    (ssizessizeargfunc) 0,                    /* sq_slice */
-#endif
-    (ssizeobjargproc) 0,                      /* sq_ass_item */
-#if PY_VERSION_HEX >= 0x03000000
-    (void *) 0,                               /* was_sq_ass_slice */
-#else
-    (ssizessizeobjargproc) 0,                 /* sq_ass_slice */
-#endif
-    (objobjproc) 0,                           /* sq_contains */
-    (binaryfunc) 0,                           /* sq_inplace_concat */
-    (ssizeargfunc) 0,                         /* sq_inplace_repeat */
-  },
-  {
-#if PY_VERSION_HEX < 0x03000000
-    (readbufferproc) 0,                       /* bf_getreadbuffer */
-    (writebufferproc) 0,                      /* bf_getwritebuffer */
-    (segcountproc) 0,                         /* bf_getsegcount */
-    (charbufferproc) 0,                       /* bf_getcharbuffer */
-#endif
-    (getbufferproc) 0,                        /* bf_getbuffer */
-    (releasebufferproc) 0,                    /* bf_releasebuffer */
-  },
-    (PyObject *) 0,                           /* ht_name */
-    (PyObject *) 0,                           /* ht_slots */
-#if PY_VERSION_HEX >= 0x03030000
-    (PyObject *) 0,                           /* ht_qualname */
-    0,                                        /* ht_cached_keys */
-#endif
-#if PY_VERSION_HEX >= 0x03090000
-    (PyObject *) 0,                           /* ht_module */
-#endif
-#if PY_VERSION_HEX >= 0x030b0000
-    (char *) 0,                               /* _ht_tpname */
-  {
-    (PyObject *) 0,                           /* getitem */
-#if PY_VERSION_HEX >= 0x030c0000
-    (uint32_t) 0,                             /* getitem_version */
-#endif
-  }
-#endif
-};
-
-SWIGINTERN SwigPyClientData SwigPyBuiltin__CameraWidgetChoiceIter_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin__CameraWidgetChoiceIter_type};
-
-static SwigPyGetSet CameraWidget___dict___getset = { SwigPyObject_get___dict__, 0 };
-SWIGINTERN PyGetSetDef SwigPyBuiltin___CameraWidget_getset[] = {
-    { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"\n"
-		"gp_widget_get_choices\n"
-		"Gets all the choice values of a CameraWidget. The return value is a list\n"
-		"containing a gphoto2 error code and a Python iterator. The iterator can\n"
-		"be used to get each choice in sequence.\n"
-		"\n"
-		"Parameters\n"
-		"----------\n"
-		"* `widget` :\n"
-		"    a CameraWidget\n"
-		"\n"
-		"Returns\n"
-		"-------\n"
-		"a gphoto2 error code and a Python iterator.\n"
-		"\n"
-		"See also gphoto2.CameraWidget.get_choices\n"
 		"", &CameraWidget___dict___getset },
     { NULL, NULL, NULL, NULL, NULL } /* Sentinel */
 };
@@ -8971,7 +8594,6 @@ SWIGINTERN SwigPyClientData SwigPyBuiltin___CameraWidget_clientdata = {0, 0, 0, 
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
-static swig_type_info _swigt__p_CameraWidgetChoiceIter = {"_p_CameraWidgetChoiceIter", "CameraWidgetChoiceIter *|struct CameraWidgetChoiceIter *", 0, 0, (void*)&SwigPyBuiltin__CameraWidgetChoiceIter_clientdata, 0};
 static swig_type_info _swigt__p_CameraWidgetType = {"_p_CameraWidgetType", "CameraWidgetType *|enum CameraWidgetType *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_SwigPyObject = {"_p_SwigPyObject", "SwigPyObject *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraWidget = {"_p__CameraWidget", "CameraWidget *|struct _CameraWidget *|_CameraWidget *", 0, 0, (void*)&SwigPyBuiltin___CameraWidget_clientdata, 0};
@@ -8983,7 +8605,6 @@ static swig_type_info _swigt__p_p__CameraWidget = {"_p_p__CameraWidget", "Camera
 static swig_type_info _swigt__p_p_char = {"_p_p_char", "char **", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
-  &_swigt__p_CameraWidgetChoiceIter,
   &_swigt__p_CameraWidgetType,
   &_swigt__p_SwigPyObject,
   &_swigt__p__CameraWidget,
@@ -8995,7 +8616,6 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_p_char,
 };
 
-static swig_cast_info _swigc__p_CameraWidgetChoiceIter[] = {  {&_swigt__p_CameraWidgetChoiceIter, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_CameraWidgetType[] = {  {&_swigt__p_CameraWidgetType, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_SwigPyObject[] = {  {&_swigt__p_SwigPyObject, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraWidget[] = {  {&_swigt__p__CameraWidget, 0, 0, 0},{0, 0, 0, 0}};
@@ -9007,7 +8627,6 @@ static swig_cast_info _swigc__p_p__CameraWidget[] = {  {&_swigt__p_p__CameraWidg
 static swig_cast_info _swigc__p_p_char[] = {  {&_swigt__p_p_char, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
-  _swigc__p_CameraWidgetChoiceIter,
   _swigc__p_CameraWidgetType,
   _swigc__p_SwigPyObject,
   _swigc__p__CameraWidget,
@@ -9500,29 +9119,6 @@ SWIG_init(void) {
 #endif
   }
   
-  
-  /* type '::CameraWidgetChoiceIter' */
-  builtin_pytype = (PyTypeObject *)&SwigPyBuiltin__CameraWidgetChoiceIter_type;
-  builtin_pytype->tp_dict = d = PyDict_New();
-  SwigPyBuiltin_SetMetaType(builtin_pytype, metatype);
-  builtin_pytype->tp_new = PyType_GenericNew;
-  builtin_base_count = 0;
-  builtin_bases[builtin_base_count] = NULL;
-  SwigPyBuiltin_InitBases(builtin_pytype, builtin_bases);
-  PyDict_SetItemString(d, "this", this_descr);
-  PyDict_SetItemString(d, "thisown", thisown_descr);
-  if (PyType_Ready(builtin_pytype) < 0) {
-    PyErr_SetString(PyExc_TypeError, "Could not create type 'CameraWidgetChoiceIter'.");
-#if PY_VERSION_HEX >= 0x03000000
-    return NULL;
-#else
-    return;
-#endif
-  }
-  Py_INCREF(builtin_pytype);
-  PyModule_AddObject(m, "CameraWidgetChoiceIter", (PyObject *)builtin_pytype);
-  SwigPyBuiltin_AddPublicSymbol(public_interface, "CameraWidgetChoiceIter");
-  d = md;
   
   /* type '::_CameraWidget' */
   builtin_pytype = (PyTypeObject *)&SwigPyBuiltin___CameraWidget_type;

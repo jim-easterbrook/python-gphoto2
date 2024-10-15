@@ -202,56 +202,6 @@ DEFAULT_EXCEPTION
     $result = SWIG_AppendOutput($result, *$1);
 }
 
-// function to allow python iter() to be called with python object
-%ignore make_iterator;
-%inline %{
-static PyObject* make_iterator(PyObject* self)
-{
-  Py_INCREF(self);
-  return self;
-}
-%}
-
-// macro to implement iterator objects
-%define ITERATOR(iter_type, function, result_type)
-
-%feature("python:tp_iter") iter_type "make_iterator";
-%feature("python:slot", "tp_iternext", functype="iternextfunc") iter_type::__next__;
-
-%ignore iter_type::parent;
-%ignore iter_type::idx;
-%ignore iter_type::len;
-%inline %{
-typedef struct iter_type {
-  CameraWidget* parent;
-  int           idx;
-  int           len;
-} iter_type;
-%}
-
-CALLOC_ARGOUT(iter_type*)
-
-%extend iter_type {
-  result_type* __next__() {
-    result_type* result;
-    int error;
-    if ($self->idx >= $self->len)
-    {
-      PyErr_SetString(PyExc_StopIteration, "End of iteration");
-      return NULL;
-    }
-    error = function($self->parent, $self->idx, &result);
-    $self->idx++;
-    if (error < GP_OK)
-    {
-      GPHOTO2_ERROR(error)
-      return NULL;
-    }
-    return result;
-  }
-}
-%enddef
-
 // Add gp_widget_get_children() method that returns an iterator
 %feature("docstring") gp_widget_get_children "Gets all the child widgets of a CameraWidget. The return value is a list
 containing a gphoto2 error code and a Python iterator. The iterator can
@@ -289,8 +239,6 @@ static int gp_widget_get_children(CameraWidget* widget, PyObject **iter) {
 %}
 
 // Add gp_widget_get_choices() method that returns an iterator
-ITERATOR(CameraWidgetChoiceIter, gp_widget_get_choice, const char)
-
 %feature("docstring") gp_widget_get_choices "Gets all the choice values of a CameraWidget. The return value is a list
 containing a gphoto2 error code and a Python iterator. The iterator can
 be used to get each choice in sequence.
@@ -317,13 +265,24 @@ See also gphoto2.gp_widget_get_choices"
 
 %noexception gp_widget_get_choices;
 %inline %{
-int gp_widget_get_choices(CameraWidget* widget, CameraWidgetChoiceIter* iter) {
-  iter->parent = widget;
-  iter->idx = 0;
-  iter->len = gp_widget_count_choices(widget);
-  if (iter->len < GP_OK)
-    return iter->len;
-  return GP_OK;
+int gp_widget_get_choices(CameraWidget* widget, PyObject **iter) {
+    int result = GP_OK;
+    int len = gp_widget_count_choices(widget);
+    if (len < GP_OK)
+        return len;
+    PyObject* list = PyTuple_New(len);
+    const char *choice = NULL;
+    for (int idx = 0; idx < len; idx++) {
+        result = gp_widget_get_choice(widget, idx, &choice);
+        if (result != GP_OK) {
+            Py_DECREF(list);
+            return result;
+        }
+        PyTuple_SET_ITEM(list, idx, PyUnicode_FromString(choice));
+    }
+    *iter = PySeqIter_New(list);
+    Py_DECREF(list);
+    return result;
 };
 %}
 
@@ -429,7 +388,7 @@ MEMBER_FUNCTION(_CameraWidget,
     int, count_choices, (),
     gp_widget_count_choices, ($self), )
 MEMBER_FUNCTION(_CameraWidget,
-    void, get_choices, (CameraWidgetChoiceIter* iter),
+    void, get_choices, (PyObject **iter),
     gp_widget_get_choices, ($self, iter), )
 MEMBER_FUNCTION(_CameraWidget,
     void, get_choice, (int choice_number, const char **choice),

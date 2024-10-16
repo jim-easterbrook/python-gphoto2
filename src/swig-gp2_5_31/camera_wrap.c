@@ -3965,31 +3965,32 @@ SwigPyBuiltin_iternextfunc_closure(SwigPyWrapperFunction wrapper, PyObject *a) {
 #define SWIGTYPE_p__CameraFileInfoPreview swig_types[29]
 #define SWIGTYPE_p__CameraFunctions swig_types[30]
 #define SWIGTYPE_p__CameraList swig_types[31]
-#define SWIGTYPE_p__CameraPrivateCore swig_types[32]
-#define SWIGTYPE_p__CameraPrivateLibrary swig_types[33]
-#define SWIGTYPE_p__CameraStorageInformation swig_types[34]
-#define SWIGTYPE_p__CameraWidget swig_types[35]
-#define SWIGTYPE_p__GPContext swig_types[36]
-#define SWIGTYPE_p__GPContextFeedback swig_types[37]
-#define SWIGTYPE_p__GPPortInfo swig_types[38]
-#define SWIGTYPE_p__GPPortInfoList swig_types[39]
-#define SWIGTYPE_p_char swig_types[40]
-#define SWIGTYPE_p_int swig_types[41]
-#define SWIGTYPE_p_long swig_types[42]
-#define SWIGTYPE_p_long_long swig_types[43]
-#define SWIGTYPE_p_p__Camera swig_types[44]
-#define SWIGTYPE_p_p__CameraStorageInformation swig_types[45]
-#define SWIGTYPE_p_p__CameraWidget swig_types[46]
-#define SWIGTYPE_p_p__GPPortInfo swig_types[47]
-#define SWIGTYPE_p_p_void swig_types[48]
-#define SWIGTYPE_p_short swig_types[49]
-#define SWIGTYPE_p_signed_char swig_types[50]
-#define SWIGTYPE_p_unsigned_char swig_types[51]
-#define SWIGTYPE_p_unsigned_int swig_types[52]
-#define SWIGTYPE_p_unsigned_long_long swig_types[53]
-#define SWIGTYPE_p_unsigned_short swig_types[54]
-static swig_type_info *swig_types[56];
-static swig_module_info swig_module = {swig_types, 55, 0, 0, 0, 0};
+#define SWIGTYPE_p__CameraList_accessor swig_types[32]
+#define SWIGTYPE_p__CameraPrivateCore swig_types[33]
+#define SWIGTYPE_p__CameraPrivateLibrary swig_types[34]
+#define SWIGTYPE_p__CameraStorageInformation swig_types[35]
+#define SWIGTYPE_p__CameraWidget swig_types[36]
+#define SWIGTYPE_p__GPContext swig_types[37]
+#define SWIGTYPE_p__GPContextFeedback swig_types[38]
+#define SWIGTYPE_p__GPPortInfo swig_types[39]
+#define SWIGTYPE_p__GPPortInfoList swig_types[40]
+#define SWIGTYPE_p_char swig_types[41]
+#define SWIGTYPE_p_int swig_types[42]
+#define SWIGTYPE_p_long swig_types[43]
+#define SWIGTYPE_p_long_long swig_types[44]
+#define SWIGTYPE_p_p__Camera swig_types[45]
+#define SWIGTYPE_p_p__CameraStorageInformation swig_types[46]
+#define SWIGTYPE_p_p__CameraWidget swig_types[47]
+#define SWIGTYPE_p_p__GPPortInfo swig_types[48]
+#define SWIGTYPE_p_p_void swig_types[49]
+#define SWIGTYPE_p_short swig_types[50]
+#define SWIGTYPE_p_signed_char swig_types[51]
+#define SWIGTYPE_p_unsigned_char swig_types[52]
+#define SWIGTYPE_p_unsigned_int swig_types[53]
+#define SWIGTYPE_p_unsigned_long_long swig_types[54]
+#define SWIGTYPE_p_unsigned_short swig_types[55]
+static swig_type_info *swig_types[57];
+static swig_module_info swig_module = {swig_types, 56, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -11675,6 +11676,7 @@ static swig_type_info _swigt__p__CameraFileInfoFile = {"_p__CameraFileInfoFile",
 static swig_type_info _swigt__p__CameraFileInfoPreview = {"_p__CameraFileInfoPreview", "CameraFileInfoPreview *|struct _CameraFileInfoPreview *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraFunctions = {"_p__CameraFunctions", "CameraFunctions *|struct _CameraFunctions *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraList = {"_p__CameraList", "CameraList *|struct _CameraList *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p__CameraList_accessor = {"_p__CameraList_accessor", "CameraList_accessor *|struct _CameraList_accessor *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraPrivateCore = {"_p__CameraPrivateCore", "CameraPrivateCore *|struct _CameraPrivateCore *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraPrivateLibrary = {"_p__CameraPrivateLibrary", "CameraPrivateLibrary *|struct _CameraPrivateLibrary *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraStorageInformation = {"_p__CameraStorageInformation", "CameraStorageInformation *|struct _CameraStorageInformation *", 0, 0, (void*)0, 0};
@@ -11732,6 +11734,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p__CameraFileInfoPreview,
   &_swigt__p__CameraFunctions,
   &_swigt__p__CameraList,
+  &_swigt__p__CameraList_accessor,
   &_swigt__p__CameraPrivateCore,
   &_swigt__p__CameraPrivateLibrary,
   &_swigt__p__CameraStorageInformation,
@@ -11789,6 +11792,7 @@ static swig_cast_info _swigc__p__CameraFileInfoFile[] = {  {&_swigt__p__CameraFi
 static swig_cast_info _swigc__p__CameraFileInfoPreview[] = {  {&_swigt__p__CameraFileInfoPreview, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraFunctions[] = {  {&_swigt__p__CameraFunctions, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraList[] = {  {&_swigt__p__CameraList, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p__CameraList_accessor[] = {  {&_swigt__p__CameraList_accessor, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraPrivateCore[] = {  {&_swigt__p__CameraPrivateCore, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraPrivateLibrary[] = {  {&_swigt__p__CameraPrivateLibrary, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraStorageInformation[] = {  {&_swigt__p__CameraStorageInformation, 0, 0, 0},{0, 0, 0, 0}};
@@ -11846,6 +11850,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p__CameraFileInfoPreview,
   _swigc__p__CameraFunctions,
   _swigc__p__CameraList,
+  _swigc__p__CameraList_accessor,
   _swigc__p__CameraPrivateCore,
   _swigc__p__CameraPrivateLibrary,
   _swigc__p__CameraStorageInformation,

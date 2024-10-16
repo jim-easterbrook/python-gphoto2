@@ -3942,14 +3942,15 @@ SwigPyBuiltin_iternextfunc_closure(SwigPyWrapperFunction wrapper, PyObject *a) {
 #define SWIGTYPE_p_SwigPyObject swig_types[7]
 #define SWIGTYPE_p__CameraAbilitiesList swig_types[8]
 #define SWIGTYPE_p__CameraList swig_types[9]
-#define SWIGTYPE_p__GPContext swig_types[10]
-#define SWIGTYPE_p__GPContextFeedback swig_types[11]
-#define SWIGTYPE_p__GPPortInfo swig_types[12]
-#define SWIGTYPE_p__GPPortInfoList swig_types[13]
-#define SWIGTYPE_p_char swig_types[14]
-#define SWIGTYPE_p_p__CameraAbilitiesList swig_types[15]
-static swig_type_info *swig_types[17];
-static swig_module_info swig_module = {swig_types, 16, 0, 0, 0, 0};
+#define SWIGTYPE_p__CameraList_accessor swig_types[10]
+#define SWIGTYPE_p__GPContext swig_types[11]
+#define SWIGTYPE_p__GPContextFeedback swig_types[12]
+#define SWIGTYPE_p__GPPortInfo swig_types[13]
+#define SWIGTYPE_p__GPPortInfoList swig_types[14]
+#define SWIGTYPE_p_char swig_types[15]
+#define SWIGTYPE_p_p__CameraAbilitiesList swig_types[16]
+static swig_type_info *swig_types[18];
+static swig_module_info swig_module = {swig_types, 17, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -6778,6 +6779,7 @@ static swig_type_info _swigt__p_GphotoDeviceType = {"_p_GphotoDeviceType", "Gpho
 static swig_type_info _swigt__p_SwigPyObject = {"_p_SwigPyObject", "SwigPyObject *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraAbilitiesList = {"_p__CameraAbilitiesList", "CameraAbilitiesList *|struct _CameraAbilitiesList *|_CameraAbilitiesList *", 0, 0, (void*)&SwigPyBuiltin___CameraAbilitiesList_clientdata, 0};
 static swig_type_info _swigt__p__CameraList = {"_p__CameraList", "CameraList *|struct _CameraList *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p__CameraList_accessor = {"_p__CameraList_accessor", "CameraList_accessor *|struct _CameraList_accessor *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__GPContext = {"_p__GPContext", "GPContext *|struct _GPContext *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__GPContextFeedback = {"_p__GPContextFeedback", "GPContextFeedback *|enum _GPContextFeedback *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__GPPortInfo = {"_p__GPPortInfo", "_GPPortInfo *", 0, 0, (void*)0, 0};
@@ -6796,6 +6798,7 @@ static swig_type_info *swig_type_initial[] = {
   &_swigt__p_SwigPyObject,
   &_swigt__p__CameraAbilitiesList,
   &_swigt__p__CameraList,
+  &_swigt__p__CameraList_accessor,
   &_swigt__p__GPContext,
   &_swigt__p__GPContextFeedback,
   &_swigt__p__GPPortInfo,
@@ -6814,6 +6817,7 @@ static swig_cast_info _swigc__p_GphotoDeviceType[] = {  {&_swigt__p_GphotoDevice
 static swig_cast_info _swigc__p_SwigPyObject[] = {  {&_swigt__p_SwigPyObject, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraAbilitiesList[] = {  {&_swigt__p__CameraAbilitiesList, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraList[] = {  {&_swigt__p__CameraList, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p__CameraList_accessor[] = {  {&_swigt__p__CameraList_accessor, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__GPContext[] = {  {&_swigt__p__GPContext, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__GPContextFeedback[] = {  {&_swigt__p__GPContextFeedback, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__GPPortInfo[] = {  {&_swigt__p__GPPortInfo, 0, 0, 0},{0, 0, 0, 0}};
@@ -6832,6 +6836,7 @@ static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_SwigPyObject,
   _swigc__p__CameraAbilitiesList,
   _swigc__p__CameraList,
+  _swigc__p__CameraList_accessor,
   _swigc__p__GPContext,
   _swigc__p__GPContextFeedback,
   _swigc__p__GPPortInfo,

@@ -3930,17 +3930,11 @@ SwigPyBuiltin_iternextfunc_closure(SwigPyWrapperFunction wrapper, PyObject *a) {
 
 
 
-#include "gphoto2/gphoto2.h"
-static PyObject* CameraList_item(CameraList *list, int type, int idx);
-typedef struct _CameraList_iterator CameraList_iterator;
-CameraList_iterator *new_CameraList_iterator(CameraList *list, int type);
-
-
 /* -------- TYPES TABLE (BEGIN) -------- */
 
 #define SWIGTYPE_p_SwigPyObject swig_types[0]
 #define SWIGTYPE_p__CameraList swig_types[1]
-#define SWIGTYPE_p__CameraList_iterator swig_types[2]
+#define SWIGTYPE_p__CameraList_accessor swig_types[2]
 #define SWIGTYPE_p_char swig_types[3]
 #define SWIGTYPE_p_int swig_types[4]
 #define SWIGTYPE_p_p__CameraList swig_types[5]
@@ -3996,6 +3990,58 @@ SWIGINTERN void delete__CameraList(struct _CameraList *self){
 PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 /*@SWIG@*/
   }
+
+  #include "gphoto2/gphoto2.h"
+  typedef PyObject* (CameraList_get_func) (CameraList *, int);
+  typedef struct _CameraList_accessor {
+    CameraList *list;
+    CameraList_get_func *func;
+  } CameraList_accessor;
+
+
+  // Constructor defined outside %extend as not callable from Python
+  static CameraList_accessor
+  *new_CameraList_accessor(CameraList *list, CameraList_get_func *func) {
+    CameraList_accessor *self = malloc(sizeof(CameraList_accessor));
+    if (!self) return NULL;
+    if (gp_list_ref(list) < GP_OK) {
+      free(self);
+      return NULL;
+    }
+    self->list = list;
+    self->func = func;
+    return self;
+  }
+
+
+  static PyObject* CameraList_get_key(CameraList *list, int idx) {
+    const char *name = NULL;
+    if (gp_list_get_name(list, idx, &name) < GP_OK) {
+      PyErr_SetNone(PyExc_IndexError);
+      return NULL;
+    }
+    return name ? PyUnicode_FromString(name) : SWIG_Py_Void();
+  }
+
+
+  static PyObject* CameraList_get_value(CameraList *list, int idx) {
+    const char *value = NULL;
+    if (gp_list_get_value(list, idx, &value) < GP_OK) {
+      PyErr_SetNone(PyExc_IndexError);
+      return NULL;
+    }
+    return value ? PyUnicode_FromString(value) : SWIG_Py_Void();
+  }
+
+
+  static PyObject* CameraList_get_item(CameraList *list, int idx) {
+    PyObject *name = CameraList_get_key(list, idx);
+    if (!name) return NULL;
+    PyObject *value = CameraList_get_value(list, idx);
+    if (!value) return NULL;
+    return PyTuple_Pack(2, name, value);
+  }
+
 
 #include <limits.h>
 #if !defined(SWIG_NO_LLONG_MAX)
@@ -4155,20 +4201,9 @@ SWIG_AsVal_int (PyObject * obj, int *val)
 }
 
 SWIGINTERN PyObject *_CameraList___getitem____SWIG_0(struct _CameraList *self,int idx){
-    int count = gp_list_count(self);
-    if (count < GP_OK) {
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(count));
-/*@SWIG@*/
-      return NULL;
-    }
     if (idx < 0)
-      idx += count;
-    if (idx < 0 || idx >= count) {
-      PyErr_SetString(PyExc_IndexError, "CameraList index out of range");
-      return NULL;
-    }
-    return CameraList_item(self, 2, idx);
+      idx += gp_list_count(self);
+    return CameraList_get_item(self, idx);
   }
 
 SWIGINTERN swig_type_info*
@@ -4279,19 +4314,16 @@ SWIGINTERN PyObject *_CameraList___getitem____SWIG_1(struct _CameraList *self,ch
       PyErr_SetString(PyExc_KeyError, name);
       return NULL;
     }
-    return CameraList_item(self, 1, idx);
+    return CameraList_get_value(self, idx);
   }
-SWIGINTERN CameraList_iterator *_CameraList_keys(struct _CameraList *self){
-    return new_CameraList_iterator(self, 0);
+SWIGINTERN CameraList_accessor *_CameraList_keys(struct _CameraList *self){
+    return new_CameraList_accessor(self, CameraList_get_key);
   }
-SWIGINTERN CameraList_iterator *_CameraList_values(struct _CameraList *self){
-    return new_CameraList_iterator(self, 1);
+SWIGINTERN CameraList_accessor *_CameraList_values(struct _CameraList *self){
+    return new_CameraList_accessor(self, CameraList_get_value);
   }
-SWIGINTERN CameraList_iterator *_CameraList_items(struct _CameraList *self){
-    return new_CameraList_iterator(self, 2);
-  }
-SWIGINTERN CameraList_iterator *_CameraList___iter__(struct _CameraList *self){
-    return new_CameraList_iterator(self, 2);
+SWIGINTERN CameraList_accessor *_CameraList_items(struct _CameraList *self){
+    return new_CameraList_accessor(self, CameraList_get_item);
   }
 SWIGINTERN int _CameraList___len__(struct _CameraList *self){
 
@@ -4465,101 +4497,16 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
 
 
   }
-
-typedef struct _CameraList_iterator {
-  CameraList *list;
-  int type; // 0 = keys, 1 = values, 2 = items
-  int idx;
-  int count;
-} CameraList_iterator;
-
-SWIGINTERN void delete__CameraList_iterator(struct _CameraList_iterator *self){
-    int error = gp_list_unref(self->list);
-    if (error < GP_OK) {
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
-    }
+SWIGINTERN void delete__CameraList_accessor(struct _CameraList_accessor *self){
+    gp_list_unref(self->list);
     free(self);
   }
-SWIGINTERN int _CameraList_iterator___len__(struct _CameraList_iterator *self){
-    return self->count;
+SWIGINTERN int _CameraList_accessor___len__(struct _CameraList_accessor *self){
+    return gp_list_count(self->list);
   }
-SWIGINTERN PyObject *_CameraList_iterator___getitem__(struct _CameraList_iterator *self,int idx){
-    if (idx < 0)
-      idx += self->count;
-    if (idx < 0 || idx >= self->count) {
-      PyErr_SetString(PyExc_IndexError,
-                      "CameraList_iterator index out of range");
-      return NULL;
-    }
-    return CameraList_item(self->list, self->type, idx);
+SWIGINTERN PyObject *_CameraList_accessor___getitem__(struct _CameraList_accessor *self,int idx){
+    return self->func(self->list, idx);
   }
-SWIGINTERN CameraList_iterator *_CameraList_iterator___iter__(struct _CameraList_iterator *self){
-    return self;
-  }
-SWIGINTERN PyObject *_CameraList_iterator___next__(struct _CameraList_iterator *self){
-    if (self->idx >= self->count) {
-      PyErr_SetNone(PyExc_StopIteration);
-      return NULL;
-    }
-    return CameraList_item(self->list, self->type, self->idx++);
-  }
-
-static PyObject* CameraList_item(CameraList *list, int type, int idx) {
-  int error = GP_OK;
-  const char *name = NULL;
-  const char *value = NULL;
-  PyObject *py_name = NULL;
-  PyObject *py_value = NULL;
-  if (type != 1) {
-    error = gp_list_get_name(list, idx, &name);
-    if (error < GP_OK) {
-      PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-      return NULL;
-    }
-    py_name = name ? PyUnicode_FromString(name) : SWIG_Py_Void();
-  }
-  if (type == 0)
-    return py_name;
-  error = gp_list_get_value(list, idx, &value);
-  if (error < GP_OK) {
-    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-    return NULL;
-  }
-  py_value = value ? PyUnicode_FromString(value) : SWIG_Py_Void();
-  if (type == 1)
-    return py_value;
-  return PyTuple_Pack(2, py_name, py_value);
-}
-CameraList_iterator *new_CameraList_iterator(CameraList *list, int type) {
-  int error = GP_OK;
-  CameraList_iterator *self = malloc(sizeof(CameraList_iterator));
-  if (!self) {
-    PyErr_SetString(
-      PyExc_MemoryError, "cannot allocate CameraList_iterator");
-    goto fail;
-  }
-  self->list = list;
-  self->type = type;
-  self->idx = 0;
-  self->count = gp_list_count(list);
-  if (self->count < GP_OK) {
-    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(self->count));
-    goto fail;
-  }
-  error = gp_list_ref(list);
-  if (error < GP_OK) {
-    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-    goto fail;
-  }
-  return self;
-fail:
-  if (self)
-    free(self);
-  return NULL;
-}
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -4716,7 +4663,7 @@ SWIGINTERN PyObject *_wrap_CameraList_keys(PyObject *self, PyObject *args) {
   struct _CameraList *arg1 = (struct _CameraList *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  CameraList_iterator *result = 0 ;
+  CameraList_accessor *result = 0 ;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList_keys takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList, 0 |  0 );
@@ -4724,8 +4671,8 @@ SWIGINTERN PyObject *_wrap_CameraList_keys(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_keys" "', argument " "1"" of type '" "struct _CameraList *""'"); 
   }
   arg1 = (struct _CameraList *)(argp1);
-  result = (CameraList_iterator *)_CameraList_keys(arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_iterator, 0 |  0 );
+  result = (CameraList_accessor *)_CameraList_keys(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_accessor, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4737,7 +4684,7 @@ SWIGINTERN PyObject *_wrap_CameraList_values(PyObject *self, PyObject *args) {
   struct _CameraList *arg1 = (struct _CameraList *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  CameraList_iterator *result = 0 ;
+  CameraList_accessor *result = 0 ;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList_values takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList, 0 |  0 );
@@ -4745,8 +4692,8 @@ SWIGINTERN PyObject *_wrap_CameraList_values(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_values" "', argument " "1"" of type '" "struct _CameraList *""'"); 
   }
   arg1 = (struct _CameraList *)(argp1);
-  result = (CameraList_iterator *)_CameraList_values(arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_iterator, 0 |  0 );
+  result = (CameraList_accessor *)_CameraList_values(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_accessor, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -4758,7 +4705,7 @@ SWIGINTERN PyObject *_wrap_CameraList_items(PyObject *self, PyObject *args) {
   struct _CameraList *arg1 = (struct _CameraList *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  CameraList_iterator *result = 0 ;
+  CameraList_accessor *result = 0 ;
   
   if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList_items takes no arguments");
   res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList, 0 |  0 );
@@ -4766,29 +4713,8 @@ SWIGINTERN PyObject *_wrap_CameraList_items(PyObject *self, PyObject *args) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_items" "', argument " "1"" of type '" "struct _CameraList *""'"); 
   }
   arg1 = (struct _CameraList *)(argp1);
-  result = (CameraList_iterator *)_CameraList_items(arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_iterator, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_CameraList___iter__(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _CameraList *arg1 = (struct _CameraList *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  CameraList_iterator *result = 0 ;
-  
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList___iter__ takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList___iter__" "', argument " "1"" of type '" "struct _CameraList *""'"); 
-  }
-  arg1 = (struct _CameraList *)(argp1);
-  result = (CameraList_iterator *)_CameraList___iter__(arg1);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_iterator, 0 |  0 );
+  result = (CameraList_accessor *)_CameraList_items(arg1);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_accessor, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;
@@ -5203,24 +5129,22 @@ SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraList) /* defines _wrap_delete_Camer
 
 SWIGPY_BINARYFUNC_CLOSURE(_wrap_CameraList___getitem__) /* defines _wrap_CameraList___getitem___binaryfunc_closure */
 
-SWIGPY_GETITERFUNC_CLOSURE(_wrap_CameraList___iter__) /* defines _wrap_CameraList___iter___getiterfunc_closure */
-
 SWIGPY_LENFUNC_CLOSURE(_wrap_CameraList___len__) /* defines _wrap_CameraList___len___lenfunc_closure */
 
-SWIGINTERN PyObject *_wrap_delete_CameraList_iterator(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_delete_CameraList_accessor(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct _CameraList_iterator *arg1 = (struct _CameraList_iterator *) 0 ;
+  struct _CameraList_accessor *arg1 = (struct _CameraList_accessor *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_CameraList_iterator takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList_iterator, SWIG_POINTER_DISOWN |  0 );
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_CameraList_accessor takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList_accessor, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_CameraList_iterator" "', argument " "1"" of type '" "struct _CameraList_iterator *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_CameraList_accessor" "', argument " "1"" of type '" "struct _CameraList_accessor *""'"); 
   }
-  arg1 = (struct _CameraList_iterator *)(argp1);
+  arg1 = (struct _CameraList_accessor *)(argp1);
   {
-    delete__CameraList_iterator(arg1);
+    delete__CameraList_accessor(arg1);
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_Py_Void();
@@ -5230,21 +5154,21 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CameraList_iterator___len__(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CameraList_accessor___len__(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct _CameraList_iterator *arg1 = (struct _CameraList_iterator *) 0 ;
+  struct _CameraList_accessor *arg1 = (struct _CameraList_accessor *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   int result;
   
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList_iterator___len__ takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList_iterator, 0 |  0 );
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList_accessor___len__ takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList_accessor, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_iterator___len__" "', argument " "1"" of type '" "struct _CameraList_iterator *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_accessor___len__" "', argument " "1"" of type '" "struct _CameraList_accessor *""'"); 
   }
-  arg1 = (struct _CameraList_iterator *)(argp1);
+  arg1 = (struct _CameraList_accessor *)(argp1);
   {
-    result = (int)_CameraList_iterator___len__(arg1);
+    result = (int)_CameraList_accessor___len__(arg1);
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = SWIG_From_int((int)(result));
@@ -5254,9 +5178,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CameraList_iterator___getitem__(PyObject *self, PyObject *args) {
+SWIGINTERN PyObject *_wrap_CameraList_accessor___getitem__(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
-  struct _CameraList_iterator *arg1 = (struct _CameraList_iterator *) 0 ;
+  struct _CameraList_accessor *arg1 = (struct _CameraList_accessor *) 0 ;
   int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
@@ -5265,19 +5189,19 @@ SWIGINTERN PyObject *_wrap_CameraList_iterator___getitem__(PyObject *self, PyObj
   PyObject * obj1 = 0 ;
   PyObject *result = 0 ;
   
-  if (!PyArg_UnpackTuple(args, "CameraList_iterator___getitem__", 1, 1, &obj1)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList_iterator, 0 |  0 );
+  if (!PyArg_UnpackTuple(args, "CameraList_accessor___getitem__", 1, 1, &obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList_accessor, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_iterator___getitem__" "', argument " "1"" of type '" "struct _CameraList_iterator *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_accessor___getitem__" "', argument " "1"" of type '" "struct _CameraList_accessor *""'"); 
   }
-  arg1 = (struct _CameraList_iterator *)(argp1);
+  arg1 = (struct _CameraList_accessor *)(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraList_iterator___getitem__" "', argument " "2"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "CameraList_accessor___getitem__" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = (int)(val2);
   {
-    result = (PyObject *)_CameraList_iterator___getitem__(arg1,arg2);
+    result = (PyObject *)_CameraList_accessor___getitem__(arg1,arg2);
     if (PyErr_Occurred()) SWIG_fail;
   }
   resultobj = result;
@@ -5287,63 +5211,11 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_CameraList_iterator___iter__(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _CameraList_iterator *arg1 = (struct _CameraList_iterator *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  CameraList_iterator *result = 0 ;
-  
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList_iterator___iter__ takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList_iterator, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_iterator___iter__" "', argument " "1"" of type '" "struct _CameraList_iterator *""'"); 
-  }
-  arg1 = (struct _CameraList_iterator *)(argp1);
-  {
-    result = (CameraList_iterator *)_CameraList_iterator___iter__(arg1);
-    if (PyErr_Occurred()) SWIG_fail;
-  }
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_iterator, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
+SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraList_accessor) /* defines _wrap_delete_CameraList_accessor_destructor_closure */
 
+SWIGPY_LENFUNC_CLOSURE(_wrap_CameraList_accessor___len__) /* defines _wrap_CameraList_accessor___len___lenfunc_closure */
 
-SWIGINTERN PyObject *_wrap_CameraList_iterator___next__(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _CameraList_iterator *arg1 = (struct _CameraList_iterator *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject *result = 0 ;
-  
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList_iterator___next__ takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList_iterator, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList_iterator___next__" "', argument " "1"" of type '" "struct _CameraList_iterator *""'"); 
-  }
-  arg1 = (struct _CameraList_iterator *)(argp1);
-  {
-    result = (PyObject *)_CameraList_iterator___next__(arg1);
-    if (PyErr_Occurred()) SWIG_fail;
-  }
-  resultobj = result;
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraList_iterator) /* defines _wrap_delete_CameraList_iterator_destructor_closure */
-
-SWIGPY_LENFUNC_CLOSURE(_wrap_CameraList_iterator___len__) /* defines _wrap_CameraList_iterator___len___lenfunc_closure */
-
-SWIGPY_SSIZEARGFUNC_CLOSURE(_wrap_CameraList_iterator___getitem__) /* defines _wrap_CameraList_iterator___getitem___ssizeargfunc_closure */
-
-SWIGPY_GETITERFUNC_CLOSURE(_wrap_CameraList_iterator___iter__) /* defines _wrap_CameraList_iterator___iter___getiterfunc_closure */
-
-SWIGPY_ITERNEXTFUNC_CLOSURE(_wrap_CameraList_iterator___next__) /* defines _wrap_CameraList_iterator___next___iternextfunc_closure */
+SWIGPY_SSIZEARGFUNC_CLOSURE(_wrap_CameraList_accessor___getitem__) /* defines _wrap_CameraList_accessor___getitem___ssizeargfunc_closure */
 
 SWIGINTERN PyObject *_wrap_gp_list_new(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
@@ -6024,18 +5896,17 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___CameraList_methods[] = {
 		"\n"
 		"" },
   { "keys", _wrap_CameraList_keys, METH_VARARGS, "\n"
-		"keys(self) -> CameraList_iterator\n"
-		"Return an iterator over the names in the list.\n"
+		"keys(self) -> CameraList_accessor\n"
+		"Return an accessor for the names in the list.\n"
 		"" },
   { "values", _wrap_CameraList_values, METH_VARARGS, "\n"
-		"values(self) -> CameraList_iterator\n"
-		"Return an iterator over the values in the list.\n"
+		"values(self) -> CameraList_accessor\n"
+		"Return an accessor for the values in the list.\n"
 		"" },
   { "items", _wrap_CameraList_items, METH_VARARGS, "\n"
-		"items(self) -> CameraList_iterator\n"
-		"Return an iterator over the (name, value) pairs in the list.\n"
+		"items(self) -> CameraList_accessor\n"
+		"Return an accessor for the (name, value) pairs in the list.\n"
 		"" },
-  { "__iter__", _wrap_CameraList___iter__, METH_VARARGS, "__iter__(self) -> CameraList_iterator" },
   { "__len__", _wrap_CameraList___len__, METH_VARARGS, "__len__(self) -> int" },
   { "count", _wrap_CameraList_count, METH_VARARGS, "\n"
 		"count(self) -> int\n"
@@ -6287,7 +6158,7 @@ static PyHeapTypeObject SwigPyBuiltin___CameraList_type = {
     (inquiry) 0,                              /* tp_clear */
     SwigPyBuiltin___CameraList_richcompare,   /* tp_richcompare */
     0,                                        /* tp_weaklistoffset */
-    _wrap_CameraList___iter___getiterfunc_closure,                /* tp_iter */
+    (getiterfunc) 0,                          /* tp_iter */
     (iternextfunc) 0,                         /* tp_iternext */
     SwigPyBuiltin___CameraList_methods,       /* tp_methods */
     0,                                        /* tp_members */
@@ -6453,14 +6324,14 @@ static PyHeapTypeObject SwigPyBuiltin___CameraList_type = {
 
 SWIGINTERN SwigPyClientData SwigPyBuiltin___CameraList_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin___CameraList_type};
 
-static SwigPyGetSet CameraList_iterator___dict___getset = { SwigPyObject_get___dict__, 0 };
-SWIGINTERN PyGetSetDef SwigPyBuiltin___CameraList_iterator_getset[] = {
-    { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"~_CameraList_iterator", &CameraList_iterator___dict___getset },
+static SwigPyGetSet CameraList_accessor___dict___getset = { SwigPyObject_get___dict__, 0 };
+SWIGINTERN PyGetSetDef SwigPyBuiltin___CameraList_accessor_getset[] = {
+    { (char *)"__dict__", SwigPyBuiltin_GetterClosure, 0, (char *)"~_CameraList_accessor", &CameraList_accessor___dict___getset },
     { NULL, NULL, NULL, NULL, NULL } /* Sentinel */
 };
 
 SWIGINTERN PyObject *
-SwigPyBuiltin___CameraList_iterator_richcompare(PyObject *self, PyObject *other, int op) {
+SwigPyBuiltin___CameraList_accessor_richcompare(PyObject *self, PyObject *other, int op) {
   PyObject *result = NULL;
   PyObject *tuple = PyTuple_New(1);
   assert(tuple);
@@ -6478,9 +6349,9 @@ SwigPyBuiltin___CameraList_iterator_richcompare(PyObject *self, PyObject *other,
   return result;
 }
 
-SWIGINTERN PyMethodDef SwigPyBuiltin___CameraList_iterator_methods[] = {
-  { "__len__", _wrap_CameraList_iterator___len__, METH_VARARGS, "__len__(self) -> int" },
-  { "__getitem__", _wrap_CameraList_iterator___getitem__, METH_VARARGS, "\n"
+SWIGINTERN PyMethodDef SwigPyBuiltin___CameraList_accessor_methods[] = {
+  { "__len__", _wrap_CameraList_accessor___len__, METH_VARARGS, "__len__(self) -> int" },
+  { "__getitem__", _wrap_CameraList_accessor___getitem__, METH_VARARGS, "\n"
 		"__getitem__(self, idx) -> PyObject *\n"
 		"\n"
 		"Parameters\n"
@@ -6488,12 +6359,10 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___CameraList_iterator_methods[] = {
 		"idx: int\n"
 		"\n"
 		"" },
-  { "__iter__", _wrap_CameraList_iterator___iter__, METH_VARARGS, "__iter__(self) -> CameraList_iterator" },
-  { "__next__", _wrap_CameraList_iterator___next__, METH_VARARGS, "__next__(self) -> PyObject *" },
   { NULL, NULL, 0, NULL } /* Sentinel */
 };
 
-static PyHeapTypeObject SwigPyBuiltin___CameraList_iterator_type = {
+static PyHeapTypeObject SwigPyBuiltin___CameraList_accessor_type = {
   {
 #if PY_VERSION_HEX >= 0x03000000
     PyVarObject_HEAD_INIT(NULL, 0)
@@ -6501,10 +6370,10 @@ static PyHeapTypeObject SwigPyBuiltin___CameraList_iterator_type = {
     PyObject_HEAD_INIT(NULL)
     0,                                        /* ob_size */
 #endif
-    "gphoto2.list.CameraList_iterator",       /* tp_name */
+    "gphoto2.list.CameraList_accessor",       /* tp_name */
     sizeof(SwigPyObject),                     /* tp_basicsize */
     0,                                        /* tp_itemsize */
-    _wrap_delete_CameraList_iterator_destructor_closure,          /* tp_dealloc */
+    _wrap_delete_CameraList_accessor_destructor_closure,          /* tp_dealloc */
 #if PY_VERSION_HEX < 0x030800b4
     (printfunc) 0,                            /* tp_print */
 #else
@@ -6518,35 +6387,34 @@ static PyHeapTypeObject SwigPyBuiltin___CameraList_iterator_type = {
     (cmpfunc) 0,                              /* tp_compare */
 #endif
     (reprfunc) 0,                             /* tp_repr */
-    &SwigPyBuiltin___CameraList_iterator_type.as_number,          /* tp_as_number */
-    &SwigPyBuiltin___CameraList_iterator_type.as_sequence,        /* tp_as_sequence */
-    &SwigPyBuiltin___CameraList_iterator_type.as_mapping,         /* tp_as_mapping */
+    &SwigPyBuiltin___CameraList_accessor_type.as_number,          /* tp_as_number */
+    &SwigPyBuiltin___CameraList_accessor_type.as_sequence,        /* tp_as_sequence */
+    &SwigPyBuiltin___CameraList_accessor_type.as_mapping,         /* tp_as_mapping */
     SwigPyObject_hash,                        /* tp_hash */
     (ternaryfunc) 0,                          /* tp_call */
     (reprfunc) 0,                             /* tp_str */
     (getattrofunc) 0,                         /* tp_getattro */
     (setattrofunc) 0,                         /* tp_setattro */
-    &SwigPyBuiltin___CameraList_iterator_type.as_buffer,          /* tp_as_buffer */
+    &SwigPyBuiltin___CameraList_accessor_type.as_buffer,          /* tp_as_buffer */
 #if PY_VERSION_HEX >= 0x03000000
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE,   /* tp_flags */
 #else
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES, /* tp_flags */
 #endif
     "\n"
-		"Iterator over CameraList keys, values, or (key, value) pairs.\n"
+		"List-like access to CameraList keys, values, or (key, value) items.\n"
 		"\n"
-		"In addition to the usual iterator methods the values can be read by\n"
-		"indexing, for example iterator[4] gets the 4th value.\n"
+		"This can be accessed or iterated over like any Python list or tuple.\n"
 		"",/* tp_doc */
     (traverseproc) 0,                         /* tp_traverse */
     (inquiry) 0,                              /* tp_clear */
-    SwigPyBuiltin___CameraList_iterator_richcompare,              /* tp_richcompare */
+    SwigPyBuiltin___CameraList_accessor_richcompare,              /* tp_richcompare */
     0,                                        /* tp_weaklistoffset */
-    _wrap_CameraList_iterator___iter___getiterfunc_closure,       /* tp_iter */
-    _wrap_CameraList_iterator___next___iternextfunc_closure,      /* tp_iternext */
-    SwigPyBuiltin___CameraList_iterator_methods,                  /* tp_methods */
+    (getiterfunc) 0,                          /* tp_iter */
+    (iternextfunc) 0,                         /* tp_iternext */
+    SwigPyBuiltin___CameraList_accessor_methods,                  /* tp_methods */
     0,                                        /* tp_members */
-    SwigPyBuiltin___CameraList_iterator_getset,                   /* tp_getset */
+    SwigPyBuiltin___CameraList_accessor_getset,                   /* tp_getset */
     0,                                        /* tp_base */
     0,                                        /* tp_dict */
     (descrgetfunc) 0,                         /* tp_descr_get */
@@ -6657,10 +6525,10 @@ static PyHeapTypeObject SwigPyBuiltin___CameraList_iterator_type = {
     (objobjargproc) 0,                        /* mp_ass_subscript */
   },
   {
-    _wrap_CameraList_iterator___len___lenfunc_closure,            /* sq_length */
+    _wrap_CameraList_accessor___len___lenfunc_closure,            /* sq_length */
     (binaryfunc) 0,                           /* sq_concat */
     (ssizeargfunc) 0,                         /* sq_repeat */
-    _wrap_CameraList_iterator___getitem___ssizeargfunc_closure,   /* sq_item */
+    _wrap_CameraList_accessor___getitem___ssizeargfunc_closure,   /* sq_item */
 #if PY_VERSION_HEX >= 0x03000000
     (void *) 0,                               /* was_sq_slice */
 #else
@@ -6706,14 +6574,14 @@ static PyHeapTypeObject SwigPyBuiltin___CameraList_iterator_type = {
 #endif
 };
 
-SWIGINTERN SwigPyClientData SwigPyBuiltin___CameraList_iterator_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin___CameraList_iterator_type};
+SWIGINTERN SwigPyClientData SwigPyBuiltin___CameraList_accessor_clientdata = {0, 0, 0, 0, 0, 0, (PyTypeObject *)&SwigPyBuiltin___CameraList_accessor_type};
 
 
 /* -------- TYPE CONVERSION AND EQUIVALENCE RULES (BEGIN) -------- */
 
 static swig_type_info _swigt__p_SwigPyObject = {"_p_SwigPyObject", "SwigPyObject *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p__CameraList = {"_p__CameraList", "CameraList *|struct _CameraList *|_CameraList *", 0, 0, (void*)&SwigPyBuiltin___CameraList_clientdata, 0};
-static swig_type_info _swigt__p__CameraList_iterator = {"_p__CameraList_iterator", "CameraList_iterator *|struct _CameraList_iterator *|_CameraList_iterator *", 0, 0, (void*)&SwigPyBuiltin___CameraList_iterator_clientdata, 0};
+static swig_type_info _swigt__p__CameraList_accessor = {"_p__CameraList_accessor", "CameraList_accessor *|struct _CameraList_accessor *|_CameraList_accessor *", 0, 0, (void*)&SwigPyBuiltin___CameraList_accessor_clientdata, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_int = {"_p_int", "int *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_p__CameraList = {"_p_p__CameraList", "CameraList **|struct _CameraList **", 0, 0, (void*)0, 0};
@@ -6722,7 +6590,7 @@ static swig_type_info _swigt__p_p_char = {"_p_p_char", "char **", 0, 0, (void*)0
 static swig_type_info *swig_type_initial[] = {
   &_swigt__p_SwigPyObject,
   &_swigt__p__CameraList,
-  &_swigt__p__CameraList_iterator,
+  &_swigt__p__CameraList_accessor,
   &_swigt__p_char,
   &_swigt__p_int,
   &_swigt__p_p__CameraList,
@@ -6731,7 +6599,7 @@ static swig_type_info *swig_type_initial[] = {
 
 static swig_cast_info _swigc__p_SwigPyObject[] = {  {&_swigt__p_SwigPyObject, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p__CameraList[] = {  {&_swigt__p__CameraList, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p__CameraList_iterator[] = {  {&_swigt__p__CameraList_iterator, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p__CameraList_accessor[] = {  {&_swigt__p__CameraList_accessor, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_p__CameraList[] = {  {&_swigt__p_p__CameraList, 0, 0, 0},{0, 0, 0, 0}};
@@ -6740,7 +6608,7 @@ static swig_cast_info _swigc__p_p_char[] = {  {&_swigt__p_p_char, 0, 0, 0},{0, 0
 static swig_cast_info *swig_cast_initial[] = {
   _swigc__p_SwigPyObject,
   _swigc__p__CameraList,
-  _swigc__p__CameraList_iterator,
+  _swigc__p__CameraList_accessor,
   _swigc__p_char,
   _swigc__p_int,
   _swigc__p_p__CameraList,
@@ -7252,8 +7120,8 @@ SWIG_init(void) {
   SwigPyBuiltin_AddPublicSymbol(public_interface, "CameraList");
   d = md;
   
-  /* type '::_CameraList_iterator' */
-  builtin_pytype = (PyTypeObject *)&SwigPyBuiltin___CameraList_iterator_type;
+  /* type '::_CameraList_accessor' */
+  builtin_pytype = (PyTypeObject *)&SwigPyBuiltin___CameraList_accessor_type;
   builtin_pytype->tp_dict = d = PyDict_New();
   SwigPyBuiltin_SetMetaType(builtin_pytype, metatype);
   builtin_pytype->tp_new = PyType_GenericNew;
@@ -7263,7 +7131,7 @@ SWIG_init(void) {
   PyDict_SetItemString(d, "this", this_descr);
   PyDict_SetItemString(d, "thisown", thisown_descr);
   if (PyType_Ready(builtin_pytype) < 0) {
-    PyErr_SetString(PyExc_TypeError, "Could not create type 'CameraList_iterator'.");
+    PyErr_SetString(PyExc_TypeError, "Could not create type 'CameraList_accessor'.");
 #if PY_VERSION_HEX >= 0x03000000
     return NULL;
 #else
@@ -7271,8 +7139,8 @@ SWIG_init(void) {
 #endif
   }
   Py_INCREF(builtin_pytype);
-  PyModule_AddObject(m, "CameraList_iterator", (PyObject *)builtin_pytype);
-  SwigPyBuiltin_AddPublicSymbol(public_interface, "CameraList_iterator");
+  PyModule_AddObject(m, "CameraList_accessor", (PyObject *)builtin_pytype);
+  SwigPyBuiltin_AddPublicSymbol(public_interface, "CameraList_accessor");
   d = md;
 #if PY_VERSION_HEX >= 0x03000000
   return m;

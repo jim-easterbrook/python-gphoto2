@@ -72,8 +72,9 @@ PLAIN_ARGOUT(CameraList **)
 %fragment("CameraList_get_key", "header") {
   static PyObject* CameraList_get_key(CameraList *list, int idx) {
     const char *name = NULL;
-    if (gp_list_get_name(list, idx, &name) < GP_OK) {
-      PyErr_SetNone(PyExc_IndexError);
+    int error = gp_list_get_name(list, idx, &name);
+    if (error < GP_OK) {
+      GPHOTO2_ERROR(error);
       return NULL;
     }
     return name ? PyUnicode_FromString(name) : SWIG_Py_Void();
@@ -82,8 +83,9 @@ PLAIN_ARGOUT(CameraList **)
 %fragment("CameraList_get_value", "header") {
   static PyObject* CameraList_get_value(CameraList *list, int idx) {
     const char *value = NULL;
-    if (gp_list_get_value(list, idx, &value) < GP_OK) {
-      PyErr_SetNone(PyExc_IndexError);
+    int error = gp_list_get_value(list, idx, &value);
+    if (error < GP_OK) {
+      GPHOTO2_ERROR(error);
       return NULL;
     }
     return value ? PyUnicode_FromString(value) : SWIG_Py_Void();
@@ -95,7 +97,10 @@ PLAIN_ARGOUT(CameraList **)
     PyObject *name = CameraList_get_key(list, idx);
     if (!name) return NULL;
     PyObject *value = CameraList_get_value(list, idx);
-    if (!value) return NULL;
+    if (!value) {
+      Py_DECREF(name);
+      return NULL;
+    }
     return PyTuple_Pack(2, name, value);
   }
 }
@@ -125,6 +130,11 @@ typedef struct _CameraList_accessor {} CameraList_accessor;
     return gp_list_count($self->list);
   }
   PyObject* __getitem__(int idx) {
+    if (idx < 0 || idx >= gp_list_count($self->list)) {
+      PyErr_SetString(PyExc_IndexError,
+                      "CameraList_accessor index out of range");
+      return NULL;
+    }
     return self->func($self->list, idx);
   }
 };
@@ -149,6 +159,10 @@ typedef struct _CameraList_accessor {} CameraList_accessor;
   PyObject *__getitem__(int idx) {
     if (idx < 0)
       idx += gp_list_count($self);
+    if (idx < 0 || idx >= gp_list_count($self)) {
+      PyErr_SetString(PyExc_IndexError, "CameraList index out of range");
+      return NULL;
+    }
     return CameraList_get_item($self, idx);
   }
   PyObject *__getitem__(const char *name) {

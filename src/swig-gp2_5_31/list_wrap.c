@@ -4016,8 +4016,11 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 
   static PyObject* CameraList_get_key(CameraList *list, int idx) {
     const char *name = NULL;
-    if (gp_list_get_name(list, idx, &name) < GP_OK) {
-      PyErr_SetNone(PyExc_IndexError);
+    int error = gp_list_get_name(list, idx, &name);
+    if (error < GP_OK) {
+      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+/*@SWIG@*/;
       return NULL;
     }
     return name ? PyUnicode_FromString(name) : SWIG_Py_Void();
@@ -4026,8 +4029,11 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 
   static PyObject* CameraList_get_value(CameraList *list, int idx) {
     const char *value = NULL;
-    if (gp_list_get_value(list, idx, &value) < GP_OK) {
-      PyErr_SetNone(PyExc_IndexError);
+    int error = gp_list_get_value(list, idx, &value);
+    if (error < GP_OK) {
+      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
+PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+/*@SWIG@*/;
       return NULL;
     }
     return value ? PyUnicode_FromString(value) : SWIG_Py_Void();
@@ -4038,7 +4044,10 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
     PyObject *name = CameraList_get_key(list, idx);
     if (!name) return NULL;
     PyObject *value = CameraList_get_value(list, idx);
-    if (!value) return NULL;
+    if (!value) {
+      Py_DECREF(name);
+      return NULL;
+    }
     return PyTuple_Pack(2, name, value);
   }
 
@@ -4203,6 +4212,10 @@ SWIG_AsVal_int (PyObject * obj, int *val)
 SWIGINTERN PyObject *_CameraList___getitem____SWIG_0(struct _CameraList *self,int idx){
     if (idx < 0)
       idx += gp_list_count(self);
+    if (idx < 0 || idx >= gp_list_count(self)) {
+      PyErr_SetString(PyExc_IndexError, "CameraList index out of range");
+      return NULL;
+    }
     return CameraList_get_item(self, idx);
   }
 
@@ -4505,6 +4518,11 @@ SWIGINTERN int _CameraList_accessor___len__(struct _CameraList_accessor *self){
     return gp_list_count(self->list);
   }
 SWIGINTERN PyObject *_CameraList_accessor___getitem__(struct _CameraList_accessor *self,int idx){
+    if (idx < 0 || idx >= gp_list_count(self->list)) {
+      PyErr_SetString(PyExc_IndexError,
+                      "CameraList_accessor index out of range");
+      return NULL;
+    }
     return self->func(self->list, idx);
   }
 #ifdef __cplusplus

@@ -4096,7 +4096,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
     if (!name) return NULL;
     PyObject *value = CameraList_get_value(list, idx);
     if (!value) {
-      Py_DECREF(name);
+      SWIG_Py_DECREF(name);
       return NULL;
     }
     return PyTuple_Pack(2, name, value);
@@ -7389,7 +7389,7 @@ SWIG_init(void) {
     PyObject *module = PyImport_ImportModule("gphoto2");
     if (module != NULL) {
       PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
-      Py_DECREF(module);
+      SWIG_Py_DECREF(module);
     }
     if (PyExc_GPhoto2Error == NULL)
 #if PY_VERSION_HEX >= 0x03000000

@@ -4037,8 +4037,8 @@ static int del_LogFuncItem(struct LogFuncItem *this) {
     int error = GP_OK;
     if (this->id >= 0)
         error = gp_log_remove_func(this->id);
-    Py_XDECREF(this->func);
-    Py_XDECREF(this->data);
+    SWIG_Py_XDECREF(this->func);
+    SWIG_Py_XDECREF(this->data);
     free(this);
     return error;
 };
@@ -4072,11 +4072,11 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
         PyErr_Print();
     } else {
         result = PyObject_CallObject(this->func, arglist);
-        Py_DECREF(arglist);
+        SWIG_Py_DECREF(arglist);
         if (result == NULL) {
             PyErr_Print();
         } else {
-            Py_DECREF(result);
+            SWIG_Py_DECREF(result);
         }
     }
     PyGILState_Release(gstate);
@@ -4428,13 +4428,13 @@ SWIGINTERN PyObject *_wrap_Log_add_func(PyObject *self, PyObject *args) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "Log_add_func" "', argument " "2"" of type '" "callable""'");
     }
     _global_callback->func = obj1;
-    Py_INCREF(_global_callback->func);
+    SWIG_Py_INCREF(_global_callback->func);
     arg2 = gp_log_call_python;
   }
   if (obj2) {
     {
       _global_callback->data = obj2;
-      Py_INCREF(_global_callback->data);
+      SWIG_Py_INCREF(_global_callback->data);
     }
   }
   {
@@ -4499,13 +4499,13 @@ SWIGINTERN PyObject *_wrap_gp_log_add_func(PyObject *self, PyObject *args) {
       SWIG_exception_fail(SWIG_ArgError(SWIG_TypeError), "in method '" "gp_log_add_func" "', argument " "2"" of type '" "callable""'");
     }
     _global_callback->func = obj1;
-    Py_INCREF(_global_callback->func);
+    SWIG_Py_INCREF(_global_callback->func);
     arg2 = gp_log_call_python;
   }
   if (obj2) {
     {
       _global_callback->data = obj2;
-      Py_INCREF(_global_callback->data);
+      SWIG_Py_INCREF(_global_callback->data);
     }
   }
   result = (int)gp_log_add_func(arg1,arg2,arg3);
@@ -5882,7 +5882,7 @@ SWIG_init(void) {
     PyObject *module = PyImport_ImportModule("gphoto2");
     if (module != NULL) {
       PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
-      Py_DECREF(module);
+      SWIG_Py_DECREF(module);
     }
     if (PyExc_GPhoto2Error == NULL)
 #if PY_VERSION_HEX >= 0x03000000

@@ -87,7 +87,7 @@ LEN_MEMBER_FUNCTION(_CameraAbilitiesList, gp_abilities_list_count)
   while (*value) {
     PyObject* temp = PyInt_FromLong(*value);
     PyList_Append($result, temp);
-    Py_DECREF(temp);
+    SWIG_Py_DECREF(temp);
     value++;
   }
 }

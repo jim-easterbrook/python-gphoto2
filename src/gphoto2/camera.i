@@ -302,7 +302,7 @@ MEMBER_FUNCTION(_Camera,
     free(*$2);
   }
   else {
-    Py_INCREF(Py_None);
+    SWIG_Py_INCREF(Py_None);
     $result = SWIG_AppendOutput($result, Py_None);
     if (*$2 != NULL)
       free(*$2);

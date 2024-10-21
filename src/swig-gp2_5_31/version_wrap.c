@@ -4215,7 +4215,7 @@ SWIGINTERN PyObject *_wrap_gp_port_library_version(PyObject *self, PyObject *arg
     while (*line) {
       PyObject* temp = PyString_FromString(*line);
       PyList_Append(resultobj, temp);
-      Py_DECREF(temp);
+      SWIG_Py_DECREF(temp);
       line++;
     }
   }
@@ -4247,7 +4247,7 @@ SWIGINTERN PyObject *_wrap_gp_library_version(PyObject *self, PyObject *args) {
     while (*line) {
       PyObject* temp = PyString_FromString(*line);
       PyList_Append(resultobj, temp);
-      Py_DECREF(temp);
+      SWIG_Py_DECREF(temp);
       line++;
     }
   }
@@ -4769,7 +4769,7 @@ SWIG_init(void) {
     PyObject *module = PyImport_ImportModule("gphoto2");
     if (module != NULL) {
       PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
-      Py_DECREF(module);
+      SWIG_Py_DECREF(module);
     }
     if (PyExc_GPhoto2Error == NULL)
 #if PY_VERSION_HEX >= 0x03000000

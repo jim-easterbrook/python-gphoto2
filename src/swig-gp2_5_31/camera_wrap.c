@@ -6288,7 +6288,7 @@ SWIGINTERN PyObject *_wrap_Camera_wait_for_event(PyObject *self, PyObject *args)
       free(*arg4);
     }
     else {
-      Py_INCREF(Py_None);
+      SWIG_Py_INCREF(Py_None);
       resultobj = SWIG_Python_AppendOutput(resultobj, Py_None, 1);
       if (*arg4 != NULL)
       free(*arg4);
@@ -8175,7 +8175,7 @@ SWIGINTERN PyObject *_wrap_gp_camera_wait_for_event(PyObject *self, PyObject *ar
       free(*arg4);
     }
     else {
-      Py_INCREF(Py_None);
+      SWIG_Py_INCREF(Py_None);
       resultobj = SWIG_Python_AppendOutput(resultobj, Py_None, 0);
       if (*arg4 != NULL)
       free(*arg4);
@@ -12759,7 +12759,7 @@ SWIG_init(void) {
     PyObject *module = PyImport_ImportModule("gphoto2");
     if (module != NULL) {
       PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
-      Py_DECREF(module);
+      SWIG_Py_DECREF(module);
     }
     if (PyExc_GPhoto2Error == NULL)
 #if PY_VERSION_HEX >= 0x03000000

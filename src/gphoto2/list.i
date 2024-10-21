@@ -98,7 +98,7 @@ PLAIN_ARGOUT(CameraList **)
     if (!name) return NULL;
     PyObject *value = CameraList_get_value(list, idx);
     if (!value) {
-      Py_DECREF(name);
+      SWIG_Py_DECREF(name);
       return NULL;
     }
     return PyTuple_Pack(2, name, value);

@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2017-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2017-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -34,6 +34,16 @@
 #endif
 %feature("autodoc", "2");
 
+// Provide our own version of macros added in SWIG 4.3.0
+#if SWIG_VERSION < 0x040300
+%{
+#define SWIG_Py_INCREF Py_INCREF
+#define SWIG_Py_XINCREF Py_XINCREF
+#define SWIG_Py_DECREF Py_DECREF
+#define SWIG_Py_XDECREF Py_XDECREF
+%}
+#endif
+
 // Improve documentation of some parameter types
 %typemap(doc) char const * "$1_name: str"
 %typemap(doc) uint64_t "$1_name: int"
@@ -57,7 +67,7 @@ PyObject *PyExc_GPhoto2Error = NULL;
   PyObject *module = PyImport_ImportModule("gphoto2");
   if (module != NULL) {
     PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
-    Py_DECREF(module);
+    SWIG_Py_DECREF(module);
   }
   if (PyExc_GPhoto2Error == NULL)
 #if PY_VERSION_HEX >= 0x03000000

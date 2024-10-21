@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -65,8 +65,8 @@ static int del_LogFuncItem(struct LogFuncItem *this) {
     int error = GP_OK;
     if (this->id >= 0)
         error = gp_log_remove_func(this->id);
-    Py_XDECREF(this->func);
-    Py_XDECREF(this->data);
+    SWIG_Py_XDECREF(this->func);
+    SWIG_Py_XDECREF(this->data);
     free(this);
     return error;
 };
@@ -98,11 +98,11 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
         PyErr_Print();
     } else {
         result = PyObject_CallObject(this->func, arglist);
-        Py_DECREF(arglist);
+        SWIG_Py_DECREF(arglist);
         if (result == NULL) {
             PyErr_Print();
         } else {
-            Py_DECREF(result);
+            SWIG_Py_DECREF(result);
         }
     }
     PyGILState_Release(gstate);
@@ -129,7 +129,7 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
         %argument_fail(SWIG_TypeError, callable, $symname, $argnum);
     }
     _global_callback->func = $input;
-    Py_INCREF(_global_callback->func);
+    SWIG_Py_INCREF(_global_callback->func);
     $1 = gp_log_call_python;
 }
 %typemap(argout) GPLogFunc {
@@ -146,7 +146,7 @@ static void gp_log_call_python(GPLogLevel level, const char *domain,
 }
 %typemap(in) void *data {
     _global_callback->data = $input;
-    Py_INCREF(_global_callback->data);
+    SWIG_Py_INCREF(_global_callback->data);
 }
 %typemap(doc) void *data "$1_name: object (default=None)";
 

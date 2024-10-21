@@ -4047,7 +4047,7 @@ static int gp_widget_get_children(CameraWidget* widget, PyObject **iter) {
     PyObject* py_self = SWIG_Python_NewPointerObj(
         NULL, widget, SWIGTYPE_p__CameraWidget, 0);
     *iter = PySeqIter_New(py_self);
-    Py_DECREF(py_self);
+    SWIG_Py_DECREF(py_self);
     return GP_OK;
 };
 
@@ -4062,13 +4062,13 @@ int gp_widget_get_choices(CameraWidget* widget, PyObject **iter) {
     for (int idx = 0; idx < len; idx++) {
         result = gp_widget_get_choice(widget, idx, &choice);
         if (result != GP_OK) {
-            Py_DECREF(list);
+            SWIG_Py_DECREF(list);
             return result;
         }
         PyTuple_SET_ITEM(list, idx, PyUnicode_FromString(choice));
     }
     *iter = PySeqIter_New(list);
-    Py_DECREF(list);
+    SWIG_Py_DECREF(list);
     return result;
 };
 
@@ -4897,7 +4897,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_value(PyObject *self, PyObject *args) {
       if (value->str_val) {
         py_value = PyString_FromString(value->str_val);
       } else {
-        Py_INCREF(Py_None);
+        SWIG_Py_INCREF(Py_None);
         py_value = Py_None;
       }
       break;
@@ -5617,7 +5617,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_value(PyObject *self, PyObject *args
       if (value->str_val) {
         py_value = PyString_FromString(value->str_val);
       } else {
-        Py_INCREF(Py_None);
+        SWIG_Py_INCREF(Py_None);
         py_value = Py_None;
       }
       break;
@@ -9279,7 +9279,7 @@ SWIG_init(void) {
     PyObject *module = PyImport_ImportModule("gphoto2");
     if (module != NULL) {
       PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
-      Py_DECREF(module);
+      SWIG_Py_DECREF(module);
     }
     if (PyExc_GPhoto2Error == NULL)
 #if PY_VERSION_HEX >= 0x03000000

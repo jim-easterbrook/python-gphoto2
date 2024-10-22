@@ -72,8 +72,9 @@ CALLOC_ARGOUT(CameraText *about)
 // gp_camera_folder_list_files() etc. return a pointer in an output parameter
 NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
-// gp_camera_capture_preview() & gp_camera_file_get() return a new CameraFile
-// in old versions of python-gphoto2
+// In python-gphoto2 v2.5.0+ you can optionally pass a CameraFile to
+// gp_camera_capture_preview() & gp_camera_file_get(), otherwise one gets
+// created and returned as a new object.
 %typemap(default) CameraFile *camera_file (int new_file = 0) %{
   $1 = NULL;
 %}
@@ -85,6 +86,10 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
       SWIG_fail;
     }
     new_file$argnum = 1;
+    // Deprecated since 2024-10-22
+    PyErr_WarnEx(PyExc_DeprecationWarning,
+                 "In function $symname a CameraFile object should be"
+                 " passed as an in/out parameter.", 1);
   }
 }
 %typemap(argout) CameraFile *camera_file {

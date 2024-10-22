@@ -5059,6 +5059,9 @@ SWIGINTERN PyObject *_wrap_gp_camera_capture_preview(PyObject *self, PyObject *a
         SWIG_fail;
       }
       new_file2 = 1;
+      PyErr_WarnEx(PyExc_DeprecationWarning,
+        "In function gp_camera_capture_preview a CameraFile object should be"
+        " passed as an in/out parameter", 1);
     }
   }
   {
@@ -6200,6 +6203,9 @@ SWIGINTERN PyObject *_wrap_Camera_capture_preview(PyObject *self, PyObject *args
         SWIG_fail;
       }
       new_file2 = 1;
+      PyErr_WarnEx(PyExc_DeprecationWarning,
+        "In function Camera_capture_preview a CameraFile object should be"
+        " passed as an in/out parameter", 1);
     }
   }
   {
@@ -7007,6 +7013,9 @@ SWIGINTERN PyObject *_wrap_Camera_file_get(PyObject *self, PyObject *args) {
         SWIG_fail;
       }
       new_file5 = 1;
+      PyErr_WarnEx(PyExc_DeprecationWarning,
+        "In function Camera_file_get a CameraFile object should be"
+        " passed as an in/out parameter", 1);
     }
   }
   {
@@ -8907,6 +8916,9 @@ SWIGINTERN PyObject *_wrap_gp_camera_file_get(PyObject *self, PyObject *args) {
         SWIG_fail;
       }
       new_file5 = 1;
+      PyErr_WarnEx(PyExc_DeprecationWarning,
+        "In function gp_camera_file_get a CameraFile object should be"
+        " passed as an in/out parameter", 1);
     }
   }
   {

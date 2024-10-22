@@ -23,7 +23,7 @@
 
 %rename(CameraList) _CameraList;
 
-// Deprecate some functions intended for camera drivers
+// Deprecate some functions intended for camera drivers (2023-08-01)
 DEPRECATED(gp_list_populate,)
 DEPRECATED(_CameraList::populate, 1)
 

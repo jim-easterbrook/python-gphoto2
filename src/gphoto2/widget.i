@@ -23,7 +23,7 @@
 
 %rename(CameraWidget) _CameraWidget;
 
-// Deprecate some functions intended for camera drivers
+// Deprecate some functions intended for camera drivers (2023-07-20)
 DEPRECATED(gp_widget_add_choice,)
 DEPRECATED(_CameraWidget::add_choice, 1)
 DEPRECATED(gp_widget_set_info,)

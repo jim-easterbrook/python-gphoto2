@@ -28,7 +28,7 @@ PortInfoList = GPPortInfoList
 PortInfo = GPPortInfo
 %}
 
-// Deprecate some functions intended for camera drivers
+// Deprecate some functions intended for camera drivers (2023-08-01)
 DEPRECATED(gp_port_info_list_append,)
 DEPRECATED(_GPPortInfoList::append, 1)
 

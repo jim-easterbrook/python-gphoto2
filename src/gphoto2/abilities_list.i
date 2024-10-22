@@ -27,7 +27,7 @@
 
 %rename(CameraAbilitiesList) _CameraAbilitiesList;
 
-// Deprecate some functions intended for camera drivers
+// Deprecate some functions intended for camera drivers (2023-07-25)
 DEPRECATED(gp_abilities_list_append,)
 DEPRECATED(_CameraAbilitiesList::append, 1)
 

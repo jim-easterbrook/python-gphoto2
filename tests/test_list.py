@@ -69,7 +69,7 @@ class TestList(unittest.TestCase):
         self.assertEqual(test_list['A'], '1')
         with self.assertRaises(KeyError):
             test_list['Z']
-        it = iter(test_list)
+        it = iter(test_list.items())
         self.assertEqual(next(it), test_list[0])
         self.assertEqual(next(it), test_list[1])
         self.assertEqual(next(it), test_list[2])

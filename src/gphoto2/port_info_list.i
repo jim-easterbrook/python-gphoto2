@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -28,7 +28,7 @@ PortInfoList = GPPortInfoList
 PortInfo = GPPortInfo
 %}
 
-// Deprecate some functions intended for camera drivers
+// Deprecate some functions intended for camera drivers (2023-08-01)
 DEPRECATED(gp_port_info_list_append,)
 DEPRECATED(_GPPortInfoList::append, 1)
 
@@ -37,7 +37,7 @@ DEPRECATED(_GPPortInfoList::append, 1)
   $1 = &temp;
 }
 %typemap(argout) GPPortInfo * {
-  $result = SWIG_Python_AppendOutput(
+  $result = SWIG_AppendOutput(
     $result, SWIG_NewPointerObj(*$1, $descriptor(_GPPortInfo*), 0));
 }
 
@@ -56,9 +56,7 @@ PLAIN_ARGOUT(GPPortInfoList **)
 
 // Make GPPortInfoList more like a Python list
 LEN_MEMBER_FUNCTION(_GPPortInfoList, gp_port_info_list_count)
-#if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "sq_item",   functype="ssizeargfunc") _GPPortInfoList::__getitem__;
-#endif
 %exception __getitem__ {
   $action
   if (PyErr_Occurred() != NULL) {

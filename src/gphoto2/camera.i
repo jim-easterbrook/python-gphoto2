@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -72,8 +72,9 @@ CALLOC_ARGOUT(CameraText *about)
 // gp_camera_folder_list_files() etc. return a pointer in an output parameter
 NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 
-// gp_camera_capture_preview() & gp_camera_file_get() return a new CameraFile
-// in old versions of python-gphoto2
+// In python-gphoto2 v2.5.0+ you can optionally pass a CameraFile to
+// gp_camera_capture_preview() & gp_camera_file_get(), otherwise one gets
+// created and returned as a new object.
 %typemap(default) CameraFile *camera_file (int new_file = 0) %{
   $1 = NULL;
 %}
@@ -85,15 +86,19 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
       SWIG_fail;
     }
     new_file$argnum = 1;
+    // Deprecated since 2024-10-22
+    PyErr_WarnEx(PyExc_DeprecationWarning,
+                 "In function $symname a CameraFile object should be"
+                 " passed as an in/out parameter.", 1);
   }
 }
-%typemap(argout) CameraFile *camera_file %{
+%typemap(argout) CameraFile *camera_file {
   if (new_file$argnum) {
-    $result = SWIG_Python_AppendOutput(
+    $result = SWIG_AppendOutput(
       $result, SWIG_NewPointerObj($1, $1_descriptor, SWIG_POINTER_OWN));
     new_file$argnum = 0;
   }
-%}
+}
 %typemap(freearg) CameraFile *camera_file %{
   if (new_file$argnum) gp_file_unref($1);
 %}
@@ -130,7 +135,7 @@ CALLOC_ARGOUT(CameraFilePath *path)
   PyBuffer_Release(&view);
 }
 %typemap(argout) (char * buf, uint64_t * size) {
-  $result = SWIG_Python_AppendOutput($result, PyLong_FromUnsignedLongLong(*$2));
+  $result = SWIG_AppendOutput($result, PyLong_FromUnsignedLongLong(*$2));
 }
 
 // Add default constructor and destructor to _Camera
@@ -267,7 +272,7 @@ MEMBER_FUNCTION(_Camera,
     PyList_SetItem(out_list, n,
         SWIG_NewPointerObj(new_sif, $descriptor(CameraStorageInformation*), SWIG_POINTER_OWN));
   }
-  $result = SWIG_Python_AppendOutput($result, out_list);
+  $result = SWIG_AppendOutput($result, out_list);
 }
 %typemap(freearg) (CameraStorageInformation **, int *),
                   (CameraStorageInformation **sifs, int *nrofsifs) {
@@ -291,19 +296,19 @@ MEMBER_FUNCTION(_Camera,
   $2 = &temp_data;
 }
 %typemap(argout) (CameraEventType * eventtype, void ** eventdata) {
-  $result = SWIG_Python_AppendOutput($result, PyInt_FromLong(*$1));
+  $result = SWIG_AppendOutput($result, PyInt_FromLong(*$1));
   if (*$1 == GP_EVENT_FILE_ADDED || *$1 == GP_EVENT_FOLDER_ADDED
                                  || *$1 == GP_EVENT_FILE_CHANGED) {
-    $result = SWIG_Python_AppendOutput(
+    $result = SWIG_AppendOutput(
       $result, SWIG_NewPointerObj(*$2, $descriptor(CameraFilePath*), SWIG_POINTER_OWN));
   }
   else if (*$1 == GP_EVENT_UNKNOWN && *$2 != NULL) {
-    $result = SWIG_Python_AppendOutput($result, PyString_FromString(*$2));
+    $result = SWIG_AppendOutput($result, PyString_FromString(*$2));
     free(*$2);
   }
   else {
-    Py_INCREF(Py_None);
-    $result = SWIG_Python_AppendOutput($result, Py_None);
+    SWIG_Py_INCREF(Py_None);
+    $result = SWIG_AppendOutput($result, Py_None);
     if (*$2 != NULL)
       free(*$2);
   }
@@ -313,9 +318,7 @@ MEMBER_FUNCTION(_Camera,
 %noexception;
 
 // Add __str__ method to CameraText
-#if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "tp_str", functype="reprfunc") CameraText::__str__;
-#endif // SWIGPYTHON_BUILTIN
 %extend CameraText {
   char *__str__() {
     return $self->text;

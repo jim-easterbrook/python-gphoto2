@@ -54,10 +54,10 @@ PLAIN_ARGOUT(CameraFile **)
   $1 = &temp_data;
   $2 = &temp_size;
 %}
-%typemap(argout) (const char **data, unsigned long int *size) %{
-  $result = SWIG_Python_AppendOutput(
+%typemap(argout) (const char **data, unsigned long int *size) {
+  $result = SWIG_AppendOutput(
     $result, PyMemoryView_FromMemory(*$1, *$2, PyBUF_READ));
-%}
+}
 
 // gp_file_set_data_and_size() requires data allocated by malloc which it will free later
 %typemap(in, numinputs=1) (char * data, unsigned long int size) {

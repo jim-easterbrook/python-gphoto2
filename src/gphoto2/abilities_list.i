@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -27,7 +27,7 @@
 
 %rename(CameraAbilitiesList) _CameraAbilitiesList;
 
-// Deprecate some functions intended for camera drivers
+// Deprecate some functions intended for camera drivers (2023-07-25)
 DEPRECATED(gp_abilities_list_append,)
 DEPRECATED(_CameraAbilitiesList::append, 1)
 
@@ -58,10 +58,8 @@ DEFAULT_DTOR(_CameraAbilitiesList, gp_abilities_list_free)
 
 // Make CameraAbilitiesList more like a Python list
 LEN_MEMBER_FUNCTION(_CameraAbilitiesList, gp_abilities_list_count)
-#if defined(SWIGPYTHON_BUILTIN)
 %feature("python:slot", "sq_item",   functype="ssizeargfunc")
     _CameraAbilitiesList::__getitem__;
-#endif
 %exception __getitem__ {
   $action
   if (PyErr_Occurred() != NULL) goto fail;
@@ -89,7 +87,7 @@ LEN_MEMBER_FUNCTION(_CameraAbilitiesList, gp_abilities_list_count)
   while (*value) {
     PyObject* temp = PyInt_FromLong(*value);
     PyList_Append($result, temp);
-    Py_DECREF(temp);
+    SWIG_Py_DECREF(temp);
     value++;
   }
 }

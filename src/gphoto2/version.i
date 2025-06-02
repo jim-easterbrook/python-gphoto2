@@ -37,7 +37,7 @@
   while (*line) {
     PyObject* temp = PyString_FromString(*line);
     PyList_Append($result, temp);
-    Py_DECREF(temp);
+    SWIG_Py_DECREF(temp);
     line++;
   }
 }

@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -78,10 +78,10 @@ static int del_CallbackDetails(struct CallbackDetails *this) {
         this->remove(this->context, NULL, NULL);
         gp_context_unref(this->context);
     }
-    Py_XDECREF(this->func_1);
-    Py_XDECREF(this->func_2);
-    Py_XDECREF(this->func_3);
-    Py_XDECREF(this->data);
+    SWIG_Py_XDECREF(this->func_1);
+    SWIG_Py_XDECREF(this->func_2);
+    SWIG_Py_XDECREF(this->func_3);
+    SWIG_Py_XDECREF(this->data);
     free(this);
     return GP_OK;
 };
@@ -116,7 +116,7 @@ static rtn_type cb_name cb_args {
         goto fail;
     }
     result = PyObject_CallObject(function, arglist);
-    Py_DECREF(arglist);
+    SWIG_Py_DECREF(arglist);
     if (result == NULL) {
         PyErr_Print();
         goto fail;
@@ -128,7 +128,7 @@ static rtn_type cb_name cb_args {
 %}
 #endif
 %{
-    Py_DECREF(result);
+    SWIG_Py_DECREF(result);
 fail:
     PyGILState_Release(gstate);
 %}
@@ -200,14 +200,14 @@ CB_WRAPPER(void, py_progress_stop,
 %typemap(in) void *data {
     gp_context_ref(arg1);
     _global_callbacks->context = arg1;
-    Py_INCREF($input);
+    SWIG_Py_INCREF($input);
     _global_callbacks->data = $input;
     $1 = _global_callbacks;
 }
 %typemap(doc) void *data "$1_name: object"
 
 %typemap(argout) void *data {
-    $result = SWIG_Python_AppendOutput($result,
+    $result = SWIG_AppendOutput($result,
         SWIG_NewPointerObj(_global_callbacks, $descriptor(CallbackDetails*), SWIG_POINTER_OWN));
     _global_callbacks = NULL;
 }
@@ -219,7 +219,7 @@ CB_WRAPPER(void, py_progress_stop,
     if (!PyCallable_Check($input)) {
         %argument_fail(SWIG_TypeError, callable, $symname, $argnum);
     }
-    Py_INCREF($input);
+    SWIG_Py_INCREF($input);
     _global_callbacks->func_1 = $input;
     _global_callbacks->remove = (RemoveFunc) remove_func;
     $1 = (cb_func_type) cb_wrapper;
@@ -253,7 +253,7 @@ SINGLE_CALLBACK_FUNCTION(GPContextProgressStartFunc,
         %argument_fail(SWIG_TypeError, callable, $symname, $argnum);
     }
     _global_callbacks->func_2 = $input;
-    Py_INCREF(_global_callbacks->func_2);
+    SWIG_Py_INCREF(_global_callbacks->func_2);
     $1 = (GPContextProgressUpdateFunc) py_progress_update;
 }
 %typemap(in) GPContextProgressStopFunc {
@@ -261,7 +261,7 @@ SINGLE_CALLBACK_FUNCTION(GPContextProgressStartFunc,
         %argument_fail(SWIG_TypeError, callable, $symname, $argnum);
     }
     _global_callbacks->func_3 = $input;
-    Py_INCREF(_global_callbacks->func_3);
+    SWIG_Py_INCREF(_global_callbacks->func_3);
     $1 = (GPContextProgressStopFunc) py_progress_stop;
 }
 %typemap(doc) GPContextProgressUpdateFunc, GPContextProgressStopFunc

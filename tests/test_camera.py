@@ -92,6 +92,10 @@ class TestVirtualCamera(unittest.TestCase):
         use_vcam(True)
         self.camera = gp.Camera()
         self.camera.init()
+        self.test_file = os.path.join(
+            os.path.dirname(__file__), 'vcamera', 'copyright-free-image.jpg')
+        with open(self.test_file, 'rb') as f:
+            self.src_data = f.read()
 
     def tearDown(self):
         self.camera.exit()
@@ -138,10 +142,17 @@ class TestVirtualCamera(unittest.TestCase):
         files = list_files()
         self.assertEqual(files[0], '/store_00010001/copyright-free-image.jpg')
         # file_get
-        file = self.camera.file_get(
-            '/store_00010001', 'copyright-free-image.jpg',
-            gp.GP_FILE_TYPE_NORMAL)
+        with self.assertWarns(DeprecationWarning):
+            file = self.camera.file_get(
+                '/store_00010001', 'copyright-free-image.jpg',
+                gp.GP_FILE_TYPE_NORMAL)
         self.assertIsInstance(file, gp.CameraFile)
+        self.assertEqual(file.get_data_and_size(), self.src_data)
+        file = gp.CameraFile()
+        self.camera.file_get(
+            '/store_00010001', 'copyright-free-image.jpg',
+            gp.GP_FILE_TYPE_NORMAL, file)
+        self.assertEqual(file.get_data_and_size(), self.src_data)
         # file put
         with self.assertRaises(gp.GPhoto2Error) as cm:
             self.camera.folder_put_file('/store_00010001', 'uploaded.jpg',
@@ -175,7 +186,13 @@ class TestVirtualCamera(unittest.TestCase):
         self.camera.file_set_info(path.folder, path.name, new_info)
         # capture preview
         with self.assertRaises(gp.GPhoto2Error) as cm:
-            preview_file = self.camera.capture_preview()
+            with self.assertWarns(DeprecationWarning):
+                preview_file = self.camera.capture_preview()
+        ex = cm.exception
+        self.assertEqual(ex.code, gp.GP_ERROR_NOT_SUPPORTED)
+        preview_file = gp.CameraFile()
+        with self.assertRaises(gp.GPhoto2Error) as cm:
+            self.camera.capture_preview(preview_file)
         ex = cm.exception
         self.assertEqual(ex.code, gp.GP_ERROR_NOT_SUPPORTED)
         # trigger capture
@@ -276,11 +293,20 @@ class TestVirtualCamera(unittest.TestCase):
         files = list_files()
         self.assertEqual(files[0], '/store_00010001/copyright-free-image.jpg')
         # file_get
-        OK, file = gp.gp_camera_file_get(
-            self.camera, '/store_00010001', 'copyright-free-image.jpg',
-            gp.GP_FILE_TYPE_NORMAL)
+        with self.assertWarns(DeprecationWarning):
+            OK, file = gp.gp_camera_file_get(
+                self.camera, '/store_00010001', 'copyright-free-image.jpg',
+                gp.GP_FILE_TYPE_NORMAL)
         self.assertEqual(OK, gp.GP_OK)
         self.assertIsInstance(file, gp.CameraFile)
+        self.assertEqual(file.get_data_and_size(), self.src_data)
+        OK, file = gp.gp_file_new()
+        self.assertEqual(OK, gp.GP_OK)
+        OK = gp.gp_camera_file_get(
+            self.camera, '/store_00010001', 'copyright-free-image.jpg',
+            gp.GP_FILE_TYPE_NORMAL, file)
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertEqual(file.get_data_and_size(), self.src_data)
         # file put
         self.assertEqual(
             gp.gp_camera_folder_put_file(
@@ -316,7 +342,12 @@ class TestVirtualCamera(unittest.TestCase):
             self.camera, path.folder, path.name, new_info)
         self.assertEqual(OK, gp.GP_OK)
         # capture preview
-        OK, preview_file = gp.gp_camera_capture_preview(self.camera)
+        with self.assertWarns(DeprecationWarning):
+            OK, preview_file = gp.gp_camera_capture_preview(self.camera)
+        self.assertEqual(OK, gp.GP_ERROR_NOT_SUPPORTED)
+        OK, preview_file = gp.gp_file_new()
+        self.assertEqual(OK, gp.GP_OK)
+        OK = gp.gp_camera_capture_preview(self.camera, preview_file)
         self.assertEqual(OK, gp.GP_ERROR_NOT_SUPPORTED)
         # trigger capture
         self.assertEqual(gp.gp_camera_trigger_capture(self.camera), gp.GP_OK)

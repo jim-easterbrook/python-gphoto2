@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -23,7 +23,7 @@
 
 %rename(CameraWidget) _CameraWidget;
 
-// Deprecate some functions intended for camera drivers
+// Deprecate some functions intended for camera drivers (2023-07-20)
 DEPRECATED(gp_widget_add_choice,)
 DEPRECATED(_CameraWidget::add_choice, 1)
 DEPRECATED(gp_widget_set_info,)
@@ -61,7 +61,7 @@ Beware of changes in the libgphoto2 definitions though.
 }
 %typemap(argout) CameraWidget **window, CameraWidget **widget {
   // Append result to output object
-  $result = SWIG_Python_AppendOutput(
+  $result = SWIG_AppendOutput(
     $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
 }
 %typemap(argout) CameraWidget **child, CameraWidget **root, CameraWidget **parent {
@@ -80,7 +80,7 @@ Beware of changes in the libgphoto2 definitions though.
     }
   }
   // Append result to output object
-  $result = SWIG_Python_AppendOutput(
+  $result = SWIG_AppendOutput(
     $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
 }
 
@@ -127,7 +127,7 @@ typedef union {
       if (value->str_val) {
         py_value = PyString_FromString(value->str_val);
       } else {
-        Py_INCREF(Py_None);
+        SWIG_Py_INCREF(Py_None);
         py_value = Py_None;
       }
       break;
@@ -135,7 +135,7 @@ typedef union {
       PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
       SWIG_fail;
   }
-  $result = SWIG_Python_AppendOutput($result, py_value);
+  $result = SWIG_AppendOutput($result, py_value);
 }
 %typemap(doc) (void *value) "$1_name: int/float/str"
 
@@ -192,72 +192,17 @@ DEFAULT_EXCEPTION
 
 #ifndef SWIGIMPORTED
 
-// function to allow python iter() to be called with python object
-#if defined(SWIGPYTHON_BUILTIN)
-%ignore make_iterator;
-%inline %{
-static PyObject* make_iterator(PyObject* self)
-{
-  Py_INCREF(self);
-  return self;
+// Typemaps for iterator return values
+%typemap(in, numinputs=0) PyObject **iter (PyObject* temp=NULL) {
+    $1 = &temp;
 }
-%}
-#endif
-
-// macro to implement iterator objects
-%define ITERATOR(iter_type, function, result_type)
-
-#if defined(SWIGPYTHON_BUILTIN)
-  %feature("python:tp_iter") iter_type "make_iterator";
-  %feature("python:slot", "tp_iternext", functype="iternextfunc") iter_type::__next__;
-#else
-  %extend iter_type {
-    %pythoncode {
-      def __iter__(self):
-          return self
-      def next(self):
-          return self.__next__()
-    }
-  }
-#endif
-
-%ignore iter_type::parent;
-%ignore iter_type::idx;
-%ignore iter_type::len;
-%inline %{
-typedef struct iter_type {
-  CameraWidget* parent;
-  int           idx;
-  int           len;
-} iter_type;
-%}
-
-CALLOC_ARGOUT(iter_type*)
-
-%extend iter_type {
-  result_type* __next__() {
-    result_type* result;
-    int error;
-    if ($self->idx >= $self->len)
-    {
-      PyErr_SetString(PyExc_StopIteration, "End of iteration");
-      return NULL;
-    }
-    error = function($self->parent, $self->idx, &result);
-    $self->idx++;
-    if (error < GP_OK)
-    {
-      GPHOTO2_ERROR(error)
-      return NULL;
-    }
-    return result;
-  }
+%typemap(argout) PyObject **iter {
+    if (!*$1)
+        *$1 = SWIG_Py_Void();
+    $result = SWIG_AppendOutput($result, *$1);
 }
-%enddef
 
 // Add gp_widget_get_children() method that returns an iterator
-ITERATOR(CameraWidgetChildIter, gp_widget_get_child, CameraWidget)
-
 %feature("docstring") gp_widget_get_children "Gets all the child widgets of a CameraWidget. The return value is a list
 containing a gphoto2 error code and a Python iterator. The iterator can
 be used to get each child in sequence.
@@ -284,19 +229,16 @@ See also gphoto2.gp_widget_get_children"
 
 %noexception gp_widget_get_children;
 %inline %{
-int gp_widget_get_children(CameraWidget* widget, CameraWidgetChildIter* iter) {
-  iter->parent = widget;
-  iter->idx = 0;
-  iter->len = gp_widget_count_children(widget);
-  if (iter->len < GP_OK)
-    return iter->len;
-  return GP_OK;
+static int gp_widget_get_children(CameraWidget* widget, PyObject **iter) {
+    PyObject* py_self = SWIG_Python_NewPointerObj(
+        NULL, widget, SWIGTYPE_p__CameraWidget, 0);
+    *iter = PySeqIter_New(py_self);
+    SWIG_Py_DECREF(py_self);
+    return GP_OK;
 };
 %}
 
 // Add gp_widget_get_choices() method that returns an iterator
-ITERATOR(CameraWidgetChoiceIter, gp_widget_get_choice, const char)
-
 %feature("docstring") gp_widget_get_choices "Gets all the choice values of a CameraWidget. The return value is a list
 containing a gphoto2 error code and a Python iterator. The iterator can
 be used to get each choice in sequence.
@@ -323,13 +265,24 @@ See also gphoto2.gp_widget_get_choices"
 
 %noexception gp_widget_get_choices;
 %inline %{
-int gp_widget_get_choices(CameraWidget* widget, CameraWidgetChoiceIter* iter) {
-  iter->parent = widget;
-  iter->idx = 0;
-  iter->len = gp_widget_count_choices(widget);
-  if (iter->len < GP_OK)
-    return iter->len;
-  return GP_OK;
+int gp_widget_get_choices(CameraWidget* widget, PyObject **iter) {
+    int result = GP_OK;
+    int len = gp_widget_count_choices(widget);
+    if (len < GP_OK)
+        return len;
+    PyObject* list = PyTuple_New(len);
+    const char *choice = NULL;
+    for (int idx = 0; idx < len; idx++) {
+        result = gp_widget_get_choice(widget, idx, &choice);
+        if (result != GP_OK) {
+            SWIG_Py_DECREF(list);
+            return result;
+        }
+        PyTuple_SET_ITEM(list, idx, PyUnicode_FromString(choice));
+    }
+    *iter = PySeqIter_New(list);
+    SWIG_Py_DECREF(list);
+    return result;
 };
 %}
 
@@ -353,7 +306,24 @@ static int widget_dtor(CameraWidget *widget) {
 struct _CameraWidget {};
 DEFAULT_DTOR(_CameraWidget, widget_dtor)
 
+
+// Make _CameraWidget more like a list
+%feature("python:slot", "sq_item", functype="ssizeargfunc")
+    _CameraWidget::__getitem__;
+%extend _CameraWidget {
+    void __getitem__(int child_number, CameraWidget **child) {
+        if ((child_number < 0) ||
+            (child_number >= gp_widget_count_children($self))) {
+            PyErr_SetNone(PyExc_IndexError);
+            return;
+        }
+        int result = gp_widget_get_child($self, child_number, child);
+        if (result < GP_OK) GPHOTO2_ERROR(result)
+    }
+};
+
 // Add member methods to _CameraWidget
+LEN_MEMBER_FUNCTION(_CameraWidget, gp_widget_count_children)
 MEMBER_FUNCTION(_CameraWidget,
     int, count_children, (),
     gp_widget_count_children, ($self), )
@@ -361,7 +331,7 @@ MEMBER_FUNCTION(_CameraWidget,
     void, get_child, (int child_number, CameraWidget **child),
     gp_widget_get_child, ($self, child_number, child), )
 MEMBER_FUNCTION(_CameraWidget,
-    void, get_children, (CameraWidgetChildIter* iter),
+    void, get_children, (PyObject** iter),
     gp_widget_get_children, ($self, iter), )
 MEMBER_FUNCTION(_CameraWidget,
     void, get_child_by_label, (const char *label, CameraWidget **child),
@@ -418,7 +388,7 @@ MEMBER_FUNCTION(_CameraWidget,
     int, count_choices, (),
     gp_widget_count_choices, ($self), )
 MEMBER_FUNCTION(_CameraWidget,
-    void, get_choices, (CameraWidgetChoiceIter* iter),
+    void, get_choices, (PyObject **iter),
     gp_widget_get_choices, ($self, iter), )
 MEMBER_FUNCTION(_CameraWidget,
     void, get_choice, (int choice_number, const char **choice),

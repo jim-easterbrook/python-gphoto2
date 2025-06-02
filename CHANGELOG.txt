@@ -1,6 +1,6 @@
 python-gphoto2 - Python interface to libgphoto2
 http://github.com/jim-easterbrook/python-gphoto2
-Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
+Copyright (C) 2014-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 
 This file is part of python-gphoto2.
 
@@ -18,6 +18,13 @@ You should have received a copy of the GNU Lesser General Public
 License along with python-gphoto2.  If not, see
 <https://www.gnu.org/licenses/>.
 
+
+Changes in 2.6.0:
+  1/ Deprecated passing a CameraFile object to file_get() and capture_preview()
+     functions. These allocate a new CameraFile object for the return value.
+  2/ CameraWidget now has len and [] (index) methods.
+  3/ Linux "binary wheels" are compatible with older OS versions.
+  4/ Numerous other small improvements.
 
 Changes in 2.5.1:
   1/ Add macOS arm64 "binary wheels".

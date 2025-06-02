@@ -4,3 +4,4 @@ recursive-exclude .github *
 exclude .gitignore .travis.yml
 recursive-exclude src/gphoto2 *
 exclude developer/*
+exclude tests/*

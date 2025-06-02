@@ -2,7 +2,7 @@
 
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2019-22  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2019-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This file is part of python-gphoto2.
 #
@@ -41,9 +41,15 @@ def main():
     print(str(text))
     print('Config')
     print('======')
-    config = gp.check_result(gp.gp_camera_list_config(camera))
-    for n in range(len(config)):
-        print(config.get_name(n), config.get_value(n))
+    config_items = camera.list_config()
+    config_root = camera.get_config()
+    for n in range(len(config_items)):
+        name = config_items.get_name(n)
+        try:
+            config = config_root.get_child_by_name(name)
+            print(name, config.get_value())
+        except gp.GPhoto2Error as ex:
+            print(name, 'Error:', str(ex))
     camera.exit()
     return 0
 

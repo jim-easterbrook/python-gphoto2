@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2023  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2023-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This file is part of python-gphoto2.
 #
@@ -24,6 +24,8 @@ import gphoto2 as gp
 
 
 def use_vcam(enable):
+    if 'IOLIBS' not in os.environ:
+        return
     if enable:
         os.environ['VCAMERADIR'] = os.path.join(
             os.path.dirname(__file__), 'vcamera')
@@ -35,6 +37,8 @@ def use_vcam(enable):
 
 
 def _has_vcam():
+    if 'IOLIBS' not in os.environ:
+        return False
     vusb_dir = os.environ['IOLIBS'].replace('iolibs', 'vusb')
     if not os.path.isdir(vusb_dir):
         return False

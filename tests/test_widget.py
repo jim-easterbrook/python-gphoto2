@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2023-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2023-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This file is part of python-gphoto2.
 #
@@ -45,6 +45,10 @@ class TestWidget(unittest.TestCase):
         # test almost every gphoto2.CameraWidget method
         # untested: get_range() & set_range() as no GP_WIDGET_RANGE widget
         config = self.camera.get_config()
+        now = time.time()
+        if time.localtime(now).tm_isdst == 1:
+            # this needs testing on other time zones
+            now -= 3600
         # test top level widget
         self.assertEqual(config.get_label(), 'Camera and Driver Configuration')
         self.assertEqual(config.get_name(), 'main')
@@ -110,10 +114,6 @@ class TestWidget(unittest.TestCase):
         # test date widget
         widget = settings.get_child_by_name('datetime')
         self.assertEqual(widget.get_type(), gp.GP_WIDGET_DATE)
-        now = time.time()
-        if time.localtime(now).tm_isdst == 1:
-            # this needs testing on other time zones
-            now -= 3600
         self.assertEqual(widget.get_value(), int(now))
         # test read-only widget
         widget = status.get_child_by_name('batterylevel')
@@ -140,6 +140,10 @@ class TestWidget(unittest.TestCase):
         # untested: get_range() & set_range() as no GP_WIDGET_RANGE widget
         OK, config = gp.gp_camera_get_config(self.camera)
         self.assertEqual(OK, gp.GP_OK)
+        now = time.time()
+        if time.localtime(now).tm_isdst == 1:
+            # this needs testing on other time zones
+            now -= 3600
         # test top level widget
         self.assertEqual(gp.gp_widget_get_label(config),
                          [gp.GP_OK, 'Camera and Driver Configuration'])
@@ -231,10 +235,6 @@ class TestWidget(unittest.TestCase):
         self.assertEqual(OK, gp.GP_OK)
         self.assertEqual(gp.gp_widget_get_type(widget),
                          [gp.GP_OK, gp.GP_WIDGET_DATE])
-        now = time.time()
-        if time.localtime(now).tm_isdst == 1:
-            # this needs testing on other time zones
-            now -= 3600
         self.assertEqual(gp.gp_widget_get_value(widget), [gp.GP_OK, int(now)])
         # test read-only widget
         OK, widget = gp.gp_widget_get_child_by_name(status, 'batterylevel')

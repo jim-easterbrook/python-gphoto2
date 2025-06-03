@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -145,6 +145,10 @@ typedef struct _CameraList_accessor {} CameraList_accessor;
 // Make CameraList more like a Python list and/or dict
 %feature("python:slot", "mp_subscript", functype="binaryfunc")
   _CameraList::__getitem__;
+%feature("python:slot", "tp_iter", functype="getiterfunc")
+  _CameraList::__iter__;
+// deprecated since 2025-06-03, v2.6.1
+DEPRECATED(_CameraList::__iter__, 1)
 %feature("docstring") _CameraList::keys "Return an accessor for the names in the list."
 %feature("docstring") _CameraList::values "Return an accessor for the values in the list."
 %feature("docstring") _CameraList::items "Return an accessor for the (name, value) pairs in the list."
@@ -181,6 +185,11 @@ typedef struct _CameraList_accessor {} CameraList_accessor;
   }
   CameraList_accessor* items() {
     return new_CameraList_accessor($self, CameraList_get_item);
+  }
+  PyObject* __iter__() {
+    return PySeqIter_New(SWIG_Python_NewPointerObj(
+      NULL, SWIG_as_voidptr(_CameraList_items($self)),
+      $descriptor(CameraList_accessor*), SWIG_POINTER_OWN));
   }
 };
 

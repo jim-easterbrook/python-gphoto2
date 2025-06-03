@@ -19,7 +19,11 @@ License along with python-gphoto2.  If not, see
 <https://www.gnu.org/licenses/>.
 
 
+Changes in 2.6.1:
+  1/ Reinstated CameraList.__iter__ removed in v2.6.0, but deprecated.
+
 Changes in 2.6.0:
+  0/ API change: Removed CameraList.__iter__, use CameraList.items() instead.
   1/ Deprecated passing a CameraFile object to file_get() and capture_preview()
      functions. These allocate a new CameraFile object for the return value.
   2/ CameraWidget now has len and [] (index) methods.

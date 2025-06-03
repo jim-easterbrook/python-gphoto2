@@ -69,6 +69,13 @@ class TestList(unittest.TestCase):
         self.assertEqual(test_list['A'], '1')
         with self.assertRaises(KeyError):
             test_list['Z']
+        with self.assertWarns(DeprecationWarning):
+            it = iter(test_list)
+        self.assertEqual(next(it), test_list[0])
+        self.assertEqual(next(it), test_list[1])
+        self.assertEqual(next(it), test_list[2])
+        with self.assertRaises(StopIteration):
+            next(it)
         it = iter(test_list.items())
         self.assertEqual(next(it), test_list[0])
         self.assertEqual(next(it), test_list[1])

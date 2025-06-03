@@ -4388,6 +4388,11 @@ SWIGINTERN CameraList_accessor *_CameraList_values(struct _CameraList *self){
 SWIGINTERN CameraList_accessor *_CameraList_items(struct _CameraList *self){
     return new_CameraList_accessor(self, CameraList_get_item);
   }
+SWIGINTERN PyObject *_CameraList___iter__(struct _CameraList *self){
+    return PySeqIter_New(SWIG_Python_NewPointerObj(
+      NULL, SWIG_as_voidptr(_CameraList_items(self)),
+      SWIGTYPE_p__CameraList_accessor, SWIG_POINTER_OWN));
+  }
 SWIGINTERN int _CameraList___len__(struct _CameraList *self){
 
 
@@ -4783,6 +4788,34 @@ SWIGINTERN PyObject *_wrap_CameraList_items(PyObject *self, PyObject *args) {
   arg1 = (struct _CameraList *)(argp1);
   result = (CameraList_accessor *)_CameraList_items(arg1);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__CameraList_accessor, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_CameraList___iter__(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraList *arg1 = (struct _CameraList *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject *result = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "CameraList___iter__ takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "CameraList___iter__" "', argument " "1"" of type '" "struct _CameraList *""'"); 
+  }
+  arg1 = (struct _CameraList *)(argp1);
+  {
+    if (PyErr_WarnEx(PyExc_DeprecationWarning,"_CameraList::__iter__"" is deprecated and"
+        " will be removed in a future release", 1) < 0) SWIG_fail;
+    result = (PyObject *)_CameraList___iter__(arg1);
+    
+    if (PyErr_Occurred()) SWIG_fail;
+    
+  }
+  resultobj = result;
   return resultobj;
 fail:
   return NULL;
@@ -5196,6 +5229,8 @@ fail:
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraList) /* defines _wrap_delete_CameraList_destructor_closure */
 
 SWIGPY_BINARYFUNC_CLOSURE(_wrap_CameraList___getitem__) /* defines _wrap_CameraList___getitem___binaryfunc_closure */
+
+SWIGPY_GETITERFUNC_CLOSURE(_wrap_CameraList___iter__) /* defines _wrap_CameraList___iter___getiterfunc_closure */
 
 SWIGPY_LENFUNC_CLOSURE(_wrap_CameraList___len__) /* defines _wrap_CameraList___len___lenfunc_closure */
 
@@ -5975,6 +6010,10 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___CameraList_methods[] = {
 		"items(self) -> CameraList_accessor\n"
 		"Return an accessor for the (name, value) pairs in the list.\n"
 		"" },
+  { "__iter__", _wrap_CameraList___iter__, METH_VARARGS, "\n"
+		"__iter__(self) -> PyObject *\n"
+		"This function is deprecated and will be removed in a future release.\n"
+		"" },
   { "__len__", _wrap_CameraList___len__, METH_VARARGS, "__len__(self) -> int" },
   { "count", _wrap_CameraList_count, METH_VARARGS, "\n"
 		"count(self) -> int\n"
@@ -6227,7 +6266,7 @@ static PyHeapTypeObject SwigPyBuiltin___CameraList_type = {
     (inquiry) 0,                            /* tp_clear */
     SwigPyBuiltin___CameraList_richcompare, /* tp_richcompare */
     0,                                      /* tp_weaklistoffset */
-    (getiterfunc) 0,                        /* tp_iter */
+    _wrap_CameraList___iter___getiterfunc_closure, /* tp_iter */
     (iternextfunc) 0,                       /* tp_iternext */
     SwigPyBuiltin___CameraList_methods,     /* tp_methods */
     0,                                      /* tp_members */
@@ -6444,7 +6483,7 @@ static PyTypeObject *SwigPyBuiltin___CameraList_type_create(PyTypeObject *type, 
     { Py_mp_length,                     (void *)(lenfunc) 0 },
     { Py_mp_subscript,                  (void *)_wrap_CameraList___getitem___binaryfunc_closure },
     { Py_mp_ass_subscript,              (void *)(objobjargproc) 0 },
-    { Py_tp_iter,                       (void *)(getiterfunc) 0 },
+    { Py_tp_iter,                       (void *)_wrap_CameraList___iter___getiterfunc_closure },
     { Py_tp_iternext,                   (void *)(iternextfunc) 0 },
     { Py_nb_add,                        (void *)(binaryfunc) 0 },
     { Py_nb_subtract,                   (void *)(binaryfunc) 0 },

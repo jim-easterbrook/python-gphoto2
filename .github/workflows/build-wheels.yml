@@ -1,0 +1,79 @@
+name: build python-gphoto2 wheels
+on: workflow_dispatch
+
+jobs:
+  build:
+    name: build on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, ubuntu-22.04-arm, macos-13, macos-14]
+        include:
+          - os: macos-13
+            target: 13.0
+          - os: macos-14
+            dependencies: libtool gd
+            target: 14.0
+    env:
+      GPHOTO_DIR: ${{ github.workspace }}/libgphoto2
+      GPHOTO_VSN: 2.5.31
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+
+      - name: Download libgphoto2
+        run: wget -nv
+          https://github.com/gphoto/libgphoto2/releases/download/v${GPHOTO_VSN}/libgphoto2-${GPHOTO_VSN}.tar.xz
+          -O libgphoto2.tar.xz
+
+      - name: Extract libgphoto2
+        run: |
+          mkdir $GPHOTO_DIR
+          tar xf libgphoto2.tar.xz \
+            --directory $GPHOTO_DIR --strip-components=1
+
+      - name: Build libgphoto2
+        if: ${{ runner.os == 'macOS' }}
+        run: |
+          brew install libexif ${{ matrix.dependencies }}
+          cd $GPHOTO_DIR
+          ./configure --prefix=$PWD/local_install --disable-internal-docs \
+            --enable-vusb \
+            CFLAGS="-D_DARWIN_C_SOURCE -I$(brew --prefix)/include"
+          make
+          make install
+
+      - name: Build wheels
+        # cibuildwheel@v3.x omits Python 3.6 & 3.7
+        uses: pypa/cibuildwheel@v2.23.3
+        env:
+          CIBW_ARCHS: auto64
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+          CIBW_MANYLINUX_AARCH64_IMAGE: manylinux_2_28
+          CIBW_BUILD: "cp*"
+          CIBW_SKIP: "*musllinux*"
+          CIBW_ENVIRONMENT_LINUX: >
+            GPHOTO2_ROOT=$PWD/libgphoto2/local_install
+          CIBW_ENVIRONMENT_MACOS: >
+            GPHOTO2_ROOT=$GPHOTO_DIR/local_install
+            MACOSX_DEPLOYMENT_TARGET=${{ matrix.target }}
+            SYSTEM_VERSION_COMPAT=0
+          CIBW_TEST_COMMAND: >
+            python3 -m gphoto2 -v &&
+            python3 -m unittest discover {project}/tests -v
+          CIBW_TEST_SKIP: "cp38-macosx_*:arm64"
+          CIBW_BEFORE_ALL_LINUX: >
+            yum install -y libusbx-devel libexif-devel libjpeg-turbo-devel
+            gd-devel libcurl-devel libxml2-devel libtool-ltdl-devel &&
+            pushd $PWD/libgphoto2 &&
+            ./configure --prefix=$PWD/local_install --disable-internal-docs
+            --enable-vusb &&
+            make &&
+            make install &&
+            popd
+
+      - name: Store results
+        uses: actions/upload-artifact@v4
+        with:
+          name: gphoto2-wheels-${{ runner.os }}-${{ runner.arch }}
+          path: wheelhouse/*.whl

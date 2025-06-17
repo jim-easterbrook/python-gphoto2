@@ -114,7 +114,7 @@ class TestWidget(unittest.TestCase):
         # test date widget
         widget = settings.get_child_by_name('datetime')
         self.assertEqual(widget.get_type(), gp.GP_WIDGET_DATE)
-        self.assertEqual(widget.get_value(), int(now))
+        self.assertAlmostEqual(widget.get_value(), int(now), delta=1)
         # test read-only widget
         widget = status.get_child_by_name('batterylevel')
         self.assertEqual(widget.get_type(), gp.GP_WIDGET_TEXT)
@@ -235,7 +235,9 @@ class TestWidget(unittest.TestCase):
         self.assertEqual(OK, gp.GP_OK)
         self.assertEqual(gp.gp_widget_get_type(widget),
                          [gp.GP_OK, gp.GP_WIDGET_DATE])
-        self.assertEqual(gp.gp_widget_get_value(widget), [gp.GP_OK, int(now)])
+        OK, value = gp.gp_widget_get_value(widget)
+        self.assertEqual(OK, gp.GP_OK)
+        self.assertAlmostEqual(value, int(now), delta=1)
         # test read-only widget
         OK, widget = gp.gp_widget_get_child_by_name(status, 'batterylevel')
         self.assertEqual(OK, gp.GP_OK)

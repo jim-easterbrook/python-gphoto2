@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -86,11 +86,12 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
       SWIG_fail;
     }
     new_file$argnum = 1;
-    // Deprecated since 2024-10-22
-    PyErr_WarnEx(PyExc_DeprecationWarning,
-                 "In function $symname a CameraFile object should be"
-                 " passed as an in/out parameter.", 1);
   }
+  else
+    // Deprecated since 2025-06-28
+    PyErr_WarnEx(PyExc_DeprecationWarning,
+                 "In function $symname a CameraFile object should not"
+                 " be passed as an in/out parameter.", 1);
 }
 %typemap(argout) CameraFile *camera_file {
   if (new_file$argnum) {

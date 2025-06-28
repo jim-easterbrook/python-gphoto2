@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2023-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2023-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This file is part of python-gphoto2.
 #
@@ -142,16 +142,16 @@ class TestVirtualCamera(unittest.TestCase):
         files = list_files()
         self.assertEqual(files[0], '/store_00010001/copyright-free-image.jpg')
         # file_get
-        with self.assertWarns(DeprecationWarning):
-            file = self.camera.file_get(
-                '/store_00010001', 'copyright-free-image.jpg',
-                gp.GP_FILE_TYPE_NORMAL)
+        file = self.camera.file_get(
+            '/store_00010001', 'copyright-free-image.jpg',
+            gp.GP_FILE_TYPE_NORMAL)
         self.assertIsInstance(file, gp.CameraFile)
         self.assertEqual(file.get_data_and_size(), self.src_data)
         file = gp.CameraFile()
-        self.camera.file_get(
-            '/store_00010001', 'copyright-free-image.jpg',
-            gp.GP_FILE_TYPE_NORMAL, file)
+        with self.assertWarns(DeprecationWarning):
+            self.camera.file_get(
+                '/store_00010001', 'copyright-free-image.jpg',
+                gp.GP_FILE_TYPE_NORMAL, file)
         self.assertEqual(file.get_data_and_size(), self.src_data)
         # file put
         with self.assertRaises(gp.GPhoto2Error) as cm:
@@ -186,13 +186,13 @@ class TestVirtualCamera(unittest.TestCase):
         self.camera.file_set_info(path.folder, path.name, new_info)
         # capture preview
         with self.assertRaises(gp.GPhoto2Error) as cm:
-            with self.assertWarns(DeprecationWarning):
-                preview_file = self.camera.capture_preview()
+            preview_file = self.camera.capture_preview()
         ex = cm.exception
         self.assertEqual(ex.code, gp.GP_ERROR_NOT_SUPPORTED)
         preview_file = gp.CameraFile()
         with self.assertRaises(gp.GPhoto2Error) as cm:
-            self.camera.capture_preview(preview_file)
+            with self.assertWarns(DeprecationWarning):
+                self.camera.capture_preview(preview_file)
         ex = cm.exception
         self.assertEqual(ex.code, gp.GP_ERROR_NOT_SUPPORTED)
         # trigger capture
@@ -293,18 +293,18 @@ class TestVirtualCamera(unittest.TestCase):
         files = list_files()
         self.assertEqual(files[0], '/store_00010001/copyright-free-image.jpg')
         # file_get
-        with self.assertWarns(DeprecationWarning):
-            OK, file = gp.gp_camera_file_get(
-                self.camera, '/store_00010001', 'copyright-free-image.jpg',
-                gp.GP_FILE_TYPE_NORMAL)
+        OK, file = gp.gp_camera_file_get(
+            self.camera, '/store_00010001', 'copyright-free-image.jpg',
+            gp.GP_FILE_TYPE_NORMAL)
         self.assertEqual(OK, gp.GP_OK)
         self.assertIsInstance(file, gp.CameraFile)
         self.assertEqual(file.get_data_and_size(), self.src_data)
         OK, file = gp.gp_file_new()
         self.assertEqual(OK, gp.GP_OK)
-        OK = gp.gp_camera_file_get(
-            self.camera, '/store_00010001', 'copyright-free-image.jpg',
-            gp.GP_FILE_TYPE_NORMAL, file)
+        with self.assertWarns(DeprecationWarning):
+            OK = gp.gp_camera_file_get(
+                self.camera, '/store_00010001', 'copyright-free-image.jpg',
+                gp.GP_FILE_TYPE_NORMAL, file)
         self.assertEqual(OK, gp.GP_OK)
         self.assertEqual(file.get_data_and_size(), self.src_data)
         # file put
@@ -342,12 +342,12 @@ class TestVirtualCamera(unittest.TestCase):
             self.camera, path.folder, path.name, new_info)
         self.assertEqual(OK, gp.GP_OK)
         # capture preview
-        with self.assertWarns(DeprecationWarning):
-            OK, preview_file = gp.gp_camera_capture_preview(self.camera)
+        OK, preview_file = gp.gp_camera_capture_preview(self.camera)
         self.assertEqual(OK, gp.GP_ERROR_NOT_SUPPORTED)
         OK, preview_file = gp.gp_file_new()
         self.assertEqual(OK, gp.GP_OK)
-        OK = gp.gp_camera_capture_preview(self.camera, preview_file)
+        with self.assertWarns(DeprecationWarning):
+            OK = gp.gp_camera_capture_preview(self.camera, preview_file)
         self.assertEqual(OK, gp.GP_ERROR_NOT_SUPPORTED)
         # trigger capture
         self.assertEqual(gp.gp_camera_trigger_capture(self.camera), gp.GP_OK)

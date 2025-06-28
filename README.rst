@@ -1,4 +1,4 @@
-python-gphoto2 v\ 2.6.1
+python-gphoto2 v\ 2.6.2
 =======================
 
 python-gphoto2 is a comprehensive Python interface (or binding) to libgphoto2_.
@@ -300,10 +300,11 @@ gp_camera_capture_preview / gp_camera_file_get
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Before python-gphoto2 version 2.5.0 these functions (and their corresponding "object oriented" methods) always allocated and returned a new ``CameraFile`` object.
-Now you can pass in a previously allocated ``CameraFile`` for them to use.
+Now you can pass in a previously allocated ``CameraFile`` for them to use, but this is deprecated.
 In this case it is not returned by the function.
 
 If you need to use a ``Context`` value with these functions without passing in a ``CameraFile``, then pass ``None`` in place of the ``CameraFile`` object.
+In a future release the ``CameraFile`` parameter will be removed.
 
 gp_log_add_func / use_python_logging
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

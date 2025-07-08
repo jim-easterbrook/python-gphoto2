@@ -7394,6 +7394,8 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_JPEG",SWIG_FromCharPtr("image/jpeg"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_TIFF",SWIG_FromCharPtr("image/tiff"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_BMP",SWIG_FromCharPtr("image/bmp"));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_QTKN",SWIG_FromCharPtr("image/qtkn"));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_QTKT",SWIG_FromCharPtr("image/qtkt"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_QUICKTIME",SWIG_FromCharPtr("video/quicktime"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_AVI",SWIG_FromCharPtr("video/x-msvideo"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_CRW",SWIG_FromCharPtr("image/x-canon-raw"));
@@ -7408,8 +7410,10 @@ SWIG_init(void) {
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_ASF",SWIG_FromCharPtr("audio/x-asf"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_MPEG",SWIG_FromCharPtr("video/mpeg"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_AVCHD",SWIG_FromCharPtr("video/mp2t"));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_MPO",SWIG_FromCharPtr("video/mpo"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_RW2",SWIG_FromCharPtr("image/x-panasonic-raw2"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_ARW",SWIG_FromCharPtr("image/x-sony-arw"));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_RAF",SWIG_FromCharPtr("image/x-fuji-raf"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_FILE_TYPE_PREVIEW",SWIG_From_int((int)(GP_FILE_TYPE_PREVIEW)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_FILE_TYPE_NORMAL",SWIG_From_int((int)(GP_FILE_TYPE_NORMAL)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_FILE_TYPE_RAW",SWIG_From_int((int)(GP_FILE_TYPE_RAW)));

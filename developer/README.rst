@@ -53,6 +53,7 @@ Differences found so far::
     2.5.29    No change
     2.5.30    Add gp_init_localedir & gp_port_init_localedir functions
     2.5.31    No change
+    2.5.32    Add GP_MIME_MPO, GP_MIME_QTKN, GP_MIME_QTKT, and GP_MIME_RAF constants
 
 Documentation
 -------------

@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2023  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2023-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -71,12 +71,14 @@ MEMBER_FUNCTION(_GPPort,
 %ignore gp_port_usb_clear_halt;
 %ignore gp_port_usb_find_device;
 %ignore gp_port_usb_find_device_by_class;
+%ignore gp_port_usb_get_sys_device;
 %ignore gp_port_usb_msg_class_read;
 %ignore gp_port_usb_msg_class_write;
 %ignore gp_port_usb_msg_interface_read;
 %ignore gp_port_usb_msg_interface_write;
 %ignore gp_port_usb_msg_read;
 %ignore gp_port_usb_msg_write;
+%ignore gp_port_usb_set_sys_device;
 %ignore gp_port_write;
 
 %ignore _GPPort::type;

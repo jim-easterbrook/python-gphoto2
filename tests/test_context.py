@@ -35,6 +35,8 @@ from tests.vcamera import has_vcam, use_vcam
 class TestContext(unittest.TestCase):
     def setUp(self):
         use_vcam(True)
+        self.gp_library_version = tuple(int(x) for x in gp.gp_library_version(
+            gp.GP_VERSION_SHORT)[0].split('.'))
 
     def cb_idle(self, context, data):
         self.callback_count['cb_idle'] += 1
@@ -98,7 +100,7 @@ class TestContext(unittest.TestCase):
         # call some camera functions which may invoke some callbacks
         text = camera.get_summary(context)
         config = camera.get_config(context)
-        if gp.gp_library_version(gp.GP_VERSION_SHORT)[0] == '2.5.32':
+        if self.gp_library_version == (2, 5, 32):
             # workaround for https://github.com/gphoto/libgphoto2/issues/1136
             camera.folder_list_folders('/store_00010001')
         path = camera.capture(gp.GP_CAPTURE_IMAGE, context)
@@ -109,7 +111,7 @@ class TestContext(unittest.TestCase):
         # check result
         self.assertEqual(self.callback_count['cb_progress_start'], 1)
         self.assertEqual(self.callback_count['cb_progress_stop'], 1)
-        if gp.gp_library_version(gp.GP_VERSION_SHORT)[0] == '2.5.32':
+        if self.gp_library_version >= (2, 5, 32):
             self.assertEqual(self.callback_count['cb_progress_update'], 21)
             self.assertEqual(self.callback_count['cb_cancel'], 31)
         else:
@@ -148,7 +150,7 @@ class TestContext(unittest.TestCase):
         self.assertEqual(OK, gp.GP_OK)
         OK, config = gp.gp_camera_get_config(camera, context)
         self.assertEqual(OK, gp.GP_OK)
-        if gp.gp_library_version(gp.GP_VERSION_SHORT)[0] == '2.5.32':
+        if self.gp_library_version == (2, 5, 32):
             # workaround for https://github.com/gphoto/libgphoto2/issues/1136
             camera.folder_list_folders('/store_00010001')
         OK, path = gp.gp_camera_capture(camera, gp.GP_CAPTURE_IMAGE, context)
@@ -162,7 +164,7 @@ class TestContext(unittest.TestCase):
         # check result
         self.assertEqual(self.callback_count['cb_progress_start'], 1)
         self.assertEqual(self.callback_count['cb_progress_stop'], 1)
-        if gp.gp_library_version(gp.GP_VERSION_SHORT)[0] == '2.5.32':
+        if self.gp_library_version >= (2, 5, 32):
             self.assertEqual(self.callback_count['cb_progress_update'], 21)
             self.assertEqual(self.callback_count['cb_cancel'], 31)
         else:

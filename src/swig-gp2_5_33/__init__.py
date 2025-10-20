@@ -1,5 +1,5 @@
-__version__ = "2.6.2"
-__version_tuple__ = tuple((2, 6, 2))
+__version__ = "2.6.3"
+__version_tuple__ = tuple((2, 6, 3))
 
 
 import os

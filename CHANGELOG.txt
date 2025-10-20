@@ -19,6 +19,9 @@ License along with python-gphoto2.  If not, see
 <https://www.gnu.org/licenses/>.
 
 
+Changes in 2.6.3:
+  1/ Binary wheels include libgphoto2 v2.5.33
+
 Changes in 2.6.2:
   1/ Corrected deprecation of passing a CameraFile object to file_get() and
      capture_preview(). Release 2.6.0 deprecated not passing one.

@@ -16,7 +16,7 @@ jobs:
             target: 14.0
     env:
       GPHOTO_DIR: ${{ github.workspace }}/libgphoto2
-      GPHOTO_VSN: 2.5.32
+      GPHOTO_VSN: 2.5.33
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4

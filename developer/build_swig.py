@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2021-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2021-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This file is part of python-gphoto2.
 #
@@ -76,7 +76,8 @@ def main(argv=None):
             break
     # make options list
     swig_opts = ['-python', '-nodefaultctor', '-O',
-                 '-Wextra', '-Werror', '-builtin', '-nofastunpack']
+                 '-Wextra', '-Werror', '-builtin', '-nofastunpack',
+                 '-Isrc/gphoto2', '-I-']
     if swig_version < (4, 1, 0):
         swig_opts.append('-py3')
     doc_file = os.path.join('src', 'gphoto2', 'common', 'doc.i')
@@ -86,7 +87,7 @@ def main(argv=None):
     version_opts = ['-outdir', output_dir]
     if os.path.isfile(doc_file):
         version_opts.append(
-            '-DDOC_FILE=' + os.path.basename(doc_file))
+            '-DDOC_FILE=common/' + os.path.basename(doc_file))
     version_opts += gphoto2_include
     # do each swig module
     for ext_name in ext_names:

@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2017-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2017-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -24,8 +24,8 @@
 #include "gphoto2/gphoto2.h"
 %}
 
-// Include macros and typemaps
-%include "macros.i"
+// Include our macros and swig's typemaps
+%include "common/macros.i"
 %include "typemaps.i"
 
 // Include doxygen documentation

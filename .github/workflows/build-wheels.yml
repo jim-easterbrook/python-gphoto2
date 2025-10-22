@@ -43,9 +43,37 @@ jobs:
           make
           make install
 
-      - name: Build wheels
+      - name: Build wheels (Python 3.6 & 3.7)
+        if: ${{ matrix.os != 'macos-14' }}
         # cibuildwheel@v3.x omits Python 3.6 & 3.7
         uses: pypa/cibuildwheel@v2.23.3
+        env:
+          CIBW_ARCHS: auto64
+          CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
+          CIBW_MANYLINUX_AARCH64_IMAGE: manylinux_2_28
+          CIBW_BUILD: "cp36* cp37*"
+          CIBW_SKIP: "*musllinux*"
+          CIBW_ENVIRONMENT_LINUX: >
+            GPHOTO2_ROOT=$PWD/libgphoto2/local_install
+          CIBW_ENVIRONMENT_MACOS: >
+            GPHOTO2_ROOT=$GPHOTO_DIR/local_install
+            MACOSX_DEPLOYMENT_TARGET=${{ matrix.target }}
+            SYSTEM_VERSION_COMPAT=0
+          CIBW_TEST_COMMAND: >
+            python3 -m gphoto2 -v &&
+            python3 -m unittest discover {project}/tests -v
+          CIBW_BEFORE_ALL_LINUX: >
+            yum install -y libusbx-devel libexif-devel libjpeg-turbo-devel
+            gd-devel libcurl-devel libxml2-devel libtool-ltdl-devel &&
+            pushd $PWD/libgphoto2 &&
+            ./configure --prefix=$PWD/local_install --disable-internal-docs
+            --enable-vusb &&
+            make &&
+            make install &&
+            popd
+
+      - name: Build wheels (Python 3.8+)
+        uses: pypa/cibuildwheel@v3.2.1
         env:
           CIBW_ARCHS: auto64
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014

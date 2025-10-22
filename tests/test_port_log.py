@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2023  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2023-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This file is part of python-gphoto2.
 #
@@ -48,12 +48,14 @@ class TestPortLog(unittest.TestCase):
         gp.gp_log(gp.GP_LOG_DEBUG, 'wrong', 'wrong')
 
     def test_use_python_logging(self):
-        self.assertEqual(sys.getrefcount(_gphoto2_logger_cb), 3)
+        if sys.version_info < (3, 14):
+            self.assertEqual(sys.getrefcount(_gphoto2_logger_cb), 3)
         # test default mapping
         # GP_LOG_DATA maps to DEBUG - 5 which self.assertLogs doesn't handle
         OK, callbacks = gp.use_python_logging()
         self.assertGreaterEqual(OK, gp.GP_OK)
-        self.assertEqual(sys.getrefcount(_gphoto2_logger_cb), 4)
+        if sys.version_info < (3, 14):
+            self.assertEqual(sys.getrefcount(_gphoto2_logger_cb), 4)
         with self.assertLogs('gphoto2', logging.DEBUG):
             gp.gp_log(gp.GP_LOG_DEBUG, 'debug', 'debug_message')
         with self.assertLogs('gphoto2', logging.INFO):
@@ -61,7 +63,8 @@ class TestPortLog(unittest.TestCase):
         with self.assertLogs('gphoto2', logging.WARNING):
             gp.gp_log(gp.GP_LOG_ERROR, 'error', 'error_message')
         del callbacks
-        self.assertEqual(sys.getrefcount(_gphoto2_logger_cb), 3)
+        if sys.version_info < (3, 14):
+            self.assertEqual(sys.getrefcount(_gphoto2_logger_cb), 3)
         # test custom mapping
         OK, callbacks = gp.use_python_logging(mapping={
             gp.GP_LOG_ERROR   : logging.CRITICAL,

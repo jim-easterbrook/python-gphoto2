@@ -70,7 +70,9 @@ PyObject *PyExc_GPhoto2Error = NULL;
     SWIG_Py_DECREF(module);
   }
   if (PyExc_GPhoto2Error == NULL)
-#if PY_VERSION_HEX >= 0x03000000
+#if SWIG_VERSION >= 0x040400
+    return -1;
+#elif PY_VERSION_HEX >= 0x03000000
     return NULL;
 #else
     return;

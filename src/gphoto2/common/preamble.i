@@ -57,25 +57,3 @@
   $result = SWIG_AppendOutput($result,
     *$1 ? PyString_FromString(*$1) : SWIG_Py_Void());
 }
-
-// Get PyExc_GPhoto2Error object
-%{
-PyObject *PyExc_GPhoto2Error = NULL;
-%}
-%init %{
-{
-  PyObject *module = PyImport_ImportModule("gphoto2");
-  if (module != NULL) {
-    PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
-    SWIG_Py_DECREF(module);
-  }
-  if (PyExc_GPhoto2Error == NULL)
-#if SWIG_VERSION >= 0x040400
-    return -1;
-#elif PY_VERSION_HEX >= 0x03000000
-    return NULL;
-#else
-    return;
-#endif
-}
-%}

@@ -78,11 +78,9 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 %typemap(default) CameraFile *camera_file (int new_file = 0) %{
   $1 = NULL;
 %}
-%typemap(check) CameraFile *camera_file {
+%typemap(check, fragment="gphoto2_error") CameraFile *camera_file {
   if (!$1) {
-    int error = gp_file_new(&$1);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error)
+    if (gphoto2_error(gp_file_new(&$1))) {
       SWIG_fail;
     }
     new_file$argnum = 1;

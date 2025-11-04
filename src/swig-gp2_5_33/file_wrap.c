@@ -4376,20 +4376,22 @@ static swig_module_info swig_module = {swig_types, 10, 0, 0, 0, 0};
 
 PyObject *PyExc_GPhoto2Error = NULL;
 
+
+static int gphoto2_error(int error) {
+  if (error < GP_OK) {
+    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+    return 1;
+  }
+  return 0;
+};
+
 SWIGINTERN struct _CameraFile *new__CameraFile__SWIG_0(void){
     struct _CameraFile *result;
-    int error = gp_file_new(&result);
-    if (error < GP_OK)
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
+    gphoto2_error(gp_file_new(&result));
     return result;
   }
 SWIGINTERN void delete__CameraFile(struct _CameraFile *self){
-    int error = gp_file_unref(self);
-    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
+    gphoto2_error(gp_file_unref(self));
   }
 
 #include <limits.h>
@@ -4554,11 +4556,7 @@ SWIG_AsVal_int (PyObject * obj, int *val)
 
 SWIGINTERN struct _CameraFile *new__CameraFile__SWIG_1(int fd){
     struct _CameraFile *result;
-    int error = gp_file_new_from_fd(&result, fd);
-    if (error < GP_OK)
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
+    gphoto2_error(gp_file_new_from_fd(&result, fd));
     return result;
   }
 
@@ -4670,9 +4668,7 @@ SWIGINTERN void _CameraFile_set_name(struct _CameraFile *self,char const *name){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4685,9 +4681,7 @@ SWIGINTERN void _CameraFile_get_name(struct _CameraFile *self,char const **name)
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4700,9 +4694,7 @@ SWIGINTERN void _CameraFile_set_mime_type(struct _CameraFile *self,char const *m
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4715,9 +4707,7 @@ SWIGINTERN void _CameraFile_get_mime_type(struct _CameraFile *self,char const **
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4730,9 +4720,7 @@ SWIGINTERN void _CameraFile_set_mtime(struct _CameraFile *self,time_t mtime){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4748,9 +4736,7 @@ SWIGINTERN void _CameraFile_get_mtime(struct _CameraFile *self,time_t *mtime){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4763,9 +4749,7 @@ SWIGINTERN void _CameraFile_detect_mime_type(struct _CameraFile *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4778,9 +4762,7 @@ SWIGINTERN void _CameraFile_adjust_name_for_mime_type(struct _CameraFile *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4793,9 +4775,7 @@ SWIGINTERN void _CameraFile_get_name_by_type(struct _CameraFile *self,char const
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4860,9 +4840,7 @@ SWIGINTERN void _CameraFile_set_data_and_size(struct _CameraFile *self,char *dat
 
     SWIG_PYTHON_THREAD_END_ALLOW;
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4875,9 +4853,7 @@ SWIGINTERN void _CameraFile_get_data_and_size(struct _CameraFile *self,char cons
 
     SWIG_PYTHON_THREAD_END_ALLOW;
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4890,9 +4866,7 @@ SWIGINTERN void _CameraFile_save(struct _CameraFile *self,char const *filename){
 
     SWIG_PYTHON_THREAD_END_ALLOW;
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4905,9 +4879,7 @@ SWIGINTERN void _CameraFile_clean(struct _CameraFile *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4920,9 +4892,7 @@ SWIGINTERN void _CameraFile_copy(struct _CameraFile *self,CameraFile *source){
 
     SWIG_PYTHON_THREAD_END_ALLOW;
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4935,9 +4905,7 @@ SWIGINTERN void _CameraFile_open(struct _CameraFile *self,char const *filename){
 
     SWIG_PYTHON_THREAD_END_ALLOW;
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -7828,25 +7796,23 @@ SWIGINTERN int SWIG_mod_exec(PyObject *m) {
   SWIG_InstallConstants(d,swig_const_table);
   
   
+  /* type '::_CameraFile' */
+  d = PyDict_New();
+  
   {
     PyObject *module = PyImport_ImportModule("gphoto2");
-    if (module != NULL) {
+    if (module) {
       PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
       SWIG_Py_DECREF(module);
     }
-    if (PyExc_GPhoto2Error == NULL)
-#if SWIG_VERSION >= 0x040400
+    if (!PyExc_GPhoto2Error)
+    
     return -1;
-#elif PY_VERSION_HEX >= 0x03000000
-    return NULL;
-#else
-    return;
-#endif
+    
+    
+    
   }
   
-  
-  /* type '::_CameraFile' */
-  d = PyDict_New();
   builtin_base_count = 0;
   builtin_bases[builtin_base_count] = NULL;
   PyDict_SetItemString(d, "this", this_descr);

@@ -4372,20 +4372,22 @@ static swig_module_info swig_module = {swig_types, 7, 0, 0, 0, 0};
 
 PyObject *PyExc_GPhoto2Error = NULL;
 
+
+static int gphoto2_error(int error) {
+  if (error < GP_OK) {
+    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+    return 1;
+  }
+  return 0;
+};
+
 SWIGINTERN struct _CameraList *new__CameraList(void){
     struct _CameraList *result;
-    int error = gp_list_new(&result);
-    if (error < GP_OK)
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
+    gphoto2_error(gp_list_new(&result));
     return result;
   }
 SWIGINTERN void delete__CameraList(struct _CameraList *self){
-    int error = gp_list_unref(self);
-    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
+    gphoto2_error(gp_list_unref(self));
   }
 
   #include "gphoto2/gphoto2.h"
@@ -4413,26 +4415,16 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 
   static PyObject* CameraList_get_key(CameraList *list, int idx) {
     const char *name = NULL;
-    int error = gp_list_get_name(list, idx, &name);
-    if (error < GP_OK) {
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/;
+    if (gphoto2_error(gp_list_get_name(list, idx, &name)))
       return NULL;
-    }
     return name ? PyUnicode_FromString(name) : SWIG_Py_Void();
   }
 
 
   static PyObject* CameraList_get_value(CameraList *list, int idx) {
     const char *value = NULL;
-    int error = gp_list_get_value(list, idx, &value);
-    if (error < GP_OK) {
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/;
+    if (gphoto2_error(gp_list_get_value(list, idx, &value)))
       return NULL;
-    }
     return value ? PyUnicode_FromString(value) : SWIG_Py_Void();
   }
 
@@ -4749,9 +4741,7 @@ SWIGINTERN int _CameraList___len__(struct _CameraList *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
     return result;
 
@@ -4771,9 +4761,7 @@ SWIGINTERN int _CameraList_count(struct _CameraList *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
     return result;
 
@@ -4786,9 +4774,7 @@ SWIGINTERN void _CameraList_append(struct _CameraList *self,char const *name,cha
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4801,9 +4787,7 @@ SWIGINTERN void _CameraList_reset(struct _CameraList *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4816,9 +4800,7 @@ SWIGINTERN void _CameraList_sort(struct _CameraList *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4831,9 +4813,7 @@ SWIGINTERN void _CameraList_find_by_name(struct _CameraList *self,int *index,cha
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4846,9 +4826,7 @@ SWIGINTERN void _CameraList_get_name(struct _CameraList *self,int index,char con
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4861,9 +4839,7 @@ SWIGINTERN void _CameraList_get_value(struct _CameraList *self,int index,char co
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4876,9 +4852,7 @@ SWIGINTERN void _CameraList_set_name(struct _CameraList *self,int index,char con
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4891,9 +4865,7 @@ SWIGINTERN void _CameraList_set_value(struct _CameraList *self,int index,char co
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4906,9 +4878,7 @@ SWIGINTERN void _CameraList_populate(struct _CameraList *self,char const *format
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -7859,25 +7829,23 @@ SWIGINTERN int SWIG_mod_exec(PyObject *m) {
   SWIG_InstallConstants(d,swig_const_table);
   
   
+  /* type '::_CameraList' */
+  d = PyDict_New();
+  
   {
     PyObject *module = PyImport_ImportModule("gphoto2");
-    if (module != NULL) {
+    if (module) {
       PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
       SWIG_Py_DECREF(module);
     }
-    if (PyExc_GPhoto2Error == NULL)
-#if SWIG_VERSION >= 0x040400
+    if (!PyExc_GPhoto2Error)
+    
     return -1;
-#elif PY_VERSION_HEX >= 0x03000000
-    return NULL;
-#else
-    return;
-#endif
+    
+    
+    
   }
   
-  
-  /* type '::_CameraList' */
-  d = PyDict_New();
   builtin_base_count = 0;
   builtin_bases[builtin_base_count] = NULL;
   PyDict_SetItemString(d, "this", this_descr);

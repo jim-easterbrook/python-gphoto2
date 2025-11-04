@@ -4390,9 +4390,6 @@ static swig_module_info swig_module = {swig_types, 27, 0, 0, 0, 0};
 #include "gphoto2/gphoto2.h"
 
 
-PyObject *PyExc_GPhoto2Error = NULL;
-
-
 #include <stdint.h>		// Use the C99 official header
 
 
@@ -8595,23 +8592,6 @@ SWIGINTERN int SWIG_mod_exec(PyObject *m) {
 #endif
   
   SWIG_InstallConstants(d,swig_const_table);
-  
-  
-  {
-    PyObject *module = PyImport_ImportModule("gphoto2");
-    if (module != NULL) {
-      PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
-      SWIG_Py_DECREF(module);
-    }
-    if (PyExc_GPhoto2Error == NULL)
-#if SWIG_VERSION >= 0x040400
-    return -1;
-#elif PY_VERSION_HEX >= 0x03000000
-    return NULL;
-#else
-    return;
-#endif
-  }
   
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_FILE_INFO_NONE",SWIG_From_int((int)(GP_FILE_INFO_NONE)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_FILE_INFO_TYPE",SWIG_From_int((int)(GP_FILE_INFO_TYPE)));

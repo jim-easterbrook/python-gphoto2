@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -104,11 +104,10 @@ DEFAULT_DTOR(_CameraFile, gp_file_unref)
 
 // Add constructor from file descriptor
 %extend _CameraFile {
+  %fragment("gphoto2_error");
   _CameraFile(int fd) {
     struct _CameraFile *result;
-    int error = gp_file_new_from_fd(&result, fd);
-    if (error < GP_OK)
-      GPHOTO2_ERROR(error)
+    gphoto2_error(gp_file_new_from_fd(&result, fd));
     return result;
   }
 };

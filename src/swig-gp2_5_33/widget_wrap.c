@@ -4372,14 +4372,23 @@ static swig_module_info swig_module = {swig_types, 9, 0, 0, 0, 0};
 #include "gphoto2/gphoto2.h"
 
 
-PyObject *PyExc_GPhoto2Error = NULL;
-
-
 typedef union {
     int int_val;
     float flt_val;
     char* str_val;
 } VoidValue;
+
+
+PyObject *PyExc_GPhoto2Error = NULL;
+
+
+static int gphoto2_error(int error) {
+  if (error < GP_OK) {
+    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+    return 1;
+  }
+  return 0;
+};
 
 
 SWIGINTERNINLINE PyObject*
@@ -4432,10 +4441,7 @@ static int widget_dtor(CameraWidget *widget) {
 }
 
 SWIGINTERN void delete__CameraWidget(struct _CameraWidget *self){
-    int error = widget_dtor(self);
-    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
+    gphoto2_error(widget_dtor(self));
   }
 
 #include <limits.h>
@@ -4604,10 +4610,7 @@ SWIGINTERN void _CameraWidget___getitem__(struct _CameraWidget *self,int child_n
             PyErr_SetNone(PyExc_IndexError);
             return;
         }
-        int result = gp_widget_get_child(self, child_number, child);
-        if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+        gphoto2_error(gp_widget_get_child(self, child_number, child));
     }
 SWIGINTERN int _CameraWidget___len__(struct _CameraWidget *self){
 
@@ -4617,9 +4620,7 @@ SWIGINTERN int _CameraWidget___len__(struct _CameraWidget *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
     return result;
 
@@ -4632,9 +4633,7 @@ SWIGINTERN int _CameraWidget_count_children(struct _CameraWidget *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
     return result;
 
@@ -4647,9 +4646,7 @@ SWIGINTERN void _CameraWidget_get_child(struct _CameraWidget *self,int child_num
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4662,9 +4659,7 @@ SWIGINTERN void _CameraWidget_get_children(struct _CameraWidget *self,PyObject *
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4778,9 +4773,7 @@ SWIGINTERN void _CameraWidget_get_child_by_label(struct _CameraWidget *self,char
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4793,9 +4786,7 @@ SWIGINTERN void _CameraWidget_get_child_by_id(struct _CameraWidget *self,int id,
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4808,9 +4799,7 @@ SWIGINTERN void _CameraWidget_get_child_by_name(struct _CameraWidget *self,char 
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4823,9 +4812,7 @@ SWIGINTERN void _CameraWidget_get_root(struct _CameraWidget *self,CameraWidget *
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4838,9 +4825,7 @@ SWIGINTERN void _CameraWidget_get_parent(struct _CameraWidget *self,CameraWidget
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4853,9 +4838,7 @@ SWIGINTERN void _CameraWidget_set_value(struct _CameraWidget *self,void const *v
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4868,9 +4851,7 @@ SWIGINTERN void _CameraWidget_get_value(struct _CameraWidget *self,void *value_o
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4883,9 +4864,7 @@ SWIGINTERN void _CameraWidget_set_name(struct _CameraWidget *self,char const *na
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4898,9 +4877,7 @@ SWIGINTERN void _CameraWidget_get_name(struct _CameraWidget *self,char const **n
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4913,9 +4890,7 @@ SWIGINTERN void _CameraWidget_set_info(struct _CameraWidget *self,char const *in
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4928,9 +4903,7 @@ SWIGINTERN void _CameraWidget_get_info(struct _CameraWidget *self,char const **i
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4943,9 +4916,7 @@ SWIGINTERN void _CameraWidget_get_id(struct _CameraWidget *self,int *id){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4958,9 +4929,7 @@ SWIGINTERN void _CameraWidget_get_type(struct _CameraWidget *self,CameraWidgetTy
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4973,9 +4942,7 @@ SWIGINTERN void _CameraWidget_get_label(struct _CameraWidget *self,char const **
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -5044,9 +5011,7 @@ SWIGINTERN void _CameraWidget_set_range(struct _CameraWidget *self,float min,flo
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -5069,9 +5034,7 @@ SWIGINTERN void _CameraWidget_get_range(struct _CameraWidget *self,float *min,fl
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -5084,9 +5047,7 @@ SWIGINTERN void _CameraWidget_add_choice(struct _CameraWidget *self,char const *
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -5099,9 +5060,7 @@ SWIGINTERN int _CameraWidget_count_choices(struct _CameraWidget *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
     return result;
 
@@ -5114,9 +5073,7 @@ SWIGINTERN void _CameraWidget_get_choices(struct _CameraWidget *self,PyObject **
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -5129,9 +5086,7 @@ SWIGINTERN void _CameraWidget_get_choice(struct _CameraWidget *self,int choice_n
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -5144,9 +5099,7 @@ SWIGINTERN int _CameraWidget_changed(struct _CameraWidget *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
     return result;
 
@@ -5159,9 +5112,7 @@ SWIGINTERN void _CameraWidget_set_changed(struct _CameraWidget *self,int changed
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -5174,9 +5125,7 @@ SWIGINTERN void _CameraWidget_set_readonly(struct _CameraWidget *self,int readon
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -5189,9 +5138,7 @@ SWIGINTERN void _CameraWidget_get_readonly(struct _CameraWidget *self,int *reado
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -5225,11 +5172,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_value(PyObject *self, PyObject *args) {
     CameraWidgetType type;
     PyObject* py_value = NULL;
     VoidValue* value = (VoidValue*) arg2;
-    int error = gp_widget_get_type(arg1, &type);
-    if (error < GP_OK) {
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-      PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-      /*@SWIG@*/;
+    if (gphoto2_error(gp_widget_get_type(arg1, &type))) {
       SWIG_fail;
     }
     switch (type) {
@@ -5385,18 +5328,10 @@ SWIGINTERN PyObject *_wrap_CameraWidget___getitem__(PyObject *self, PyObject *ar
     if (*arg3 != NULL) {
       // Increment refcount on root widget
       CameraWidget *root;
-      int error = gp_widget_get_root(*arg3, &root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
         SWIG_fail;
       }
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_ref(root))) {
         SWIG_fail;
       }
     }
@@ -5494,18 +5429,10 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child(PyObject *self, PyObject *args
     if (*arg3 != NULL) {
       // Increment refcount on root widget
       CameraWidget *root;
-      int error = gp_widget_get_root(*arg3, &root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
         SWIG_fail;
       }
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_ref(root))) {
         SWIG_fail;
       }
     }
@@ -5589,18 +5516,10 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_label(PyObject *self, PyObj
     if (*arg3 != NULL) {
       // Increment refcount on root widget
       CameraWidget *root;
-      int error = gp_widget_get_root(*arg3, &root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
         SWIG_fail;
       }
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_ref(root))) {
         SWIG_fail;
       }
     }
@@ -5652,18 +5571,10 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_id(PyObject *self, PyObject
     if (*arg3 != NULL) {
       // Increment refcount on root widget
       CameraWidget *root;
-      int error = gp_widget_get_root(*arg3, &root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
         SWIG_fail;
       }
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_ref(root))) {
         SWIG_fail;
       }
     }
@@ -5714,18 +5625,10 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_name(PyObject *self, PyObje
     if (*arg3 != NULL) {
       // Increment refcount on root widget
       CameraWidget *root;
-      int error = gp_widget_get_root(*arg3, &root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
         SWIG_fail;
       }
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_ref(root))) {
         SWIG_fail;
       }
     }
@@ -5768,18 +5671,10 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_root(PyObject *self, PyObject *args)
     if (*arg2 != NULL) {
       // Increment refcount on root widget
       CameraWidget *root;
-      int error = gp_widget_get_root(*arg2, &root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_get_root(*arg2, &root))) {
         SWIG_fail;
       }
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_ref(root))) {
         SWIG_fail;
       }
     }
@@ -5820,18 +5715,10 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_parent(PyObject *self, PyObject *arg
     if (*arg2 != NULL) {
       // Increment refcount on root widget
       CameraWidget *root;
-      int error = gp_widget_get_root(*arg2, &root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_get_root(*arg2, &root))) {
         SWIG_fail;
       }
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_ref(root))) {
         SWIG_fail;
       }
     }
@@ -5865,10 +5752,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_set_value(PyObject *self, PyObject *args
   arg1 = (struct _CameraWidget *)(argp1);
   // Camera widget is stored in arg1 as it's definitely the first argument to gp_widget_set_value
   res2 = gp_widget_get_type(arg1, &type2);
-  if (res2 < GP_OK) {
-    /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(res2));
-    /*@SWIG@*/;
+  if (gphoto2_error(res2)) {
     SWIG_fail;
   }
   switch (type2) {
@@ -5945,11 +5829,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_value(PyObject *self, PyObject *args
     CameraWidgetType type;
     PyObject* py_value = NULL;
     VoidValue* value = (VoidValue*) arg2;
-    int error = gp_widget_get_type(arg1, &type);
-    if (error < GP_OK) {
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-      PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-      /*@SWIG@*/;
+    if (gphoto2_error(gp_widget_get_type(arg1, &type))) {
       SWIG_fail;
     }
     switch (type) {
@@ -6720,18 +6600,10 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child(PyObject *self, PyObject *args) {
     if (*arg3 != NULL) {
       // Increment refcount on root widget
       CameraWidget *root;
-      int error = gp_widget_get_root(*arg3, &root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
         SWIG_fail;
       }
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_ref(root))) {
         SWIG_fail;
       }
     }
@@ -6781,18 +6653,10 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_label(PyObject *self, PyObject
     if (*arg3 != NULL) {
       // Increment refcount on root widget
       CameraWidget *root;
-      int error = gp_widget_get_root(*arg3, &root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
         SWIG_fail;
       }
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_ref(root))) {
         SWIG_fail;
       }
     }
@@ -6843,18 +6707,10 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_id(PyObject *self, PyObject *a
     if (*arg3 != NULL) {
       // Increment refcount on root widget
       CameraWidget *root;
-      int error = gp_widget_get_root(*arg3, &root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
         SWIG_fail;
       }
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_ref(root))) {
         SWIG_fail;
       }
     }
@@ -6904,18 +6760,10 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_name(PyObject *self, PyObject 
     if (*arg3 != NULL) {
       // Increment refcount on root widget
       CameraWidget *root;
-      int error = gp_widget_get_root(*arg3, &root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
         SWIG_fail;
       }
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_ref(root))) {
         SWIG_fail;
       }
     }
@@ -6957,18 +6805,10 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_root(PyObject *self, PyObject *args) {
     if (*arg2 != NULL) {
       // Increment refcount on root widget
       CameraWidget *root;
-      int error = gp_widget_get_root(*arg2, &root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_get_root(*arg2, &root))) {
         SWIG_fail;
       }
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_ref(root))) {
         SWIG_fail;
       }
     }
@@ -7008,18 +6848,10 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_parent(PyObject *self, PyObject *args) 
     if (*arg2 != NULL) {
       // Increment refcount on root widget
       CameraWidget *root;
-      int error = gp_widget_get_root(*arg2, &root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_get_root(*arg2, &root))) {
         SWIG_fail;
       }
-      error = gp_widget_ref(root);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-        PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-        /*@SWIG@*/;
+      if (gphoto2_error(gp_widget_ref(root))) {
         SWIG_fail;
       }
     }
@@ -7055,10 +6887,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_set_value(PyObject *self, PyObject *args) {
   arg1 = (CameraWidget *)(argp1);
   // Camera widget is stored in arg1 as it's definitely the first argument to gp_widget_set_value
   res2 = gp_widget_get_type(arg1, &type2);
-  if (res2 < GP_OK) {
-    /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(res2));
-    /*@SWIG@*/;
+  if (gphoto2_error(res2)) {
     SWIG_fail;
   }
   switch (type2) {
@@ -9747,18 +9576,16 @@ SWIGINTERN int SWIG_mod_exec(PyObject *m) {
   
   {
     PyObject *module = PyImport_ImportModule("gphoto2");
-    if (module != NULL) {
+    if (module) {
       PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
       SWIG_Py_DECREF(module);
     }
-    if (PyExc_GPhoto2Error == NULL)
-#if SWIG_VERSION >= 0x040400
+    if (!PyExc_GPhoto2Error)
+    
     return -1;
-#elif PY_VERSION_HEX >= 0x03000000
-    return NULL;
-#else
-    return;
-#endif
+    
+    
+    
   }
   
   

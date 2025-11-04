@@ -69,25 +69,19 @@ PLAIN_ARGOUT(CameraList **)
     return self;
   }
 }
-%fragment("CameraList_get_key", "header") {
+%fragment("CameraList_get_key", "header", fragment="gphoto2_error") {
   static PyObject* CameraList_get_key(CameraList *list, int idx) {
     const char *name = NULL;
-    int error = gp_list_get_name(list, idx, &name);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error);
+    if (gphoto2_error(gp_list_get_name(list, idx, &name)))
       return NULL;
-    }
     return name ? PyUnicode_FromString(name) : SWIG_Py_Void();
   }
 }
-%fragment("CameraList_get_value", "header") {
+%fragment("CameraList_get_value", "header", fragment="gphoto2_error") {
   static PyObject* CameraList_get_value(CameraList *list, int idx) {
     const char *value = NULL;
-    int error = gp_list_get_value(list, idx, &value);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error);
+    if (gphoto2_error(gp_list_get_value(list, idx, &value)))
       return NULL;
-    }
     return value ? PyUnicode_FromString(value) : SWIG_Py_Void();
   }
 }

@@ -4375,9 +4375,6 @@ static swig_module_info swig_module = {swig_types, 12, 0, 0, 0, 0};
 #include "gphoto2/gphoto2.h"
 
 
-PyObject *PyExc_GPhoto2Error = NULL;
-
-
 typedef void (*RemoveFunc) (GPContext *context, void *func, void *data);
 
 typedef struct CallbackDetails {
@@ -4410,11 +4407,20 @@ static int del_CallbackDetails(struct CallbackDetails *this) {
     return GP_OK;
 };
 
+
+PyObject *PyExc_GPhoto2Error = NULL;
+
+
+static int gphoto2_error(int error) {
+  if (error < GP_OK) {
+    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+    return 1;
+  }
+  return 0;
+};
+
 SWIGINTERN void delete_CallbackDetails(struct CallbackDetails *self){
-    int error = del_CallbackDetails(self);
-    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
+    gphoto2_error(del_CallbackDetails(self));
   }
 
 static void wrap_idle_func (GPContext *context, void *data) {
@@ -7327,25 +7333,23 @@ SWIGINTERN int SWIG_mod_exec(PyObject *m) {
   SWIG_InstallConstants(d,swig_const_table);
   
   
+  /* type '::CallbackDetails' */
+  d = PyDict_New();
+  
   {
     PyObject *module = PyImport_ImportModule("gphoto2");
-    if (module != NULL) {
+    if (module) {
       PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
       SWIG_Py_DECREF(module);
     }
-    if (PyExc_GPhoto2Error == NULL)
-#if SWIG_VERSION >= 0x040400
+    if (!PyExc_GPhoto2Error)
+    
     return -1;
-#elif PY_VERSION_HEX >= 0x03000000
-    return NULL;
-#else
-    return;
-#endif
+    
+    
+    
   }
   
-  
-  /* type '::CallbackDetails' */
-  d = PyDict_New();
   builtin_base_count = 0;
   builtin_bases[builtin_base_count] = NULL;
   PyDict_SetItemString(d, "this", this_descr);

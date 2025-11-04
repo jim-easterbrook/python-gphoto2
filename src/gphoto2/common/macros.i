@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -37,9 +37,36 @@
 }
 %enddef
 
-%define GPHOTO2_ERROR(error)
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-%enddef
+// Get PyExc_GPhoto2Error object
+%fragment("_declare_GPhoto2Error", "header") {
+PyObject *PyExc_GPhoto2Error = NULL;
+}
+%fragment("_import_GPhoto2Error", "init", fragment="_declare_GPhoto2Error") {
+{
+  PyObject *module = PyImport_ImportModule("gphoto2");
+  if (module) {
+    PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
+    SWIG_Py_DECREF(module);
+  }
+  if (!PyExc_GPhoto2Error)
+#if SWIG_VERSION >= 0x040400
+    return -1;
+#else
+    return NULL;
+#endif
+}
+}
+
+// Set Python exception if result is a failure
+%fragment("gphoto2_error", "header", fragment="_import_GPhoto2Error") {
+static int gphoto2_error(int error) {
+  if (error < GP_OK) {
+    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+    return 1;
+  }
+  return 0;
+};
+}
 
 %define PLAIN_ARGOUT(typepattern)
 %typemap(in, numinputs=0) typepattern ($*1_type temp) {
@@ -71,11 +98,9 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %enddef
 
 %define NEW_ARGOUT(typepattern, alloc_func, free_func)
-%typemap(in, numinputs=0) typepattern () {
-  int error = alloc_func(&$1);
-  if (error < GP_OK) {
+%typemap(in, numinputs=0, fragment="gphoto2_error") typepattern () {
+  if (gphoto2_error(alloc_func(&$1))) {
     $1 = NULL;
-    GPHOTO2_ERROR(error)
     SWIG_fail;
   }
 }
@@ -93,11 +118,10 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 
 %define DEFAULT_CTOR(type, function)
 %extend type {
+  %fragment("gphoto2_error");
   type() {
     struct type *result;
-    int error = function(&result);
-    if (error < GP_OK)
-      GPHOTO2_ERROR(error)
+    gphoto2_error(function(&result));
     return result;
   }
 };
@@ -106,9 +130,9 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %define DEFAULT_DTOR(name, free_func)
 %delobject free_func;
 %extend name {
+  %fragment("gphoto2_error");
   ~name() {
-    int error = free_func($self);
-    if (error < GP_OK) GPHOTO2_ERROR(error)
+    gphoto2_error(free_func($self));
   }
 };
 %enddef
@@ -117,6 +141,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 %define MEMBER_FUNCTION(type, member_rtn, member, member_args,
                         function, function_args, thread_allow)
 %extend type {
+  %fragment("gphoto2_error");
   member_rtn member member_args {
 #if #thread_allow != ""
     SWIG_PYTHON_THREAD_BEGIN_ALLOW;
@@ -125,7 +150,7 @@ PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
 #if #thread_allow != ""
     SWIG_PYTHON_THREAD_END_ALLOW;
 #endif
-    if (result < GP_OK) GPHOTO2_ERROR(result)
+    gphoto2_error(result);
 #if #member_rtn == "int" || #member_rtn == "static int"
     return result;
 #endif

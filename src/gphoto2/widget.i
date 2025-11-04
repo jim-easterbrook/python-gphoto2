@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -64,18 +64,15 @@ Beware of changes in the libgphoto2 definitions though.
   $result = SWIG_AppendOutput(
     $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
 }
-%typemap(argout) CameraWidget **child, CameraWidget **root, CameraWidget **parent {
+%typemap(argout, fragment="gphoto2_error")
+    CameraWidget **child, CameraWidget **root, CameraWidget **parent {
   if (*$1 != NULL) {
     // Increment refcount on root widget
     CameraWidget *root;
-    int error = gp_widget_get_root(*$1, &root);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error);
+    if (gphoto2_error(gp_widget_get_root(*$1, &root))) {
       SWIG_fail;
     }
-    error = gp_widget_ref(root);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error);
+    if (gphoto2_error(gp_widget_ref(root))) {
       SWIG_fail;
     }
   }
@@ -103,14 +100,13 @@ typedef union {
   temp.str_val = NULL;
   $1 = &temp;
 }
-%typemap(argout) (CameraWidget *widget, void *value_out),
-                 (struct _CameraWidget *self, void *value_out) {
+%typemap(argout, fragment="gphoto2_error")
+    (CameraWidget *widget, void *value_out),
+    (struct _CameraWidget *self, void *value_out) {
   CameraWidgetType type;
   PyObject* py_value = NULL;
   VoidValue* value = (VoidValue*) $2;
-  int error = gp_widget_get_type($1, &type);
-  if (error < GP_OK) {
-    GPHOTO2_ERROR(error);
+  if (gphoto2_error(gp_widget_get_type($1, &type))) {
     SWIG_fail;
   }
   switch (type) {
@@ -144,12 +140,11 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
 %ignore gp_widget_get_value;
 
 // Use typemaps to convert input to gp_widget_set_value
-%typemap(in, noblock=1) const void *value
+%typemap(in, noblock=1, fragment="gphoto2_error") const void *value
     (VoidValue value, int alloc = 0, int res = 0, CameraWidgetType type) {
   // Camera widget is stored in arg1 as it's definitely the first argument to gp_widget_set_value
   res = gp_widget_get_type(arg1, &type);
-  if (res < GP_OK) {
-    GPHOTO2_ERROR(res);
+  if (gphoto2_error(res)) {
     SWIG_fail;
   }
   switch (type) {
@@ -311,14 +306,14 @@ DEFAULT_DTOR(_CameraWidget, widget_dtor)
 %feature("python:slot", "sq_item", functype="ssizeargfunc")
     _CameraWidget::__getitem__;
 %extend _CameraWidget {
+    %fragment("gphoto2_error");
     void __getitem__(int child_number, CameraWidget **child) {
         if ((child_number < 0) ||
             (child_number >= gp_widget_count_children($self))) {
             PyErr_SetNone(PyExc_IndexError);
             return;
         }
-        int result = gp_widget_get_child($self, child_number, child);
-        if (result < GP_OK) GPHOTO2_ERROR(result)
+        gphoto2_error(gp_widget_get_child($self, child_number, child));
     }
 };
 

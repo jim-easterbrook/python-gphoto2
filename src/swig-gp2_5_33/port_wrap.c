@@ -4381,29 +4381,31 @@ static swig_module_info swig_module = {swig_types, 18, 0, 0, 0, 0};
 #include "gphoto2/gphoto2.h"
 
 
-PyObject *PyExc_GPhoto2Error = NULL;
-
-
 SWIGINTERNINLINE PyObject*
   SWIG_From_int  (int value)
 {
   return PyInt_FromLong((long) value);
 }
 
+
+PyObject *PyExc_GPhoto2Error = NULL;
+
+
+static int gphoto2_error(int error) {
+  if (error < GP_OK) {
+    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+    return 1;
+  }
+  return 0;
+};
+
 SWIGINTERN struct _GPPort *new__GPPort(void){
     struct _GPPort *result;
-    int error = gp_port_new(&result);
-    if (error < GP_OK)
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
+    gphoto2_error(gp_port_new(&result));
     return result;
   }
 SWIGINTERN void delete__GPPort(struct _GPPort *self){
-    int error = gp_port_free(self);
-    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
+    gphoto2_error(gp_port_free(self));
   }
 SWIGINTERN void _GPPort_close(struct _GPPort *self){
 
@@ -4413,9 +4415,7 @@ SWIGINTERN void _GPPort_close(struct _GPPort *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4428,9 +4428,7 @@ SWIGINTERN void _GPPort_get_info(struct _GPPort *self,GPPortInfo *info){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4443,9 +4441,7 @@ SWIGINTERN void _GPPort_open(struct _GPPort *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4458,9 +4454,7 @@ SWIGINTERN void _GPPort_reset(struct _GPPort *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4473,9 +4467,7 @@ SWIGINTERN void _GPPort_set_info(struct _GPPort *self,GPPortInfo info){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -6020,23 +6012,6 @@ SWIGINTERN int SWIG_mod_exec(PyObject *m) {
   
   SWIG_InstallConstants(d,swig_const_table);
   
-  
-  {
-    PyObject *module = PyImport_ImportModule("gphoto2");
-    if (module != NULL) {
-      PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
-      SWIG_Py_DECREF(module);
-    }
-    if (PyExc_GPhoto2Error == NULL)
-#if SWIG_VERSION >= 0x040400
-    return -1;
-#elif PY_VERSION_HEX >= 0x03000000
-    return NULL;
-#else
-    return;
-#endif
-  }
-  
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "TRUE",SWIG_From_int((int)((0==0))));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "FALSE",SWIG_From_int((int)((1==0))));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_PORT_SERIAL_PARITY_OFF",SWIG_From_int((int)(GP_PORT_SERIAL_PARITY_OFF)));
@@ -6049,6 +6024,21 @@ SWIGINTERN int SWIG_mod_exec(PyObject *m) {
   
   /* type '::_GPPort' */
   d = PyDict_New();
+  
+  {
+    PyObject *module = PyImport_ImportModule("gphoto2");
+    if (module) {
+      PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
+      SWIG_Py_DECREF(module);
+    }
+    if (!PyExc_GPhoto2Error)
+    
+    return -1;
+    
+    
+    
+  }
+  
   builtin_base_count = 0;
   builtin_bases[builtin_base_count] = NULL;
   PyDict_SetItemString(d, "this", this_descr);

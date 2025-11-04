@@ -4382,20 +4382,22 @@ static swig_module_info swig_module = {swig_types, 17, 0, 0, 0, 0};
 
 PyObject *PyExc_GPhoto2Error = NULL;
 
+
+static int gphoto2_error(int error) {
+  if (error < GP_OK) {
+    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+    return 1;
+  }
+  return 0;
+};
+
 SWIGINTERN struct _CameraAbilitiesList *new__CameraAbilitiesList(void){
     struct _CameraAbilitiesList *result;
-    int error = gp_abilities_list_new(&result);
-    if (error < GP_OK)
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
+    gphoto2_error(gp_abilities_list_new(&result));
     return result;
   }
 SWIGINTERN void delete__CameraAbilitiesList(struct _CameraAbilitiesList *self){
-    int error = gp_abilities_list_free(self);
-    if (error < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
+    gphoto2_error(gp_abilities_list_free(self));
   }
 SWIGINTERN int _CameraAbilitiesList___len__(struct _CameraAbilitiesList *self){
 
@@ -4405,9 +4407,7 @@ SWIGINTERN int _CameraAbilitiesList___len__(struct _CameraAbilitiesList *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
     return result;
 
@@ -4585,15 +4585,9 @@ SWIGINTERN void _CameraAbilitiesList___getitem__(struct _CameraAbilitiesList *se
       PyErr_SetString(PyExc_IndexError, "CameraAbilitiesList index out of range");
       return;
     }
-    {
-      int error = gp_abilities_list_get_abilities(self, idx, abilities);
-      if (error < GP_OK) {
-        /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-/*@SWIG@*/
-        return;
-      }
-    }
+    if (gphoto2_error(gp_abilities_list_get_abilities(
+        self, idx, abilities)))
+      return;
   }
 SWIGINTERN void _CameraAbilitiesList_load(struct _CameraAbilitiesList *self,GPContext *context){
 
@@ -4603,9 +4597,7 @@ SWIGINTERN void _CameraAbilitiesList_load(struct _CameraAbilitiesList *self,GPCo
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4719,9 +4711,7 @@ SWIGINTERN void _CameraAbilitiesList_load_dir(struct _CameraAbilitiesList *self,
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4734,9 +4724,7 @@ SWIGINTERN void _CameraAbilitiesList_reset(struct _CameraAbilitiesList *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4749,9 +4737,7 @@ SWIGINTERN void _CameraAbilitiesList_detect(struct _CameraAbilitiesList *self,GP
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4764,9 +4750,7 @@ SWIGINTERN void _CameraAbilitiesList_append(struct _CameraAbilitiesList *self,Ca
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -4779,9 +4763,7 @@ SWIGINTERN int _CameraAbilitiesList_count(struct _CameraAbilitiesList *self){
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
     return result;
 
@@ -4794,9 +4776,7 @@ SWIGINTERN int _CameraAbilitiesList_lookup_model(struct _CameraAbilitiesList *se
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
     return result;
 
@@ -4809,9 +4789,7 @@ SWIGINTERN void _CameraAbilitiesList_get_abilities(struct _CameraAbilitiesList *
 
 
 
-    if (result < GP_OK) /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(result));
-/*@SWIG@*/
+    gphoto2_error(result);
 
 
 
@@ -5111,12 +5089,8 @@ SWIGINTERN PyObject *_wrap_CameraAbilitiesList_detect(PyObject *self, PyObject *
     arg4 = NULL;
   }
   {
-    int error = gp_list_new(&arg3);
-    if (error < GP_OK) {
+    if (gphoto2_error(gp_list_new(&arg3))) {
       arg3 = NULL;
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-      PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-      /*@SWIG@*/
       SWIG_fail;
     }
   }
@@ -5984,12 +5958,8 @@ SWIGINTERN PyObject *_wrap_gp_abilities_list_detect(PyObject *self, PyObject *ar
     arg4 = NULL;
   }
   {
-    int error = gp_list_new(&arg3);
-    if (error < GP_OK) {
+    if (gphoto2_error(gp_list_new(&arg3))) {
       arg3 = NULL;
-      /*@SWIG:src/gphoto2/common/macros.i,40,GPHOTO2_ERROR@*/
-      PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
-      /*@SWIG@*/
       SWIG_fail;
     }
   }
@@ -8028,25 +7998,23 @@ SWIGINTERN int SWIG_mod_exec(PyObject *m) {
   SWIG_InstallConstants(d,swig_const_table);
   
   
+  /* type '::_CameraAbilitiesList' */
+  d = PyDict_New();
+  
   {
     PyObject *module = PyImport_ImportModule("gphoto2");
-    if (module != NULL) {
+    if (module) {
       PyExc_GPhoto2Error = PyObject_GetAttrString(module, "GPhoto2Error");
       SWIG_Py_DECREF(module);
     }
-    if (PyExc_GPhoto2Error == NULL)
-#if SWIG_VERSION >= 0x040400
+    if (!PyExc_GPhoto2Error)
+    
     return -1;
-#elif PY_VERSION_HEX >= 0x03000000
-    return NULL;
-#else
-    return;
-#endif
+    
+    
+    
   }
   
-  
-  /* type '::_CameraAbilitiesList' */
-  d = PyDict_New();
   builtin_base_count = 0;
   builtin_bases[builtin_base_count] = NULL;
   PyDict_SetItemString(d, "this", this_descr);

@@ -58,22 +58,27 @@ if 'GPHOTO2_ROOT' in os.environ:
             package_data['gphoto2.libgphoto2'].append(name)
     # get cam libs
     packages.append('gphoto2.libgphoto2.camlibs')
-    lib_dir = subprocess.check_output(
+    camlib_dir = subprocess.check_output(
         ['pkg-config', '--variable=driverdir', 'libgphoto2'],
         universal_newlines=True).strip()
-    package_dir['gphoto2.libgphoto2.camlibs'] = os.path.relpath(lib_dir)
+    package_dir['gphoto2.libgphoto2.camlibs'] = os.path.relpath(camlib_dir)
     package_data['gphoto2.libgphoto2.camlibs'] = ['*.so']
     # get io libs
     packages.append('gphoto2.libgphoto2.iolibs')
-    lib_dir = subprocess.check_output(
+    iolib_dir = subprocess.check_output(
         ['pkg-config', '--variable=driverdir', 'libgphoto2_port'],
         universal_newlines=True).strip()
-    package_dir['gphoto2.libgphoto2.iolibs'] = os.path.relpath(lib_dir)
+    if not iolib_dir:
+        iolib_vsn = subprocess.check_output(
+            ['pkg-config', '--variable=VERSION', 'libgphoto2_port'],
+            universal_newlines=True).strip()
+        iolib_dir = os.path.join(lib_dir, 'libgphoto2_port', iolib_vsn)
+    package_dir['gphoto2.libgphoto2.iolibs'] = os.path.relpath(iolib_dir)
     package_data['gphoto2.libgphoto2.iolibs'] = []
-    for name in os.listdir(lib_dir):
+    for name in os.listdir(iolib_dir):
         if name == 'vusb.so':
             packages.append('gphoto2.libgphoto2.vusb')
-            package_dir['gphoto2.libgphoto2.vusb'] = os.path.relpath(lib_dir)
+            package_dir['gphoto2.libgphoto2.vusb'] = os.path.relpath(iolib_dir)
             package_data['gphoto2.libgphoto2.vusb'] = [name]
         elif name.endswith('.so'):
             package_data['gphoto2.libgphoto2.iolibs'].append(name)

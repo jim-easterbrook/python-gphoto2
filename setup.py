@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This file is part of python-gphoto2.
 #
@@ -183,6 +183,10 @@ if tuple(map(int, setuptools_version.split('.')[:2])) < (61, 0):
         # python-gphoto2 version
         version = long_description.split('\n')[0].split()[-1]
 
+    classifiers = metadata['project']['classifiers']
+    classifiers.append('License :: OSI Approved :: GNU Lesser General Public'
+                       ' License v3 or later (LGPLv3+)')
+
     setup_kwds.update(
         name = metadata['project']['name'],
         version = version,
@@ -191,9 +195,9 @@ if tuple(map(int, setuptools_version.split('.')[:2])) < (61, 0):
         author = metadata['project']['authors'][0]['name'],
         author_email = metadata['project']['authors'][0]['email'],
         url = metadata['project']['urls']['homepage'],
-        classifiers = metadata['project']['classifiers'],
+        classifiers = classifiers,
         platforms = metadata['tool']['setuptools']['platforms'],
-        license = metadata['project']['license']['text'],
+        license = 'GNU LGPL',
         zip_safe = metadata['tool']['setuptools']['zip-safe'],
         )
 

@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2023  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2023-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This file is part of python-gphoto2.
 #
@@ -19,19 +19,22 @@
 # <https://www.gnu.org/licenses/>.
 
 [build-system]
-requires = ["setuptools >= 59.6", "toml"]
+requires = [
+    "setuptools >= 59.6, < 61.0; python_version < '3.9'",
+    "setuptools >= 77.0; python_version >= '3.9'",
+    "toml; python_version < '3.9'"
+]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "gphoto2"
 description = "Python interface to libgphoto2"
 readme = "README.rst"
-license = {text = "GNU LGPL"}
+license = "LGPL-3.0-or-later"
 authors = [{name = "Jim Easterbrook", email = "jim@jim-easterbrook.me.uk"}]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: GNU Lesser General Public License v3 or later (LGPLv3+)",
     "Operating System :: MacOS",
     "Operating System :: MacOS :: MacOS X",
     "Operating System :: POSIX",

@@ -4731,9 +4731,6 @@ fail:
 SWIGINTERN struct _GPContext *new__GPContext(void){
     return gp_context_new();
   }
-SWIGINTERN void delete__GPContext(struct _GPContext *self){
-    gp_context_unref(self);
-  }
 SWIGINTERN void _GPContext_set_idle_func(struct _GPContext *self,GPContextIdleFunc func,void *data){
     gp_context_set_idle_func (self, func, data);
   }
@@ -4834,26 +4831,6 @@ SWIGINTERN int _wrap_new_GPContext(PyObject *self, PyObject *args, PyObject *kwa
   return resultobj == Py_None ? -1 : 0;
 fail:
   return -1;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_GPContext(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _GPContext *arg1 = 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_GPContext takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPContext, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_GPContext" "', argument " "1"" of type '" "struct _GPContext *""'"); 
-  }
-  arg1 = (struct _GPContext *)(argp1);
-  delete__GPContext(arg1);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
 }
 
 
@@ -5346,6 +5323,26 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_delete_GPContext(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _GPContext *arg1 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_GPContext takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__GPContext, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_GPContext" "', argument " "1"" of type '" "struct _GPContext *""'"); 
+  }
+  arg1 = (struct _GPContext *)(argp1);
+  gp_context_unref(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_GPContext) /* defines _wrap_delete_GPContext_destructor_closure */
 
 SWIGINTERN PyObject *_wrap_gp_context_new(PyObject *self, PyObject *args) {
@@ -5354,7 +5351,7 @@ SWIGINTERN PyObject *_wrap_gp_context_new(PyObject *self, PyObject *args) {
   
   if (!PyArg_UnpackTuple(args, "gp_context_new", 0, 0)) SWIG_fail;
   result = (GPContext *)gp_context_new();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__GPContext, SWIG_POINTER_OWN |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__GPContext, 0 |  0 );
   return resultobj;
 fail:
   return NULL;

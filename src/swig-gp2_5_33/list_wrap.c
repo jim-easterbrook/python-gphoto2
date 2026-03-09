@@ -4386,9 +4386,6 @@ SWIGINTERN struct _CameraList *new__CameraList(void){
     gphoto2_error(gp_list_new(&result));
     return result;
   }
-SWIGINTERN void delete__CameraList(struct _CameraList *self){
-    gphoto2_error(gp_list_unref(self));
-  }
 
   #include "gphoto2/gphoto2.h"
   typedef PyObject* (CameraList_get_func) (CameraList *, int);
@@ -4915,29 +4912,6 @@ SWIGINTERN int _wrap_new_CameraList(PyObject *self, PyObject *args, PyObject *kw
   return resultobj == Py_None ? -1 : 0;
 fail:
   return -1;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_CameraList(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _CameraList *arg1 = 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_CameraList takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_CameraList" "', argument " "1"" of type '" "struct _CameraList *""'"); 
-  }
-  arg1 = (struct _CameraList *)(argp1);
-  {
-    delete__CameraList(arg1);
-    if (PyErr_Occurred()) SWIG_fail;
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
 }
 
 
@@ -5547,13 +5521,33 @@ fail:
 }
 
 
-SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraList) /* defines _wrap_delete_CameraList_destructor_closure */
+SWIGINTERN PyObject *_wrap_delete_CameraList(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraList *arg1 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_CameraList takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraList, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_CameraList" "', argument " "1"" of type '" "struct _CameraList *""'"); 
+  }
+  arg1 = (struct _CameraList *)(argp1);
+  gp_list_unref(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
 
 SWIGPY_BINARYFUNC_CLOSURE(_wrap_CameraList___getitem__) /* defines _wrap_CameraList___getitem___binaryfunc_closure */
 
 SWIGPY_GETITERFUNC_CLOSURE(_wrap_CameraList___iter__) /* defines _wrap_CameraList___iter___getiterfunc_closure */
 
 SWIGPY_LENFUNC_CLOSURE(_wrap_CameraList___len__) /* defines _wrap_CameraList___len___lenfunc_closure */
+
+SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraList) /* defines _wrap_delete_CameraList_destructor_closure */
 
 SWIGINTERN PyObject *_wrap_delete_CameraList_accessor(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;

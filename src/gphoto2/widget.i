@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -184,6 +184,10 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
 
 // Turn on default exception handling
 DEFAULT_EXCEPTION
+
+// SWIG ref counting
+%feature("ref") _CameraWidget "gp_widget_ref($this);"
+%feature("unref") _CameraWidget "gp_widget_unref($this);"
 
 #ifndef SWIGIMPORTED
 

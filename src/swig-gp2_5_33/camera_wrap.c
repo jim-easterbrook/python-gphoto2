@@ -4507,9 +4507,6 @@ SWIGINTERN struct _Camera *new__Camera(void){
     gphoto2_error(gp_camera_new(&result));
     return result;
   }
-SWIGINTERN void delete__Camera(struct _Camera *self){
-    gphoto2_error(gp_camera_unref(self));
-  }
 SWIGINTERN void _Camera_autodetect(CameraList *list,GPContext *context){
 
 
@@ -5534,29 +5531,6 @@ SWIGINTERN int _wrap_new_Camera(PyObject *self, PyObject *args, PyObject *kwargs
   return resultobj == Py_None ? -1 : 0;
 fail:
   return -1;
-}
-
-
-SWIGINTERN PyObject *_wrap_delete_Camera(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _Camera *arg1 = 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_Camera takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__Camera, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Camera" "', argument " "1"" of type '" "struct _Camera *""'"); 
-  }
-  arg1 = (struct _Camera *)(argp1);
-  {
-    delete__Camera(arg1);
-    if (PyErr_Occurred()) SWIG_fail;
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
 }
 
 
@@ -7471,6 +7445,26 @@ SWIGINTERN PyObject *_wrap_Camera_file_delete(PyObject *self, PyObject *args) {
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   if (alloc3 == SWIG_NEWOBJ) free((char*)buf3);
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_Camera(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _Camera *arg1 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_Camera takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__Camera, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Camera" "', argument " "1"" of type '" "struct _Camera *""'"); 
+  }
+  arg1 = (struct _Camera *)(argp1);
+  gp_camera_unref(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
   return NULL;
 }
 

@@ -55,6 +55,25 @@ result, so it's easy to use different typemaps for the different functions.
 Beware of changes in the libgphoto2 definitions though.
 */
 
+%fragment("widget_root_ref", "header") {
+static int widget_root_ref(CameraWidget* widget) {
+  CameraWidget* root;
+  int error = gp_widget_get_root(widget, &root);
+  if (error != GP_OK)
+    return error;
+  return gp_widget_ref(root);
+};
+}
+%fragment("widget_root_unref", "header") {
+static int widget_root_unref(CameraWidget* widget) {
+  CameraWidget* root;
+  int error = gp_widget_get_root(widget, &root);
+  if (error != GP_OK)
+    return error;
+  return gp_widget_unref(root);
+};
+}
+
 %typemap(in, numinputs=0) CameraWidget ** (CameraWidget *temp) {
   temp = NULL;
   $1 = &temp;
@@ -64,15 +83,11 @@ Beware of changes in the libgphoto2 definitions though.
   $result = SWIG_AppendOutput(
     $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
 }
-%typemap(argout, fragment="gphoto2_error")
+%typemap(argout, fragment="gphoto2_error", fragment="widget_root_ref")
     CameraWidget **child, CameraWidget **root, CameraWidget **parent {
   if (*$1 != NULL) {
     // Increment refcount on root widget
-    CameraWidget *root;
-    if (gphoto2_error(gp_widget_get_root(*$1, &root))) {
-      SWIG_fail;
-    }
-    if (gphoto2_error(gp_widget_ref(root))) {
+    if (gphoto2_error(widget_root_ref(*$1))) {
       SWIG_fail;
     }
   }
@@ -96,11 +111,32 @@ typedef union {
     char* str_val;
 } VoidValue;
 %}
+%fragment("from_void", "header") {
+static PyObject* from_void(CameraWidgetType type, VoidValue* value) {
+  switch (type) {
+    case GP_WIDGET_DATE:
+    case GP_WIDGET_TOGGLE:
+      return PyInt_FromLong((long) value->int_val);
+    case GP_WIDGET_RANGE:
+      return PyFloat_FromDouble(value->flt_val);
+    case GP_WIDGET_MENU:
+    case GP_WIDGET_TEXT:
+    case GP_WIDGET_RADIO:
+      if (value->str_val)
+        return PyString_FromString(value->str_val);
+      Py_INCREF(Py_None);
+      return Py_None;
+    default:
+      PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
+  }
+  return NULL;
+};
+}
 %typemap(in, numinputs=0) (void *value_out) (VoidValue temp) {
   temp.str_val = NULL;
   $1 = &temp;
 }
-%typemap(argout, fragment="gphoto2_error")
+%typemap(argout, fragment="gphoto2_error", fragment="from_void")
     (CameraWidget *widget, void *value_out),
     (struct _CameraWidget *self, void *value_out) {
   CameraWidgetType type;
@@ -109,27 +145,9 @@ typedef union {
   if (gphoto2_error(gp_widget_get_type($1, &type))) {
     SWIG_fail;
   }
-  switch (type) {
-    case GP_WIDGET_DATE:
-    case GP_WIDGET_TOGGLE:
-      py_value = SWIG_From_int(value->int_val);
-      break;
-    case GP_WIDGET_RANGE:
-      py_value = SWIG_From_float(value->flt_val);
-      break;
-    case GP_WIDGET_MENU:
-    case GP_WIDGET_TEXT:
-    case GP_WIDGET_RADIO:
-      if (value->str_val) {
-        py_value = PyString_FromString(value->str_val);
-      } else {
-        SWIG_Py_INCREF(Py_None);
-        py_value = Py_None;
-      }
-      break;
-    default:
-      PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
-      SWIG_fail;
+  py_value = from_void(type, value);
+  if (!py_value) {
+    SWIG_fail;
   }
   $result = SWIG_AppendOutput($result, py_value);
 }
@@ -186,8 +204,10 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
 DEFAULT_EXCEPTION
 
 // SWIG ref counting
-%feature("ref") _CameraWidget "gp_widget_ref($this);"
-%feature("unref") _CameraWidget "gp_widget_unref($this);"
+%fragment("widget_root_ref");
+%fragment("widget_root_unref");
+%feature("ref") _CameraWidget "widget_root_ref($this);"
+%feature("unref") _CameraWidget "widget_root_unref($this);"
 
 #ifndef SWIGIMPORTED
 
@@ -287,28 +307,10 @@ int gp_widget_get_choices(CameraWidget* widget, PyObject **iter) {
 
 #endif //ifndef SWIGIMPORTED
 
-// Add default destructor to _CameraWidget
-// Destructor decrefs root widget
-%{
-static int widget_dtor(CameraWidget *widget) {
-  if (widget == NULL)
-    return GP_OK;
-  {
-    CameraWidget *root;
-    int error = gp_widget_get_root(widget, &root);
-    if (error < GP_OK)
-      return error;
-    return gp_widget_unref(root);
-  }
-}
-%}
-struct _CameraWidget {};
-DEFAULT_DTOR(_CameraWidget, widget_dtor)
-
-
 // Make _CameraWidget more like a list
 %feature("python:slot", "sq_item", functype="ssizeargfunc")
     _CameraWidget::__getitem__;
+struct _CameraWidget {};
 %extend _CameraWidget {
     %fragment("gphoto2_error");
     void __getitem__(int child_number, CameraWidget **child) {

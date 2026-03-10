@@ -5351,7 +5351,7 @@ SWIGINTERN PyObject *_wrap_gp_context_new(PyObject *self, PyObject *args) {
   
   if (!PyArg_UnpackTuple(args, "gp_context_new", 0, 0)) SWIG_fail;
   result = (GPContext *)gp_context_new();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__GPContext, 0 |  0 );
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p__GPContext, SWIG_POINTER_OWN |  0 );
   return resultobj;
 fail:
   return NULL;

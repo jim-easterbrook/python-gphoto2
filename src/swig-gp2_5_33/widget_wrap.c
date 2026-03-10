@@ -4391,11 +4391,50 @@ static int gphoto2_error(int error) {
 };
 
 
+static PyObject* from_void(CameraWidgetType type, VoidValue* value) {
+  switch (type) {
+    case GP_WIDGET_DATE:
+    case GP_WIDGET_TOGGLE:
+      return PyInt_FromLong((long) value->int_val);
+    case GP_WIDGET_RANGE:
+      return PyFloat_FromDouble(value->flt_val);
+    case GP_WIDGET_MENU:
+    case GP_WIDGET_TEXT:
+    case GP_WIDGET_RADIO:
+      if (value->str_val)
+        return PyString_FromString(value->str_val);
+      Py_INCREF(Py_None);
+      return Py_None;
+    default:
+      PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
+  }
+  return NULL;
+};
+
+
 SWIGINTERNINLINE PyObject*
   SWIG_From_int  (int value)
 {
   return PyInt_FromLong((long) value);
 }
+
+
+static int widget_root_ref(CameraWidget* widget) {
+  CameraWidget* root;
+  int error = gp_widget_get_root(widget, &root);
+  if (error != GP_OK)
+    return error;
+  return gp_widget_ref(root);
+};
+
+
+static int widget_root_unref(CameraWidget* widget) {
+  CameraWidget* root;
+  int error = gp_widget_get_root(widget, &root);
+  if (error != GP_OK)
+    return error;
+  return gp_widget_unref(root);
+};
 
 
 static int gp_widget_get_children(CameraWidget* widget, PyObject **iter) {
@@ -4427,22 +4466,6 @@ int gp_widget_get_choices(CameraWidget* widget, PyObject **iter) {
     return result;
 };
 
-
-static int widget_dtor(CameraWidget *widget) {
-  if (widget == NULL)
-    return GP_OK;
-  {
-    CameraWidget *root;
-    int error = gp_widget_get_root(widget, &root);
-    if (error < GP_OK)
-      return error;
-    return gp_widget_unref(root);
-  }
-}
-
-SWIGINTERN void delete__CameraWidget(struct _CameraWidget *self){
-    gphoto2_error(widget_dtor(self));
-  }
 
 #include <limits.h>
 #if !defined(SWIG_NO_LLONG_MAX)
@@ -5175,26 +5198,8 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_value(PyObject *self, PyObject *args) {
     if (gphoto2_error(gp_widget_get_type(arg1, &type))) {
       SWIG_fail;
     }
-    switch (type) {
-    case GP_WIDGET_DATE:
-    case GP_WIDGET_TOGGLE:
-      py_value = SWIG_From_int(value->int_val);
-      break;
-    case GP_WIDGET_RANGE:
-      py_value = SWIG_From_float(value->flt_val);
-      break;
-    case GP_WIDGET_MENU:
-    case GP_WIDGET_TEXT:
-    case GP_WIDGET_RADIO:
-      if (value->str_val) {
-        py_value = PyString_FromString(value->str_val);
-      } else {
-        SWIG_Py_INCREF(Py_None);
-        py_value = Py_None;
-      }
-      break;
-    default:
-      PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
+    py_value = from_void(type, value);
+    if (!py_value) {
       SWIG_fail;
     }
     resultobj = SWIG_Python_AppendOutput(resultobj, py_value, 0);
@@ -5269,29 +5274,6 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_CameraWidget(PyObject *self, PyObject *args) {
-  PyObject *resultobj = 0;
-  struct _CameraWidget *arg1 = 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  
-  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_CameraWidget takes no arguments");
-  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraWidget, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_CameraWidget" "', argument " "1"" of type '" "struct _CameraWidget *""'"); 
-  }
-  arg1 = (struct _CameraWidget *)(argp1);
-  {
-    delete__CameraWidget(arg1);
-    if (PyErr_Occurred()) SWIG_fail;
-  }
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
 SWIGINTERN PyObject *_wrap_CameraWidget___getitem__(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   struct _CameraWidget *arg1 = 0 ;
@@ -5327,11 +5309,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget___getitem__(PyObject *self, PyObject *ar
   {
     if (*arg3 != NULL) {
       // Increment refcount on root widget
-      CameraWidget *root;
-      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
-        SWIG_fail;
-      }
-      if (gphoto2_error(gp_widget_ref(root))) {
+      if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
@@ -5428,11 +5406,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child(PyObject *self, PyObject *args
   {
     if (*arg3 != NULL) {
       // Increment refcount on root widget
-      CameraWidget *root;
-      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
-        SWIG_fail;
-      }
-      if (gphoto2_error(gp_widget_ref(root))) {
+      if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
@@ -5515,11 +5489,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_label(PyObject *self, PyObj
   {
     if (*arg3 != NULL) {
       // Increment refcount on root widget
-      CameraWidget *root;
-      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
-        SWIG_fail;
-      }
-      if (gphoto2_error(gp_widget_ref(root))) {
+      if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
@@ -5570,11 +5540,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_id(PyObject *self, PyObject
   {
     if (*arg3 != NULL) {
       // Increment refcount on root widget
-      CameraWidget *root;
-      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
-        SWIG_fail;
-      }
-      if (gphoto2_error(gp_widget_ref(root))) {
+      if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
@@ -5624,11 +5590,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_name(PyObject *self, PyObje
   {
     if (*arg3 != NULL) {
       // Increment refcount on root widget
-      CameraWidget *root;
-      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
-        SWIG_fail;
-      }
-      if (gphoto2_error(gp_widget_ref(root))) {
+      if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
@@ -5670,11 +5632,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_root(PyObject *self, PyObject *args)
   {
     if (*arg2 != NULL) {
       // Increment refcount on root widget
-      CameraWidget *root;
-      if (gphoto2_error(gp_widget_get_root(*arg2, &root))) {
-        SWIG_fail;
-      }
-      if (gphoto2_error(gp_widget_ref(root))) {
+      if (gphoto2_error(widget_root_ref(*arg2))) {
         SWIG_fail;
       }
     }
@@ -5714,11 +5672,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_parent(PyObject *self, PyObject *arg
   {
     if (*arg2 != NULL) {
       // Increment refcount on root widget
-      CameraWidget *root;
-      if (gphoto2_error(gp_widget_get_root(*arg2, &root))) {
-        SWIG_fail;
-      }
-      if (gphoto2_error(gp_widget_ref(root))) {
+      if (gphoto2_error(widget_root_ref(*arg2))) {
         SWIG_fail;
       }
     }
@@ -5832,26 +5786,8 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_value(PyObject *self, PyObject *args
     if (gphoto2_error(gp_widget_get_type(arg1, &type))) {
       SWIG_fail;
     }
-    switch (type) {
-    case GP_WIDGET_DATE:
-    case GP_WIDGET_TOGGLE:
-      py_value = SWIG_From_int(value->int_val);
-      break;
-    case GP_WIDGET_RANGE:
-      py_value = SWIG_From_float(value->flt_val);
-      break;
-    case GP_WIDGET_MENU:
-    case GP_WIDGET_TEXT:
-    case GP_WIDGET_RADIO:
-      if (value->str_val) {
-        py_value = PyString_FromString(value->str_val);
-      } else {
-        SWIG_Py_INCREF(Py_None);
-        py_value = Py_None;
-      }
-      break;
-    default:
-      PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
+    py_value = from_void(type, value);
+    if (!py_value) {
       SWIG_fail;
     }
     resultobj = SWIG_Python_AppendOutput(resultobj, py_value, 1);
@@ -6475,11 +6411,31 @@ fail:
 }
 
 
-SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraWidget) /* defines _wrap_delete_CameraWidget_destructor_closure */
+SWIGINTERN PyObject *_wrap_delete_CameraWidget(PyObject *self, PyObject *args) {
+  PyObject *resultobj = 0;
+  struct _CameraWidget *arg1 = 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  
+  if (args && PyTuple_Check(args) && PyTuple_GET_SIZE(args) > 0) SWIG_exception_fail(SWIG_TypeError, "delete_CameraWidget takes no arguments");
+  res1 = SWIG_ConvertPtr(self, &argp1,SWIGTYPE_p__CameraWidget, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_CameraWidget" "', argument " "1"" of type '" "struct _CameraWidget *""'"); 
+  }
+  arg1 = (struct _CameraWidget *)(argp1);
+  widget_root_unref(arg1);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
 
 SWIGPY_SSIZEARGFUNC_CLOSURE(_wrap_CameraWidget___getitem__) /* defines _wrap_CameraWidget___getitem___ssizeargfunc_closure */
 
 SWIGPY_LENFUNC_CLOSURE(_wrap_CameraWidget___len__) /* defines _wrap_CameraWidget___len___lenfunc_closure */
+
+SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraWidget) /* defines _wrap_delete_CameraWidget_destructor_closure */
 
 SWIGINTERN PyObject *_wrap_gp_widget_append(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
@@ -6599,11 +6555,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child(PyObject *self, PyObject *args) {
   {
     if (*arg3 != NULL) {
       // Increment refcount on root widget
-      CameraWidget *root;
-      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
-        SWIG_fail;
-      }
-      if (gphoto2_error(gp_widget_ref(root))) {
+      if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
@@ -6652,11 +6604,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_label(PyObject *self, PyObject
   {
     if (*arg3 != NULL) {
       // Increment refcount on root widget
-      CameraWidget *root;
-      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
-        SWIG_fail;
-      }
-      if (gphoto2_error(gp_widget_ref(root))) {
+      if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
@@ -6706,11 +6654,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_id(PyObject *self, PyObject *a
   {
     if (*arg3 != NULL) {
       // Increment refcount on root widget
-      CameraWidget *root;
-      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
-        SWIG_fail;
-      }
-      if (gphoto2_error(gp_widget_ref(root))) {
+      if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
@@ -6759,11 +6703,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_name(PyObject *self, PyObject 
   {
     if (*arg3 != NULL) {
       // Increment refcount on root widget
-      CameraWidget *root;
-      if (gphoto2_error(gp_widget_get_root(*arg3, &root))) {
-        SWIG_fail;
-      }
-      if (gphoto2_error(gp_widget_ref(root))) {
+      if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
@@ -6804,11 +6744,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_root(PyObject *self, PyObject *args) {
   {
     if (*arg2 != NULL) {
       // Increment refcount on root widget
-      CameraWidget *root;
-      if (gphoto2_error(gp_widget_get_root(*arg2, &root))) {
-        SWIG_fail;
-      }
-      if (gphoto2_error(gp_widget_ref(root))) {
+      if (gphoto2_error(widget_root_ref(*arg2))) {
         SWIG_fail;
       }
     }
@@ -6847,11 +6783,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_parent(PyObject *self, PyObject *args) 
   {
     if (*arg2 != NULL) {
       // Increment refcount on root widget
-      CameraWidget *root;
-      if (gphoto2_error(gp_widget_get_root(*arg2, &root))) {
-        SWIG_fail;
-      }
-      if (gphoto2_error(gp_widget_ref(root))) {
+      if (gphoto2_error(widget_root_ref(*arg2))) {
         SWIG_fail;
       }
     }

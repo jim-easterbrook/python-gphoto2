@@ -4846,6 +4846,28 @@ SWIGINTERN void _CameraWidget_get_parent(struct _CameraWidget *self,CameraWidget
 
 
   }
+
+SWIGINTERN int SWIG_AsVal_float (PyObject* obj, float* val);
+static int to_void(CameraWidgetType type, int* temp_int, float* temp_flt,
+                   PyObject* input, void** output) {
+  switch (type) {
+    case GP_WIDGET_DATE:
+    case GP_WIDGET_TOGGLE:
+      *output = temp_int;
+      return SWIG_AsVal_int(input, temp_int);
+    case GP_WIDGET_RANGE:
+      *output = temp_flt;
+      return SWIG_AsVal_float(input, temp_flt);
+    case GP_WIDGET_MENU:
+    case GP_WIDGET_TEXT:
+    case GP_WIDGET_RADIO:
+      return SWIG_AsCharPtrAndSize(input, (char**)output, NULL, NULL);
+    default:
+      PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
+      return SWIG_RuntimeError;
+  }
+};
+
 SWIGINTERN void _CameraWidget_set_value(struct _CameraWidget *self,void const *value){
 
 
@@ -5699,33 +5721,12 @@ SWIGINTERN PyObject *_wrap_CameraWidget_set_value(PyObject *self, PyObject *args
     if (gphoto2_error(res)) {
       SWIG_fail;
     }
-    switch (type) {
-    case GP_WIDGET_DATE:
-    case GP_WIDGET_TOGGLE:
-      res = SWIG_AsVal_int(obj1, &temp_int2);
-      if (!SWIG_IsOK(res)) {
-        SWIG_exception_fail(SWIG_ArgError(res), "in method '" "CameraWidget_set_value" "', argument " "2"" of type '" "int""'");
-      }
-      arg2 = &temp_int2;
-      break;
-    case GP_WIDGET_RANGE:
-      res = SWIG_AsVal_float(obj1, &temp_flt2);
-      if (!SWIG_IsOK(res)) {
-        SWIG_exception_fail(SWIG_ArgError(res), "in method '" "CameraWidget_set_value" "', argument " "2"" of type '" "float""'");
-      }
-      arg2 = &temp_flt2;
-      break;
-    case GP_WIDGET_MENU:
-    case GP_WIDGET_TEXT:
-    case GP_WIDGET_RADIO:
-      res = SWIG_AsCharPtrAndSize(obj1, (char**)&arg2, NULL, NULL);
-      if (!SWIG_IsOK(res)) {
-        SWIG_exception_fail(SWIG_ArgError(res), "in method '" "CameraWidget_set_value" "', argument " "2"" of type '" "str""'");
-      }
-      break;
-    default:
-      PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
+    res = to_void(type, &temp_int2, &temp_flt2, obj1, &arg2);
+    if (res == SWIG_RuntimeError) {
       SWIG_fail;
+    }
+    if (!SWIG_IsOK(res)) {
+      SWIG_exception_fail(SWIG_ArgError(res), "in method '" "CameraWidget_set_value" "', argument " "2"" of type '" "int/float/str""'");
     }
   }
   {
@@ -6802,33 +6803,12 @@ SWIGINTERN PyObject *_wrap_gp_widget_set_value(PyObject *self, PyObject *args) {
     if (gphoto2_error(res)) {
       SWIG_fail;
     }
-    switch (type) {
-    case GP_WIDGET_DATE:
-    case GP_WIDGET_TOGGLE:
-      res = SWIG_AsVal_int(obj1, &temp_int2);
-      if (!SWIG_IsOK(res)) {
-        SWIG_exception_fail(SWIG_ArgError(res), "in method '" "gp_widget_set_value" "', argument " "2"" of type '" "int""'");
-      }
-      arg2 = &temp_int2;
-      break;
-    case GP_WIDGET_RANGE:
-      res = SWIG_AsVal_float(obj1, &temp_flt2);
-      if (!SWIG_IsOK(res)) {
-        SWIG_exception_fail(SWIG_ArgError(res), "in method '" "gp_widget_set_value" "', argument " "2"" of type '" "float""'");
-      }
-      arg2 = &temp_flt2;
-      break;
-    case GP_WIDGET_MENU:
-    case GP_WIDGET_TEXT:
-    case GP_WIDGET_RADIO:
-      res = SWIG_AsCharPtrAndSize(obj1, (char**)&arg2, NULL, NULL);
-      if (!SWIG_IsOK(res)) {
-        SWIG_exception_fail(SWIG_ArgError(res), "in method '" "gp_widget_set_value" "', argument " "2"" of type '" "str""'");
-      }
-      break;
-    default:
-      PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
+    res = to_void(type, &temp_int2, &temp_flt2, obj1, &arg2);
+    if (res == SWIG_RuntimeError) {
       SWIG_fail;
+    }
+    if (!SWIG_IsOK(res)) {
+      SWIG_exception_fail(SWIG_ArgError(res), "in method '" "gp_widget_set_value" "', argument " "2"" of type '" "int/float/str""'");
     }
   }
   result = (int)gp_widget_set_value(arg1,(void const *)arg2);

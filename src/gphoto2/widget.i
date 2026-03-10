@@ -148,7 +148,29 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
 %ignore gp_widget_get_value;
 
 // Use typemaps to convert input to gp_widget_set_value
-%typemap(in, fragment="gphoto2_error") const void *value
+%fragment("to_void", "header") {
+SWIGINTERN int SWIG_AsVal_float (PyObject* obj, float* val);
+static int to_void(CameraWidgetType type, int* temp_int, float* temp_flt,
+                   PyObject* input, void** output) {
+  switch (type) {
+    case GP_WIDGET_DATE:
+    case GP_WIDGET_TOGGLE:
+      *output = temp_int;
+      return SWIG_AsVal_int(input, temp_int);
+    case GP_WIDGET_RANGE:
+      *output = temp_flt;
+      return SWIG_AsVal_float(input, temp_flt);
+    case GP_WIDGET_MENU:
+    case GP_WIDGET_TEXT:
+    case GP_WIDGET_RADIO:
+      return SWIG_AsCharPtrAndSize(input, (char**)output, NULL, NULL);
+    default:
+      PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
+      return SWIG_RuntimeError;
+  }
+};
+}
+%typemap(in, fragment="gphoto2_error", fragment="to_void") const void *value
     (int temp_int, float temp_flt) {
   // Camera widget is stored in arg1 as it's definitely the first argument to gp_widget_set_value
   CameraWidgetType type;
@@ -156,33 +178,12 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
   if (gphoto2_error(res)) {
     SWIG_fail;
   }
-  switch (type) {
-    case GP_WIDGET_DATE:
-    case GP_WIDGET_TOGGLE:
-      res = SWIG_AsVal_int($input, &temp_int);
-      if (!SWIG_IsOK(res)) {
-        %argument_fail(res, int, $symname, $argnum);
-      }
-      $1 = &temp_int;
-      break;
-    case GP_WIDGET_RANGE:
-      res = SWIG_AsVal_float($input, &temp_flt);
-      if (!SWIG_IsOK(res)) {
-        %argument_fail(res, float, $symname, $argnum);
-      }
-      $1 = &temp_flt;
-      break;
-    case GP_WIDGET_MENU:
-    case GP_WIDGET_TEXT:
-    case GP_WIDGET_RADIO:
-      res = SWIG_AsCharPtrAndSize($input, (char**)&$1, NULL, NULL);
-      if (!SWIG_IsOK(res)) {
-        %argument_fail(res, str, $symname, $argnum);
-      }
-      break;
-    default:
-      PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
-      SWIG_fail;
+  res = to_void(type, &temp_int, &temp_flt, $input, &$1);
+  if (res == SWIG_RuntimeError) {
+    SWIG_fail;
+  }
+  if (!SWIG_IsOK(res)) {
+    %argument_fail(res, "int/float/str", $symname, $argnum);
   }
 }
 

@@ -4847,7 +4847,62 @@ SWIGINTERN void _CameraWidget_get_parent(struct _CameraWidget *self,CameraWidget
 
   }
 
-SWIGINTERN int SWIG_AsVal_float (PyObject* obj, float* val);
+/* Getting isfinite working pre C99 across multiple platforms is non-trivial. Users can provide SWIG_isfinite on older platforms. */
+#ifndef SWIG_isfinite
+/* isfinite() is a macro for C99 */
+# if defined(isfinite)
+#  define SWIG_isfinite(X) (isfinite(X))
+# elif defined(__cplusplus) && __cplusplus >= 201103L
+/* Use a template so that this works whether isfinite() is std::isfinite() or
+ * in the global namespace.  The reality seems to vary between compiler
+ * versions.
+ *
+ * Make sure namespace std exists to avoid compiler warnings.
+ *
+ * extern "C++" is required as this fragment can end up inside an extern "C" { } block
+ */
+namespace std { }
+extern "C++" template<typename T>
+inline int SWIG_isfinite_func(T x) {
+  using namespace std;
+  return isfinite(x);
+}
+#  define SWIG_isfinite(X) (SWIG_isfinite_func(X))
+# elif defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
+#  define SWIG_isfinite(X) (__builtin_isfinite(X))
+# elif defined(_MSC_VER)
+#  define SWIG_isfinite(X) (_finite(X))
+# elif defined(__sun) && defined(__SVR4)
+#  include <ieeefp.h>
+#  define SWIG_isfinite(X) (finite(X))
+# endif
+#endif
+
+
+/* Accept infinite as a valid float value unless we are unable to check if a value is finite */
+#ifdef SWIG_isfinite
+# define SWIG_Float_Overflow_Check(X) ((X < -FLT_MAX || X > FLT_MAX) && SWIG_isfinite(X))
+#else
+# define SWIG_Float_Overflow_Check(X) ((X < -FLT_MAX || X > FLT_MAX))
+#endif
+
+
+SWIGINTERN int
+SWIG_AsVal_float (PyObject * obj, float *val)
+{
+  double v;
+  int res = SWIG_AsVal_double (obj, &v);
+  if (SWIG_IsOK(res)) {
+    if (SWIG_Float_Overflow_Check(v)) {
+      return SWIG_OverflowError;
+    } else {
+      if (val) *val = (float)(v);
+    }
+  }  
+  return res;
+}
+
+
 static int to_void(CameraWidgetType type, int* temp_int, float* temp_flt,
                    PyObject* input, void** output) {
   switch (type) {
@@ -4864,7 +4919,7 @@ static int to_void(CameraWidgetType type, int* temp_int, float* temp_flt,
       return SWIG_AsCharPtrAndSize(input, (char**)output, NULL, NULL);
     default:
       PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
-      return SWIG_RuntimeError;
+      return -300;
   }
 };
 
@@ -4985,62 +5040,6 @@ SWIGINTERN void _CameraWidget_get_label(struct _CameraWidget *self,char const **
 
 
   }
-
-/* Getting isfinite working pre C99 across multiple platforms is non-trivial. Users can provide SWIG_isfinite on older platforms. */
-#ifndef SWIG_isfinite
-/* isfinite() is a macro for C99 */
-# if defined(isfinite)
-#  define SWIG_isfinite(X) (isfinite(X))
-# elif defined(__cplusplus) && __cplusplus >= 201103L
-/* Use a template so that this works whether isfinite() is std::isfinite() or
- * in the global namespace.  The reality seems to vary between compiler
- * versions.
- *
- * Make sure namespace std exists to avoid compiler warnings.
- *
- * extern "C++" is required as this fragment can end up inside an extern "C" { } block
- */
-namespace std { }
-extern "C++" template<typename T>
-inline int SWIG_isfinite_func(T x) {
-  using namespace std;
-  return isfinite(x);
-}
-#  define SWIG_isfinite(X) (SWIG_isfinite_func(X))
-# elif defined(__GNUC__) && (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 2))
-#  define SWIG_isfinite(X) (__builtin_isfinite(X))
-# elif defined(_MSC_VER)
-#  define SWIG_isfinite(X) (_finite(X))
-# elif defined(__sun) && defined(__SVR4)
-#  include <ieeefp.h>
-#  define SWIG_isfinite(X) (finite(X))
-# endif
-#endif
-
-
-/* Accept infinite as a valid float value unless we are unable to check if a value is finite */
-#ifdef SWIG_isfinite
-# define SWIG_Float_Overflow_Check(X) ((X < -FLT_MAX || X > FLT_MAX) && SWIG_isfinite(X))
-#else
-# define SWIG_Float_Overflow_Check(X) ((X < -FLT_MAX || X > FLT_MAX))
-#endif
-
-
-SWIGINTERN int
-SWIG_AsVal_float (PyObject * obj, float *val)
-{
-  double v;
-  int res = SWIG_AsVal_double (obj, &v);
-  if (SWIG_IsOK(res)) {
-    if (SWIG_Float_Overflow_Check(v)) {
-      return SWIG_OverflowError;
-    } else {
-      if (val) *val = (float)(v);
-    }
-  }  
-  return res;
-}
-
 SWIGINTERN void _CameraWidget_set_range(struct _CameraWidget *self,float min,float max,float increment){
 
 
@@ -5320,14 +5319,14 @@ SWIGINTERN PyObject *_wrap_CameraWidget___getitem__(PyObject *self, PyObject *ar
   resultobj = SWIG_Py_Void();
   {
     if (*arg3 != NULL) {
-      // Increment refcount on root widget
       if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
-    // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
-    ;
+    {
+      resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
+      ;
+    }
   }
   return resultobj;
 fail:
@@ -5417,14 +5416,14 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child(PyObject *self, PyObject *args
   resultobj = SWIG_Py_Void();
   {
     if (*arg3 != NULL) {
-      // Increment refcount on root widget
       if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
-    // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
-    ;
+    {
+      resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
+      ;
+    }
   }
   return resultobj;
 fail:
@@ -5500,14 +5499,14 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_label(PyObject *self, PyObj
   resultobj = SWIG_Py_Void();
   {
     if (*arg3 != NULL) {
-      // Increment refcount on root widget
       if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
-    // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
-    ;
+    {
+      resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
+      ;
+    }
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
@@ -5551,14 +5550,14 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_id(PyObject *self, PyObject
   resultobj = SWIG_Py_Void();
   {
     if (*arg3 != NULL) {
-      // Increment refcount on root widget
       if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
-    // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
-    ;
+    {
+      resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
+      ;
+    }
   }
   return resultobj;
 fail:
@@ -5601,14 +5600,14 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_child_by_name(PyObject *self, PyObje
   resultobj = SWIG_Py_Void();
   {
     if (*arg3 != NULL) {
-      // Increment refcount on root widget
       if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
-    // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
-    ;
+    {
+      resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
+      ;
+    }
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
@@ -5643,14 +5642,14 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_root(PyObject *self, PyObject *args)
   resultobj = SWIG_Py_Void();
   {
     if (*arg2 != NULL) {
-      // Increment refcount on root widget
       if (gphoto2_error(widget_root_ref(*arg2))) {
         SWIG_fail;
       }
     }
-    // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
-    ;
+    {
+      resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
+      ;
+    }
   }
   return resultobj;
 fail:
@@ -5683,14 +5682,14 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_parent(PyObject *self, PyObject *arg
   resultobj = SWIG_Py_Void();
   {
     if (*arg2 != NULL) {
-      // Increment refcount on root widget
       if (gphoto2_error(widget_root_ref(*arg2))) {
         SWIG_fail;
       }
     }
-    // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
-    ;
+    {
+      resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
+      ;
+    }
   }
   return resultobj;
 fail:
@@ -5722,7 +5721,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_set_value(PyObject *self, PyObject *args
       SWIG_fail;
     }
     res = to_void(type, &temp_int2, &temp_flt2, obj1, &arg2);
-    if (res == SWIG_RuntimeError) {
+    if (res == -300) {
       SWIG_fail;
     }
     if (!SWIG_IsOK(res)) {
@@ -6535,14 +6534,14 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child(PyObject *self, PyObject *args) {
   resultobj = SWIG_From_int((int)(result));
   {
     if (*arg3 != NULL) {
-      // Increment refcount on root widget
       if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
-    // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
-    ;
+    {
+      resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
+      ;
+    }
   }
   return resultobj;
 fail:
@@ -6584,14 +6583,14 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_label(PyObject *self, PyObject
   resultobj = SWIG_From_int((int)(result));
   {
     if (*arg3 != NULL) {
-      // Increment refcount on root widget
       if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
-    // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
-    ;
+    {
+      resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
+      ;
+    }
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
@@ -6634,14 +6633,14 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_id(PyObject *self, PyObject *a
   resultobj = SWIG_From_int((int)(result));
   {
     if (*arg3 != NULL) {
-      // Increment refcount on root widget
       if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
-    // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
-    ;
+    {
+      resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
+      ;
+    }
   }
   return resultobj;
 fail:
@@ -6683,14 +6682,14 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_child_by_name(PyObject *self, PyObject 
   resultobj = SWIG_From_int((int)(result));
   {
     if (*arg3 != NULL) {
-      // Increment refcount on root widget
       if (gphoto2_error(widget_root_ref(*arg3))) {
         SWIG_fail;
       }
     }
-    // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
-    ;
+    {
+      resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
+      ;
+    }
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   return resultobj;
@@ -6724,14 +6723,14 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_root(PyObject *self, PyObject *args) {
   resultobj = SWIG_From_int((int)(result));
   {
     if (*arg2 != NULL) {
-      // Increment refcount on root widget
       if (gphoto2_error(widget_root_ref(*arg2))) {
         SWIG_fail;
       }
     }
-    // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
-    ;
+    {
+      resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
+      ;
+    }
   }
   return resultobj;
 fail:
@@ -6763,14 +6762,14 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_parent(PyObject *self, PyObject *args) 
   resultobj = SWIG_From_int((int)(result));
   {
     if (*arg2 != NULL) {
-      // Increment refcount on root widget
       if (gphoto2_error(widget_root_ref(*arg2))) {
         SWIG_fail;
       }
     }
-    // Append result to output object
-    resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
-    ;
+    {
+      resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
+      ;
+    }
   }
   return resultobj;
 fail:
@@ -6804,7 +6803,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_set_value(PyObject *self, PyObject *args) {
       SWIG_fail;
     }
     res = to_void(type, &temp_int2, &temp_flt2, obj1, &arg2);
-    if (res == SWIG_RuntimeError) {
+    if (res == -300) {
       SWIG_fail;
     }
     if (!SWIG_IsOK(res)) {

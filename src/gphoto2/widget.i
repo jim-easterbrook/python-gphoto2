@@ -78,22 +78,18 @@ static int widget_root_unref(CameraWidget* widget) {
   temp = NULL;
   $1 = &temp;
 }
-%typemap(argout) CameraWidget **window, CameraWidget **widget {
-  // Append result to output object
+%typemap(argout) CameraWidget ** {
   $result = SWIG_AppendOutput(
     $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
 }
 %typemap(argout, fragment="gphoto2_error", fragment="widget_root_ref")
     CameraWidget **child, CameraWidget **root, CameraWidget **parent {
   if (*$1 != NULL) {
-    // Increment refcount on root widget
     if (gphoto2_error(widget_root_ref(*$1))) {
       SWIG_fail;
     }
   }
-  // Append result to output object
-  $result = SWIG_AppendOutput(
-    $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
+  $typemap(argout, CameraWidget **)
 }
 
 // Make docstring parameter types more Pythonic
@@ -148,8 +144,8 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
 %ignore gp_widget_get_value;
 
 // Use typemaps to convert input to gp_widget_set_value
-%fragment("to_void", "header") {
-SWIGINTERN int SWIG_AsVal_float (PyObject* obj, float* val);
+%fragment("to_void", "header",
+          fragment=SWIG_AsVal_frag(int), fragment=SWIG_AsVal_frag(float)) {
 static int to_void(CameraWidgetType type, int* temp_int, float* temp_flt,
                    PyObject* input, void** output) {
   switch (type) {
@@ -166,7 +162,7 @@ static int to_void(CameraWidgetType type, int* temp_int, float* temp_flt,
       return SWIG_AsCharPtrAndSize(input, (char**)output, NULL, NULL);
     default:
       PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
-      return SWIG_RuntimeError;
+      return -300;
   }
 };
 }
@@ -179,7 +175,7 @@ static int to_void(CameraWidgetType type, int* temp_int, float* temp_flt,
     SWIG_fail;
   }
   res = to_void(type, &temp_int, &temp_flt, $input, &$1);
-  if (res == SWIG_RuntimeError) {
+  if (res == -300) {
     SWIG_fail;
   }
   if (!SWIG_IsOK(res)) {

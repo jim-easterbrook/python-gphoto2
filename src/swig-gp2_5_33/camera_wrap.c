@@ -5898,7 +5898,6 @@ SWIGINTERN PyObject *_wrap_Camera_get_config(PyObject *self, PyObject *args) {
   }
   resultobj = SWIG_Py_Void();
   {
-    // Append result to output object
     resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
     ;
   }
@@ -6015,7 +6014,6 @@ SWIGINTERN PyObject *_wrap_Camera_get_single_config(PyObject *self, PyObject *ar
   }
   resultobj = SWIG_Py_Void();
   {
-    // Append result to output object
     resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 1)
     ;
   }
@@ -7854,7 +7852,6 @@ SWIGINTERN PyObject *_wrap_gp_camera_get_config(PyObject *self, PyObject *args) 
   }
   resultobj = SWIG_From_int((int)(result));
   {
-    // Append result to output object
     resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg2, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
     ;
   }
@@ -7973,7 +7970,6 @@ SWIGINTERN PyObject *_wrap_gp_camera_get_single_config(PyObject *self, PyObject 
   }
   resultobj = SWIG_From_int((int)(result));
   {
-    // Append result to output object
     resultobj = SWIG_Python_AppendOutput(resultobj, SWIG_NewPointerObj(*arg3, SWIGTYPE_p__CameraWidget, SWIG_POINTER_OWN), 0)
     ;
   }

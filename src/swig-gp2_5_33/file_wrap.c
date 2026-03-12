@@ -5569,11 +5569,10 @@ SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraFile) /* defines _wrap_delete_Camer
 SWIGINTERN PyObject *_wrap_gp_file_new(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CameraFile **arg1 = 0 ;
-  CameraFile *temp1 ;
+  CameraFile *temp1 = NULL ;
   int result;
   
   {
-    temp1 = NULL;
     arg1 = &temp1;
   }
   if (!PyArg_UnpackTuple(args, "gp_file_new", 0, 0)) SWIG_fail;
@@ -5593,14 +5592,13 @@ SWIGINTERN PyObject *_wrap_gp_file_new_from_fd(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CameraFile **arg1 = 0 ;
   int arg2 ;
-  CameraFile *temp1 ;
+  CameraFile *temp1 = NULL ;
   int val2 ;
   int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   int result;
   
   {
-    temp1 = NULL;
     arg1 = &temp1;
   }
   if (!PyArg_UnpackTuple(args, "gp_file_new_from_fd", 1, 1, &obj0)) SWIG_fail;

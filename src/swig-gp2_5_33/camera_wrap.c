@@ -5570,14 +5570,14 @@ SWIGINTERN PyObject *_wrap_Camera_autodetect(PyObject *self, PyObject *args) {
     arg1 = NULL;
   }
   {
-    if (arg1 != NULL) {
+    if (arg1) {
       gp_list_unref(arg1);
     }
   }
   return resultobj;
 fail:
   {
-    if (arg1 != NULL) {
+    if (arg1) {
       gp_list_unref(arg1);
     }
   }
@@ -5632,7 +5632,7 @@ SWIGINTERN PyObject *_wrap_Camera_get_abilities(PyObject *self, PyObject *args) 
   
   {
     arg2 = (CameraAbilities *)calloc(1, sizeof(CameraAbilities));
-    if (arg2 == NULL) {
+    if (!arg2) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraAbilities");
       SWIG_fail;
     }
@@ -5951,14 +5951,14 @@ SWIGINTERN PyObject *_wrap_Camera_list_config(PyObject *self, PyObject *args) {
     arg2 = NULL;
   }
   {
-    if (arg2 != NULL) {
+    if (arg2) {
       gp_list_unref(arg2);
     }
   }
   return resultobj;
 fail:
   {
-    if (arg2 != NULL) {
+    if (arg2) {
       gp_list_unref(arg2);
     }
   }
@@ -6145,7 +6145,7 @@ SWIGINTERN PyObject *_wrap_Camera_get_summary(PyObject *self, PyObject *args) {
   }
   {
     arg2 = (CameraText *)calloc(1, sizeof(CameraText));
-    if (arg2 == NULL) {
+    if (!arg2) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraText");
       SWIG_fail;
     }
@@ -6201,7 +6201,7 @@ SWIGINTERN PyObject *_wrap_Camera_get_manual(PyObject *self, PyObject *args) {
   }
   {
     arg2 = (CameraText *)calloc(1, sizeof(CameraText));
-    if (arg2 == NULL) {
+    if (!arg2) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraText");
       SWIG_fail;
     }
@@ -6257,7 +6257,7 @@ SWIGINTERN PyObject *_wrap_Camera_get_about(PyObject *self, PyObject *args) {
   }
   {
     arg2 = (CameraText *)calloc(1, sizeof(CameraText));
-    if (arg2 == NULL) {
+    if (!arg2) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraText");
       SWIG_fail;
     }
@@ -6317,7 +6317,7 @@ SWIGINTERN PyObject *_wrap_Camera_capture(PyObject *self, PyObject *args) {
   }
   {
     arg3 = (CameraFilePath *)calloc(1, sizeof(CameraFilePath));
-    if (arg3 == NULL) {
+    if (!arg3) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraFilePath");
       SWIG_fail;
     }
@@ -6677,7 +6677,7 @@ SWIGINTERN PyObject *_wrap_Camera_folder_list_files(PyObject *self, PyObject *ar
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   {
-    if (arg3 != NULL) {
+    if (arg3) {
       gp_list_unref(arg3);
     }
   }
@@ -6685,7 +6685,7 @@ SWIGINTERN PyObject *_wrap_Camera_folder_list_files(PyObject *self, PyObject *ar
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   {
-    if (arg3 != NULL) {
+    if (arg3) {
       gp_list_unref(arg3);
     }
   }
@@ -6748,7 +6748,7 @@ SWIGINTERN PyObject *_wrap_Camera_folder_list_folders(PyObject *self, PyObject *
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   {
-    if (arg3 != NULL) {
+    if (arg3) {
       gp_list_unref(arg3);
     }
   }
@@ -6756,7 +6756,7 @@ SWIGINTERN PyObject *_wrap_Camera_folder_list_folders(PyObject *self, PyObject *
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   {
-    if (arg3 != NULL) {
+    if (arg3) {
       gp_list_unref(arg3);
     }
   }
@@ -7040,7 +7040,7 @@ SWIGINTERN PyObject *_wrap_Camera_file_get_info(PyObject *self, PyObject *args) 
   }
   {
     arg4 = (CameraFileInfo *)calloc(1, sizeof(CameraFileInfo));
-    if (arg4 == NULL) {
+    if (!arg4) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraFileInfo");
       SWIG_fail;
     }
@@ -7472,11 +7472,10 @@ SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_Camera) /* defines _wrap_delete_Camera_de
 SWIGINTERN PyObject *_wrap_gp_camera_new(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   Camera **arg1 = 0 ;
-  Camera *temp1 ;
+  Camera *temp1 = NULL ;
   int result;
   
   {
-    temp1 = NULL;
     arg1 = &temp1;
   }
   if (!PyArg_UnpackTuple(args, "gp_camera_new", 0, 0)) SWIG_fail;
@@ -7540,7 +7539,7 @@ SWIGINTERN PyObject *_wrap_gp_camera_get_abilities(PyObject *self, PyObject *arg
   
   {
     arg2 = (CameraAbilities *)calloc(1, sizeof(CameraAbilities));
-    if (arg2 == NULL) {
+    if (!arg2) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraAbilities");
       SWIG_fail;
     }
@@ -7720,14 +7719,14 @@ SWIGINTERN PyObject *_wrap_gp_camera_autodetect(PyObject *self, PyObject *args) 
     arg1 = NULL;
   }
   {
-    if (arg1 != NULL) {
+    if (arg1) {
       gp_list_unref(arg1);
     }
   }
   return resultobj;
 fail:
   {
-    if (arg1 != NULL) {
+    if (arg1) {
       gp_list_unref(arg1);
     }
   }
@@ -7904,14 +7903,14 @@ SWIGINTERN PyObject *_wrap_gp_camera_list_config(PyObject *self, PyObject *args)
     arg2 = NULL;
   }
   {
-    if (arg2 != NULL) {
+    if (arg2) {
       gp_list_unref(arg2);
     }
   }
   return resultobj;
 fail:
   {
-    if (arg2 != NULL) {
+    if (arg2) {
       gp_list_unref(arg2);
     }
   }
@@ -8109,7 +8108,7 @@ SWIGINTERN PyObject *_wrap_gp_camera_get_summary(PyObject *self, PyObject *args)
   }
   {
     arg2 = (CameraText *)calloc(1, sizeof(CameraText));
-    if (arg2 == NULL) {
+    if (!arg2) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraText");
       SWIG_fail;
     }
@@ -8164,7 +8163,7 @@ SWIGINTERN PyObject *_wrap_gp_camera_get_manual(PyObject *self, PyObject *args) 
   }
   {
     arg2 = (CameraText *)calloc(1, sizeof(CameraText));
-    if (arg2 == NULL) {
+    if (!arg2) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraText");
       SWIG_fail;
     }
@@ -8219,7 +8218,7 @@ SWIGINTERN PyObject *_wrap_gp_camera_get_about(PyObject *self, PyObject *args) {
   }
   {
     arg2 = (CameraText *)calloc(1, sizeof(CameraText));
-    if (arg2 == NULL) {
+    if (!arg2) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraText");
       SWIG_fail;
     }
@@ -8278,7 +8277,7 @@ SWIGINTERN PyObject *_wrap_gp_camera_capture(PyObject *self, PyObject *args) {
   }
   {
     arg3 = (CameraFilePath *)calloc(1, sizeof(CameraFilePath));
-    if (arg3 == NULL) {
+    if (!arg3) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraFilePath");
       SWIG_fail;
     }
@@ -8569,7 +8568,7 @@ SWIGINTERN PyObject *_wrap_gp_camera_folder_list_files(PyObject *self, PyObject 
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   {
-    if (arg3 != NULL) {
+    if (arg3) {
       gp_list_unref(arg3);
     }
   }
@@ -8577,7 +8576,7 @@ SWIGINTERN PyObject *_wrap_gp_camera_folder_list_files(PyObject *self, PyObject 
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   {
-    if (arg3 != NULL) {
+    if (arg3) {
       gp_list_unref(arg3);
     }
   }
@@ -8643,7 +8642,7 @@ SWIGINTERN PyObject *_wrap_gp_camera_folder_list_folders(PyObject *self, PyObjec
   }
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   {
-    if (arg3 != NULL) {
+    if (arg3) {
       gp_list_unref(arg3);
     }
   }
@@ -8651,7 +8650,7 @@ SWIGINTERN PyObject *_wrap_gp_camera_folder_list_folders(PyObject *self, PyObjec
 fail:
   if (alloc2 == SWIG_NEWOBJ) free((char*)buf2);
   {
-    if (arg3 != NULL) {
+    if (arg3) {
       gp_list_unref(arg3);
     }
   }
@@ -8941,7 +8940,7 @@ SWIGINTERN PyObject *_wrap_gp_camera_file_get_info(PyObject *self, PyObject *arg
   }
   {
     arg4 = (CameraFileInfo *)calloc(1, sizeof(CameraFileInfo));
-    if (arg4 == NULL) {
+    if (!arg4) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraFileInfo");
       SWIG_fail;
     }

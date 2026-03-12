@@ -5639,11 +5639,10 @@ SWIGPY_SSIZEARGFUNC_CLOSURE(_wrap_CameraList_accessor___getitem__) /* defines _w
 SWIGINTERN PyObject *_wrap_gp_list_new(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CameraList **arg1 = 0 ;
-  CameraList *temp1 ;
+  CameraList *temp1 = NULL ;
   int result;
   
   {
-    temp1 = NULL;
     arg1 = &temp1;
   }
   if (!PyArg_UnpackTuple(args, "gp_list_new", 0, 0)) SWIG_fail;

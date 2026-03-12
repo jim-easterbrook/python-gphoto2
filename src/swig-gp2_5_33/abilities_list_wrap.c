@@ -4923,7 +4923,7 @@ SWIGINTERN PyObject *_wrap_CameraAbilitiesList___getitem__(PyObject *self, PyObj
   
   {
     arg3 = (CameraAbilities *)calloc(1, sizeof(CameraAbilities));
-    if (arg3 == NULL) {
+    if (!arg3) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraAbilities");
       SWIG_fail;
     }
@@ -5123,14 +5123,14 @@ SWIGINTERN PyObject *_wrap_CameraAbilitiesList_detect(PyObject *self, PyObject *
     arg3 = NULL;
   }
   {
-    if (arg3 != NULL) {
+    if (arg3) {
       gp_list_unref(arg3);
     }
   }
   return resultobj;
 fail:
   {
-    if (arg3 != NULL) {
+    if (arg3) {
       gp_list_unref(arg3);
     }
   }
@@ -5253,7 +5253,7 @@ SWIGINTERN PyObject *_wrap_CameraAbilitiesList_get_abilities(PyObject *self, PyO
   
   {
     arg3 = (CameraAbilities *)calloc(1, sizeof(CameraAbilities));
-    if (arg3 == NULL) {
+    if (!arg3) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraAbilities");
       SWIG_fail;
     }
@@ -5811,11 +5811,10 @@ SWIGPY_DESTRUCTOR_CLOSURE(_wrap_delete_CameraAbilities) /* defines _wrap_delete_
 SWIGINTERN PyObject *_wrap_gp_abilities_list_new(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   CameraAbilitiesList **arg1 = 0 ;
-  CameraAbilitiesList *temp1 ;
+  CameraAbilitiesList *temp1 = NULL ;
   int result;
   
   {
-    temp1 = NULL;
     arg1 = &temp1;
   }
   if (!PyArg_UnpackTuple(args, "gp_abilities_list_new", 0, 0)) SWIG_fail;
@@ -5989,14 +5988,14 @@ SWIGINTERN PyObject *_wrap_gp_abilities_list_detect(PyObject *self, PyObject *ar
     arg3 = NULL;
   }
   {
-    if (arg3 != NULL) {
+    if (arg3) {
       gp_list_unref(arg3);
     }
   }
   return resultobj;
 fail:
   {
-    if (arg3 != NULL) {
+    if (arg3) {
       gp_list_unref(arg3);
     }
   }
@@ -6119,7 +6118,7 @@ SWIGINTERN PyObject *_wrap_gp_abilities_list_get_abilities(PyObject *self, PyObj
   
   {
     arg3 = (CameraAbilities *)calloc(1, sizeof(CameraAbilities));
-    if (arg3 == NULL) {
+    if (!arg3) {
       PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "CameraAbilities");
       SWIG_fail;
     }

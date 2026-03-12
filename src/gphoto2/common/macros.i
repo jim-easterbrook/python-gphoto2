@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -69,8 +69,7 @@ static int gphoto2_error(int error) {
 }
 
 %define PLAIN_ARGOUT(typepattern)
-%typemap(in, numinputs=0) typepattern ($*1_type temp) {
-  temp = NULL;
+%typemap(in, numinputs=0) typepattern ($*1_type temp = NULL) {
   $1 = &temp;
 }
 %typemap(argout) typepattern {
@@ -82,7 +81,7 @@ static int gphoto2_error(int error) {
 %define CALLOC_ARGOUT(typepattern)
 %typemap(in, numinputs=0) typepattern () {
   $1 = ($1_type)calloc(1, sizeof($*1_type));
-  if ($1 == NULL) {
+  if (!$1) {
     PyErr_SetString(PyExc_MemoryError, "Cannot allocate " "$*1_type");
     SWIG_fail;
   }
@@ -105,7 +104,7 @@ static int gphoto2_error(int error) {
   }
 }
 %typemap(freearg) typepattern {
-  if ($1 != NULL) {
+  if ($1) {
     free_func($1);
   }
 }

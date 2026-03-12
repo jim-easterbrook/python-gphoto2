@@ -5373,11 +5373,10 @@ fail:
 SWIGINTERN PyObject *_wrap_gp_port_info_list_new(PyObject *self, PyObject *args) {
   PyObject *resultobj = 0;
   GPPortInfoList **arg1 = 0 ;
-  GPPortInfoList *temp1 ;
+  GPPortInfoList *temp1 = NULL ;
   int result;
   
   {
-    temp1 = NULL;
     arg1 = &temp1;
   }
   if (!PyArg_UnpackTuple(args, "gp_port_info_list_new", 0, 0)) SWIG_fail;

@@ -4384,7 +4384,11 @@ static int gphoto2_error(int error) {
 };
 
 
-static PyObject* from_void(CameraWidgetType type, void* value) {
+static PyObject* from_void(CameraWidget* widget, void* value) {
+  CameraWidgetType type;
+  if (gphoto2_error(gp_widget_get_type(widget, &type))) {
+    return NULL;
+  }
   switch (type) {
     case GP_WIDGET_DATE:
     case GP_WIDGET_TOGGLE:
@@ -4903,16 +4907,18 @@ SWIG_AsVal_float (PyObject * obj, float *val)
 }
 
 
-static int to_void(CameraWidgetType type, int* temp_int, float* temp_flt,
-                   PyObject* input, void** output) {
+static int to_void(CameraWidget* widget, PyObject* input, void** output) {
+  CameraWidgetType type;
+  int res = gp_widget_get_type(widget, &type);
+  if (gphoto2_error(res)) {
+    return -300;
+  }
   switch (type) {
     case GP_WIDGET_DATE:
     case GP_WIDGET_TOGGLE:
-      *output = temp_int;
-      return SWIG_AsVal_int(input, temp_int);
+      return SWIG_AsVal_int(input, (int*)*output);
     case GP_WIDGET_RANGE:
-      *output = temp_flt;
-      return SWIG_AsVal_float(input, temp_flt);
+      return SWIG_AsVal_float(input, (float*)*output);
     case GP_WIDGET_MENU:
     case GP_WIDGET_TEXT:
     case GP_WIDGET_RADIO:
@@ -5205,11 +5211,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_get_value(PyObject *self, PyObject *args) {
   result = (int)gp_widget_get_value(arg1,arg2);
   resultobj = SWIG_From_int((int)(result));
   {
-    CameraWidgetType type;
-    if (gphoto2_error(gp_widget_get_type(arg1, &type))) {
-      SWIG_fail;
-    }
-    PyObject* py_value = from_void(type, arg2);
+    PyObject* py_value = from_void(arg1, arg2);
     if (!py_value) {
       SWIG_fail;
     }
@@ -5703,8 +5705,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_set_value(PyObject *self, PyObject *args
   void *arg2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int temp_int2 ;
-  float temp_flt2 ;
+  void *temp2 ;
   PyObject * obj1 = 0 ;
   
   if (!PyArg_UnpackTuple(args, "CameraWidget_set_value", 1, 1, &obj1)) SWIG_fail;
@@ -5714,13 +5715,8 @@ SWIGINTERN PyObject *_wrap_CameraWidget_set_value(PyObject *self, PyObject *args
   }
   arg1 = (struct _CameraWidget *)(argp1);
   {
-    // Camera widget is stored in arg1 as it's definitely the first argument to gp_widget_set_value
-    CameraWidgetType type;
-    int res = gp_widget_get_type(arg1, &type);
-    if (gphoto2_error(res)) {
-      SWIG_fail;
-    }
-    res = to_void(type, &temp_int2, &temp_flt2, obj1, &arg2);
+    arg2 = &temp2;
+    int res = to_void(arg1, obj1, &arg2);
     if (res == -300) {
       SWIG_fail;
     }
@@ -5762,11 +5758,7 @@ SWIGINTERN PyObject *_wrap_CameraWidget_get_value(PyObject *self, PyObject *args
   }
   resultobj = SWIG_Py_Void();
   {
-    CameraWidgetType type;
-    if (gphoto2_error(gp_widget_get_type(arg1, &type))) {
-      SWIG_fail;
-    }
-    PyObject* py_value = from_void(type, arg2);
+    PyObject* py_value = from_void(arg1, arg2);
     if (!py_value) {
       SWIG_fail;
     }
@@ -6783,8 +6775,7 @@ SWIGINTERN PyObject *_wrap_gp_widget_set_value(PyObject *self, PyObject *args) {
   void *arg2 = 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int temp_int2 ;
-  float temp_flt2 ;
+  void *temp2 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   int result;
@@ -6796,13 +6787,8 @@ SWIGINTERN PyObject *_wrap_gp_widget_set_value(PyObject *self, PyObject *args) {
   }
   arg1 = (CameraWidget *)(argp1);
   {
-    // Camera widget is stored in arg1 as it's definitely the first argument to gp_widget_set_value
-    CameraWidgetType type;
-    int res = gp_widget_get_type(arg1, &type);
-    if (gphoto2_error(res)) {
-      SWIG_fail;
-    }
-    res = to_void(type, &temp_int2, &temp_flt2, obj1, &arg2);
+    arg2 = &temp2;
+    int res = to_void(arg1, obj1, &arg2);
     if (res == -300) {
       SWIG_fail;
     }

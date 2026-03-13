@@ -35,6 +35,7 @@ if 'GPHOTO2_ROOT' in os.environ:
     # using a local build of libgphoto2
     gphoto2_dir = os.environ['GPHOTO2_ROOT']
     gphoto2_dir = os.path.expanduser(gphoto2_dir)
+    gphoto2_dir = os.path.abspath(gphoto2_dir)
     print('Using libgphoto2 from {}'.format(gphoto2_dir))
     for root, dirs, files in os.walk(gphoto2_dir):
         if 'libgphoto2.pc' in files:

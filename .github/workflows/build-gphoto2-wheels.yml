@@ -3,40 +3,45 @@ on: workflow_dispatch
 
 jobs:
   build:
-    name: build on ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: build ${{ matrix.build }}
+    runs-on: ${{ matrix.runner }}
     strategy:
       matrix:
-        os: [ubuntu-22.04, ubuntu-22.04-arm, macos-13, macos-14]
         include:
-          - os: macos-13
-            target: 13.0
-          - os: macos-14
+          - build: Linux-x64
+            runner: ubuntu-22.04
+            arch: x86_64
+          - build: Linux-arm64
+            runner: ubuntu-22.04-arm
+            arch: aarch64
+          - build: MacOS-x64
+            runner: macos-15-intel
+            target: 15.0
+            arch: x86_64
+          - build: MacOS-arm64
+            runner: macos-14
             dependencies: libtool gd
             target: 14.0
+            arch: arm64
     env:
-      GPHOTO_DIR: ${{ github.workspace }}/libgphoto2
-      GPHOTO_VSN: 2.5.33
+      GPHOTO_SRC: https://github.com/gphoto/libgphoto2/releases/download/v2.5.33/libgphoto2-2.5.33.tar.xz
+      GPHOTO2_ROOT: libgphoto2/local_install
+      MACOSX_DEPLOYMENT_TARGET: ${{ matrix.target }}
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
 
       - name: Download libgphoto2
-        run: wget -nv
-          https://github.com/gphoto/libgphoto2/releases/download/v${GPHOTO_VSN}/libgphoto2-${GPHOTO_VSN}.tar.xz
-          -O libgphoto2.tar.xz
-
-      - name: Extract libgphoto2
         run: |
-          mkdir $GPHOTO_DIR
-          tar xf libgphoto2.tar.xz \
-            --directory $GPHOTO_DIR --strip-components=1
+          mkdir libgphoto2
+          wget -nv ${{ env.GPHOTO_SRC }} -O - |
+          tar --xz -x -f - --directory libgphoto2 --strip-components=1
 
-      - name: Build libgphoto2
+      - name: Build libgphoto2 (MacOS)
         if: ${{ runner.os == 'macOS' }}
         run: |
           brew install libexif ${{ matrix.dependencies }}
-          cd $GPHOTO_DIR
+          cd libgphoto2
           ./configure --prefix=$PWD/local_install --disable-internal-docs \
             --enable-vusb \
             CFLAGS="-D_DARWIN_C_SOURCE -I$(brew --prefix)/include"
@@ -44,48 +49,39 @@ jobs:
           make install
 
       - name: Build wheels (Python 3.6 & 3.7)
-        if: ${{ matrix.os != 'macos-14' }}
+        if: ${{ runner.os != 'macOS' }}
         # cibuildwheel@v3.x omits Python 3.6 & 3.7
         uses: pypa/cibuildwheel@v2.23.3
         env:
-          CIBW_ARCHS: auto64
+          CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
           CIBW_MANYLINUX_AARCH64_IMAGE: manylinux_2_28
           CIBW_BUILD: "cp36* cp37*"
           CIBW_SKIP: "*musllinux*"
-          CIBW_ENVIRONMENT_LINUX: >
-            GPHOTO2_ROOT=$PWD/libgphoto2/local_install
-          CIBW_ENVIRONMENT_MACOS: >
-            GPHOTO2_ROOT=$GPHOTO_DIR/local_install
-            MACOSX_DEPLOYMENT_TARGET=${{ matrix.target }}
-            SYSTEM_VERSION_COMPAT=0
+          CIBW_ENVIRONMENT_MACOS: SYSTEM_VERSION_COMPAT=0
+          CIBW_ENVIRONMENT_PASS_LINUX: GPHOTO2_ROOT
           CIBW_TEST_COMMAND: >
             python3 -m gphoto2 -v &&
             python3 -m unittest discover {project}/tests -v
           CIBW_BEFORE_ALL_LINUX: >
             yum install -y libusbx-devel libexif-devel libjpeg-turbo-devel
             gd-devel libcurl-devel libxml2-devel libtool-ltdl-devel &&
-            pushd $PWD/libgphoto2 &&
+            cd libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs
             --enable-vusb &&
             make &&
-            make install &&
-            popd
+            make install
 
       - name: Build wheels (Python 3.8+)
-        uses: pypa/cibuildwheel@v3.2.1
+        uses: pypa/cibuildwheel@v3.4.0
         env:
-          CIBW_ARCHS: auto64
+          CIBW_ARCHS: ${{ matrix.arch }}
           CIBW_MANYLINUX_X86_64_IMAGE: manylinux2014
           CIBW_MANYLINUX_AARCH64_IMAGE: manylinux_2_28
           CIBW_BUILD: "cp*"
           CIBW_SKIP: "*musllinux*"
-          CIBW_ENVIRONMENT_LINUX: >
-            GPHOTO2_ROOT=$PWD/libgphoto2/local_install
-          CIBW_ENVIRONMENT_MACOS: >
-            GPHOTO2_ROOT=$GPHOTO_DIR/local_install
-            MACOSX_DEPLOYMENT_TARGET=${{ matrix.target }}
-            SYSTEM_VERSION_COMPAT=0
+          CIBW_ENVIRONMENT_MACOS: SYSTEM_VERSION_COMPAT=0
+          CIBW_ENVIRONMENT_PASS_LINUX: GPHOTO2_ROOT
           CIBW_TEST_COMMAND: >
             python3 -m gphoto2 -v &&
             python3 -m unittest discover {project}/tests -v
@@ -93,15 +89,14 @@ jobs:
           CIBW_BEFORE_ALL_LINUX: >
             yum install -y libusbx-devel libexif-devel libjpeg-turbo-devel
             gd-devel libcurl-devel libxml2-devel libtool-ltdl-devel &&
-            pushd $PWD/libgphoto2 &&
+            cd libgphoto2 &&
             ./configure --prefix=$PWD/local_install --disable-internal-docs
             --enable-vusb &&
             make &&
-            make install &&
-            popd
+            make install
 
       - name: Store results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
-          name: gphoto2-wheels-${{ runner.os }}-${{ runner.arch }}
+          name: gphoto2-wheels-${{ matrix.build }}
           path: wheelhouse/*.whl

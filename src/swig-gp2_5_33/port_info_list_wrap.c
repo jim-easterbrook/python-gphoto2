@@ -5650,7 +5650,7 @@ static PyMethodDef SwigMethods[] = {
 		"* `name` :  \n"
 		"    a pointer to a char* which will receive the name  \n"
 		"\n"
-		"Retreives the name of the passed in GPPortInfo, by reference.  \n"
+		"Retrieves the name of the passed in GPPortInfo, by reference.  \n"
 		"\n"
 		"Returns\n"
 		"-------\n"
@@ -5674,7 +5674,7 @@ static PyMethodDef SwigMethods[] = {
 		"* `path` :  \n"
 		"    a pointer to a char* which will receive the path  \n"
 		"\n"
-		"Retreives the path of the passed in GPPortInfo, by reference.  \n"
+		"Retrieves the path of the passed in GPPortInfo, by reference.  \n"
 		"\n"
 		"Returns\n"
 		"-------\n"
@@ -5698,7 +5698,7 @@ static PyMethodDef SwigMethods[] = {
 		"* `type` :  \n"
 		"    a pointer to a GPPortType variable which will receive the type  \n"
 		"\n"
-		"Retreives the type of the passed in GPPortInfo  \n"
+		"Retrieves the type of the passed in GPPortInfo  \n"
 		"\n"
 		"Returns\n"
 		"-------\n"
@@ -5962,7 +5962,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfo_methods[] = {
 		"* `name` :  \n"
 		"    a pointer to a char* which will receive the name  \n"
 		"\n"
-		"Retreives the name of the passed in GPPortInfo, by reference.  \n"
+		"Retrieves the name of the passed in GPPortInfo, by reference.  \n"
 		"\n"
 		"Returns\n"
 		"-------\n"
@@ -5981,7 +5981,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfo_methods[] = {
 		"* `path` :  \n"
 		"    a pointer to a char* which will receive the path  \n"
 		"\n"
-		"Retreives the path of the passed in GPPortInfo, by reference.  \n"
+		"Retrieves the path of the passed in GPPortInfo, by reference.  \n"
 		"\n"
 		"Returns\n"
 		"-------\n"
@@ -6000,7 +6000,7 @@ SWIGINTERN PyMethodDef SwigPyBuiltin___GPPortInfo_methods[] = {
 		"* `type` :  \n"
 		"    a pointer to a GPPortType variable which will receive the type  \n"
 		"\n"
-		"Retreives the type of the passed in GPPortInfo  \n"
+		"Retrieves the type of the passed in GPPortInfo  \n"
 		"\n"
 		"Returns\n"
 		"-------\n"
@@ -6051,7 +6051,13 @@ static PyHeapTypeObject SwigPyBuiltin___GPPortInfo_type = {
 #else
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES, /* tp_flags */
 #endif
-    "::_GPPortInfo",                        /* tp_doc */
+    "\n"
+		"GPPortInfo:  \n"
+		"\n"
+		"The internals of this list are private.  \n"
+		"\n"
+		"C++ includes: gphoto2-port-info.h\n"
+		"", /* tp_doc */
     (traverseproc) 0,                       /* tp_traverse */
     (inquiry) 0,                            /* tp_clear */
     SwigPyBuiltin___GPPortInfo_richcompare, /* tp_richcompare */
@@ -6250,7 +6256,13 @@ static PyTypeObject *SwigPyBuiltin___GPPortInfo_type_create(PyTypeObject *type, 
   PyType_Slot slots[] = {
     { Py_tp_init,                       (void *)(initproc) SwigPyBuiltin_BadInit },
     { Py_tp_dealloc,                    (void *)(destructor) _wrap_delete_GPPortInfo_destructor_closure },
-    { Py_tp_doc,                        (void *)"::_GPPortInfo" },
+    { Py_tp_doc,                        (void *)"\n"
+		"GPPortInfo:  \n"
+		"\n"
+		"The internals of this list are private.  \n"
+		"\n"
+		"C++ includes: gphoto2-port-info.h\n"
+		"" },
     { Py_tp_richcompare,                (void *)(richcmpfunc) SwigPyBuiltin___GPPortInfo_richcompare },
     { Py_tp_methods,                    (void *)SwigPyBuiltin___GPPortInfo_methods },
     { Py_tp_getset,                     (void *)SwigPyBuiltin___GPPortInfo_getset },
@@ -6480,7 +6492,11 @@ static PyHeapTypeObject SwigPyBuiltin___GPPortInfoList_type = {
 #else
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES, /* tp_flags */
 #endif
-    "::_GPPortInfoList",                    /* tp_doc */
+    "\n"
+		"GPPortInfoList:  \n"
+		"\n"
+		"The internals of this list are private.\n"
+		"", /* tp_doc */
     (traverseproc) 0,                       /* tp_traverse */
     (inquiry) 0,                            /* tp_clear */
     SwigPyBuiltin___GPPortInfoList_richcompare, /* tp_richcompare */
@@ -6679,7 +6695,11 @@ static PyTypeObject *SwigPyBuiltin___GPPortInfoList_type_create(PyTypeObject *ty
   PyType_Slot slots[] = {
     { Py_tp_init,                       (void *)(initproc) _wrap_new_GPPortInfoList },
     { Py_tp_dealloc,                    (void *)(destructor) _wrap_delete_GPPortInfoList_destructor_closure },
-    { Py_tp_doc,                        (void *)"::_GPPortInfoList" },
+    { Py_tp_doc,                        (void *)"\n"
+		"GPPortInfoList:  \n"
+		"\n"
+		"The internals of this list are private.\n"
+		"" },
     { Py_tp_richcompare,                (void *)(richcmpfunc) SwigPyBuiltin___GPPortInfoList_richcompare },
     { Py_tp_methods,                    (void *)SwigPyBuiltin___GPPortInfoList_methods },
     { Py_tp_getset,                     (void *)SwigPyBuiltin___GPPortInfoList_getset },

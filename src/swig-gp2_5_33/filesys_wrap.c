@@ -7575,7 +7575,7 @@ static PyHeapTypeObject SwigPyBuiltin___CameraStorageInformation_type = {
     Py_TPFLAGS_DEFAULT|Py_TPFLAGS_BASETYPE|Py_TPFLAGS_CHECKTYPES, /* tp_flags */
 #endif
     "\n"
-		"Storage information structue.  \n"
+		"Storage information structure.  \n"
 		"\n"
 		"This structure contains the information of a specific camera storage.\n"
 		"Only the members as specified by the *fields* member are valid.  \n"
@@ -7781,7 +7781,7 @@ static PyTypeObject *SwigPyBuiltin___CameraStorageInformation_type_create(PyType
     { Py_tp_init,                       (void *)(initproc) SwigPyBuiltin_BadInit },
     { Py_tp_dealloc,                    (void *)(destructor) _wrap_delete_CameraStorageInformation_destructor_closure },
     { Py_tp_doc,                        (void *)"\n"
-		"Storage information structue.  \n"
+		"Storage information structure.  \n"
 		"\n"
 		"This structure contains the information of a specific camera storage.\n"
 		"Only the members as specified by the *fields* member are valid.  \n"

@@ -4853,7 +4853,7 @@ static PyMethodDef SwigMethods[] = {
 		"----------\n"
 		"port: GPPort *\n"
 		"\n"
-		"Retreives information about the port.  \n"
+		"Retrieves information about the port.  \n"
 		"\n"
 		"Retrieves the informations set by gp_port_set_info().  \n"
 		"\n"

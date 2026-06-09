@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -43,6 +43,10 @@ typedef long int time_t;
 
 // Turn on default exception handling
 DEFAULT_EXCEPTION
+
+// SWIG ref counting
+%feature("ref") _CameraFile "gp_file_ref($this);"
+%feature("unref") _CameraFile "gp_file_unref($this);"
 
 // gp_file_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraFile **)
@@ -97,18 +101,16 @@ PLAIN_ARGOUT(CameraFile **)
 }
 %typemap(doc) char * data, unsigned long int size "$1_name: readable buffer (e.g. bytes)"
 
-// Add default constructor and destructor to _CameraFile
+// Add default constructor to _CameraFile
 struct _CameraFile {};
 DEFAULT_CTOR(_CameraFile, gp_file_new)
-DEFAULT_DTOR(_CameraFile, gp_file_unref)
 
 // Add constructor from file descriptor
 %extend _CameraFile {
+  %fragment("gphoto2_error");
   _CameraFile(int fd) {
     struct _CameraFile *result;
-    int error = gp_file_new_from_fd(&result, fd);
-    if (error < GP_OK)
-      GPHOTO2_ERROR(error)
+    gphoto2_error(gp_file_new_from_fd(&result, fd));
     return result;
   }
 };

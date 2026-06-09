@@ -1,6 +1,6 @@
 python-gphoto2 - Python interface to libgphoto2
 http://github.com/jim-easterbrook/python-gphoto2
-Copyright (C) 2014-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
+Copyright (C) 2014-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 
 This file is part of python-gphoto2.
 
@@ -18,6 +18,9 @@ You should have received a copy of the GNU Lesser General Public
 License along with python-gphoto2.  If not, see
 <https://www.gnu.org/licenses/>.
 
+
+Changes in 2.6.4:
+  1/ Binary wheels include libgphoto2 v2.5.34
 
 Changes in 2.6.3:
   1/ Binary wheels include libgphoto2 v2.5.33

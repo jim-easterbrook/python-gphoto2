@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -32,6 +32,10 @@ DEPRECATED(_CameraList::populate, 1)
 
 // Turn on default exception handling
 DEFAULT_EXCEPTION
+
+// SWIG ref counting
+%feature("ref") _CameraList "gp_list_ref($this);"
+%feature("unref") _CameraList "gp_list_unref($this);"
 
 // gp_list_new() returns a pointer in an output parameter
 PLAIN_ARGOUT(CameraList **)
@@ -69,25 +73,19 @@ PLAIN_ARGOUT(CameraList **)
     return self;
   }
 }
-%fragment("CameraList_get_key", "header") {
+%fragment("CameraList_get_key", "header", fragment="gphoto2_error") {
   static PyObject* CameraList_get_key(CameraList *list, int idx) {
     const char *name = NULL;
-    int error = gp_list_get_name(list, idx, &name);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error);
+    if (gphoto2_error(gp_list_get_name(list, idx, &name)))
       return NULL;
-    }
     return name ? PyUnicode_FromString(name) : SWIG_Py_Void();
   }
 }
-%fragment("CameraList_get_value", "header") {
+%fragment("CameraList_get_value", "header", fragment="gphoto2_error") {
   static PyObject* CameraList_get_value(CameraList *list, int idx) {
     const char *value = NULL;
-    int error = gp_list_get_value(list, idx, &value);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error);
+    if (gphoto2_error(gp_list_get_value(list, idx, &value)))
       return NULL;
-    }
     return value ? PyUnicode_FromString(value) : SWIG_Py_Void();
   }
 }
@@ -105,10 +103,9 @@ PLAIN_ARGOUT(CameraList **)
   }
 }
 
-// Add constructor and destructor to _CameraList
+// Add constructor to _CameraList
 struct _CameraList {};
 DEFAULT_CTOR(_CameraList, gp_list_new)
-DEFAULT_DTOR(_CameraList, gp_list_unref)
 
 // Simple accessor object
 %feature("docstring") _CameraList_accessor

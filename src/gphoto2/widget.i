@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -55,33 +55,41 @@ result, so it's easy to use different typemaps for the different functions.
 Beware of changes in the libgphoto2 definitions though.
 */
 
+%fragment("widget_root_ref", "header") {
+static int widget_root_ref(CameraWidget* widget) {
+  CameraWidget* root;
+  int error = gp_widget_get_root(widget, &root);
+  if (error != GP_OK)
+    return error;
+  return gp_widget_ref(root);
+};
+}
+%fragment("widget_root_unref", "header") {
+static int widget_root_unref(CameraWidget* widget) {
+  CameraWidget* root;
+  int error = gp_widget_get_root(widget, &root);
+  if (error != GP_OK)
+    return error;
+  return gp_widget_unref(root);
+};
+}
+
 %typemap(in, numinputs=0) CameraWidget ** (CameraWidget *temp) {
   temp = NULL;
   $1 = &temp;
 }
-%typemap(argout) CameraWidget **window, CameraWidget **widget {
-  // Append result to output object
+%typemap(argout) CameraWidget ** {
   $result = SWIG_AppendOutput(
     $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
 }
-%typemap(argout) CameraWidget **child, CameraWidget **root, CameraWidget **parent {
+%typemap(argout, fragment="gphoto2_error", fragment="widget_root_ref")
+    CameraWidget **child, CameraWidget **root, CameraWidget **parent {
   if (*$1 != NULL) {
-    // Increment refcount on root widget
-    CameraWidget *root;
-    int error = gp_widget_get_root(*$1, &root);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error);
-      SWIG_fail;
-    }
-    error = gp_widget_ref(root);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error);
+    if (gphoto2_error(widget_root_ref(*$1))) {
       SWIG_fail;
     }
   }
-  // Append result to output object
-  $result = SWIG_AppendOutput(
-    $result, SWIG_NewPointerObj(*$1, $*1_descriptor, SWIG_POINTER_OWN));
+  $typemap(argout, CameraWidget **)
 }
 
 // Make docstring parameter types more Pythonic
@@ -92,48 +100,40 @@ Beware of changes in the libgphoto2 definitions though.
 %apply float *OUTPUT { float * };
 
 // Use typemaps to convert result of gp_widget_get_value
-%{
-typedef union {
-    int int_val;
-    float flt_val;
-    char* str_val;
-} VoidValue;
-%}
-%typemap(in, numinputs=0) (void *value_out) (VoidValue temp) {
-  temp.str_val = NULL;
-  $1 = &temp;
-}
-%typemap(argout) (CameraWidget *widget, void *value_out),
-                 (struct _CameraWidget *self, void *value_out) {
+%fragment("from_void", "header", fragment="gphoto2_error") {
+static PyObject* from_void(CameraWidget* widget, void* value) {
   CameraWidgetType type;
-  PyObject* py_value = NULL;
-  VoidValue* value = (VoidValue*) $2;
-  int error = gp_widget_get_type($1, &type);
-  if (error < GP_OK) {
-    GPHOTO2_ERROR(error);
-    SWIG_fail;
+  if (gphoto2_error(gp_widget_get_type(widget, &type))) {
+    return NULL;
   }
   switch (type) {
     case GP_WIDGET_DATE:
     case GP_WIDGET_TOGGLE:
-      py_value = SWIG_From_int(value->int_val);
-      break;
+      return PyInt_FromLong((long) *((int*)value));
     case GP_WIDGET_RANGE:
-      py_value = SWIG_From_float(value->flt_val);
-      break;
+      return PyFloat_FromDouble(*((float*)value));
     case GP_WIDGET_MENU:
     case GP_WIDGET_TEXT:
     case GP_WIDGET_RADIO:
-      if (value->str_val) {
-        py_value = PyString_FromString(value->str_val);
-      } else {
-        SWIG_Py_INCREF(Py_None);
-        py_value = Py_None;
-      }
-      break;
+      if (value)
+        return PyString_FromString(*((char**)value));
+      Py_INCREF(Py_None);
+      return Py_None;
     default:
       PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
-      SWIG_fail;
+  }
+  return NULL;
+};
+}
+%typemap(in, numinputs=0) (void *value_out) (void* temp = NULL) {
+  $1 = &temp;
+}
+%typemap(argout, fragment="from_void")
+    (CameraWidget *widget, void *value_out),
+    (struct _CameraWidget *self, void *value_out) {
+  PyObject* py_value = from_void($1, $2);
+  if (!py_value) {
+    SWIG_fail;
   }
   $result = SWIG_AppendOutput($result, py_value);
 }
@@ -144,51 +144,49 @@ int gp_widget_get_value(CameraWidget *widget, void *value_out);
 %ignore gp_widget_get_value;
 
 // Use typemaps to convert input to gp_widget_set_value
-%typemap(in, noblock=1) const void *value
-    (VoidValue value, int alloc = 0, int res = 0, CameraWidgetType type) {
-  // Camera widget is stored in arg1 as it's definitely the first argument to gp_widget_set_value
-  res = gp_widget_get_type(arg1, &type);
-  if (res < GP_OK) {
-    GPHOTO2_ERROR(res);
-    SWIG_fail;
+%fragment("to_void", "header", fragment="gphoto2_error",
+          fragment=SWIG_AsVal_frag(int), fragment=SWIG_AsVal_frag(float)) {
+static int to_void(CameraWidget* widget, PyObject* input, void** output) {
+  CameraWidgetType type;
+  int res = gp_widget_get_type(widget, &type);
+  if (gphoto2_error(res)) {
+    return -300;
   }
   switch (type) {
     case GP_WIDGET_DATE:
     case GP_WIDGET_TOGGLE:
-      res = SWIG_AsVal_int($input, &value.int_val);
-      if (!SWIG_IsOK(res)) {
-        %argument_fail(res, int, $symname, $argnum);
-      }
-      $1 = &value.int_val;
-      break;
+      return SWIG_AsVal_int(input, (int*)*output);
     case GP_WIDGET_RANGE:
-      res = SWIG_AsVal_float($input, &value.flt_val);
-      if (!SWIG_IsOK(res)) {
-        %argument_fail(res, float, $symname, $argnum);
-      }
-      $1 = &value.flt_val;
-      break;
+      return SWIG_AsVal_float(input, (float*)*output);
     case GP_WIDGET_MENU:
     case GP_WIDGET_TEXT:
     case GP_WIDGET_RADIO:
-      res = SWIG_AsCharPtrAndSize($input, &value.str_val, NULL, &alloc);
-      if (!SWIG_IsOK(res)) {
-        %argument_fail(res, str, $symname, $argnum);
-      }
-      // Note this is a pointer set by SWIG_AsCharPtrAndSize, not the address of value
-      $1 = value.str_val;
-      break;
+      return SWIG_AsCharPtrAndSize(input, (char**)output, NULL, NULL);
     default:
       PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
-      SWIG_fail;
+      return -300;
   }
+};
 }
-%typemap(freearg) const void *value {
-  if (alloc$argnum == SWIG_NEWOBJ) free($1);
+%typemap(in, fragment="to_void") const void *value (void* temp) {
+  $1 = &temp;
+  int res = to_void(arg1, $input, &$1);
+  if (res == -300) {
+    SWIG_fail;
+  }
+  if (!SWIG_IsOK(res)) {
+    %argument_fail(res, "int/float/str", $symname, $argnum);
+  }
 }
 
 // Turn on default exception handling
 DEFAULT_EXCEPTION
+
+// SWIG ref counting
+%fragment("widget_root_ref");
+%fragment("widget_root_unref");
+%feature("ref") _CameraWidget "widget_root_ref($this);"
+%feature("unref") _CameraWidget "widget_root_unref($this);"
 
 #ifndef SWIGIMPORTED
 
@@ -288,37 +286,19 @@ int gp_widget_get_choices(CameraWidget* widget, PyObject **iter) {
 
 #endif //ifndef SWIGIMPORTED
 
-// Add default destructor to _CameraWidget
-// Destructor decrefs root widget
-%{
-static int widget_dtor(CameraWidget *widget) {
-  if (widget == NULL)
-    return GP_OK;
-  {
-    CameraWidget *root;
-    int error = gp_widget_get_root(widget, &root);
-    if (error < GP_OK)
-      return error;
-    return gp_widget_unref(root);
-  }
-}
-%}
-struct _CameraWidget {};
-DEFAULT_DTOR(_CameraWidget, widget_dtor)
-
-
 // Make _CameraWidget more like a list
 %feature("python:slot", "sq_item", functype="ssizeargfunc")
     _CameraWidget::__getitem__;
+struct _CameraWidget {};
 %extend _CameraWidget {
+    %fragment("gphoto2_error");
     void __getitem__(int child_number, CameraWidget **child) {
         if ((child_number < 0) ||
             (child_number >= gp_widget_count_children($self))) {
             PyErr_SetNone(PyExc_IndexError);
             return;
         }
-        int result = gp_widget_get_child($self, child_number, child);
-        if (result < GP_OK) GPHOTO2_ERROR(result)
+        gphoto2_error(gp_widget_get_child($self, child_number, child));
     }
 };
 

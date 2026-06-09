@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -64,18 +64,14 @@ LEN_MEMBER_FUNCTION(_GPPortInfoList, gp_port_info_list_count)
   }
 }
 %extend _GPPortInfoList {
+  %fragment("gphoto2_error");
   void __getitem__(int idx, GPPortInfo *info) {
     if (idx < 0 || idx >= gp_port_info_list_count($self)) {
       PyErr_SetString(PyExc_IndexError, "GPPortInfoList index out of range");
       return;
     }
-    {
-      int error = gp_port_info_list_get_info($self, idx, info);
-      if (error < GP_OK) {
-        GPHOTO2_ERROR(error)
-        return;
-      }
-    }
+    if (gphoto2_error(gp_port_info_list_get_info($self, idx, info)))
+      return;
   }
 };
 

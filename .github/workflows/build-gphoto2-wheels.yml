@@ -24,7 +24,7 @@ jobs:
             target: 14.0
             arch: arm64
     env:
-      GPHOTO_SRC: https://github.com/gphoto/libgphoto2/releases/download/v2.5.33/libgphoto2-2.5.33.tar.xz
+      GPHOTO_SRC: https://github.com/gphoto/libgphoto2/releases/download/v2.5.34/libgphoto2-2.5.34.tar.xz
       GPHOTO2_ROOT: libgphoto2/local_install
       MACOSX_DEPLOYMENT_TARGET: ${{ matrix.target }}
     steps:

@@ -1,6 +1,6 @@
 # python-gphoto2 - Python interface to libgphoto2
 # http://github.com/jim-easterbrook/python-gphoto2
-# Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
+# Copyright (C) 2014-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 #
 # This file is part of python-gphoto2.
 #
@@ -35,8 +35,7 @@ if 'GPHOTO2_ROOT' in os.environ:
     # using a local build of libgphoto2
     gphoto2_dir = os.environ['GPHOTO2_ROOT']
     gphoto2_dir = os.path.expanduser(gphoto2_dir)
-    if not os.path.isabs(gphoto2_dir):
-        raise RuntimeError('GPHOTO2_ROOT is not an absolute path')
+    gphoto2_dir = os.path.abspath(gphoto2_dir)
     print('Using libgphoto2 from {}'.format(gphoto2_dir))
     for root, dirs, files in os.walk(gphoto2_dir):
         if 'libgphoto2.pc' in files:
@@ -58,22 +57,27 @@ if 'GPHOTO2_ROOT' in os.environ:
             package_data['gphoto2.libgphoto2'].append(name)
     # get cam libs
     packages.append('gphoto2.libgphoto2.camlibs')
-    lib_dir = subprocess.check_output(
+    camlib_dir = subprocess.check_output(
         ['pkg-config', '--variable=driverdir', 'libgphoto2'],
         universal_newlines=True).strip()
-    package_dir['gphoto2.libgphoto2.camlibs'] = os.path.relpath(lib_dir)
+    package_dir['gphoto2.libgphoto2.camlibs'] = os.path.relpath(camlib_dir)
     package_data['gphoto2.libgphoto2.camlibs'] = ['*.so']
     # get io libs
     packages.append('gphoto2.libgphoto2.iolibs')
-    lib_dir = subprocess.check_output(
+    iolib_dir = subprocess.check_output(
         ['pkg-config', '--variable=driverdir', 'libgphoto2_port'],
         universal_newlines=True).strip()
-    package_dir['gphoto2.libgphoto2.iolibs'] = os.path.relpath(lib_dir)
+    if not iolib_dir:
+        iolib_vsn = subprocess.check_output(
+            ['pkg-config', '--variable=VERSION', 'libgphoto2_port'],
+            universal_newlines=True).strip()
+        iolib_dir = os.path.join(lib_dir, 'libgphoto2_port', iolib_vsn)
+    package_dir['gphoto2.libgphoto2.iolibs'] = os.path.relpath(iolib_dir)
     package_data['gphoto2.libgphoto2.iolibs'] = []
-    for name in os.listdir(lib_dir):
+    for name in os.listdir(iolib_dir):
         if name == 'vusb.so':
             packages.append('gphoto2.libgphoto2.vusb')
-            package_dir['gphoto2.libgphoto2.vusb'] = os.path.relpath(lib_dir)
+            package_dir['gphoto2.libgphoto2.vusb'] = os.path.relpath(iolib_dir)
             package_data['gphoto2.libgphoto2.vusb'] = [name]
         elif name.endswith('.so'):
             package_data['gphoto2.libgphoto2.iolibs'].append(name)
@@ -183,6 +187,10 @@ if tuple(map(int, setuptools_version.split('.')[:2])) < (61, 0):
         # python-gphoto2 version
         version = long_description.split('\n')[0].split()[-1]
 
+    classifiers = metadata['project']['classifiers']
+    classifiers.append('License :: OSI Approved :: GNU Lesser General Public'
+                       ' License v3 or later (LGPLv3+)')
+
     setup_kwds.update(
         name = metadata['project']['name'],
         version = version,
@@ -191,9 +199,9 @@ if tuple(map(int, setuptools_version.split('.')[:2])) < (61, 0):
         author = metadata['project']['authors'][0]['name'],
         author_email = metadata['project']['authors'][0]['email'],
         url = metadata['project']['urls']['homepage'],
-        classifiers = metadata['project']['classifiers'],
+        classifiers = classifiers,
         platforms = metadata['tool']['setuptools']['platforms'],
-        license = metadata['project']['license']['text'],
+        license = 'GNU LGPL',
         zip_safe = metadata['tool']['setuptools']['zip-safe'],
         )
 

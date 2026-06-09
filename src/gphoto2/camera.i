@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -58,6 +58,10 @@ DEFAULT_EXCEPTION
 // Many functions accept NULL context value
 DEFAULT_CONTEXT
 
+// SWIG ref counting
+%feature("ref") _Camera "gp_camera_ref($this);"
+%feature("unref") _Camera "gp_camera_unref($this);"
+
 // gp_camera_get_abilities() returns a pointer in an output parameter
 CALLOC_ARGOUT(CameraAbilities *abilities)
 
@@ -78,11 +82,9 @@ NEW_ARGOUT(CameraList *, gp_list_new, gp_list_unref)
 %typemap(default) CameraFile *camera_file (int new_file = 0) %{
   $1 = NULL;
 %}
-%typemap(check) CameraFile *camera_file {
+%typemap(check, fragment="gphoto2_error") CameraFile *camera_file {
   if (!$1) {
-    int error = gp_file_new(&$1);
-    if (error < GP_OK) {
-      GPHOTO2_ERROR(error)
+    if (gphoto2_error(gp_file_new(&$1))) {
       SWIG_fail;
     }
     new_file$argnum = 1;
@@ -139,9 +141,9 @@ CALLOC_ARGOUT(CameraFilePath *path)
   $result = SWIG_AppendOutput($result, PyLong_FromUnsignedLongLong(*$2));
 }
 
-// Add default constructor and destructor to _Camera
+// Add default constructor to _Camera
 DEFAULT_CTOR(_Camera, gp_camera_new)
-DEFAULT_DTOR(_Camera, gp_camera_unref)
+
 %ignore gp_camera_ref;
 %ignore gp_camera_unref;
 

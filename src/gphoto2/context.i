@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-24  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -41,6 +41,10 @@ Context = GPContext
 %ignore gp_context_ref;
 %ignore gp_context_status;
 %ignore gp_context_unref;
+
+// SWIG ref counting
+%feature("ref") _GPContext "gp_context_ref($this);"
+%feature("unref") _GPContext "gp_context_unref($this);"
 
 #ifndef SWIGIMPORTED
 
@@ -269,18 +273,14 @@ SINGLE_CALLBACK_FUNCTION(GPContextProgressStartFunc,
 
 #endif //ifndef SWIGIMPORTED
 
-// Add default constructor and destructor to _GPContext
+// Add default constructor to _GPContext
 struct _GPContext {};
 %extend _GPContext {
   _GPContext() {
     return gp_context_new();
   }
-  ~_GPContext() {
-    gp_context_unref($self);
-  }
 };
 %newobject gp_context_new;
-%delobject gp_context_unref;
 
 // Add member methods to _GPContext
 VOID_MEMBER_FUNCTION(_GPContext,

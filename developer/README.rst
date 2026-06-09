@@ -14,7 +14,7 @@ Using local libgphoto2
 
 To build python-gphoto2 with a different version of libgphoto2 than the one installed on your system you first need to build a local copy of libgphoto2. Download and extract the libgphoto2 source, change to the source directory and then configure, build and install::
 
-    ./configure --prefix=$PWD/local_install CFLAGS="-std=gnu99 -g -O2"
+    ./configure --prefix=$PWD/local_install --enable-vusb
     make
     make install
 
@@ -55,6 +55,7 @@ Differences found so far::
     2.5.31    No change
     2.5.32    Add GP_MIME_MPO, GP_MIME_QTKN, GP_MIME_QTKT, and GP_MIME_RAF constants
     2.5.33    No change
+    2.5.44    Add GP_MIME_DNG constant
 
 Documentation
 -------------

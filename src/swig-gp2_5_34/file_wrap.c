@@ -7851,6 +7851,7 @@ SWIGINTERN int SWIG_mod_exec(PyObject *m) {
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_RW2",SWIG_FromCharPtr("image/x-panasonic-raw2"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_ARW",SWIG_FromCharPtr("image/x-sony-arw"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_RAF",SWIG_FromCharPtr("image/x-fuji-raf"));
+  SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_MIME_DNG",SWIG_FromCharPtr("image/x-adobe-dng"));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_FILE_TYPE_PREVIEW",SWIG_From_int((int)(GP_FILE_TYPE_PREVIEW)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_FILE_TYPE_NORMAL",SWIG_From_int((int)(GP_FILE_TYPE_NORMAL)));
   SWIG_Python_SetConstant(d, d == md ? public_interface : NULL, "GP_FILE_TYPE_RAW",SWIG_From_int((int)(GP_FILE_TYPE_RAW)));

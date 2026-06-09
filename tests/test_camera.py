@@ -169,8 +169,8 @@ class TestVirtualCamera(unittest.TestCase):
         self.assertEqual(ex.code, gp.GP_ERROR_NOT_SUPPORTED)
         # capture
         path = self.camera.capture(gp.GP_CAPTURE_IMAGE)
-        self.assertRegex(path.name, 'GPH_\d{4}.JPG')
-        self.assertRegex(path.folder, '/store_00010001/DCIM/\d{3}GPHOT')
+        self.assertRegex(path.name, r'GPH_\d{4}.JPG')
+        self.assertRegex(path.folder, r'/store_00010001/DCIM/\d{3}GPHOT')
         info = self.camera.file_get_info(path.folder, path.name)
         self.assertEqual(info.file.size, 7082)
         self.assertEqual(info.file.type, 'image/jpeg')
@@ -322,8 +322,8 @@ class TestVirtualCamera(unittest.TestCase):
         # capture
         OK, path = gp.gp_camera_capture(self.camera, gp.GP_CAPTURE_IMAGE)
         self.assertEqual(OK, gp.GP_OK)
-        self.assertRegex(path.name, 'GPH_\d{4}.JPG')
-        self.assertRegex(path.folder, '/store_00010001/DCIM/\d{3}GPHOT')
+        self.assertRegex(path.name, r'GPH_\d{4}.JPG')
+        self.assertRegex(path.folder, r'/store_00010001/DCIM/\d{3}GPHOT')
         OK, info = gp.gp_camera_file_get_info(
             self.camera, path.folder, path.name)
         self.assertEqual(OK, gp.GP_OK)

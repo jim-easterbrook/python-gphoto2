@@ -4398,7 +4398,7 @@ static PyObject* from_void(CameraWidget* widget, void* value) {
     case GP_WIDGET_MENU:
     case GP_WIDGET_TEXT:
     case GP_WIDGET_RADIO:
-      if (value)
+      if (*((char**)value))
         return PyString_FromString(*((char**)value));
       Py_INCREF(Py_None);
       return Py_None;

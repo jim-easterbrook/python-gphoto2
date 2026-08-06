@@ -109,7 +109,7 @@ static PyObject* from_void(CameraWidget* widget, void* value) {
   switch (type) {
     case GP_WIDGET_DATE:
     case GP_WIDGET_TOGGLE:
-      return PyInt_FromLong((long) *((int*)value));
+      return PyLong_FromLong((long) *((int*)value));
     case GP_WIDGET_RANGE:
       return PyFloat_FromDouble(*((float*)value));
     case GP_WIDGET_MENU:
@@ -120,7 +120,7 @@ static PyObject* from_void(CameraWidget* widget, void* value) {
                         "gp_widget_get_value: NULL string pointer");
         return NULL;
       }
-      return PyString_FromString(*((char**)value));
+      return PyUnicode_FromString(*((char**)value));
     default:
       PyErr_SetString(PyExc_RuntimeError, "Unsupported widget type");
   }

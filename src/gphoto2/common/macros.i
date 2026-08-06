@@ -61,7 +61,7 @@ PyObject *PyExc_GPhoto2Error = NULL;
 %fragment("gphoto2_error", "header", fragment="_import_GPhoto2Error") {
 static int gphoto2_error(int error) {
   if (error < GP_OK) {
-    PyErr_SetObject(PyExc_GPhoto2Error, PyInt_FromLong(error));
+    PyErr_SetObject(PyExc_GPhoto2Error, PyLong_FromLong(error));
     return 1;
   }
   return 0;

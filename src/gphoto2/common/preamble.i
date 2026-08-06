@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2017-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2017-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -55,5 +55,5 @@
 }
 %typemap(argout) char ** {
   $result = SWIG_AppendOutput($result,
-    *$1 ? PyString_FromString(*$1) : SWIG_Py_Void());
+    *$1 ? PyUnicode_FromString(*$1) : SWIG_Py_Void());
 }

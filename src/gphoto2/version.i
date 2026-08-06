@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-23  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -35,7 +35,7 @@
   char **line = $1;
   $result = PyList_New(0);
   while (*line) {
-    PyObject* temp = PyString_FromString(*line);
+    PyObject* temp = PyUnicode_FromString(*line);
     PyList_Append($result, temp);
     SWIG_Py_DECREF(temp);
     line++;

@@ -128,7 +128,7 @@ static rtn_type cb_name cb_args {
 %}
 #if #rtn_type != "void"
 %{
-    c_result = PyInt_AsLong(result);
+    c_result = PyLong_AsLong(result);
 %}
 #endif
 %{

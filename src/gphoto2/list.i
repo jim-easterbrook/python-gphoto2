@@ -45,7 +45,7 @@ PLAIN_ARGOUT(CameraList **)
   $1 = &temp;
 %}
 %typemap(argout) int *index {
-  $result = SWIG_AppendOutput($result, PyInt_FromLong(*$1));
+  $result = SWIG_AppendOutput($result, PyLong_FromLong(*$1));
 }
 
 // Code fragments used later on

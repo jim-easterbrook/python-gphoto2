@@ -1,6 +1,6 @@
 // python-gphoto2 - Python interface to libgphoto2
 // http://github.com/jim-easterbrook/python-gphoto2
-// Copyright (C) 2014-25  Jim Easterbrook  jim@jim-easterbrook.me.uk
+// Copyright (C) 2014-26  Jim Easterbrook  jim@jim-easterbrook.me.uk
 //
 // This file is part of python-gphoto2.
 //
@@ -82,7 +82,7 @@ LEN_MEMBER_FUNCTION(_CameraAbilitiesList, gp_abilities_list_count)
   int *value = $1;
   $result = PyList_New(0);
   while (*value) {
-    PyObject* temp = PyInt_FromLong(*value);
+    PyObject* temp = PyLong_FromLong(*value);
     PyList_Append($result, temp);
     SWIG_Py_DECREF(temp);
     value++;

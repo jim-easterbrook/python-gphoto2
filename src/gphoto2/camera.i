@@ -299,14 +299,14 @@ MEMBER_FUNCTION(_Camera,
   $2 = &temp_data;
 }
 %typemap(argout) (CameraEventType * eventtype, void ** eventdata) {
-  $result = SWIG_AppendOutput($result, PyInt_FromLong(*$1));
+  $result = SWIG_AppendOutput($result, PyLong_FromLong(*$1));
   if (*$1 == GP_EVENT_FILE_ADDED || *$1 == GP_EVENT_FOLDER_ADDED
                                  || *$1 == GP_EVENT_FILE_CHANGED) {
     $result = SWIG_AppendOutput(
       $result, SWIG_NewPointerObj(*$2, $descriptor(CameraFilePath*), SWIG_POINTER_OWN));
   }
   else if (*$1 == GP_EVENT_UNKNOWN && *$2 != NULL) {
-    $result = SWIG_AppendOutput($result, PyString_FromString(*$2));
+    $result = SWIG_AppendOutput($result, PyUnicode_FromString(*$2));
     free(*$2);
   }
   else {
